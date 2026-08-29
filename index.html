@@ -1492,8 +1492,8 @@
     }
 
     .col-num { width: 7.5mm; }
-    .col-marks { width: 11mm; }
-    .sheet.is-combo .col-marks { width: 8mm; }
+    .col-marks { width: 11mm; min-width: 11mm; }
+    .sheet.is-combo .col-marks { width: 8mm; min-width: 8mm; }
     .col-rq { width: 22mm; }
     .sheet.is-combo .col-rq { width: 14mm; }
     .liste th.col-num {
@@ -2261,7 +2261,7 @@
           </div>
         </div>
         <div class="info-sub" id="badgeWrap" hidden>
-          <p class="hint-note" style="margin:0 0 8px">Ajoutez une pastille, cochez sa forme, cliquez-la, puis une ligne dans l’aperçu. Ctrl+Z annule.</p>
+          <p class="hint-note" style="margin:0 0 8px">PAP et PAI sont proposés. Cliquez une pastille, puis une ligne dans l’aperçu. Ctrl+Z annule.</p>
           <div class="chips" id="badgeTypes"></div>
           <div class="opt-label" style="margin-top:10px">Forme</div>
           <div class="seg shape-seg" id="badgeShapeSeg" role="radiogroup" aria-label="Forme des pastilles">
@@ -2472,7 +2472,10 @@
       rowY: null,
       activeStamp: null,
       activeFluo: null,
-      badges: [],
+      badges: [
+        { id: "pap", label: "PAP", color: "#e67e22", shape: "rond" },
+        { id: "pai", label: "PAI", color: "#2980b9", shape: "rond" },
+      ],
       badgeShape: "rond",
       sharedCols: [],
     };
@@ -3298,8 +3301,19 @@
       return '<i class="dot is-' + shape + '" style="background:' + color + '"' + title + "></i>";
     }
 
+    function cloneDefaultBadges() {
+      return [
+        { id: "pap", label: "PAP", color: "#e67e22", shape: "rond" },
+        { id: "pai", label: "PAI", color: "#2980b9", shape: "rond" },
+      ];
+    }
+
+    function ensureDefaultBadges() {
+      if (!state.badges.length) state.badges = cloneDefaultBadges();
+    }
+
     function showPastilles() {
-      return Boolean(state.showBadges && state.badges.length);
+      return Boolean(state.showBadges);
     }
 
     function showRemarks() {
@@ -3597,7 +3611,7 @@
     }
 
     function legendHtml(list) {
-      if (!state.legend || !showPastilles()) return "";
+      if (!state.legend || !showPastilles() || !state.badges.length) return "";
       return '<div class="legend">' + state.badges.map((b) =>
         "<span>" + dotHtml(b) + escapeHtml(b.label) + "</span>"
       ).join("") + "</div>";
@@ -4365,6 +4379,7 @@
       state.activeFluo = null;
       state.badges = Array.isArray(s.badges) ? s.badges : [];
       state.showBadges = s.showBadges != null ? Boolean(s.showBadges) : state.badges.length > 0;
+      if (state.showBadges) ensureDefaultBadges();
       const listsRaw = data.lists || [];
       state.showNotes = s.showNotes != null ? Boolean(s.showNotes) : listsRaw.some((l) => l.notes && Object.keys(l.notes).length);
       state.notesPos = s.notesPos === "left" || s.notesPos === "custom" ? s.notesPos : "right";
@@ -4674,7 +4689,8 @@
     $("optBadges").addEventListener("change", () => {
       pushHist();
       state.showBadges = $("optBadges").checked;
-      if (!state.showBadges) state.activeStamp = null;
+      if (state.showBadges) ensureDefaultBadges();
+      else state.activeStamp = null;
       renderAll();
     });
     $("fluoRow").addEventListener("click", (e) => {
