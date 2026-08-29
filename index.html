@@ -1380,7 +1380,8 @@
     .liste td.is-blank { min-height: 1.15em; }
 
     .liste thead th[data-ci],
-    .liste thead th[data-slot="rq"] { cursor: grab; }
+    .liste thead th[data-slot="rq"],
+    .liste thead th[data-slot="marks"] { cursor: grab; }
     .liste thead th.is-drop {
       box-shadow: inset 0 -3px 0 var(--d-accent, var(--teal-deep));
     }
@@ -2936,9 +2937,9 @@
       list.headers.push(name);
       list.rows.forEach((r) => r.push(""));
       const i = list.headers.length - 1;
-      const rqAt = list.order.indexOf("rq");
-      if (rqAt === list.order.length - 1) list.order.splice(rqAt, 0, i);
-      else list.order.push(i);
+      let insertAt = list.order.length;
+      while (insertAt > 0 && (list.order[insertAt - 1] === "rq" || list.order[insertAt - 1] === "marks")) insertAt--;
+      list.order.splice(insertAt, 0, i);
       list.on.push(true);
       list.custom[i] = true;
     }
@@ -2953,7 +2954,7 @@
       list.rows.forEach((r) => r.splice(index, 1));
       if (Array.isArray(list.on)) list.on.splice(index, 1);
       list.order = list.order.map((k) => {
-        if (k === "rq") return k;
+        if (k === "rq" || k === "marks") return k;
         if (k === index) return null;
         if (typeof k === "number" && k > index) return k - 1;
         return k;
@@ -2990,11 +2991,11 @@
     }
 
     function selectedCols(list) {
-      return list.order.filter((i) => i !== "rq" && list.on[i]);
+      return list.order.filter((i) => i !== "rq" && i !== "marks" && list.on[i]);
     }
 
     function parseOrderKey(raw) {
-      if (raw === "rq") return "rq";
+      if (raw === "rq" || raw === "marks") return raw;
       const n = Number(raw);
       return Number.isInteger(n) ? n : null;
     }
@@ -3003,10 +3004,10 @@
       const seen = new Set();
       const out = [];
       (Array.isArray(raw) ? raw : []).forEach((k) => {
-        if (k === "rq") {
-          if (!seen.has("rq")) {
-            seen.add("rq");
-            out.push("rq");
+        if (k === "rq" || k === "marks") {
+          if (!seen.has(k)) {
+            seen.add(k);
+            out.push(k);
           }
           return;
         }
@@ -3025,6 +3026,11 @@
       else list.order.push("rq");
     }
 
+    function ensureMarksOrder(list) {
+      if (!list || list.order.indexOf("marks") >= 0) return;
+      list.order.unshift("marks");
+    }
+
     function placeRqInOrder(list, pos) {
       list.order = list.order.filter((k) => k !== "rq");
       if (pos === "left") list.order.unshift("rq");
@@ -3033,7 +3039,7 @@
 
     function rqPlacement(list) {
       if (!list) return state.notesPos || "right";
-      const keys = list.order.filter((k) => k === "rq" || list.on[k]);
+      const keys = list.order.filter((k) => k === "rq" || (typeof k === "number" && list.on[k]));
       const i = keys.indexOf("rq");
       if (i < 0) return state.notesPos || "right";
       if (i === 0) return "left";
@@ -3043,6 +3049,7 @@
 
     function moveOrderOnto(list, fromKey, toKey) {
       if (fromKey === "rq" || toKey === "rq") ensureRqOrder(list, "right");
+      if (fromKey === "marks" || toKey === "marks") ensureMarksOrder(list);
       const a = list.order.indexOf(fromKey);
       const b = list.order.indexOf(toKey);
       if (a < 0 || b < 0 || a === b) return false;
@@ -3052,6 +3059,7 @@
 
     function moveOrderToIndex(list, fromKey, dest) {
       if (fromKey === "rq") ensureRqOrder(list, "right");
+      if (fromKey === "marks") ensureMarksOrder(list);
       const a = list.order.indexOf(fromKey);
       if (a < 0) return false;
       const b = Math.max(0, Math.min(list.order.length - 1, dest));
@@ -3062,9 +3070,12 @@
 
     function columnLayout(list) {
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
+      if (showPastilles()) ensureMarksOrder(list);
       const items = [];
       list.order.forEach((k) => {
-        if (k === "rq") {
+        if (k === "marks") {
+          if (showPastilles()) items.push({ type: "marks" });
+        } else if (k === "rq") {
           if (showRemarks()) items.push({ type: "rq" });
         } else if (list.on[k]) {
           items.push({ type: "data", i: k });
@@ -3427,6 +3438,25 @@
       return '<th class="col-rq" draggable="true" data-lid="' + list.id + '" data-slot="rq">Rq.</th>';
     }
 
+    function marksThHtml(list) {
+      return '<th class="col-marks" draggable="true" data-lid="' + list.id + '" data-slot="marks" aria-label="Pastilles" title="Pastilles"></th>';
+    }
+
+    function marksTdHtml(list, ri, extras) {
+      extras = extras || {};
+      const ids = list.marks[ri] || [];
+      let dots = '<span class="dots">';
+      ids.forEach((id) => {
+        const b = badgeById(id);
+        if (!b) return;
+        dots += dotHtml(b, true);
+      });
+      dots += "</span>";
+      return '<td class="col-marks">' + (extras.handle || "") + dots +
+        (extras.del ? rowDelHtml(list, ri) : "") +
+        (extras.resize ? rowResizerHtml() : "") + "</td>";
+    }
+
     function rqTdHtml(list, ri, extras) {
       extras = extras || {};
       const note = list.notes && list.notes[ri] ? String(list.notes[ri]) : "";
@@ -3453,21 +3483,23 @@
         kinds[i] = classify(list.headers[i], list.rows.map((r) => r[i] || ""), list.custom[i]);
       });
       const showNum = state.numbering !== "off";
-      const showMarks = showPastilles();
       const vis = visibleRowIndices(list);
       let html = '<table class="liste' + (state.vlines ? " has-vlines" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
       html += "<colgroup>";
       if (showNum) html += '<col class="col-num">';
-      if (showMarks) html += '<col class="col-marks">';
       let wi = 0;
       layout.forEach((col) => {
-        if (col.type === "rq") html += '<col class="col-rq">';
+        if (col.type === "marks") html += '<col class="col-marks">';
+        else if (col.type === "rq") html += '<col class="col-rq">';
         else html += '<col data-ci="' + col.i + '" style="width:' + widths[wi++].toFixed(2) + '%">';
       });
       html += "</colgroup><thead><tr>";
       if (showNum) html += '<th class="col-num" data-lid="' + list.id + '" data-slot="num">N°</th>';
-      if (showMarks) html += '<th class="col-marks" data-lid="' + list.id + '" data-slot="marks"></th>';
       layout.forEach((col) => {
+        if (col.type === "marks") {
+          html += marksThHtml(list);
+          return;
+        }
         if (col.type === "rq") {
           html += rqThHtml(list);
           return;
@@ -3492,18 +3524,12 @@
           return rowHandleHtml(list, ri);
         };
         if (showNum) html += '<td class="col-num">' + handle() + escapeHtml(rowNumber(visIdx)) + rowResizerHtml() + "</td>";
-        if (showMarks) {
-          const ids = list.marks[ri] || [];
-          html += '<td class="col-marks">' + handle() + '<span class="dots">';
-          ids.forEach((id) => {
-            const b = badgeById(id);
-            if (!b) return;
-            html += dotHtml(b, true);
-          });
-          html += "</span>" + rowResizerHtml() + "</td>";
-        }
         layout.forEach((col, k) => {
           const last = k === layout.length - 1;
+          if (col.type === "marks") {
+            html += marksTdHtml(list, ri, { handle: handle(), del: last, resize: true });
+            return;
+          }
           if (col.type === "rq") {
             html += rqTdHtml(list, ri, { handle: handle(), del: last, resize: true });
             return;
@@ -3842,8 +3868,10 @@
       $("colsBlock").hidden = !list;
       if (!list) return;
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
+      if (showPastilles()) ensureMarksOrder(list);
       list.order.forEach((key) => {
         if (key === "rq" && !showRemarks()) return;
+        if (key === "marks" && !showPastilles()) return;
         const el = document.createElement("div");
         el.draggable = true;
         if (key === "rq") {
@@ -3852,6 +3880,12 @@
             '<span class="handle" aria-hidden="true">⠿</span>' +
             "<span></span>" +
             '<span class="name" title="Remarques">Rq.</span>';
+        } else if (key === "marks") {
+          el.className = "col";
+          el.innerHTML =
+            '<span class="handle" aria-hidden="true">⠿</span>' +
+            "<span></span>" +
+            '<span class="name" title="Pastilles">Pastilles</span>';
         } else {
           const i = key;
           el.className = "col" + (list.on[i] ? "" : " is-off");
@@ -4852,9 +4886,9 @@
         e.preventDefault();
         return;
       }
-      const th = e.target.closest("th[data-ci], th[data-slot='rq']");
+      const th = e.target.closest("th[data-ci], th[data-slot='rq'], th[data-slot='marks']");
       if (!th) return;
-      const key = th.dataset.slot === "rq" ? "rq" : th.dataset.ci;
+      const key = th.dataset.slot === "rq" || th.dataset.slot === "marks" ? th.dataset.slot : th.dataset.ci;
       e.dataTransfer.setData("text/plain", th.dataset.lid + ":" + key);
       e.dataTransfer.effectAllowed = "move";
       th.classList.add("is-drag");
@@ -4918,12 +4952,12 @@
       const list = state.lists.find((l) => String(l.id) === lid);
       if (!list) return;
       let moved = false;
-      if (th.dataset.slot === "num" || th.dataset.slot === "marks") {
+      if (th.dataset.slot === "num") {
         if (list.order.indexOf(fromKey) === 0) return;
         pushHist();
         moved = moveOrderToIndex(list, fromKey, 0);
       } else {
-        const toKey = th.dataset.slot === "rq" ? "rq" : parseOrderKey(th.dataset.ci);
+        const toKey = th.dataset.slot === "rq" || th.dataset.slot === "marks" ? th.dataset.slot : parseOrderKey(th.dataset.ci);
         if (toKey == null || fromKey === toKey) return;
         if (list.order.indexOf(fromKey) < 0 || list.order.indexOf(toKey) < 0) return;
         pushHist();
