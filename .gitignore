@@ -1,0 +1,5 @@
+Test tableau.json
+*.listes.json
+Thumbs.db
+.DS_Store
+preview-*.png
