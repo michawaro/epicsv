@@ -2,4 +2,6 @@
 
 Convertissez des listes CSV (exports Pronote, Excel, presse-papiers) en un tableau soigné, prêt à imprimer.
 
-Ouvrez `index.html` dans un navigateur, ou l’exemple : ajoutez `?exemple=1` à l’URL.
+Utilisation en ligne : [https://michawaro.github.io/epicsv/](https://michawaro.github.io/epicsv/)
+
+Exemple : [https://michawaro.github.io/epicsv/?exemple=1](https://michawaro.github.io/epicsv/?exemple=1)

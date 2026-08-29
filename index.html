@@ -637,8 +637,15 @@
     .info-line .check-row { margin-top: 0; }
     .fluo-row {
       display: flex;
+      align-items: center;
       gap: 5px;
       flex: none;
+    }
+    .fluo-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--cream-dim);
+      margin-right: 2px;
     }
     .fluo {
       appearance: none;
@@ -1351,6 +1358,8 @@
       vertical-align: bottom;
       background: var(--paper);
       position: relative;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
     .liste td {
       padding: var(--row-y) var(--row-x);
@@ -1407,6 +1416,7 @@
       display: inline-block;
       min-width: 0.6em;
       max-width: 100%;
+      overflow-wrap: anywhere;
       outline: none;
       border-radius: 2px;
       cursor: text;
@@ -2242,6 +2252,7 @@
             Pastilles
           </label>
           <div class="fluo-row" id="fluoRow" role="group" aria-label="Surligneurs" title="Clic : toute la case. Double-clic sur le texte : fluo du texte seulement.">
+            <span class="fluo-label">Fluo</span>
             <button type="button" class="fluo" data-fluo="vert" aria-label="Surligneur vert" aria-pressed="false" title="Fluo vert. Clic : case. Double-clic : texte." style="background:#c9ebc4"></button>
             <button type="button" class="fluo" data-fluo="rose" aria-label="Surligneur rose" aria-pressed="false" title="Fluo rose. Clic : case. Double-clic : texte." style="background:#f5c9d6"></button>
             <button type="button" class="fluo" data-fluo="jaune" aria-label="Surligneur jaune" aria-pressed="false" title="Fluo jaune. Clic : case. Double-clic : texte." style="background:#ffe9a3"></button>
@@ -2776,6 +2787,13 @@
       return best;
     }
 
+    function tidyHeader(name) {
+      return String(name || "")
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
     function normalizeGrid(grid) {
       const cleaned = grid
         .map((r) => r.map((c) => String(c ?? "").replace(/\u00A0/g, " ").trim()))
@@ -2786,7 +2804,7 @@
       const width = Math.max(...cleaned.slice(hi).map((r) => r.length));
       const headers = [];
       for (let i = 0; i < width; i++) {
-        const name = (headerRow[i] || "").trim();
+        const name = tidyHeader(headerRow[i] || "");
         headers.push(name || "Colonne " + (i + 1));
       }
       const rows = cleaned.slice(hi + 1).map((r) => {
@@ -2803,7 +2821,7 @@
       if (/(pr[eé]nom)/.test(h)) return "prenom";
       if (/^(nom|nom de famille|patronyme|nom d[’']usage)$/.test(h) || (/\bnom\b/.test(h) && !/pr[eé]nom|d[eé]nom/.test(h))) return "nom";
       if (/classe|division|groupe|niveau/.test(h)) return "classe";
-      if (/naissance|n[eé]\(e\)|n[eé]e?\s*le|d[nN]ais/.test(h)) return "date";
+      if (/naissance|n[eé]\(e\)|n[eé]e?\s*le|d[nN]ais|date$/.test(h)) return "date";
       if (/sexe|genre/.test(h)) return "sexe";
       if (/mail|courriel/.test(h)) return "mail";
       if (/t[eé]l|portable|mobile/.test(h)) return "tel";
@@ -3166,11 +3184,15 @@
         const header = list.headers[i];
         const vals = list.rows.map((r) => r[i] || "");
         const kind = classify(header, vals, list.custom[i]);
-        let w = Math.max(header.length, ...vals.slice(0, 80).map((v) => Math.min(40, v.length)));
-        w = Math.max(4, Math.min(36, w));
-        if (kind === "nom" || kind === "prenom") w *= 1.15;
-        if (kind === "mail") w *= 1.1;
-        if (kind === "classe" || kind === "sexe" || kind === "regime") w *= 0.75;
+        let w = Math.max(header.length, ...vals.slice(0, 80).map((v) => {
+          const cap = kind === "mail" ? 16 : kind === "id" ? 12 : 28;
+          return Math.min(cap, v.length);
+        }));
+        w = Math.max(4, Math.min(28, w));
+        if (kind === "nom" || kind === "prenom") w = Math.max(w * 1.2, 10);
+        if (kind === "mail") w = Math.min(w, 14);
+        if (kind === "id") w = Math.min(w, 11);
+        if (kind === "classe" || kind === "sexe" || kind === "regime") w *= 0.8;
         if (kind === "blank") w = Math.max(w, 8);
         return w;
       });
@@ -3492,7 +3514,7 @@
           if (kind === "nom") cls.push("is-nom");
           if (kind === "prenom") cls.push("is-prenom");
           if (kind === "blank") cls.push("is-blank");
-          if (!combining() && (kind === "classe" || kind === "date" || kind === "sexe" || kind === "regime" || kind === "id" || kind === "tel" || kind === "short")) {
+          if (!combining() && (kind === "classe" || kind === "sexe" || kind === "regime")) {
             cls.push("is-nowrap");
           }
           if (kind === "mail" || kind === "id") cls.push("is-mute");
