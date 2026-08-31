@@ -885,6 +885,23 @@
       font-weight: 800;
       letter-spacing: -0.02em;
     }
+    .sel-dim {
+      display: flex;
+      gap: 2px;
+      padding: 2px;
+      border-radius: 999px;
+      background: rgba(14, 143, 140, 0.1);
+    }
+    .sel-dim button {
+      background: transparent;
+    }
+    .sel-dim button[aria-pressed="true"] {
+      background: rgba(14, 143, 140, 0.22);
+    }
+    .sel-dim button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
     .sel-bar button {
       appearance: none;
       border: 0;
@@ -2556,12 +2573,14 @@
   <div class="sel-shield no-print" id="selShield" hidden></div>
   <div class="sel-rect no-print" id="selRect" hidden></div>
   <div class="sel-bar no-print" id="selBar" hidden>
-    <span class="sel-label">Uniformiser</span>
-    <button type="button" id="selEqW">Largeurs</button>
-    <button type="button" id="selEqH">Hauteurs</button>
+    <div class="sel-dim" role="group" aria-label="Dimension à régler">
+      <button type="button" id="selDimW" aria-pressed="true">Largeurs</button>
+      <button type="button" id="selDimH" aria-pressed="false">Hauteurs</button>
+    </div>
+    <button type="button" id="selEq">Uniformiser</button>
     <label class="sel-size">
       Taille
-      <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille de colonne" />
+      <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille" />
       <select id="selSizeUnit" aria-label="Unité de taille">
         <option value="pct">%</option>
         <option value="cm">cm</option>
@@ -2757,6 +2776,7 @@
     let dragRow = null;
     let fluoClickTimer = null;
     let zoneSel = null;
+    let zoneDim = "w";
     let zoneSuppressClick = false;
     let heldStyle = null;
     let styleDlgRestore = null;
@@ -4075,7 +4095,7 @@
       const last = cells[cells.length - 1].getBoundingClientRect();
       bar.hidden = false;
       $("selAllWrap").hidden = state.lists.length < 2;
-      syncSelSizeInput();
+      syncSelBarDim();
       bar.style.left = "12px";
       bar.style.top = Math.min(window.innerHeight - 56, Math.max(8, last.bottom + 8)) + "px";
       const w = bar.offsetWidth;
@@ -4124,6 +4144,9 @@
 
     function setZone(next, opts) {
       zoneSel = next;
+      if (next && opts && opts.rect) zoneDim = inferZoneDim(opts.rect);
+      else if (next && (!opts || opts.bar !== false)) zoneDim = pickZoneDim(zoneDim);
+      else if (!next) zoneDim = "w";
       paintZone(opts);
     }
 
@@ -4136,6 +4159,69 @@
 
     function zoneAllPages() {
       return state.lists.length > 1 && $("selAllPages") && $("selAllPages").checked;
+    }
+
+    function zoneList() {
+      return zoneSel && state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+    }
+
+    function pickZoneDim(preferred) {
+      const list = zoneList();
+      const hasW = zoneDataCols(list).length > 0;
+      const hasH = Boolean(zoneSel && zoneSel.ris && zoneSel.ris.length);
+      if (preferred === "h" && hasH) return "h";
+      if (preferred === "w" && hasW) return "w";
+      if (hasW && !hasH) return "w";
+      if (hasH && !hasW) return "h";
+      return hasW ? "w" : "h";
+    }
+
+    function inferZoneDim(r) {
+      const list = zoneList();
+      const nCols = zoneDataCols(list).length;
+      const nRows = zoneSel && zoneSel.ris ? zoneSel.ris.length : 0;
+      if (nRows < 1) return nCols ? "w" : "h";
+      if (nCols < 1) return "h";
+      if (nRows <= 1 && nCols >= 1) return "w";
+      if (nCols <= 1 && nRows >= 1) return "h";
+      const dw = Math.abs((r && r.right) - (r && r.left)) || 0;
+      const dh = Math.abs((r && r.bottom) - (r && r.top)) || 0;
+      return dw >= dh ? "w" : "h";
+    }
+
+    function setZoneDim(next) {
+      zoneDim = pickZoneDim(next);
+      const unitEl = $("selSizeUnit");
+      if (unitEl) {
+        if (zoneDim === "h") unitEl.value = "cm";
+        else if (unitEl.value !== "pct" && unitEl.value !== "cm") unitEl.value = "pct";
+      }
+      syncSelBarDim();
+    }
+
+    function syncSelBarDim() {
+      const wBtn = $("selDimW");
+      const hBtn = $("selDimH");
+      const unitEl = $("selSizeUnit");
+      const pctOpt = unitEl && unitEl.querySelector('option[value="pct"]');
+      const list = zoneList();
+      const hasW = zoneDataCols(list).length > 0;
+      const hasH = Boolean(zoneSel && zoneSel.ris && zoneSel.ris.length);
+      const isW = zoneDim !== "h";
+      if (wBtn) {
+        wBtn.disabled = !hasW;
+        wBtn.setAttribute("aria-pressed", isW ? "true" : "false");
+      }
+      if (hBtn) {
+        hBtn.disabled = !hasH;
+        hBtn.setAttribute("aria-pressed", isW ? "false" : "true");
+      }
+      if (pctOpt) pctOpt.hidden = !isW;
+      if (!isW && unitEl && unitEl.value === "pct") unitEl.value = "cm";
+      const input = $("selSizeVal");
+      if (input) input.setAttribute("aria-label", isW ? "Taille de colonne" : "Hauteur de ligne");
+      if ($("selEq")) $("selEq").disabled = isW ? zoneDataCols(list).length < 2 : !hasH;
+      syncSelSizeInput();
     }
 
     function zoneDataCols(list) {
@@ -4179,12 +4265,63 @@
       return pcts.reduce((a, b) => a + b, 0) / pcts.length;
     }
 
+    function cssPx(el, axis) {
+      if (!el) return 0;
+      const b = el.getBoundingClientRect();
+      return (axis === "h" ? b.height : b.width) / (stageScale() || 1);
+    }
+
+    function pxToCm(px) {
+      return px * 25.4 / 96 / 10;
+    }
+
+    function cmToPx(cm) {
+      return Number(cm) * 10 * 96 / 25.4;
+    }
+
+    function rowElOf(list, ri) {
+      return $("sheets").querySelector('.list-block[data-lid="' + list.id + '"] tr[data-ri="' + ri + '"]');
+    }
+
+    function currentZoneRowCm(list) {
+      const ris = zoneSel && zoneSel.ris ? zoneSel.ris : [];
+      if (!ris.length) return null;
+      const cms = ris.map((ri) => pxToCm(cssPx(rowElOf(list, ri), "h"))).filter((v) => v > 0);
+      if (!cms.length) return null;
+      return cms.reduce((a, b) => a + b, 0) / cms.length;
+    }
+
+    function setRowsFixedHeightCm(list, ris, cm) {
+      if (!ris || !ris.length || !(cm > 0)) return false;
+      const targetPx = cmToPx(cm);
+      if (!list.rowH) list.rowH = {};
+      let ok = false;
+      ris.forEach((ri) => {
+        const row = rowElOf(list, ri);
+        const fs = row ? parseFloat(getComputedStyle(row).fontSize) || 12 : 12;
+        const curPx = row ? cssPx(row, "h") : 0;
+        const curEm = rowEmOf(list, ri);
+        const contentPx = Math.max(0, curPx - 2 * curEm * fs);
+        const nextEm = Math.max(0.06, Math.min(2, (targetPx - contentPx) / (2 * fs)));
+        list.rowH[ri] = Math.round(nextEm * 1000) / 1000;
+        ok = true;
+      });
+      return ok;
+    }
+
     function syncSelSizeInput() {
       const input = $("selSizeVal");
       const unitEl = $("selSizeUnit");
       if (!input || !unitEl) return;
       if (document.activeElement === input) return;
-      const list = zoneSel && state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      const list = zoneList();
+      if (zoneDim === "h") {
+        const cm = currentZoneRowCm(list);
+        input.disabled = cm == null;
+        unitEl.disabled = cm == null;
+        input.value = cm == null ? "" : String(Math.round(cm * 100) / 100);
+        return;
+      }
       const idxs = zoneDataCols(list);
       input.disabled = !idxs.length;
       unitEl.disabled = !idxs.length;
@@ -4232,7 +4369,7 @@
 
     function applyZoneColSize() {
       if (!zoneSel) return;
-      const list = state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      const list = zoneList();
       if (!list) return;
       const idxs = zoneDataCols(list);
       if (!idxs.length) return;
@@ -4257,6 +4394,44 @@
         return;
       }
       renderPreview();
+    }
+
+    function applyZoneRowSize() {
+      if (!zoneSel || !zoneSel.ris || !zoneSel.ris.length) return;
+      const list = zoneList();
+      if (!list) return;
+      const raw = parseFloat($("selSizeVal") && $("selSizeVal").value);
+      if (!(raw > 0)) {
+        syncSelSizeInput();
+        return;
+      }
+      const visSrc = visibleRowIndices(list);
+      const pos = zoneSel.ris.map((ri) => visSrc.indexOf(ri)).filter((p) => p >= 0);
+      const targets = zoneAllPages() ? state.lists : [list];
+      pushHist();
+      let ok = false;
+      targets.forEach((lst) => {
+        const ris = lst === list
+          ? zoneSel.ris.slice()
+          : pos.map((p) => visibleRowIndices(lst)[p]).filter((ri) => ri != null);
+        if (setRowsFixedHeightCm(lst, ris, raw)) ok = true;
+      });
+      if (!ok) {
+        discardLastHist();
+        syncSelSizeInput();
+        return;
+      }
+      renderPreview();
+    }
+
+    function applyZoneSize() {
+      if (zoneDim === "h") applyZoneRowSize();
+      else applyZoneColSize();
+    }
+
+    function equalizeZone() {
+      if (zoneDim === "h") equalizeZoneHeights();
+      else equalizeZoneWidths();
     }
 
     function setColsEqualWidth(list, indices) {
@@ -4325,6 +4500,10 @@
     function showSelMenu(x, y) {
       const menu = $("selMenu");
       if (!menu || !zoneSel) return;
+      const wBtn = $("selMenuW");
+      const hBtn = $("selMenuH");
+      if (wBtn) wBtn.hidden = zoneDim === "h";
+      if (hBtn) hBtn.hidden = zoneDim !== "h";
       menu.hidden = false;
       menu.style.left = Math.min(window.innerWidth - 200, Math.max(8, x)) + "px";
       menu.style.top = Math.min(window.innerHeight - 90, Math.max(8, y)) + "px";
@@ -5891,7 +6070,7 @@
           top: Math.min(was.y0, y1),
           bottom: Math.max(was.y0, y1),
         };
-        setZone(zoneFromHits(hitsInRect(was.lid, r)));
+        setZone(zoneFromHits(hitsInRect(was.lid, r)), { rect: r });
       };
       document.addEventListener("pointermove", onMove, { capture: true, passive: false });
       document.addEventListener("pointerup", endDrag, true);
@@ -6365,10 +6544,11 @@
       $("styleFile").value = "";
       closeStyleModal();
     });
-    $("selEqW").addEventListener("click", equalizeZoneWidths);
-    $("selEqH").addEventListener("click", equalizeZoneHeights);
-    $("selMenuW").addEventListener("click", () => { hideSelMenu(); equalizeZoneWidths(); });
-    $("selMenuH").addEventListener("click", () => { hideSelMenu(); equalizeZoneHeights(); });
+    $("selDimW").addEventListener("click", () => setZoneDim("w"));
+    $("selDimH").addEventListener("click", () => setZoneDim("h"));
+    $("selEq").addEventListener("click", equalizeZone);
+    $("selMenuW").addEventListener("click", () => { hideSelMenu(); setZoneDim("w"); equalizeZoneWidths(); });
+    $("selMenuH").addEventListener("click", () => { hideSelMenu(); setZoneDim("h"); equalizeZoneHeights(); });
     $("selClear").addEventListener("click", clearZone);
     (function bindSelSize() {
       const input = $("selSizeVal");
@@ -6380,12 +6560,12 @@
         e.preventDefault();
         input.blur();
       });
-      input.addEventListener("change", applyZoneColSize);
+      input.addEventListener("change", applyZoneSize);
       unitEl.addEventListener("change", () => {
-        const list = zoneSel && state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+        const list = zoneList();
         const raw = parseFloat(input.value);
         const next = unitEl.value;
-        if (list && raw > 0 && unit !== next) {
+        if (zoneDim !== "h" && list && raw > 0 && unit !== next) {
           if (next === "cm") input.value = String(Math.round(pctToCm(list, raw) * 100) / 100);
           else input.value = String(Math.round(cmToPct(list, raw) * 10) / 10);
         }
