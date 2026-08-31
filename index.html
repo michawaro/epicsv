@@ -3089,6 +3089,62 @@
         .trim();
     }
 
+    function foldHeader(name) {
+      return tidyHeader(name)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/['’]/g, " ")
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\b(de|du|des|la|le|les|d|l)\b/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function langSlot(name) {
+      const n = foldHeader(name);
+      if (/^(lv|lva|langue|langue vivante)\s*1$/.test(n) || n === "lv1" || n === "lva") return 1;
+      if (/^(lv|lvb|langue|langue vivante)\s*2$/.test(n) || n === "lv2" || n === "lvb") return 2;
+      return 0;
+    }
+
+    function headerKindOf(list, i) {
+      if (!list || i == null || list.custom[i]) return "blank";
+      const vals = (list.rows || []).map((r) => (r && r[i]) || "");
+      return classify(list.headers[i] || "", vals, list.custom[i]);
+    }
+
+    function findHeaderIndex(list, spec, used) {
+      if (!list) return -1;
+      const name = spec && typeof spec === "object" ? spec.name : spec;
+      const kindHint = spec && typeof spec === "object" ? spec.kind : null;
+      const n = foldHeader(name);
+      if (!n && !kindHint) return -1;
+      const taken = used || new Set();
+      const free = (i) => !taken.has(i);
+      if (n) {
+        const exact = list.headers.findIndex((h, i) => free(i) && foldHeader(h) === n);
+        if (exact >= 0) return exact;
+      }
+      const slot = langSlot(name);
+      if (slot) {
+        const lang = list.headers.findIndex((h, i) => free(i) && langSlot(h) === slot);
+        if (lang >= 0) return lang;
+      }
+      const kind = kindHint && kindHint !== "text" && kindHint !== "short" && kindHint !== "blank"
+        ? kindHint
+        : classify(name || "", [], false);
+      if (kind && kind !== "text" && kind !== "short" && kind !== "blank") {
+        const hits = [];
+        list.headers.forEach((_, i) => {
+          if (!free(i) || list.custom[i]) return;
+          if (headerKindOf(list, i) === kind) hits.push(i);
+        });
+        if (hits.length === 1) return hits[0];
+      }
+      return -1;
+    }
+
     function normalizeGrid(grid) {
       const cleaned = grid
         .map((r) => r.map((c) => String(c ?? "").replace(/\u00A0/g, " ").trim()))
@@ -3234,7 +3290,8 @@
 
     function insertCustomCol(list, name) {
       name = String(name || "");
-      if (name && list.headers.indexOf(name) >= 0) return;
+      const folded = foldHeader(name);
+      if (name && list.headers.some((h) => foldHeader(h) === folded || h === name)) return;
       list.headers.push(name);
       list.rows.forEach((r) => r.push(""));
       const i = list.headers.length - 1;
@@ -4559,8 +4616,9 @@
       if (parts.columns && list) {
         out.settings.sharedCols = state.sharedCols;
         out.settings.colAll = Boolean($("colAll") && $("colAll").checked);
-        out.columns = list.headers.map((name, i) => ({
-          name: name,
+        out.columns = list.headers.map((colName, i) => ({
+          name: colName,
+          kind: headerKindOf(list, i),
           on: Boolean(list.on[i]),
           width: list.widths && list.widths[i] > 0 ? list.widths[i] : null,
           custom: Boolean(list.custom[i]),
@@ -4575,10 +4633,12 @@
       cols.forEach((c) => {
         if (c && c.custom && c.name) insertCustomCol(list, c.name);
       });
+      const used = new Set();
       cols.forEach((c) => {
-        if (!c || !c.name) return;
-        const i = list.headers.indexOf(c.name);
+        if (!c || (!c.name && !c.kind)) return;
+        const i = findHeaderIndex(list, c, used);
         if (i < 0) return;
+        used.add(i);
         if (c.on != null) list.on[i] = Boolean(c.on);
         if (c.width > 0) {
           if (!list.widths) list.widths = {};
@@ -4596,7 +4656,8 @@
           }
           return;
         }
-        const i = list.headers.indexOf(k);
+        const spec = cols.find((c) => c && c.name && (c.name === k || foldHeader(c.name) === foldHeader(k))) || k;
+        const i = findHeaderIndex(list, spec, seen);
         if (i >= 0 && !seen.has(i)) {
           seen.add(i);
           next.push(i);
@@ -4654,6 +4715,7 @@
         state.lists.forEach((lst) => applyStyleColumns(lst, data));
       }
       if (opts.render !== false) renderAll();
+      announce("Modèle de mise en page appliqué.");
       return true;
     }
 
