@@ -3104,7 +3104,8 @@
     }
 
     function insertCustomCol(list, name) {
-      if (list.headers.indexOf(name) >= 0) return;
+      name = String(name || "");
+      if (name && list.headers.indexOf(name) >= 0) return;
       list.headers.push(name);
       list.rows.forEach((r) => r.push(""));
       const i = list.headers.length - 1;
@@ -4503,11 +4504,12 @@
             '<span class="name" title="Pastilles">Pastilles</span>';
         } else {
           const i = key;
+          const label = (list.headers[i] || "").trim() || "Sans titre";
           el.className = "col" + (list.on[i] ? "" : " is-off");
           el.innerHTML =
             '<span class="handle" aria-hidden="true">⠿</span>' +
             '<input type="checkbox"' + (list.on[i] ? " checked" : "") + " />" +
-            '<span class="name" title="' + escapeHtml(list.headers[i]) + '">' + escapeHtml(list.headers[i]) + "</span>";
+            '<span class="name" title="' + escapeHtml(label) + '">' + escapeHtml(label) + "</span>";
           const box = el.querySelector("input");
           box.addEventListener("change", () => {
             pushHist();
@@ -5182,14 +5184,13 @@
 
     function addColumn() {
       const name = $("colInput").value.trim();
-      if (!name) { $("colInput").focus(); return; }
       const list = activeList();
       if (!list) return;
       pushHist();
       const all = $("colAll").checked;
       const targets = all ? state.lists : [list];
       targets.forEach((lst) => insertCustomCol(lst, name));
-      if (all && state.sharedCols.indexOf(name) < 0) state.sharedCols.push(name);
+      if (all && name && state.sharedCols.indexOf(name) < 0) state.sharedCols.push(name);
       $("colInput").value = "";
       renderAll();
     }
