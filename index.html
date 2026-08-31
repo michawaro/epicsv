@@ -876,6 +876,13 @@
       font-weight: 800;
     }
     .sel-bar[hidden] { display: none !important; }
+    .sel-bar .sel-label {
+      padding: 0 4px 0 2px;
+      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
     .sel-bar button {
       appearance: none;
       border: 0;
@@ -935,6 +942,14 @@
       box-shadow: 0 16px 40px rgba(14, 143, 140, 0.24);
     }
     .sel-menu[hidden] { display: none !important; }
+    .sel-menu .sel-label {
+      display: block;
+      padding: 6px 10px 4px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--teal-deep);
+    }
     .sel-menu button {
       display: block;
       width: 100%;
@@ -2507,12 +2522,14 @@
   <div class="sel-shield no-print" id="selShield" hidden></div>
   <div class="sel-rect no-print" id="selRect" hidden></div>
   <div class="sel-bar no-print" id="selBar" hidden>
+    <span class="sel-label">Uniformiser</span>
     <button type="button" id="selEqW">Largeurs</button>
     <button type="button" id="selEqH">Hauteurs</button>
     <label id="selAllWrap" hidden><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
     <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection">×</button>
   </div>
   <div class="sel-menu no-print" id="selMenu" hidden role="menu">
+    <span class="sel-label">Uniformiser</span>
     <button type="button" id="selMenuW" role="menuitem">Égaliser les largeurs</button>
     <button type="button" id="selMenuH" role="menuitem">Égaliser les hauteurs</button>
   </div>
@@ -5541,11 +5558,33 @@
       let liveRaf = 0;
       const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
+      const lidFromTarget = (el, x, y) => {
+        const block = el && el.closest && el.closest(".list-block[data-lid]");
+        if (block) return String(block.dataset.lid);
+        const sheet = el && el.closest && el.closest(".sheet");
+        const blocks = [...(sheet || sheets).querySelectorAll(".list-block[data-lid]")];
+        if (!blocks.length) return null;
+        if (blocks.length === 1) return String(blocks[0].dataset.lid);
+        let best = null;
+        let bestD = Infinity;
+        blocks.forEach((b) => {
+          const r = b.getBoundingClientRect();
+          const dx = x < r.left ? r.left - x : x > r.right ? x - r.right : 0;
+          const dy = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0;
+          const d = Math.hypot(dx, dy);
+          if (d < bestD) {
+            bestD = d;
+            best = b;
+          }
+        });
+        return best ? String(best.dataset.lid) : null;
+      };
       const canStart = (e) => {
         if (skip(e)) return false;
         if (e.button != null && e.button !== 0) return false;
         if (editing(e.target)) return false;
-        return Boolean(cellHit(e.target));
+        if (!e.target.closest(".sheet")) return false;
+        return Boolean(lidFromTarget(e.target, e.clientX, e.clientY));
       };
       const clearSel = () => {
         const sel = window.getSelection && window.getSelection();
@@ -5605,8 +5644,8 @@
       }, true);
       sheets.addEventListener("pointerdown", (e) => {
         if (!canStart(e)) return;
-        const hit = cellHit(e.target);
-        if (!hit) return;
+        const lid = lidFromTarget(e.target, e.clientX, e.clientY);
+        if (!lid) return;
         hideSelMenu();
         clearSel();
         const fromHead = Boolean(e.target.closest("thead"));
@@ -5619,7 +5658,7 @@
           y0: e.clientY,
           x1: e.clientX,
           y1: e.clientY,
-          lid: hit.lid,
+          lid: lid,
           moved: false,
           fromHead: fromHead,
           zoneLocked: !fromHead,
