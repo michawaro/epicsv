@@ -908,7 +908,7 @@
     .sel-bar input { accent-color: var(--teal-deep); margin: 0; }
     .sel-rect {
       position: fixed;
-      z-index: 11;
+      z-index: 40;
       pointer-events: none;
       border: 1.5px solid var(--teal-deep);
       background: rgba(18, 197, 184, 0.12);
@@ -940,8 +940,32 @@
       cursor: pointer;
     }
     .sel-menu button:hover { background: rgba(14, 143, 140, 0.1); }
-    body.is-zone-dragging { user-select: none; }
-    body.is-zone-dragging .liste { touch-action: none; }
+    .liste td,
+    .liste th,
+    .liste .cell-edit,
+    .liste .th-edit,
+    .liste .rq-note {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .liste .cell-edit:focus,
+    .liste .th-edit:focus,
+    .liste .rq-note:focus {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    body.is-zone-dragging {
+      cursor: crosshair;
+      -webkit-user-select: none !important;
+      user-select: none !important;
+    }
+    body.is-zone-dragging .liste .cell-edit,
+    body.is-zone-dragging .liste .th-edit,
+    body.is-zone-dragging .liste .rq-note {
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      cursor: crosshair;
+    }
     .liste td.is-zone,
     .liste th.is-zone {
       outline: 1.6px solid var(--teal-deep);
@@ -5486,6 +5510,10 @@
         if (e.target.isContentEditable && document.activeElement === e.target) return false;
         return Boolean(cellHit(e.target));
       };
+      const clearSel = () => {
+        const sel = window.getSelection && window.getSelection();
+        if (sel && sel.removeAllRanges) sel.removeAllRanges();
+      };
       const stopDrag = () => {
         document.body.classList.remove("is-zone-dragging");
         if (rectEl) rectEl.hidden = true;
@@ -5496,7 +5524,9 @@
         const hit = cellHit(e.target);
         if (!hit) return;
         hideSelMenu();
+        clearSel();
         drag = { x0: e.clientX, y0: e.clientY, lid: hit.lid, moved: false, pointerId: e.pointerId };
+        try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
         if (zoneSel && e.target.closest(".is-zone")) {
           holdT = setTimeout(() => {
             holdT = null;
@@ -5504,16 +5534,17 @@
             stopDrag();
           }, 520);
         }
-      });
-      document.addEventListener("pointermove", (e) => {
+      }, true);
+      const onMove = (e) => {
         if (!drag) return;
         const dx = e.clientX - drag.x0;
         const dy = e.clientY - drag.y0;
-        if (!drag.moved && Math.hypot(dx, dy) < 8) return;
+        if (!drag.moved && Math.hypot(dx, dy) < 4) return;
         if (!drag.moved) {
           drag.moved = true;
           document.body.classList.add("is-zone-dragging");
-          try { sheets.setPointerCapture(drag.pointerId); } catch (_) {}
+          clearSel();
+          if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         }
         if (holdT) { clearTimeout(holdT); holdT = null; }
         e.preventDefault();
@@ -5523,7 +5554,7 @@
         rectEl.style.top = Math.min(drag.y0, e.clientY) + "px";
         rectEl.style.width = Math.abs(dx) + "px";
         rectEl.style.height = Math.abs(dy) + "px";
-      }, { passive: false });
+      };
       const endDrag = (e) => {
         if (holdT) { clearTimeout(holdT); holdT = null; }
         if (!drag) return;
@@ -5549,11 +5580,15 @@
         });
         setZone(zoneFromHits(hits));
       };
-      document.addEventListener("pointerup", endDrag);
+      document.addEventListener("pointermove", onMove, { capture: true, passive: false });
+      document.addEventListener("pointerup", endDrag, true);
       document.addEventListener("pointercancel", () => {
         if (holdT) { clearTimeout(holdT); holdT = null; }
         stopDrag();
-      });
+      }, true);
+      sheets.addEventListener("dragstart", (e) => {
+        if (drag && drag.moved) e.preventDefault();
+      }, true);
       sheets.addEventListener("contextmenu", (e) => {
         if (!zoneSel) return;
         if (!e.target.closest(".is-zone")) return;
