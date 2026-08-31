@@ -910,11 +910,21 @@
       position: fixed;
       z-index: 120;
       pointer-events: none;
-      border: 1.5px solid var(--teal-deep);
-      background: rgba(18, 197, 184, 0.12);
-      border-radius: 4px;
+      border: 2px dashed var(--teal-deep);
+      background: rgba(18, 197, 184, 0.2);
+      box-shadow: 0 0 0 1px #fff;
+      border-radius: 2px;
     }
     .sel-rect[hidden] { display: none !important; }
+    .sel-shield {
+      position: fixed;
+      inset: 0;
+      z-index: 119;
+      cursor: crosshair;
+      touch-action: none;
+      background: transparent;
+    }
+    .sel-shield[hidden] { display: none !important; }
     .sel-menu {
       position: fixed;
       z-index: 14;
@@ -986,9 +996,12 @@
     }
     .liste td.is-zone,
     .liste th.is-zone {
-      outline: 1.6px solid var(--teal-deep);
-      outline-offset: -1.6px;
-      background: rgba(18, 197, 184, 0.12) !important;
+      box-shadow: inset 0 0 0 2.2px var(--teal-deep);
+      background: rgba(18, 197, 184, 0.32) !important;
+    }
+    .liste thead th.is-zone {
+      color: #fff;
+      background: var(--teal-deep) !important;
     }
     .style-picks {
       display: grid;
@@ -2208,7 +2221,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-menu { display: none !important; }
+      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu { display: none !important; }
       .list-block.is-editing { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
@@ -2491,6 +2504,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12H8v-5h8v5zm2-4v-3H6v3H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2zm1-5.25c.41 0 .75-.34.75-.75s-.34-.75-.75-.75-.75.34-.75.75.34.75.75.75z"/></svg>
     </button>
   </div>
+  <div class="sel-shield no-print" id="selShield" hidden></div>
   <div class="sel-rect no-print" id="selRect" hidden></div>
   <div class="sel-bar no-print" id="selBar" hidden>
     <button type="button" id="selEqW">Largeurs</button>
@@ -4009,10 +4023,11 @@
       bar.style.left = left + "px";
     }
 
-    function paintZone() {
+    function paintZone(opts) {
       hideSelMenu();
       $("sheets").querySelectorAll(".is-zone").forEach((el) => el.classList.remove("is-zone"));
       const bar = $("selBar");
+      const showBar = !opts || opts.bar !== false;
       if (!zoneSel) {
         if (bar) bar.hidden = true;
         return;
@@ -4043,12 +4058,13 @@
         const tr = cell.closest("tr");
         if (tr && rowSet[tr.dataset.ri]) cell.classList.add("is-zone");
       });
-      placeSelBar();
+      if (showBar) placeSelBar();
+      else if (bar) bar.hidden = true;
     }
 
-    function setZone(next) {
+    function setZone(next, opts) {
       zoneSel = next;
-      paintZone();
+      paintZone(opts);
     }
 
     function clearZone() {
@@ -5519,9 +5535,11 @@
     (function bindZonePointer() {
       const sheets = $("sheets");
       const rectEl = $("selRect");
+      const shield = $("selShield");
       let drag = null;
       let holdT = null;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu");
+      let liveRaf = 0;
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const canStart = (e) => {
         if (skip(e)) return false;
@@ -5533,27 +5551,51 @@
         const sel = window.getSelection && window.getSelection();
         if (sel && sel.removeAllRanges) sel.removeAllRanges();
       };
-      const freezeEdits = (on) => {
-        sheets.querySelectorAll(".liste [contenteditable]").forEach((el) => {
-          if (on) {
-            if (el.getAttribute("contenteditable") === "true") {
-              el.setAttribute("data-zone-ce", "1");
-              el.setAttribute("contenteditable", "false");
-            }
-          } else if (el.getAttribute("data-zone-ce")) {
-            el.setAttribute("contenteditable", "true");
-            el.removeAttribute("data-zone-ce");
-          }
+      const hitsInRect = (lid, r) => {
+        const block = sheets.querySelector('.list-block[data-lid="' + lid + '"]');
+        if (!block) return [];
+        const hits = [];
+        block.querySelectorAll("td[data-ck], th[data-ck]").forEach((cell) => {
+          const b = cell.getBoundingClientRect();
+          if (b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) return;
+          const hit = cellHit(cell);
+          if (hit) hits.push(hit);
         });
+        return hits;
+      };
+      const showShield = (pointerId) => {
+        if (!shield) return;
+        shield.hidden = false;
+        if (pointerId != null) {
+          try { shield.setPointerCapture(pointerId); } catch (_) {}
+        }
       };
       const stopDrag = () => {
-        if (drag && drag.capEl && drag.pointerId != null) {
-          try { drag.capEl.releasePointerCapture(drag.pointerId); } catch (_) {}
+        if (liveRaf) { cancelAnimationFrame(liveRaf); liveRaf = 0; }
+        if (shield) {
+          if (drag && drag.pointerId != null) {
+            try { shield.releasePointerCapture(drag.pointerId); } catch (_) {}
+          }
+          shield.hidden = true;
         }
-        freezeEdits(false);
         document.body.classList.remove("is-zone-dragging");
         if (rectEl) rectEl.hidden = true;
         drag = null;
+      };
+      const paintLive = (x1, y1) => {
+        if (!drag || !rectEl) return;
+        const r = {
+          left: Math.min(drag.x0, x1),
+          right: Math.max(drag.x0, x1),
+          top: Math.min(drag.y0, y1),
+          bottom: Math.max(drag.y0, y1),
+        };
+        rectEl.hidden = false;
+        rectEl.style.left = r.left + "px";
+        rectEl.style.top = r.top + "px";
+        rectEl.style.width = (r.right - r.left) + "px";
+        rectEl.style.height = (r.bottom - r.top) + "px";
+        setZone(zoneFromHits(hitsInRect(drag.lid, r)), { bar: false });
       };
       document.addEventListener("mousedown", (e) => {
         if (!sheets.contains(e.target)) return;
@@ -5568,20 +5610,22 @@
         hideSelMenu();
         clearSel();
         const fromHead = Boolean(e.target.closest("thead"));
-        if (!fromHead && e.pointerType !== "touch") e.preventDefault();
-        if (!fromHead) freezeEdits(true);
+        if (!fromHead && e.pointerType !== "touch") {
+          e.preventDefault();
+          showShield(e.pointerId);
+        }
         drag = {
           x0: e.clientX,
           y0: e.clientY,
+          x1: e.clientX,
+          y1: e.clientY,
           lid: hit.lid,
           moved: false,
           fromHead: fromHead,
           zoneLocked: !fromHead,
           pointerId: e.pointerId,
-          capEl: e.target,
           editEl: e.target.closest("[contenteditable=true]"),
         };
-        try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
         if (zoneSel && e.target.closest(".is-zone")) {
           holdT = setTimeout(() => {
             holdT = null;
@@ -5603,27 +5647,32 @@
             return;
           }
           drag.zoneLocked = true;
-          freezeEdits(true);
+          showShield(e.pointerId);
         }
         if (!drag.moved) {
           drag.moved = true;
           document.body.classList.add("is-zone-dragging");
+          showShield(e.pointerId);
           clearSel();
           if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
         }
         if (holdT) { clearTimeout(holdT); holdT = null; }
         e.preventDefault();
-        if (!rectEl) return;
-        rectEl.hidden = false;
-        rectEl.style.left = Math.min(drag.x0, e.clientX) + "px";
-        rectEl.style.top = Math.min(drag.y0, e.clientY) + "px";
-        rectEl.style.width = Math.abs(dx) + "px";
-        rectEl.style.height = Math.abs(dy) + "px";
+        drag.x1 = e.clientX;
+        drag.y1 = e.clientY;
+        if (liveRaf) return;
+        liveRaf = requestAnimationFrame(() => {
+          liveRaf = 0;
+          if (!drag) return;
+          paintLive(drag.x1, drag.y1);
+        });
       };
       const endDrag = (e) => {
         if (holdT) { clearTimeout(holdT); holdT = null; }
         if (!drag) return;
         const was = drag;
+        const x1 = e && e.clientX != null ? e.clientX : was.x1;
+        const y1 = e && e.clientY != null ? e.clientY : was.y1;
         stopDrag();
         if (!was.moved) {
           if (was.editEl && canWriteCells() && was.editEl.isContentEditable) {
@@ -5634,21 +5683,12 @@
         zoneSuppressClick = true;
         setTimeout(() => { zoneSuppressClick = false; }, 50);
         const r = {
-          left: Math.min(was.x0, e.clientX),
-          right: Math.max(was.x0, e.clientX),
-          top: Math.min(was.y0, e.clientY),
-          bottom: Math.max(was.y0, e.clientY),
+          left: Math.min(was.x0, x1),
+          right: Math.max(was.x0, x1),
+          top: Math.min(was.y0, y1),
+          bottom: Math.max(was.y0, y1),
         };
-        const block = sheets.querySelector('.list-block[data-lid="' + was.lid + '"]');
-        if (!block) return;
-        const hits = [];
-        block.querySelectorAll("td[data-ck], th[data-ck]").forEach((cell) => {
-          const b = cell.getBoundingClientRect();
-          if (b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) return;
-          const hit = cellHit(cell);
-          if (hit) hits.push(hit);
-        });
-        setZone(zoneFromHits(hits));
+        setZone(zoneFromHits(hitsInRect(was.lid, r)));
       };
       document.addEventListener("pointermove", onMove, { capture: true, passive: false });
       document.addEventListener("pointerup", endDrag, true);
@@ -5657,7 +5697,7 @@
         stopDrag();
       }, true);
       document.addEventListener("selectstart", (e) => {
-        if (drag) {
+        if (drag || document.body.classList.contains("is-zone-dragging")) {
           e.preventDefault();
           return;
         }
@@ -5665,8 +5705,25 @@
         if (inListe && !editing(e.target)) e.preventDefault();
       }, true);
       sheets.addEventListener("dragstart", (e) => {
-        if (drag && (drag.moved || drag.zoneLocked)) e.preventDefault();
+        if (e.target.closest(".row-handle")) return;
+        if (e.target.closest("thead") && !(drag && drag.zoneLocked)) return;
+        e.preventDefault();
+        e.stopPropagation();
       }, true);
+      if (shield) {
+        shield.addEventListener("pointermove", onMove, { passive: false });
+        shield.addEventListener("pointerup", endDrag);
+        shield.addEventListener("pointercancel", () => {
+          if (holdT) { clearTimeout(holdT); holdT = null; }
+          stopDrag();
+        });
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape" || !drag) return;
+        e.preventDefault();
+        stopDrag();
+        clearZone();
+      });
       sheets.addEventListener("contextmenu", (e) => {
         if (!zoneSel) return;
         if (!e.target.closest(".is-zone")) return;
