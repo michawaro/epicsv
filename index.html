@@ -908,7 +908,7 @@
     .sel-bar input { accent-color: var(--teal-deep); margin: 0; }
     .sel-rect {
       position: fixed;
-      z-index: 40;
+      z-index: 120;
       pointer-events: none;
       border: 1.5px solid var(--teal-deep);
       background: rgba(18, 197, 184, 0.12);
@@ -948,6 +948,12 @@
       -webkit-user-select: none;
       user-select: none;
     }
+    .liste tbody td,
+    .liste tbody .cell-edit,
+    .liste tbody .rq-note {
+      -webkit-user-drag: none;
+      touch-action: none;
+    }
     .liste .cell-edit:focus,
     .liste .th-edit:focus,
     .liste .rq-note:focus {
@@ -965,6 +971,18 @@
       -webkit-user-select: none !important;
       user-select: none !important;
       cursor: crosshair;
+    }
+    .liste td::selection,
+    .liste th::selection,
+    .liste .cell-edit::selection,
+    .liste .th-edit::selection,
+    .liste .rq-note::selection {
+      background: transparent;
+      color: inherit;
+    }
+    body.is-zone-dragging *::selection {
+      background: transparent !important;
+      color: inherit !important;
     }
     .liste td.is-zone,
     .liste th.is-zone {
@@ -5503,29 +5521,66 @@
       const rectEl = $("selRect");
       let drag = null;
       let holdT = null;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, thead");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu");
+      const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const canStart = (e) => {
         if (skip(e)) return false;
         if (e.button != null && e.button !== 0) return false;
-        if (e.target.isContentEditable && document.activeElement === e.target) return false;
+        if (editing(e.target)) return false;
         return Boolean(cellHit(e.target));
       };
       const clearSel = () => {
         const sel = window.getSelection && window.getSelection();
         if (sel && sel.removeAllRanges) sel.removeAllRanges();
       };
+      const freezeEdits = (on) => {
+        sheets.querySelectorAll(".liste [contenteditable]").forEach((el) => {
+          if (on) {
+            if (el.getAttribute("contenteditable") === "true") {
+              el.setAttribute("data-zone-ce", "1");
+              el.setAttribute("contenteditable", "false");
+            }
+          } else if (el.getAttribute("data-zone-ce")) {
+            el.setAttribute("contenteditable", "true");
+            el.removeAttribute("data-zone-ce");
+          }
+        });
+      };
       const stopDrag = () => {
+        if (drag && drag.capEl && drag.pointerId != null) {
+          try { drag.capEl.releasePointerCapture(drag.pointerId); } catch (_) {}
+        }
+        freezeEdits(false);
         document.body.classList.remove("is-zone-dragging");
         if (rectEl) rectEl.hidden = true;
         drag = null;
       };
+      document.addEventListener("mousedown", (e) => {
+        if (!sheets.contains(e.target)) return;
+        if (!canStart(e)) return;
+        if (e.target.closest("thead")) return;
+        e.preventDefault();
+      }, true);
       sheets.addEventListener("pointerdown", (e) => {
         if (!canStart(e)) return;
         const hit = cellHit(e.target);
         if (!hit) return;
         hideSelMenu();
         clearSel();
-        drag = { x0: e.clientX, y0: e.clientY, lid: hit.lid, moved: false, pointerId: e.pointerId };
+        const fromHead = Boolean(e.target.closest("thead"));
+        if (!fromHead && e.pointerType !== "touch") e.preventDefault();
+        if (!fromHead) freezeEdits(true);
+        drag = {
+          x0: e.clientX,
+          y0: e.clientY,
+          lid: hit.lid,
+          moved: false,
+          fromHead: fromHead,
+          zoneLocked: !fromHead,
+          pointerId: e.pointerId,
+          capEl: e.target,
+          editEl: e.target.closest("[contenteditable=true]"),
+        };
         try { e.target.setPointerCapture(e.pointerId); } catch (_) {}
         if (zoneSel && e.target.closest(".is-zone")) {
           holdT = setTimeout(() => {
@@ -5540,6 +5595,16 @@
         const dx = e.clientX - drag.x0;
         const dy = e.clientY - drag.y0;
         if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+        if (drag.fromHead && !drag.zoneLocked) {
+          const over = document.elementFromPoint(e.clientX, e.clientY);
+          const stillHead = over && over.closest && over.closest(".liste thead");
+          if (stillHead && Math.abs(dx) >= Math.abs(dy)) {
+            stopDrag();
+            return;
+          }
+          drag.zoneLocked = true;
+          freezeEdits(true);
+        }
         if (!drag.moved) {
           drag.moved = true;
           document.body.classList.add("is-zone-dragging");
@@ -5560,7 +5625,12 @@
         if (!drag) return;
         const was = drag;
         stopDrag();
-        if (!was.moved) return;
+        if (!was.moved) {
+          if (was.editEl && canWriteCells() && was.editEl.isContentEditable) {
+            try { was.editEl.focus({ preventScroll: true }); } catch (_) { was.editEl.focus(); }
+          }
+          return;
+        }
         zoneSuppressClick = true;
         setTimeout(() => { zoneSuppressClick = false; }, 50);
         const r = {
@@ -5586,8 +5656,16 @@
         if (holdT) { clearTimeout(holdT); holdT = null; }
         stopDrag();
       }, true);
+      document.addEventListener("selectstart", (e) => {
+        if (drag) {
+          e.preventDefault();
+          return;
+        }
+        const inListe = e.target.closest && e.target.closest(".liste");
+        if (inListe && !editing(e.target)) e.preventDefault();
+      }, true);
       sheets.addEventListener("dragstart", (e) => {
-        if (drag && drag.moved) e.preventDefault();
+        if (drag && (drag.moved || drag.zoneLocked)) e.preventDefault();
       }, true);
       sheets.addEventListener("contextmenu", (e) => {
         if (!zoneSel) return;
