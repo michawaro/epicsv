@@ -940,10 +940,8 @@
       cursor: pointer;
     }
     .sel-menu button:hover { background: rgba(14, 143, 140, 0.1); }
-    body.is-select-mode { user-select: none; }
-    body.is-select-mode .liste { touch-action: none; }
-    body.is-select-mode .liste thead th[data-ci],
-    body.is-select-mode .liste thead th[data-slot] { cursor: crosshair; }
+    body.is-zone-dragging { user-select: none; }
+    body.is-zone-dragging .liste { touch-action: none; }
     .liste td.is-zone,
     .liste th.is-zone {
       outline: 1.6px solid var(--teal-deep);
@@ -2284,7 +2282,7 @@
           <button type="button" id="allOff">Tout décocher</button>
           <button type="button" id="resetWidths">Largeurs auto</button>
         </div>
-        <p class="hint-note" style="margin:0 0 8px">Glissez un en-tête dans l’aperçu (ou une ligne ci-dessous) pour réordonner. Glissez le bord d’une colonne pour la largeur.</p>
+        <p class="hint-note" style="margin:0 0 8px">Glissez un en-tête pour réordonner, le bord d’une colonne pour la largeur. Dessinez une zone dans l’aperçu pour égaliser largeurs ou hauteurs.</p>
         <div class="cols" id="cols"></div>
         <div class="add-line">
           <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
@@ -2440,15 +2438,12 @@
     </main>
   </div>
 
-  <div class="hist-dock no-print" id="histDock" hidden role="group" aria-label="Annuler, rétablir, sélection et imprimer">
+  <div class="hist-dock no-print" id="histDock" hidden role="group" aria-label="Annuler, rétablir et imprimer">
     <button type="button" class="hist-btn" id="undoBtn" disabled title="Annuler (Ctrl+Z)" aria-label="Annuler" aria-keyshortcuts="Control+Z">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C20.08 11.03 16.61 8 12.5 8z"/></svg>
     </button>
     <button type="button" class="hist-btn" id="redoBtn" disabled title="Rétablir (Ctrl+Y)" aria-label="Rétablir" aria-keyshortcuts="Control+Y">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.16 0-7.74 2.42-9.44 6h2.65c1.41-2.41 4.02-4 7-4 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
-    </button>
-    <button type="button" class="hist-btn" id="selModeBtn" title="Sélectionner une zone : dessiner un rectangle, ou deux taps sur tactile. Puis égaliser largeurs ou hauteurs." aria-label="Sélectionner une zone" aria-pressed="false">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg>
     </button>
     <button type="button" class="hist-btn is-print" id="dockPrintBtn" disabled title="Imprimer ou enregistrer en PDF. Dans la boîte d’impression : marges « Par défaut », et désactiver les en-têtes et pieds de page." aria-label="Imprimer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12H8v-5h8v5zm2-4v-3H6v3H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2zm1-5.25c.41 0 .75-.34.75-.75s-.34-.75-.75-.75-.75.34-.75.75.34.75.75.75z"/></svg>
@@ -2646,9 +2641,8 @@
     let sizeDrag = null;
     let dragRow = null;
     let fluoClickTimer = null;
-    let selectMode = false;
     let zoneSel = null;
-    let zoneCorner = null;
+    let zoneSuppressClick = false;
     let heldStyle = null;
     let styleDlgRestore = null;
     const HIST_MAX = 80;
@@ -4012,38 +4006,14 @@
 
     function setZone(next) {
       zoneSel = next;
-      zoneCorner = next ? null : zoneCorner;
       paintZone();
     }
 
     function clearZone() {
       zoneSel = null;
-      zoneCorner = null;
       const rect = $("selRect");
       if (rect) rect.hidden = true;
       paintZone();
-    }
-
-    function setSelectMode(on) {
-      selectMode = Boolean(on);
-      document.body.classList.toggle("is-select-mode", selectMode);
-      const btn = $("selModeBtn");
-      if (btn) {
-        btn.classList.toggle("is-on", selectMode);
-        btn.setAttribute("aria-pressed", selectMode ? "true" : "false");
-      }
-      if (selectMode) {
-        state.activeStamp = null;
-        state.activeFluo = null;
-        if (typeof renderBadgeTypes === "function") renderBadgeTypes();
-        if (typeof renderFluos === "function") renderFluos();
-        $("sheets").querySelectorAll("tr.is-stamping, tr.is-fluoing").forEach((tr) => {
-          tr.classList.remove("is-stamping");
-          tr.classList.remove("is-fluoing");
-        });
-      } else {
-        zoneCorner = null;
-      }
     }
 
     function zoneAllPages() {
@@ -5509,34 +5479,42 @@
       const rectEl = $("selRect");
       let drag = null;
       let holdT = null;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, thead");
       const canStart = (e) => {
         if (skip(e)) return false;
         if (e.button != null && e.button !== 0) return false;
-        if (selectMode) return true;
-        return false;
+        if (e.target.isContentEditable && document.activeElement === e.target) return false;
+        return Boolean(cellHit(e.target));
+      };
+      const stopDrag = () => {
+        document.body.classList.remove("is-zone-dragging");
+        if (rectEl) rectEl.hidden = true;
+        drag = null;
       };
       sheets.addEventListener("pointerdown", (e) => {
         if (!canStart(e)) return;
         const hit = cellHit(e.target);
         if (!hit) return;
         hideSelMenu();
-        drag = { x0: e.clientX, y0: e.clientY, lid: hit.lid, moved: false };
+        drag = { x0: e.clientX, y0: e.clientY, lid: hit.lid, moved: false, pointerId: e.pointerId };
         if (zoneSel && e.target.closest(".is-zone")) {
           holdT = setTimeout(() => {
             holdT = null;
             showSelMenu(e.clientX, e.clientY);
-            drag = null;
+            stopDrag();
           }, 520);
         }
-        try { sheets.setPointerCapture(e.pointerId); } catch (_) {}
       });
-      sheets.addEventListener("pointermove", (e) => {
+      document.addEventListener("pointermove", (e) => {
         if (!drag) return;
         const dx = e.clientX - drag.x0;
         const dy = e.clientY - drag.y0;
         if (!drag.moved && Math.hypot(dx, dy) < 8) return;
-        drag.moved = true;
+        if (!drag.moved) {
+          drag.moved = true;
+          document.body.classList.add("is-zone-dragging");
+          try { sheets.setPointerCapture(drag.pointerId); } catch (_) {}
+        }
         if (holdT) { clearTimeout(holdT); holdT = null; }
         e.preventDefault();
         if (!rectEl) return;
@@ -5545,14 +5523,15 @@
         rectEl.style.top = Math.min(drag.y0, e.clientY) + "px";
         rectEl.style.width = Math.abs(dx) + "px";
         rectEl.style.height = Math.abs(dy) + "px";
-      });
+      }, { passive: false });
       const endDrag = (e) => {
         if (holdT) { clearTimeout(holdT); holdT = null; }
         if (!drag) return;
         const was = drag;
-        drag = null;
-        if (rectEl) rectEl.hidden = true;
+        stopDrag();
         if (!was.moved) return;
+        zoneSuppressClick = true;
+        setTimeout(() => { zoneSuppressClick = false; }, 50);
         const r = {
           left: Math.min(was.x0, e.clientX),
           right: Math.max(was.x0, e.clientX),
@@ -5570,11 +5549,10 @@
         });
         setZone(zoneFromHits(hits));
       };
-      sheets.addEventListener("pointerup", endDrag);
-      sheets.addEventListener("pointercancel", () => {
+      document.addEventListener("pointerup", endDrag);
+      document.addEventListener("pointercancel", () => {
         if (holdT) { clearTimeout(holdT); holdT = null; }
-        drag = null;
-        if (rectEl) rectEl.hidden = true;
+        stopDrag();
       });
       sheets.addEventListener("contextmenu", (e) => {
         if (!zoneSel) return;
@@ -5610,10 +5588,6 @@
       document.execCommand("insertText", false, text);
     });
     $("sheets").addEventListener("dragstart", (e) => {
-      if (selectMode) {
-        e.preventDefault();
-        return;
-      }
       const rowHandle = e.target.closest(".row-handle");
       if (rowHandle) {
         dragRow = { lid: rowHandle.dataset.lid, ri: Number(rowHandle.dataset.ri) };
@@ -5726,6 +5700,11 @@
       });
     });
     $("sheets").addEventListener("click", (e) => {
+      if (zoneSuppressClick) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       const block = e.target.closest(".list-block[data-lid]");
       if (block) {
         const lid = Number(block.dataset.lid);
@@ -5762,20 +5741,6 @@
         pushHist();
         list.hidden[Number(ri)] = true;
         renderAll();
-        return;
-      }
-      if (selectMode) {
-        if (e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del")) return;
-        const hit = cellHit(e.target);
-        if (!hit) return;
-        e.preventDefault();
-        if (!zoneCorner || zoneCorner.lid !== hit.lid) {
-          zoneCorner = hit;
-          setZone(zoneFromHits([hit]));
-        } else {
-          setZone(zoneFromHits([zoneCorner, hit]));
-          zoneCorner = null;
-        }
         return;
       }
       if (state.activeFluo) {
@@ -5883,14 +5848,10 @@
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
         hideSelMenu();
-        if (zoneSel || zoneCorner) {
+        if (zoneSel) {
           e.preventDefault();
           clearZone();
           return;
-        }
-        if (selectMode) {
-          e.preventDefault();
-          setSelectMode(false);
         }
         return;
       }
@@ -6031,7 +5992,6 @@
       $("styleFile").value = "";
       closeStyleModal();
     });
-    $("selModeBtn").addEventListener("click", () => setSelectMode(!selectMode));
     $("selEqW").addEventListener("click", equalizeZoneWidths);
     $("selEqH").addEventListener("click", equalizeZoneHeights);
     $("selMenuW").addEventListener("click", () => { hideSelMenu(); equalizeZoneWidths(); });
