@@ -794,6 +794,7 @@
       gap: 6px;
     }
     .toolbar .span-all { grid-column: 1 / -1; }
+    .toolbar + .toolbar { margin-top: 8px; }
     .btn {
       appearance: none;
       border: 0;
@@ -855,6 +856,125 @@
     }
     .hist-btn.is-print {
       margin-left: 2px;
+    }
+    .hist-btn.is-on {
+      background: rgba(22, 197, 191, 0.28);
+    }
+    .sel-bar {
+      position: fixed;
+      z-index: 13;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 6px 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 10px 28px rgba(14, 143, 140, 0.22);
+      backdrop-filter: blur(10px);
+      color: var(--teal-deep);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .sel-bar[hidden] { display: none !important; }
+    .sel-bar button {
+      appearance: none;
+      border: 0;
+      background: rgba(14, 143, 140, 0.12);
+      color: var(--teal-deep);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .sel-bar button:hover { background: rgba(14, 143, 140, 0.2); }
+    .sel-bar .sel-x {
+      background: transparent;
+      padding: 4px 8px;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 500;
+    }
+    .sel-bar label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .sel-bar input { accent-color: var(--teal-deep); margin: 0; }
+    .sel-rect {
+      position: fixed;
+      z-index: 11;
+      pointer-events: none;
+      border: 1.5px solid var(--teal-deep);
+      background: rgba(18, 197, 184, 0.12);
+      border-radius: 4px;
+    }
+    .sel-rect[hidden] { display: none !important; }
+    .sel-menu {
+      position: fixed;
+      z-index: 14;
+      min-width: 180px;
+      padding: 6px;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(14, 143, 140, 0.24);
+    }
+    .sel-menu[hidden] { display: none !important; }
+    .sel-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .sel-menu button:hover { background: rgba(14, 143, 140, 0.1); }
+    body.is-select-mode { user-select: none; }
+    body.is-select-mode .liste { touch-action: none; }
+    body.is-select-mode .liste thead th[data-ci],
+    body.is-select-mode .liste thead th[data-slot] { cursor: crosshair; }
+    .liste td.is-zone,
+    .liste th.is-zone {
+      outline: 1.6px solid var(--teal-deep);
+      outline-offset: -1.6px;
+      background: rgba(18, 197, 184, 0.12) !important;
+    }
+    .style-picks {
+      display: grid;
+      gap: 6px;
+      margin: 0 0 16px;
+    }
+    .style-picks label {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f3fbfa;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--teal-deep);
+      cursor: pointer;
+    }
+    .style-picks input { margin-top: 2px; accent-color: var(--teal-deep); }
+    .style-picks small {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      margin-top: 1px;
     }
     .btn-compact {
       padding: 8px 10px;
@@ -2048,7 +2168,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer { display: none !important; }
+      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-menu { display: none !important; }
       .list-block.is-editing { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
@@ -2088,14 +2208,18 @@
         <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF. Dans la boîte d’impression : marges « Par défaut », et désactiver les en-têtes et pieds de page.">Imprimer</button>
         <button class="btn btn-ghost" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
       </div>
-      <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
+      <div class="toolbar">
+        <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
+        <button class="btn btn-ghost" id="styleBtn" type="button" title="Enregistre ou applique une mise en page sans les élèves">Modèle</button>
+      </div>
       <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
+      <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
 
       <div class="add-replace-row" id="addReplaceRow">
       <label class="drop" id="drop" for="file">
         <input type="file" id="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Fichier à importer" />
         <div class="drop-title" id="dropTitle">Déposer un fichier</div>
-        <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau .json</div>
+        <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
       </label>
       <button class="btn btn-ghost btn-compact" id="replaceBtn" type="button" hidden title="Efface la page en cours et la remplace par un nouveau CSV">Remplacer la page</button>
       </div>
@@ -2316,16 +2440,30 @@
     </main>
   </div>
 
-  <div class="hist-dock no-print" id="histDock" hidden role="group" aria-label="Annuler, rétablir et imprimer">
+  <div class="hist-dock no-print" id="histDock" hidden role="group" aria-label="Annuler, rétablir, sélection et imprimer">
     <button type="button" class="hist-btn" id="undoBtn" disabled title="Annuler (Ctrl+Z)" aria-label="Annuler" aria-keyshortcuts="Control+Z">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C20.08 11.03 16.61 8 12.5 8z"/></svg>
     </button>
     <button type="button" class="hist-btn" id="redoBtn" disabled title="Rétablir (Ctrl+Y)" aria-label="Rétablir" aria-keyshortcuts="Control+Y">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.16 0-7.74 2.42-9.44 6h2.65c1.41-2.41 4.02-4 7-4 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
     </button>
+    <button type="button" class="hist-btn" id="selModeBtn" title="Sélectionner une zone : dessiner un rectangle, ou deux taps sur tactile. Puis égaliser largeurs ou hauteurs." aria-label="Sélectionner une zone" aria-pressed="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg>
+    </button>
     <button type="button" class="hist-btn is-print" id="dockPrintBtn" disabled title="Imprimer ou enregistrer en PDF. Dans la boîte d’impression : marges « Par défaut », et désactiver les en-têtes et pieds de page." aria-label="Imprimer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12H8v-5h8v5zm2-4v-3H6v3H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2zm1-5.25c.41 0 .75-.34.75-.75s-.34-.75-.75-.75-.75.34-.75.75.34.75.75.75z"/></svg>
     </button>
+  </div>
+  <div class="sel-rect no-print" id="selRect" hidden></div>
+  <div class="sel-bar no-print" id="selBar" hidden>
+    <button type="button" id="selEqW">Largeurs</button>
+    <button type="button" id="selEqH">Hauteurs</button>
+    <label id="selAllWrap" hidden><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
+    <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection">×</button>
+  </div>
+  <div class="sel-menu no-print" id="selMenu" hidden role="menu">
+    <button type="button" id="selMenuW" role="menuitem">Égaliser les largeurs</button>
+    <button type="button" id="selMenuH" role="menuitem">Égaliser les hauteurs</button>
   </div>
 
   <div class="modal-back no-print" id="modal" hidden>
@@ -2362,6 +2500,25 @@
         <button class="btn btn-print span-all" id="replaceSave" type="button">Enregistrer puis remplacer</button>
         <button class="btn btn-ghost" id="replaceGo" type="button">Remplacer</button>
         <button class="btn btn-ghost" id="replaceCancel" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back no-print" id="styleModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="styleTitle">
+      <h3 id="styleTitle">Modèle de mise en page</h3>
+      <p>Sans les élèves : à réappliquer sur un autre CSV. Cochez ce que le fichier doit contenir.</p>
+      <div class="style-picks">
+        <label><input type="checkbox" id="stDesign" checked /><span>Design<small>Style, couleurs, forme, titre</small></span></label>
+        <label><input type="checkbox" id="stSizes" checked /><span>Tailles<small>Polices et hauteur de ligne</small></span></label>
+        <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation</small></span></label>
+        <label><input type="checkbox" id="stInfo" checked /><span>Informations<small>Pastilles, légende, colonne Rq.</small></span></label>
+        <label><input type="checkbox" id="stCols" checked /><span>Colonnes<small>Ordre, visibilité, largeurs, colonnes ajoutées</small></span></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-print" id="styleSave" type="button">Enregistrer</button>
+        <button class="btn btn-ghost" id="styleLoad" type="button">Charger</button>
+        <button class="btn btn-ghost span-all" id="styleCancel" type="button">Annuler</button>
       </div>
     </div>
   </div>
@@ -2489,6 +2646,11 @@
     let sizeDrag = null;
     let dragRow = null;
     let fluoClickTimer = null;
+    let selectMode = false;
+    let zoneSel = null;
+    let zoneCorner = null;
+    let heldStyle = null;
+    let styleDlgRestore = null;
     const HIST_MAX = 80;
     const $ = (id) => document.getElementById(id);
     const drop = $("drop");
@@ -2648,7 +2810,7 @@
       const drop = $("drop");
       $("dropTitle").textContent = has ? "Ajouter une page" : "Déposer un fichier";
       $("dropSub").hidden = has;
-      if (!has) $("dropSub").textContent = "CSV · TXT · Excel · tableau .json";
+      if (!has) $("dropSub").textContent = "CSV · TXT · Excel · tableau · modèle";
       $("replaceBtn").hidden = !has;
       $("addReplaceRow").classList.toggle("has-page", has);
       drop.classList.toggle("is-btn", has);
@@ -2858,6 +3020,7 @@
         hl: {},
         hlText: {},
         widths: {},
+        rowH: {},
         sample: false,
       };
     }
@@ -2928,6 +3091,11 @@
         if (n > 0) list.widths[k] = n;
       });
       if (raw.sample) list.sample = true;
+      list.rowH = {};
+      Object.keys(raw.rowH || {}).forEach((k) => {
+        const n = Number(raw.rowH[k]);
+        if (n > 0) list.rowH[k] = n;
+      });
       return list;
     }
 
@@ -3352,6 +3520,7 @@
       remapIndexBag(list.marks, fromRi, toRi);
       remapIndexBag(list.notes, fromRi, toRi);
       remapIndexBag(list.hidden, fromRi, toRi);
+      remapIndexBag(list.rowH, fromRi, toRi);
       remapHlBag(list.hl, fromRi, toRi);
       remapHlBag(list.hlText, fromRi, toRi);
       return true;
@@ -3449,11 +3618,11 @@
     }
 
     function rqThHtml(list) {
-      return '<th class="col-rq" draggable="true" data-lid="' + list.id + '" data-slot="rq">Rq.</th>';
+      return '<th class="col-rq" draggable="true" data-lid="' + list.id + '" data-slot="rq" data-ck="rq">Rq.</th>';
     }
 
     function marksThHtml(list) {
-      return '<th class="col-marks" draggable="true" data-lid="' + list.id + '" data-slot="marks" aria-label="Pastilles" title="Pastilles"></th>';
+      return '<th class="col-marks" draggable="true" data-lid="' + list.id + '" data-slot="marks" data-ck="marks" aria-label="Pastilles" title="Pastilles"></th>';
     }
 
     function marksTdHtml(list, ri, extras) {
@@ -3466,7 +3635,7 @@
         dots += dotHtml(b, true);
       });
       dots += "</span>";
-      return '<td class="col-marks">' + (extras.handle || "") + dots +
+      return '<td class="col-marks" data-ck="marks">' + (extras.handle || "") + dots +
         (extras.del ? rowDelHtml(list, ri) : "") +
         (extras.resize ? rowResizerHtml() : "") + "</td>";
     }
@@ -3475,7 +3644,7 @@
       extras = extras || {};
       const note = list.notes && list.notes[ri] ? String(list.notes[ri]) : "";
       const canWrite = canWriteCells();
-      return '<td class="col-rq' + fluoClass(list, ri, "rq") + '">' + (extras.handle || "") +
+      return '<td class="col-rq' + fluoClass(list, ri, "rq") + '" data-ck="rq">' + (extras.handle || "") +
         '<span class="rq-note' + (canWrite ? "" : " is-locked") + fluoTextClass(list, ri, "rq") + '"' +
         (canWrite ? ' contenteditable="true"' : "") +
         ' spellcheck="false" data-lid="' + list.id + '" data-ri="' + ri + '">' +
@@ -3508,7 +3677,7 @@
         else html += '<col data-ci="' + col.i + '" style="width:' + widths[wi++].toFixed(2) + '%">';
       });
       html += "</colgroup><thead><tr>";
-      if (showNum) html += '<th class="col-num" data-lid="' + list.id + '" data-slot="num">N°</th>';
+      if (showNum) html += '<th class="col-num" data-lid="' + list.id + '" data-slot="num" data-ck="num">N°</th>';
       layout.forEach((col) => {
         if (col.type === "marks") {
           html += marksThHtml(list);
@@ -3518,7 +3687,7 @@
           html += rqThHtml(list);
           return;
         }
-        html += '<th draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
+        html += '<th draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '" data-ck="' + col.i + '"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
         if (list.custom[col.i]) {
           html += '<button type="button" class="col-del no-print" data-del-col="' + list.id + ':' + col.i + '" title="Supprimer la colonne" aria-label="Supprimer la colonne">×</button>';
         }
@@ -3530,14 +3699,16 @@
         const row = list.rows[ri];
         const stampCls = (state.activeStamp || state.activeFluo) ? " is-stamping" : "";
         const fluoCls = state.activeFluo ? " is-fluoing" : "";
-        html += '<tr class="' + (stampCls + fluoCls).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '">';
+        const rowY = list.rowH && Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 0;
+        html += '<tr class="' + (stampCls + fluoCls).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
+          (rowY ? ' style="--row-y:' + rowY + 'em"' : "") + '>';
         let lead = true;
         const handle = () => {
           if (!lead) return "";
           lead = false;
           return rowHandleHtml(list, ri);
         };
-        if (showNum) html += '<td class="col-num">' + handle() + escapeHtml(rowNumber(visIdx)) + rowResizerHtml() + "</td>";
+        if (showNum) html += '<td class="col-num" data-ck="num">' + handle() + escapeHtml(rowNumber(visIdx)) + rowResizerHtml() + "</td>";
         layout.forEach((col, k) => {
           const last = k === layout.length - 1;
           if (col.type === "marks") {
@@ -3559,7 +3730,7 @@
           }
           if (kind === "mail" || kind === "id") cls.push("is-mute");
           if (kind === "date" || kind === "id") cls.push("is-nums");
-          html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + '" data-ci="' + i + '">' + handle() + cellEditHtml(row[i] || "", list.id, ri, i, list);
+          html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '">' + handle() + cellEditHtml(row[i] || "", list.id, ri, i, list);
           if (last) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
         });
@@ -3696,6 +3867,431 @@
         "@media print { @page { size: " + size + "; margin: " + marge + "mm; } }";
     }
 
+    function defaultRowEm() {
+      if (state.rowY > 0) return state.rowY;
+      return combining() || state.marge === "etroites" ? 0.26 : state.marge === "larges" ? 0.5 : 0.38;
+    }
+
+    function rowEmOf(list, ri) {
+      const v = list.rowH && Number(list.rowH[ri]);
+      return v > 0 ? v : defaultRowEm();
+    }
+
+    function colKeysOf(list) {
+      const keys = [];
+      if (state.numbering !== "off") keys.push("num");
+      columnLayout(list).forEach((col) => {
+        if (col.type === "marks") keys.push("marks");
+        else if (col.type === "rq") keys.push("rq");
+        else keys.push(col.i);
+      });
+      return keys;
+    }
+
+    function parseCk(raw) {
+      if (raw === "num" || raw === "marks" || raw === "rq") return raw;
+      const n = Number(raw);
+      return Number.isInteger(n) ? n : null;
+    }
+
+    function cellHit(el) {
+      const cell = el && el.closest ? el.closest("td[data-ck], th[data-ck]") : null;
+      if (!cell || !cell.closest("table.liste")) return null;
+      const block = cell.closest(".list-block[data-lid]");
+      if (!block) return null;
+      const ck = parseCk(cell.dataset.ck);
+      if (ck == null) return null;
+      const head = Boolean(cell.closest("thead"));
+      const tr = cell.closest("tr");
+      const ri = head ? -1 : Number(tr && tr.dataset.ri);
+      if (!head && !Number.isInteger(ri)) return null;
+      return { lid: String(block.dataset.lid), ri: ri, ck: ck, cell: cell };
+    }
+
+    function zoneFromHits(hits) {
+      if (!hits || !hits.length) return null;
+      const lid = hits[0].lid;
+      if (hits.some((h) => h.lid !== lid)) return null;
+      const list = state.lists.find((l) => String(l.id) === lid);
+      if (!list) return null;
+      const keys = colKeysOf(list);
+      const vis = visibleRowIndices(list);
+      let k0 = Infinity;
+      let k1 = -1;
+      let p0 = Infinity;
+      let p1 = -1;
+      let anyBody = false;
+      hits.forEach((h) => {
+        const ki = keys.indexOf(h.ck);
+        if (ki >= 0) {
+          if (ki < k0) k0 = ki;
+          if (ki > k1) k1 = ki;
+        }
+        if (h.ri >= 0) {
+          anyBody = true;
+          const p = vis.indexOf(h.ri);
+          if (p >= 0) {
+            if (p < p0) p0 = p;
+            if (p > p1) p1 = p;
+          }
+        }
+      });
+      if (k1 < 0) return null;
+      return {
+        lid: lid,
+        keys: keys.slice(k0, k1 + 1),
+        ris: anyBody && p1 >= 0 ? vis.slice(p0, p1 + 1) : [],
+      };
+    }
+
+    function hideSelMenu() {
+      const m = $("selMenu");
+      if (m) m.hidden = true;
+    }
+
+    function placeSelBar() {
+      const bar = $("selBar");
+      if (!bar) return;
+      if (!zoneSel) {
+        bar.hidden = true;
+        return;
+      }
+      const cells = $("sheets").querySelectorAll(".is-zone");
+      if (!cells.length) {
+        bar.hidden = true;
+        return;
+      }
+      const first = cells[0].getBoundingClientRect();
+      const last = cells[cells.length - 1].getBoundingClientRect();
+      bar.hidden = false;
+      $("selAllWrap").hidden = state.lists.length < 2;
+      bar.style.left = "12px";
+      bar.style.top = Math.min(window.innerHeight - 56, Math.max(8, last.bottom + 8)) + "px";
+      const w = bar.offsetWidth;
+      const left = Math.min(window.innerWidth - w - 12, Math.max(12, first.left));
+      bar.style.left = left + "px";
+    }
+
+    function paintZone() {
+      hideSelMenu();
+      $("sheets").querySelectorAll(".is-zone").forEach((el) => el.classList.remove("is-zone"));
+      const bar = $("selBar");
+      if (!zoneSel) {
+        if (bar) bar.hidden = true;
+        return;
+      }
+      const list = state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      if (!list) {
+        zoneSel = null;
+        if (bar) bar.hidden = true;
+        return;
+      }
+      const keySet = {};
+      zoneSel.keys.forEach((k) => { keySet[String(k)] = true; });
+      const rowSet = {};
+      (zoneSel.ris || []).forEach((ri) => { rowSet[String(ri)] = true; });
+      const body = zoneSel.ris && zoneSel.ris.length;
+      const block = $("sheets").querySelector('.list-block[data-lid="' + zoneSel.lid + '"]');
+      if (!block) {
+        if (bar) bar.hidden = true;
+        return;
+      }
+      block.querySelectorAll("td[data-ck], th[data-ck]").forEach((cell) => {
+        if (!keySet[String(cell.dataset.ck)]) return;
+        if (cell.closest("thead")) {
+          cell.classList.add("is-zone");
+          return;
+        }
+        if (!body) return;
+        const tr = cell.closest("tr");
+        if (tr && rowSet[tr.dataset.ri]) cell.classList.add("is-zone");
+      });
+      placeSelBar();
+    }
+
+    function setZone(next) {
+      zoneSel = next;
+      zoneCorner = next ? null : zoneCorner;
+      paintZone();
+    }
+
+    function clearZone() {
+      zoneSel = null;
+      zoneCorner = null;
+      const rect = $("selRect");
+      if (rect) rect.hidden = true;
+      paintZone();
+    }
+
+    function setSelectMode(on) {
+      selectMode = Boolean(on);
+      document.body.classList.toggle("is-select-mode", selectMode);
+      const btn = $("selModeBtn");
+      if (btn) {
+        btn.classList.toggle("is-on", selectMode);
+        btn.setAttribute("aria-pressed", selectMode ? "true" : "false");
+      }
+      if (selectMode) {
+        state.activeStamp = null;
+        state.activeFluo = null;
+        if (typeof renderBadgeTypes === "function") renderBadgeTypes();
+        if (typeof renderFluos === "function") renderFluos();
+        $("sheets").querySelectorAll("tr.is-stamping, tr.is-fluoing").forEach((tr) => {
+          tr.classList.remove("is-stamping");
+          tr.classList.remove("is-fluoing");
+        });
+      } else {
+        zoneCorner = null;
+      }
+    }
+
+    function zoneAllPages() {
+      return state.lists.length > 1 && $("selAllPages") && $("selAllPages").checked;
+    }
+
+    function setColsEqualWidth(list, indices) {
+      const all = selectedCols(list);
+      const group = [];
+      indices.forEach((i) => {
+        if (all.indexOf(i) >= 0 && group.indexOf(i) < 0) group.push(i);
+      });
+      if (group.length < 2) return false;
+      if (!list.widths) list.widths = {};
+      const w = colWidths(list, all);
+      const map = {};
+      all.forEach((i, k) => { map[i] = w[k]; });
+      const sum = group.reduce((s, i) => s + map[i], 0);
+      const each = sum / group.length;
+      group.forEach((i) => { map[i] = each; });
+      const tot = all.reduce((s, i) => s + map[i], 0) || 1;
+      all.forEach((i) => { list.widths[i] = (map[i] / tot) * 100; });
+      return true;
+    }
+
+    function equalizeZoneWidths() {
+      if (!zoneSel) return;
+      const list = state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      if (!list) return;
+      const idxs = zoneSel.keys.filter((k) => typeof k === "number");
+      if (idxs.length < 2) return;
+      const names = idxs.map((i) => list.headers[i]);
+      const targets = zoneAllPages() ? state.lists : [list];
+      pushHist();
+      let ok = false;
+      targets.forEach((lst) => {
+        const dest = names.map((n) => lst.headers.indexOf(n)).filter((i) => i >= 0);
+        if (setColsEqualWidth(lst, dest)) ok = true;
+      });
+      if (!ok) {
+        discardLastHist();
+        return;
+      }
+      renderPreview();
+    }
+
+    function equalizeZoneHeights() {
+      if (!zoneSel || !zoneSel.ris || !zoneSel.ris.length) return;
+      const list = state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      if (!list) return;
+      const max = Math.max.apply(null, zoneSel.ris.map((ri) => rowEmOf(list, ri)));
+      const visSrc = visibleRowIndices(list);
+      const pos = zoneSel.ris.map((ri) => visSrc.indexOf(ri)).filter((p) => p >= 0);
+      const targets = zoneAllPages() ? state.lists : [list];
+      pushHist();
+      targets.forEach((lst) => {
+        if (!lst.rowH) lst.rowH = {};
+        if (lst === list) {
+          zoneSel.ris.forEach((ri) => { lst.rowH[ri] = max; });
+        } else {
+          const vis = visibleRowIndices(lst);
+          pos.forEach((p) => {
+            if (vis[p] != null) lst.rowH[vis[p]] = max;
+          });
+        }
+      });
+      renderPreview();
+    }
+
+    function showSelMenu(x, y) {
+      const menu = $("selMenu");
+      if (!menu || !zoneSel) return;
+      menu.hidden = false;
+      menu.style.left = Math.min(window.innerWidth - 200, Math.max(8, x)) + "px";
+      menu.style.top = Math.min(window.innerHeight - 90, Math.max(8, y)) + "px";
+    }
+
+    function stylePartsFromUi() {
+      return {
+        design: $("stDesign").checked,
+        sizes: $("stSizes").checked,
+        page: $("stPage").checked,
+        info: $("stInfo").checked,
+        columns: $("stCols").checked,
+      };
+    }
+
+    function buildStylePayload() {
+      const parts = stylePartsFromUi();
+      const list = activeList() || state.lists[0];
+      const out = {
+        app: "epicsv-modele",
+        version: 1,
+        savedAt: new Date().toISOString(),
+        parts: parts,
+        settings: {},
+      };
+      if (parts.design) {
+        out.settings.design = state.design;
+        out.settings.palette = state.palette;
+        out.settings.forme = state.forme;
+        out.settings.titre = state.titre;
+      }
+      if (parts.sizes) {
+        out.settings.fontPt = state.fontPt;
+        out.settings.titlePt = state.titlePt;
+        out.settings.thPt = state.thPt;
+        out.settings.rowY = state.rowY;
+      }
+      if (parts.page) {
+        out.settings.marge = state.marge;
+        out.settings.orient = state.orient;
+        out.settings.vlines = state.vlines;
+        out.settings.numbering = state.numbering;
+        out.settings.numberFrom = state.numberFrom;
+        out.settings.combine = state.combine;
+      }
+      if (parts.info) {
+        out.settings.legend = state.legend;
+        out.settings.showBadges = state.showBadges;
+        out.settings.showNotes = state.showNotes;
+        out.settings.notesPos = state.notesPos;
+        out.settings.badges = state.badges;
+      }
+      if (parts.columns && list) {
+        out.settings.sharedCols = state.sharedCols;
+        out.settings.colAll = Boolean($("colAll") && $("colAll").checked);
+        out.columns = list.headers.map((name, i) => ({
+          name: name,
+          on: Boolean(list.on[i]),
+          width: list.widths && list.widths[i] > 0 ? list.widths[i] : null,
+          custom: Boolean(list.custom[i]),
+        }));
+        out.order = list.order.map((k) => (k === "rq" || k === "marks" ? k : list.headers[k]));
+      }
+      return out;
+    }
+
+    function applyStyleColumns(list, data) {
+      const cols = Array.isArray(data.columns) ? data.columns : [];
+      cols.forEach((c) => {
+        if (c && c.custom && c.name) insertCustomCol(list, c.name);
+      });
+      cols.forEach((c) => {
+        if (!c || !c.name) return;
+        const i = list.headers.indexOf(c.name);
+        if (i < 0) return;
+        if (c.on != null) list.on[i] = Boolean(c.on);
+        if (c.width > 0) {
+          if (!list.widths) list.widths = {};
+          list.widths[i] = Number(c.width);
+        }
+      });
+      if (!Array.isArray(data.order)) return;
+      const seen = new Set();
+      const next = [];
+      data.order.forEach((k) => {
+        if (k === "rq" || k === "marks") {
+          if (!seen.has(k)) {
+            seen.add(k);
+            next.push(k);
+          }
+          return;
+        }
+        const i = list.headers.indexOf(k);
+        if (i >= 0 && !seen.has(i)) {
+          seen.add(i);
+          next.push(i);
+        }
+      });
+      list.headers.forEach((_, i) => {
+        if (!seen.has(i)) next.push(i);
+      });
+      list.order = next;
+    }
+
+    function applyStyle(data, opts) {
+      if (!data || data.app !== "epicsv-modele") return false;
+      opts = opts || {};
+      const parts = data.parts || { design: true, sizes: true, page: true, info: true, columns: true };
+      const s = data.settings || {};
+      if (opts.hist !== false) pushHist();
+      if (parts.design) applyTheme(s.design, s.palette, s.forme, s.titre);
+      if (parts.sizes) {
+        if (s.fontPt != null) state.fontPt = clampFontPt(s.fontPt);
+        const preset = titrePreset(state.titre);
+        if (s.titlePt != null) state.titlePt = clampTitlePt(s.titlePt);
+        else if (parts.design) state.titlePt = preset.title;
+        if (s.thPt != null) state.thPt = clampThPt(s.thPt);
+        else if (parts.design) state.thPt = preset.th;
+        if (s.rowY > 0) state.rowY = Number(s.rowY);
+      }
+      if (parts.page) {
+        if (s.marge) state.marge = s.marge;
+        if (s.orient) state.orient = s.orient;
+        if (s.vlines != null) state.vlines = s.vlines !== false;
+        if (s.numbering) state.numbering = s.numbering;
+        if (s.numberFrom) state.numberFrom = s.numberFrom;
+        if (s.combine != null) {
+          state.combine = Boolean(s.combine);
+          state.combineAsked = true;
+        }
+      }
+      if (parts.info) {
+        if (s.legend != null) state.legend = s.legend !== false;
+        if (Array.isArray(s.badges)) state.badges = s.badges;
+        if (s.showBadges != null) state.showBadges = Boolean(s.showBadges);
+        else if (state.badges && state.badges.length) state.showBadges = true;
+        if (state.showBadges) ensureDefaultBadges();
+        if (s.showNotes != null) state.showNotes = Boolean(s.showNotes);
+        if (s.notesPos === "left" || s.notesPos === "custom" || s.notesPos === "right") state.notesPos = s.notesPos;
+        if (state.showNotes) {
+          const pos = state.notesPos === "left" ? "left" : "right";
+          state.lists.forEach((l) => ensureRqOrder(l, pos));
+        }
+      }
+      if (parts.columns) {
+        if (Array.isArray(s.sharedCols)) state.sharedCols = s.sharedCols.slice();
+        if ($("colAll") && s.colAll != null) $("colAll").checked = Boolean(s.colAll);
+        state.lists.forEach((lst) => applyStyleColumns(lst, data));
+      }
+      if (opts.render !== false) renderAll();
+      return true;
+    }
+
+    function closeStyleModal() {
+      const back = $("styleModal");
+      if (back) back.hidden = true;
+      if (styleDlgRestore) {
+        styleDlgRestore();
+        styleDlgRestore = null;
+      }
+    }
+
+    function openStyleModal() {
+      const back = $("styleModal");
+      if (!back) return;
+      back.hidden = false;
+      styleDlgRestore = attachDialog(back, closeStyleModal);
+    }
+
+    function saveStyleFile() {
+      const parts = stylePartsFromUi();
+      if (!parts.design && !parts.sizes && !parts.page && !parts.info && !parts.columns) return;
+      const json = JSON.stringify(buildStylePayload(), null, 2);
+      downloadProject(json, "epicsv-modele.json");
+      closeStyleModal();
+    }
+
     function renderPreview() {
       const sheetsEl = $("sheets");
       sheetsEl.innerHTML = "";
@@ -3705,6 +4301,7 @@
         printBtn.disabled = true;
         if (dockPrintBtn) dockPrintBtn.disabled = true;
         $("saveBtn").disabled = true;
+        clearZone();
         fitStage();
         return;
       }
@@ -3715,6 +4312,7 @@
         printBtn.disabled = true;
         if (dockPrintBtn) dockPrintBtn.disabled = true;
         $("saveBtn").disabled = true;
+        clearZone();
         fitStage();
         return;
       }
@@ -3742,7 +4340,10 @@
       });
 
       $("orientBlock").hidden = combining();
-      requestAnimationFrame(fitStage);
+      requestAnimationFrame(() => {
+        fitStage();
+        paintZone();
+      });
     }
 
     function renderChips() {
@@ -4209,13 +4810,14 @@
       }
       const text = decodeBuffer(buf);
       const trimmed = text.replace(/^\uFEFF/, "").trim();
-      if ((ext === "json" || ext === "listes") || (trimmed.charAt(0) === "{" && /"listes-pronote"|"app"\s*:\s*"listes-pronote"/.test(trimmed.slice(0, 400)))) {
+      if ((ext === "json" || ext === "listes") || (trimmed.charAt(0) === "{" && /"app"\s*:/.test(trimmed.slice(0, 500)))) {
         let data;
         try { data = JSON.parse(trimmed); } catch (_) {
           throw new Error("Fichier JSON invalide : " + name);
         }
+        if (data && data.app === "epicsv-modele") return { style: data };
         if (!data || data.app !== "listes-pronote") {
-          throw new Error("« " + name + " » n’est pas un tableau EpiCSV.");
+          throw new Error("« " + name + " » n’est pas un tableau ou un modèle EpiCSV.");
         }
         return { project: data };
       }
@@ -4352,6 +4954,10 @@
         const list = addListFromGrid(item.name, item.grid);
         if (item.sample) list.sample = true;
       });
+      if (heldStyle && state.lists.length) {
+        applyStyle(heldStyle, { hist: false, render: false });
+        heldStyle = null;
+      }
       showError("");
       renderAll();
       if (isPhoneLayout()) showPreview();
@@ -4443,6 +5049,7 @@
           hl: l.hl || {},
           hlText: l.hlText || {},
           widths: l.widths || {},
+          rowH: l.rowH || {},
           sample: Boolean(l.sample),
         })),
       };
@@ -4520,6 +5127,10 @@
         showError("Pour un tableau enregistré, utilisez « Charger un tableau ».");
         return;
       }
+      if (parsed.style) {
+        applyStyle(parsed.style);
+        return;
+      }
       pushHist();
       replaceActiveFromGrid(parsed.name, parsed.grid);
       dirty = true;
@@ -4546,15 +5157,27 @@
       const files = [...fileList].filter(Boolean);
       if (!files.length) return;
       const items = [];
+      let style = null;
       for (const f of files) {
         const parsed = await parseFile(f);
         if (parsed.project) {
           loadProject(parsed.project);
           return;
         }
+        if (parsed.style) {
+          style = parsed.style;
+          continue;
+        }
         items.push(parsed);
       }
-      await ingestParsed(items);
+      if (items.length) await ingestParsed(items);
+      if (style) {
+        if (state.lists.length) applyStyle(style, { hist: items.length ? false : true });
+        else {
+          heldStyle = style;
+          showError("Modèle mémorisé : il s’appliquera au prochain fichier chargé.");
+        }
+      }
     }
 
     function addColumn() {
@@ -4829,19 +5452,41 @@
       e.preventDefault();
       e.stopPropagation();
       const table = handle.closest("table");
-      if (!table) return;
+      const tr = handle.closest("tr");
+      if (!table || !tr) return;
+      const list = state.lists.find((l) => String(l.id) === String(tr.dataset.lid));
+      const ri = Number(tr.dataset.ri);
+      if (!list || !Number.isInteger(ri)) return;
       const fs = parseFloat(getComputedStyle(table).fontSize) || 12;
-      const autoY = combining() || state.marge === "etroites" ? 0.26 : state.marge === "larges" ? 0.5 : 0.38;
-      const start = state.rowY > 0 ? state.rowY : autoY;
+      const global = e.shiftKey;
+      const targets = (!global && zoneSel && String(zoneSel.lid) === String(list.id) && zoneSel.ris && zoneSel.ris.indexOf(ri) >= 0)
+        ? zoneSel.ris.slice()
+        : [ri];
+      const start = global ? defaultRowEm() : rowEmOf(list, ri);
       const startY = e.clientY;
       const scale0 = stageScale();
       pushHist();
       document.body.classList.add("is-row-resizing");
       let rowFitPending = false;
+      const applyY = (next) => {
+        if (global) {
+          state.rowY = next;
+          list.rowH = {};
+          document.documentElement.style.setProperty("--row-y", next + "em");
+          table.querySelectorAll("tbody tr").forEach((row) => { row.style.removeProperty("--row-y"); });
+          return;
+        }
+        if (!list.rowH) list.rowH = {};
+        targets.forEach((r) => {
+          list.rowH[r] = next;
+          const row = table.querySelector('tr[data-ri="' + r + '"]');
+          if (row) row.style.setProperty("--row-y", next + "em");
+        });
+      };
       const onMove = (ev) => {
         const next = Math.max(0.06, Math.min(2, start + (ev.clientY - startY) / (fs * scale0 * 14)));
-        state.rowY = Math.round(next * 1000) / 1000;
-        document.documentElement.style.setProperty("--row-y", state.rowY + "em");
+        const rounded = Math.round(next * 1000) / 1000;
+        applyY(rounded);
         if (rowFitPending) return;
         rowFitPending = true;
         requestAnimationFrame(() => {
@@ -4858,6 +5503,85 @@
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
+    (function bindZonePointer() {
+      const sheets = $("sheets");
+      const rectEl = $("selRect");
+      let drag = null;
+      let holdT = null;
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu");
+      const canStart = (e) => {
+        if (skip(e)) return false;
+        if (e.button != null && e.button !== 0) return false;
+        if (selectMode) return true;
+        return false;
+      };
+      sheets.addEventListener("pointerdown", (e) => {
+        if (!canStart(e)) return;
+        const hit = cellHit(e.target);
+        if (!hit) return;
+        hideSelMenu();
+        drag = { x0: e.clientX, y0: e.clientY, lid: hit.lid, moved: false };
+        if (zoneSel && e.target.closest(".is-zone")) {
+          holdT = setTimeout(() => {
+            holdT = null;
+            showSelMenu(e.clientX, e.clientY);
+            drag = null;
+          }, 520);
+        }
+        try { sheets.setPointerCapture(e.pointerId); } catch (_) {}
+      });
+      sheets.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const dx = e.clientX - drag.x0;
+        const dy = e.clientY - drag.y0;
+        if (!drag.moved && Math.hypot(dx, dy) < 8) return;
+        drag.moved = true;
+        if (holdT) { clearTimeout(holdT); holdT = null; }
+        e.preventDefault();
+        if (!rectEl) return;
+        rectEl.hidden = false;
+        rectEl.style.left = Math.min(drag.x0, e.clientX) + "px";
+        rectEl.style.top = Math.min(drag.y0, e.clientY) + "px";
+        rectEl.style.width = Math.abs(dx) + "px";
+        rectEl.style.height = Math.abs(dy) + "px";
+      });
+      const endDrag = (e) => {
+        if (holdT) { clearTimeout(holdT); holdT = null; }
+        if (!drag) return;
+        const was = drag;
+        drag = null;
+        if (rectEl) rectEl.hidden = true;
+        if (!was.moved) return;
+        const r = {
+          left: Math.min(was.x0, e.clientX),
+          right: Math.max(was.x0, e.clientX),
+          top: Math.min(was.y0, e.clientY),
+          bottom: Math.max(was.y0, e.clientY),
+        };
+        const block = sheets.querySelector('.list-block[data-lid="' + was.lid + '"]');
+        if (!block) return;
+        const hits = [];
+        block.querySelectorAll("td[data-ck], th[data-ck]").forEach((cell) => {
+          const b = cell.getBoundingClientRect();
+          if (b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) return;
+          const hit = cellHit(cell);
+          if (hit) hits.push(hit);
+        });
+        setZone(zoneFromHits(hits));
+      };
+      sheets.addEventListener("pointerup", endDrag);
+      sheets.addEventListener("pointercancel", () => {
+        if (holdT) { clearTimeout(holdT); holdT = null; }
+        drag = null;
+        if (rectEl) rectEl.hidden = true;
+      });
+      sheets.addEventListener("contextmenu", (e) => {
+        if (!zoneSel) return;
+        if (!e.target.closest(".is-zone")) return;
+        e.preventDefault();
+        showSelMenu(e.clientX, e.clientY);
+      });
+    })();
     $("sheets").addEventListener("focusin", (e) => {
       if (e.target.isContentEditable) pushHist();
     });
@@ -4885,6 +5609,10 @@
       document.execCommand("insertText", false, text);
     });
     $("sheets").addEventListener("dragstart", (e) => {
+      if (selectMode) {
+        e.preventDefault();
+        return;
+      }
       const rowHandle = e.target.closest(".row-handle");
       if (rowHandle) {
         dragRow = { lid: rowHandle.dataset.lid, ri: Number(rowHandle.dataset.ri) };
@@ -5035,6 +5763,20 @@
         renderAll();
         return;
       }
+      if (selectMode) {
+        if (e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del")) return;
+        const hit = cellHit(e.target);
+        if (!hit) return;
+        e.preventDefault();
+        if (!zoneCorner || zoneCorner.lid !== hit.lid) {
+          zoneCorner = hit;
+          setZone(zoneFromHits([hit]));
+        } else {
+          setZone(zoneFromHits([zoneCorner, hit]));
+          zoneCorner = null;
+        }
+        return;
+      }
       if (state.activeFluo) {
         if (e.detail > 1) return;
         if (e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del")) return;
@@ -5135,6 +5877,22 @@
     });
 
     document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if ($("styleModal") && !$("styleModal").hidden) return;
+        if ($("modal") && !$("modal").hidden) return;
+        if ($("pasteModal") && !$("pasteModal").hidden) return;
+        hideSelMenu();
+        if (zoneSel || zoneCorner) {
+          e.preventDefault();
+          clearZone();
+          return;
+        }
+        if (selectMode) {
+          e.preventDefault();
+          setSelectMode(false);
+        }
+        return;
+      }
       const key = e.key.toLowerCase();
       if (!(e.ctrlKey || e.metaKey) || (key !== "z" && key !== "y")) return;
       if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
@@ -5263,6 +6021,26 @@
       ingestFiles($("loadFile").files).catch((err) => showError(err.message || String(err)));
       $("loadFile").value = "";
     });
+    $("styleBtn").addEventListener("click", openStyleModal);
+    $("styleCancel").addEventListener("click", closeStyleModal);
+    $("styleSave").addEventListener("click", saveStyleFile);
+    $("styleLoad").addEventListener("click", () => $("styleFile").click());
+    $("styleFile").addEventListener("change", () => {
+      ingestFiles($("styleFile").files).catch((err) => showError(err.message || String(err)));
+      $("styleFile").value = "";
+      closeStyleModal();
+    });
+    $("selModeBtn").addEventListener("click", () => setSelectMode(!selectMode));
+    $("selEqW").addEventListener("click", equalizeZoneWidths);
+    $("selEqH").addEventListener("click", equalizeZoneHeights);
+    $("selMenuW").addEventListener("click", () => { hideSelMenu(); equalizeZoneWidths(); });
+    $("selMenuH").addEventListener("click", () => { hideSelMenu(); equalizeZoneHeights(); });
+    $("selClear").addEventListener("click", clearZone);
+    document.addEventListener("pointerdown", (e) => {
+      if ($("selMenu").hidden) return;
+      if (e.target.closest("#selMenu, #selBar")) return;
+      hideSelMenu();
+    });
 
     function printLists() {
       if (printBtn.disabled) return;
@@ -5283,7 +6061,7 @@
         .catch((err) => showError(err.message || String(err)));
     });
 
-    window.addEventListener("resize", () => { syncAppLayout(); fitStage(); });
+    window.addEventListener("resize", () => { syncAppLayout(); fitStage(); placeSelBar(); });
     window.addEventListener("orientationchange", () => {
       setTimeout(() => { syncAppLayout(); fitStage(); }, 300);
     });
