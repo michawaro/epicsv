@@ -865,6 +865,7 @@
       z-index: 13;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
       padding: 5px 6px 5px 10px;
       border-radius: 999px;
@@ -874,6 +875,7 @@
       color: var(--teal-deep);
       font-size: 12px;
       font-weight: 800;
+      max-width: calc(100vw - 24px);
     }
     .sel-bar[hidden] { display: none !important; }
     .sel-bar .sel-label {
@@ -913,6 +915,38 @@
       cursor: pointer;
     }
     .sel-bar input { accent-color: var(--teal-deep); margin: 0; }
+    .sel-bar .sel-size {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0;
+      padding: 0 2px 0 8px;
+      border-left: 1px solid rgba(14, 143, 140, 0.22);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: default;
+    }
+    .sel-bar .sel-size input[type="number"] {
+      width: 3.6em;
+      border: 1px solid rgba(14, 143, 140, 0.28);
+      border-radius: 8px;
+      padding: 4px 5px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--teal-deep);
+      background: #fff;
+    }
+    .sel-bar .sel-size select {
+      border: 0;
+      background: transparent;
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
     .sel-rect {
       position: fixed;
       z-index: 120;
@@ -2525,6 +2559,14 @@
     <span class="sel-label">Uniformiser</span>
     <button type="button" id="selEqW">Largeurs</button>
     <button type="button" id="selEqH">Hauteurs</button>
+    <label class="sel-size">
+      Taille
+      <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille de colonne" />
+      <select id="selSizeUnit" aria-label="Unité de taille">
+        <option value="pct">%</option>
+        <option value="cm">cm</option>
+      </select>
+    </label>
     <label id="selAllWrap" hidden><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
     <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection">×</button>
   </div>
@@ -4033,6 +4075,7 @@
       const last = cells[cells.length - 1].getBoundingClientRect();
       bar.hidden = false;
       $("selAllWrap").hidden = state.lists.length < 2;
+      syncSelSizeInput();
       bar.style.left = "12px";
       bar.style.top = Math.min(window.innerHeight - 56, Math.max(8, last.bottom + 8)) + "px";
       const w = bar.offsetWidth;
@@ -4093,6 +4136,127 @@
 
     function zoneAllPages() {
       return state.lists.length > 1 && $("selAllPages") && $("selAllPages").checked;
+    }
+
+    function zoneDataCols(list) {
+      if (!zoneSel || !list) return [];
+      const on = selectedCols(list);
+      return zoneSel.keys.filter((k) => typeof k === "number" && on.indexOf(k) >= 0);
+    }
+
+    function tableWidthMm(list) {
+      const table = $("sheets").querySelector('.list-block[data-lid="' + (list && list.id) + '"] table.liste');
+      if (table) {
+        const scale = stageScale() || 1;
+        const cssPx = table.getBoundingClientRect().width / scale;
+        return cssPx * 25.4 / 96;
+      }
+      const cols = list ? selectedCols(list).length : 6;
+      const orient = combining() ? "paysage" : (state.orient === "auto" ? (cols >= 8 ? "paysage" : "portrait") : state.orient);
+      const pageW = orient === "paysage" ? 297 : 210;
+      const inner = pageW - 2 * (MARGES[state.marge] || 14);
+      if (!combining()) return inner;
+      const n = Math.min(4, Math.max(1, state.lists.length));
+      return (inner - 5 * (n - 1)) / n;
+    }
+
+    function pctToCm(list, pct) {
+      return (Number(pct) / 100) * tableWidthMm(list) / 10;
+    }
+
+    function cmToPct(list, cm) {
+      const mm = tableWidthMm(list);
+      return mm > 0 ? (Number(cm) * 10 / mm) * 100 : 0;
+    }
+
+    function currentZoneColPct(list) {
+      const idxs = zoneDataCols(list);
+      if (!idxs.length) return null;
+      const all = selectedCols(list);
+      const w = colWidths(list, all);
+      const pcts = idxs.map((i) => w[all.indexOf(i)]).filter((v) => v > 0);
+      if (!pcts.length) return null;
+      return pcts.reduce((a, b) => a + b, 0) / pcts.length;
+    }
+
+    function syncSelSizeInput() {
+      const input = $("selSizeVal");
+      const unitEl = $("selSizeUnit");
+      if (!input || !unitEl) return;
+      if (document.activeElement === input) return;
+      const list = zoneSel && state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      const idxs = zoneDataCols(list);
+      input.disabled = !idxs.length;
+      unitEl.disabled = !idxs.length;
+      if (!idxs.length) {
+        input.value = "";
+        return;
+      }
+      const pct = currentZoneColPct(list);
+      if (pct == null) {
+        input.value = "";
+        return;
+      }
+      if (unitEl.value === "cm") input.value = String(Math.round(pctToCm(list, pct) * 100) / 100);
+      else input.value = String(Math.round(pct * 10) / 10);
+    }
+
+    function setColsFixedWidth(list, indices, pctEach) {
+      const all = selectedCols(list);
+      const group = [];
+      indices.forEach((i) => {
+        if (all.indexOf(i) >= 0 && group.indexOf(i) < 0) group.push(i);
+      });
+      if (!group.length) return false;
+      const min = 4;
+      const others = all.filter((i) => group.indexOf(i) < 0);
+      const maxEach = others.length ? (100 - min * others.length) / group.length : 100 / group.length;
+      const each = Math.max(min, Math.min(maxEach, Number(pctEach)));
+      if (!(each > 0)) return false;
+      const w = colWidths(list, all);
+      const map = {};
+      all.forEach((i, k) => { map[i] = w[k]; });
+      group.forEach((i) => { map[i] = each; });
+      if (others.length) {
+        const remain = Math.max(min * others.length, 100 - each * group.length);
+        const oSum = others.reduce((s, i) => s + map[i], 0) || 1;
+        others.forEach((i) => { map[i] = (map[i] / oSum) * remain; });
+      } else {
+        const fill = 100 / group.length;
+        group.forEach((i) => { map[i] = fill; });
+      }
+      if (!list.widths) list.widths = {};
+      all.forEach((i) => { list.widths[i] = map[i]; });
+      return true;
+    }
+
+    function applyZoneColSize() {
+      if (!zoneSel) return;
+      const list = state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+      if (!list) return;
+      const idxs = zoneDataCols(list);
+      if (!idxs.length) return;
+      const raw = parseFloat($("selSizeVal") && $("selSizeVal").value);
+      if (!(raw > 0)) {
+        syncSelSizeInput();
+        return;
+      }
+      const unit = $("selSizeUnit") && $("selSizeUnit").value;
+      const pct = unit === "cm" ? cmToPct(list, raw) : raw;
+      const names = idxs.map((i) => list.headers[i]);
+      const targets = zoneAllPages() ? state.lists : [list];
+      pushHist();
+      let ok = false;
+      targets.forEach((lst) => {
+        const dest = names.map((n) => lst.headers.indexOf(n)).filter((i) => i >= 0);
+        if (setColsFixedWidth(lst, dest, pct)) ok = true;
+      });
+      if (!ok) {
+        discardLastHist();
+        syncSelSizeInput();
+        return;
+      }
+      renderPreview();
     }
 
     function setColsEqualWidth(list, indices) {
@@ -6206,6 +6370,28 @@
     $("selMenuW").addEventListener("click", () => { hideSelMenu(); equalizeZoneWidths(); });
     $("selMenuH").addEventListener("click", () => { hideSelMenu(); equalizeZoneHeights(); });
     $("selClear").addEventListener("click", clearZone);
+    (function bindSelSize() {
+      const input = $("selSizeVal");
+      const unitEl = $("selSizeUnit");
+      if (!input || !unitEl) return;
+      let unit = unitEl.value;
+      input.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        input.blur();
+      });
+      input.addEventListener("change", applyZoneColSize);
+      unitEl.addEventListener("change", () => {
+        const list = zoneSel && state.lists.find((l) => String(l.id) === String(zoneSel.lid));
+        const raw = parseFloat(input.value);
+        const next = unitEl.value;
+        if (list && raw > 0 && unit !== next) {
+          if (next === "cm") input.value = String(Math.round(pctToCm(list, raw) * 100) / 100);
+          else input.value = String(Math.round(cmToPct(list, raw) * 10) / 10);
+        }
+        unit = next;
+      });
+    })();
     document.addEventListener("pointerdown", (e) => {
       if ($("selMenu").hidden) return;
       if (e.target.closest("#selMenu, #selBar")) return;
