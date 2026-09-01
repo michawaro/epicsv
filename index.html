@@ -593,7 +593,7 @@
       font-size: 18px;
       line-height: 1;
       cursor: pointer;
-      z-index: 4;
+      z-index: 8;
       place-items: center;
     }
     .list-block.is-editing .page-sheet-del { display: grid; }
@@ -895,6 +895,23 @@
       line-height: 1.45;
       color: var(--cream-dim);
     }
+    .hint-callout {
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 252, 236, 0.96);
+      color: #0a4d52;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.42;
+      box-shadow:
+        inset 0 0 0 1.5px var(--seal),
+        0 4px 10px rgba(10, 77, 82, 0.12);
+    }
+    .hint-callout p {
+      margin: 0;
+    }
+    .hint-callout p + p { margin-top: 0.4em; }
 
     .actions, .toolbar {
       display: grid;
@@ -922,6 +939,14 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .toolbar .btn-style {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      line-height: 1.2;
+      font-size: 11.5px;
+      padding: 7px 8px;
     }
     .hist-dock {
       position: fixed;
@@ -1432,8 +1457,11 @@
       position: sticky;
       top: 8px;
       z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin: 0 0 12px;
-      padding: 7px 16px;
+      padding: 6px 8px 6px 16px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.92);
       color: var(--teal-deep);
@@ -1447,6 +1475,38 @@
       background: #fff4f1;
     }
     .page-format-hud[hidden] { display: none !important; }
+    .page-orient-toggle {
+      flex: none;
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--teal-deep);
+      color: #fff;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+    .page-orient-toggle:hover { background: #0a6561; }
+    .page-orient-toggle:focus-visible {
+      outline: 3px solid var(--seal);
+      outline-offset: 2px;
+    }
+    .page-orient-toggle[hidden] { display: none !important; }
+    .page-orient-toggle svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .page-orient-toggle .page-orient-sheet {
+      transform-origin: 12px 12px;
+      transition: transform 0.16s ease;
+    }
+    .page-orient-toggle.is-paysage .page-orient-sheet {
+      transform: rotate(90deg);
+    }
 
     .sheet-frame {
       width: var(--page-w);
@@ -1602,7 +1662,7 @@
     .sheet-grid[data-n="3"] { grid-template-columns: 1fr 1fr 1fr; }
     .sheet-grid[data-n="4"] { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
-    .list-block { min-width: 0; }
+    .list-block { min-width: 0; overflow: visible; }
     .list-block.is-blank-page {
       min-height: calc(var(--page-h) - 2 * var(--page-margin));
       display: flex;
@@ -1808,6 +1868,107 @@
       border-radius: 0;
     }
 
+    .liste-wrap {
+      position: relative;
+      width: 100%;
+      max-width: none;
+    }
+    .liste-wrap > .liste { width: 100%; }
+
+    .table-frame {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .table-frame-h {
+      position: absolute;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+    .list-block.is-editing .table-frame-h { pointer-events: auto; }
+    .table-frame-h[data-dir="n"] {
+      left: 12px;
+      right: 12px;
+      top: -8px;
+      height: 8px;
+      cursor: ns-resize;
+    }
+    .table-frame-h[data-dir="s"] {
+      left: 12px;
+      right: 12px;
+      bottom: -10px;
+      height: 8px;
+      cursor: ns-resize;
+    }
+    .table-frame-h[data-dir="e"] {
+      top: 2.5em;
+      bottom: 12px;
+      right: -8px;
+      width: 8px;
+      cursor: ew-resize;
+    }
+    .table-frame-h[data-dir="w"] {
+      top: 2.5em;
+      bottom: 12px;
+      left: -8px;
+      width: 8px;
+      cursor: ew-resize;
+    }
+    .table-frame-h[data-dir="nw"],
+    .table-frame-h[data-dir="ne"],
+    .table-frame-h[data-dir="sw"],
+    .table-frame-h[data-dir="se"] {
+      width: 12px;
+      height: 12px;
+    }
+    .table-frame-h[data-dir="nw"] { top: -8px; left: -8px; cursor: nwse-resize; }
+    .table-frame-h[data-dir="se"] { bottom: -10px; right: -8px; cursor: nwse-resize; }
+    .table-frame-h[data-dir="ne"] { top: -8px; right: -8px; cursor: nesw-resize; }
+    .table-frame-h[data-dir="sw"] { bottom: -10px; left: -8px; cursor: nesw-resize; }
+    .table-frame-h::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--teal-deep);
+      border: 1.5px solid #fff;
+      box-shadow: 0 1px 4px rgba(14, 143, 140, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.12s ease;
+    }
+    .list-block.is-editing:hover .table-frame-h::after,
+    body.is-table-resizing .table-frame-h::after {
+      opacity: 0.92;
+    }
+    .table-frame-h[data-dir="n"]::after,
+    .table-frame-h[data-dir="s"]::after {
+      width: 18px;
+      height: 5px;
+      border-radius: 2px;
+    }
+    .table-frame-h[data-dir="e"]::after,
+    .table-frame-h[data-dir="w"]::after {
+      width: 5px;
+      height: 18px;
+      border-radius: 2px;
+    }
+    .table-frame-h[data-dir="nw"]::after,
+    .table-frame-h[data-dir="ne"]::after,
+    .table-frame-h[data-dir="sw"]::after,
+    .table-frame-h[data-dir="se"]::after {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+    body.is-table-resizing { user-select: none; }
+    body.is-table-resizing-ew { cursor: ew-resize; }
+    body.is-table-resizing-ns { cursor: ns-resize; }
+    body.is-table-resizing-nwse { cursor: nwse-resize; }
+    body.is-table-resizing-nesw { cursor: nesw-resize; }
+
     .liste {
       width: 100%;
       border-collapse: collapse;
@@ -1928,7 +2089,7 @@
       line-height: 16px;
       cursor: grab;
       opacity: 0;
-      z-index: 3;
+      z-index: 6;
     }
     .liste tbody tr:hover .row-handle { opacity: 0.7; }
     .row-handle:active { cursor: grabbing; }
@@ -2433,7 +2594,11 @@
     }
 
     @media print {
-      @page { size: A4 portrait; margin: 14mm; }
+      @page { size: A4; size: A4 portrait; size: 210mm 297mm; margin: 14mm; }
+      @page a4p { size: A4; size: A4 portrait; size: 210mm 297mm; margin: 14mm; }
+      @page a4l { size: A4; size: A4 landscape; size: 297mm 210mm; margin: 14mm; }
+      .sheet.is-portrait { page: a4p; }
+      .sheet.is-paysage { page: a4l; }
 
       html, body {
         background: #fff !important;
@@ -2528,7 +2693,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint { display: none !important; }
+      .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint { display: none !important; }
       .list-block.is-editing { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
@@ -2565,12 +2730,12 @@
       </button>
       <div class="menu-fold" id="filesFold">
       <div class="toolbar">
-        <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF. Dans la boîte d’impression : marges « Par défaut », et désactiver les en-têtes et pieds de page.">Imprimer</button>
+        <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
         <button class="btn btn-ghost" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
       </div>
       <div class="toolbar">
         <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
-        <button class="btn btn-ghost" id="styleBtn" type="button" title="Enregistre ou applique une mise en page sans les élèves">Modèle</button>
+        <button class="btn btn-ghost btn-style" id="styleBtn" type="button" title="Enregistrer ou charger un style de mise en page (sans les élèves)" aria-label="Style enregistrer/charger">Style enregistrer/charger</button>
       </div>
       <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
       <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
@@ -2642,12 +2807,15 @@
 
       <section class="block" id="colsBlock" hidden>
         <h2>Colonnes à conserver</h2>
+        <div class="hint-callout">
+          <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
+          <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
+        </div>
         <div class="col-toolbar">
           <button type="button" id="allOn">Tout cocher</button>
           <button type="button" id="allOff">Tout décocher</button>
           <button type="button" id="resetWidths">Largeurs auto</button>
         </div>
-        <p class="hint-note" style="margin:0 0 8px">Glissez un en-tête pour réordonner, le bord d’une colonne pour la largeur. Dessinez une zone dans l’aperçu pour égaliser largeurs ou hauteurs.</p>
         <div class="cols" id="cols"></div>
         <div class="add-line">
           <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
@@ -2797,7 +2965,16 @@
         </p>
         <p>Déposez un export Pronote, chargez un tableau enregistré, collez un CSV (Ctrl+V), ou utilisez l’exemple.</p>
       </div>
-      <div class="page-format-hud no-print" id="pageFormatHud" hidden></div>
+      <div class="page-format-hud no-print" id="pageFormatHud" hidden>
+        <span id="pageFormatLabel"></span>
+        <button type="button" class="page-orient-toggle" id="pageOrientToggle" hidden title="Passer en paysage" aria-label="Passer en paysage">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/>
+            <path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/>
+          </svg>
+        </button>
+      </div>
       <div class="stage" id="stage">
         <div class="sheets" id="sheets"></div>
       </div>
@@ -2812,7 +2989,7 @@
     <button type="button" class="hist-btn" id="redoBtn" disabled title="Rétablir (Ctrl+Y)" aria-label="Rétablir" aria-keyshortcuts="Control+Y">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.16 0-7.74 2.42-9.44 6h2.65c1.41-2.41 4.02-4 7-4 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
     </button>
-    <button type="button" class="hist-btn is-print" id="dockPrintBtn" disabled title="Imprimer ou enregistrer en PDF. Dans la boîte d’impression : marges « Par défaut », et désactiver les en-têtes et pieds de page." aria-label="Imprimer">
+    <button type="button" class="hist-btn is-print" id="dockPrintBtn" disabled title="Imprimer ou enregistrer en PDF (A4)" aria-label="Imprimer">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12H8v-5h8v5zm2-4v-3H6v3H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2zm1-5.25c.41 0 .75-.34.75-.75s-.34-.75-.75-.75-.75.34-.75.75.34.75.75.75z"/></svg>
     </button>
   </div>
@@ -2896,7 +3073,7 @@
 
   <div class="modal-back no-print" id="styleModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="styleTitle">
-      <h3 id="styleTitle">Modèle de mise en page</h3>
+      <h3 id="styleTitle">Style de mise en page</h3>
       <p>Sans les élèves : à réappliquer sur un autre CSV. Cochez ce que le fichier doit contenir.</p>
       <div class="style-picks">
         <label><input type="checkbox" id="stDesign" checked /><span>Design<small>Style, couleurs, forme, titre</small></span></label>
@@ -3579,6 +3756,7 @@
         hlText: {},
         widths: {},
         rowH: {},
+        tableW: 100,
         sample: false,
         blank: false,
         orient: "auto",
@@ -3650,6 +3828,7 @@
       list.hlText = {};
       list.widths = {};
       list.rowH = {};
+      list.tableW = 100;
       list.blank = false;
       list.sample = false;
       applySharedCols(list);
@@ -3773,6 +3952,8 @@
         const n = Number(raw.rowH[k]);
         if (n > 0) list.rowH[k] = n;
       });
+      const tw = Number(raw.tableW);
+      list.tableW = tw > 0 ? tw : 100;
       return list;
     }
 
@@ -4447,6 +4628,7 @@
         return '<p class="hint-note" style="color:var(--ink-soft)">Aucune colonne sélectionnée.</p>';
       }
       const lay = layoutFor(Math.max(cols.length, 1), nOnPage, list);
+      const tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
       const widths = cols.length ? colWidths(list, cols) : [];
       const kinds = {};
       cols.forEach((i) => {
@@ -4454,7 +4636,8 @@
       });
       const showNum = state.numbering !== "off";
       const vis = visibleRowIndices(list);
-      let html = '<table class="liste' + (state.vlines ? " has-vlines" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
+      let html = '<div class="liste-wrap" style="width:' + tableW + '%">';
+      html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
       html += "<colgroup>";
       if (showNum) html += '<col class="col-num">';
       let wi = 0;
@@ -4524,7 +4707,16 @@
         html += "</tr>";
       });
       html += "</tbody></table>";
+      html += tableFrameHtml();
+      html += "</div>";
       return html;
+    }
+
+    function tableFrameHtml() {
+      const dirs = ["n", "s", "e", "w", "nw", "ne", "sw", "se"];
+      return '<div class="table-frame no-print" aria-hidden="true">' +
+        dirs.map((d) => '<span class="table-frame-h" data-dir="' + d + '" title="Redimensionner le tableau"></span>').join("") +
+        "</div>";
     }
 
     function applyPreviewEdit(el, trim) {
@@ -4655,19 +4847,15 @@
       const rowX = combining() || state.marge === "etroites" ? "0.38em" : state.marge === "larges" ? "0.9em" : "0.7em";
       document.documentElement.style.setProperty("--row-y", rowY + "em");
       document.documentElement.style.setProperty("--row-x", rowX);
-      const unique = [];
-      (sheetOrients && sheetOrients.length ? sheetOrients : [orient]).forEach((o) => {
-        const r = o === "paysage" ? "paysage" : "portrait";
-        if (unique.indexOf(r) < 0) unique.push(r);
-      });
-      let css = "@media print { @page { size: " + size.css + "; margin: " + marge + "mm; }";
-      if (unique.length > 1) {
-        css +=
-          " @page epicsv-portrait { size: A4 portrait; margin: " + marge + "mm; }" +
-          " @page epicsv-paysage { size: A4 landscape; margin: " + marge + "mm; }" +
-          " .sheet.is-portrait { page: epicsv-portrait; }" +
-          " .sheet.is-paysage { page: epicsv-paysage; }";
-      }
+      const mm = marge + "mm";
+      const defMm = orient === "paysage" ? "297mm 210mm" : "210mm 297mm";
+      const defA4 = orient === "paysage" ? "A4 landscape" : "A4 portrait";
+      let css = "@media print {";
+      css += " @page { size: A4; size: " + defA4 + "; size: " + defMm + "; margin: " + mm + "; }";
+      css += " @page a4p { size: A4; size: A4 portrait; size: 210mm 297mm; margin: " + mm + "; }";
+      css += " @page a4l { size: A4; size: A4 landscape; size: 297mm 210mm; margin: " + mm + "; }";
+      css += " .sheet.is-portrait { page: a4p; }";
+      css += " .sheet.is-paysage { page: a4l; }";
       css += " }";
       pageStyle.textContent = css;
     }
@@ -4694,11 +4882,13 @@
         if (isOver) over++;
       });
       const hud = $("pageFormatHud");
+      const label = $("pageFormatLabel");
       if (!hud) return;
       if (!state.lists.length) {
         hud.hidden = true;
-        hud.textContent = "";
+        if (label) label.textContent = "";
         hud.classList.remove("is-overflow");
+        syncPageOrientToggle();
         return;
       }
       const groups = previewGroups();
@@ -4718,12 +4908,91 @@
       const cap = mixed
         ? "A4 mixte · portrait et paysage · marges " + lay.marge + " mm"
         : sheetCaption(lay.orient, lay.marge);
-      hud.textContent = over ? cap + " · dépasse la feuille" : cap;
+      if (label) label.textContent = over ? cap + " · dépasse la feuille" : cap;
+      else hud.textContent = over ? cap + " · dépasse la feuille" : cap;
+      syncPageOrientToggle(lay.orient);
+    }
+
+    function hudPreviewOrient() {
+      const groups = previewGroups();
+      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
+      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
+      const ref = activeList() || (groups[0] && groups[0][0]);
+      const cols = ref ? Math.max(maxCols, selectedCols(ref).length) : maxCols;
+      return layoutFor(cols || 1, nFirst, ref).orient;
+    }
+
+    function syncPageOrientToggle(orient) {
+      const btn = $("pageOrientToggle");
+      if (!btn) return;
+      const show = Boolean(state.lists.length) && !combining();
+      btn.hidden = !show;
+      if (!show) return;
+      const cur = orient || hudPreviewOrient();
+      const toPaysage = cur !== "paysage";
+      btn.classList.toggle("is-paysage", cur === "paysage");
+      const lab = toPaysage ? "Passer en paysage" : "Passer en portrait";
+      btn.title = lab;
+      btn.setAttribute("aria-label", lab);
+    }
+
+    function toggleHudOrient() {
+      if (!state.lists.length || combining()) return;
+      const next = hudPreviewOrient() === "paysage" ? "portrait" : "paysage";
+      const targets = selectedLists();
+      if (!targets.length) return;
+      pushHist();
+      state.orient = next;
+      targets.forEach((l) => { l.orient = next; });
+      renderPreview();
+      syncOrientRadios();
+      syncOrientHint();
     }
 
     function defaultRowEm() {
       if (state.rowY > 0) return state.rowY;
       return combining() || state.marge === "etroites" ? 0.26 : state.marge === "larges" ? 0.5 : 0.38;
+    }
+
+    function tableScaleTargets(list) {
+      if (zoneAllPages()) return state.lists.filter((l) => !isBlankList(l));
+      const sel = selectedLists().filter((l) => !isBlankList(l));
+      if (sel.length > 1) return sel;
+      return list && !isBlankList(list) ? [list] : [];
+    }
+
+    function ensureListWidths(list) {
+      const all = selectedCols(list);
+      if (!all.length) return all;
+      if (!list.widths) list.widths = {};
+      const w = colWidths(list, all);
+      all.forEach((i, k) => {
+        if (!(Number(list.widths[i]) > 0)) list.widths[i] = w[k];
+      });
+      return all;
+    }
+
+    function scaleListFrame(list, fx, fy, opts) {
+      if (!list) return;
+      const scaleW = opts && opts.scaleW;
+      const scaleH = opts && opts.scaleH;
+      if (scaleW && fx > 0) {
+        const all = ensureListWidths(list);
+        all.forEach((i) => {
+          const v = Number(list.widths[i]);
+          if (v > 0) list.widths[i] = Math.round(v * fx * 1000) / 1000;
+        });
+        const tw = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
+        list.tableW = Math.round(Math.max(12, Math.min(400, tw * fx)) * 100) / 100;
+      }
+      if (scaleH && fy > 0) {
+        if (!list.rowH) list.rowH = {};
+        visibleRowIndices(list).forEach((ri) => {
+          const cur = rowEmOf(list, ri);
+          list.rowH[ri] = Math.round(Math.max(0.06, Math.min(2.4, cur * fy)) * 1000) / 1000;
+        });
+      }
     }
 
     function rowEmOf(list, ri) {
@@ -5431,7 +5700,7 @@
         state.lists.forEach((lst) => applyStyleColumns(lst, data));
       }
       if (opts.render !== false) renderAll();
-      announce("Modèle de mise en page appliqué.");
+      announce("Style de mise en page appliqué.");
       return true;
     }
 
@@ -6380,6 +6649,7 @@
           hlText: l.hlText || {},
           widths: l.widths || {},
           rowH: l.rowH || {},
+          tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
           sample: Boolean(l.sample),
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
           orient: listOrient(l),
@@ -6449,7 +6719,7 @@
         if (state.lists.length) applyStyle(style, { hist: items.length ? false : true });
         else {
           heldStyle = style;
-          showError("Modèle mémorisé : il s’appliquera au prochain fichier chargé.");
+          showError("Style mémorisé : il s’appliquera au prochain fichier chargé.");
         }
       }
     }
@@ -6670,7 +6940,7 @@
       renderAll();
     });
     $("sheets").addEventListener("mousedown", (e) => {
-      if (state.activeFluo && !e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del") && fluoHit(e)) {
+      if (state.activeFluo && !e.target.closest(".row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del") && fluoHit(e)) {
         e.preventDefault();
       }
       const handle = e.target.closest(".col-resizer");
@@ -6796,6 +7066,113 @@
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
+    (function bindTableFramePointer() {
+      const sheets = $("sheets");
+      let drag = null;
+      const cursorFor = (dir) => {
+        if (dir === "e" || dir === "w") return "ew";
+        if (dir === "n" || dir === "s") return "ns";
+        if (dir === "nw" || dir === "se") return "nwse";
+        return "nesw";
+      };
+      const clearBody = () => {
+        document.body.classList.remove("is-table-resizing", "is-table-resizing-ew", "is-table-resizing-ns", "is-table-resizing-nwse", "is-table-resizing-nesw");
+      };
+      const applyLive = (d, fx, fy) => {
+        if (d.scaleW) d.wrap.style.width = (Math.max(12, Math.min(400, d.tableW * fx))).toFixed(2) + "%";
+        if (d.scaleH) {
+          d.rows.forEach((r) => {
+            const next = Math.max(0.06, Math.min(2.4, r.em * fy));
+            if (r.el) r.el.style.setProperty("--row-y", next + "em");
+          });
+        }
+      };
+      const onMove = (e) => {
+        if (!drag) return;
+        let fx = 1;
+        let fy = 1;
+        if (drag.scaleW) {
+          const sign = drag.dir.indexOf("w") >= 0 ? -1 : 1;
+          fx = Math.max(0.15, Math.min(6, (drag.w0 + sign * (e.clientX - drag.x0)) / drag.w0));
+        }
+        if (drag.scaleH) {
+          const sign = drag.dir.indexOf("n") >= 0 ? -1 : 1;
+          fy = Math.max(0.15, Math.min(6, (drag.h0 + sign * (e.clientY - drag.y0)) / drag.h0));
+        }
+        drag.fx = fx;
+        drag.fy = fy;
+        applyLive(drag, fx, fy);
+        if (drag.fitPending) return;
+        drag.fitPending = true;
+        requestAnimationFrame(() => {
+          if (drag) drag.fitPending = false;
+          syncStageHeight();
+          markSheetOverflow();
+        });
+      };
+      const stop = () => {
+        if (!drag) return;
+        const d = drag;
+        drag = null;
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", stop);
+        document.removeEventListener("pointercancel", stop);
+        clearBody();
+        const fx = d.fx != null ? d.fx : 1;
+        const fy = d.fy != null ? d.fy : 1;
+        const useW = d.scaleW && Math.abs(fx - 1) > 0.004;
+        const useH = d.scaleH && Math.abs(fy - 1) > 0.004;
+        if (!useW && !useH) {
+          discardLastHist();
+          return;
+        }
+        tableScaleTargets(d.list).forEach((lst) => {
+          scaleListFrame(lst, useW ? fx : 1, useH ? fy : 1, { scaleW: useW, scaleH: useH });
+        });
+        renderPreview();
+      };
+      sheets.addEventListener("pointerdown", (e) => {
+        const handle = e.target.closest(".table-frame-h");
+        if (!handle) return;
+        const block = handle.closest(".list-block.is-editing");
+        if (!block) return;
+        const wrap = handle.closest(".liste-wrap");
+        const table = wrap && wrap.querySelector("table.liste");
+        const list = state.lists.find((l) => String(l.id) === String(block.dataset.lid));
+        if (!wrap || !table || !list || isBlankList(list)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const dir = handle.dataset.dir || "se";
+        const box = table.getBoundingClientRect();
+        pushHist();
+        drag = {
+          pointerId: e.pointerId,
+          dir: dir,
+          scaleW: dir.indexOf("e") >= 0 || dir.indexOf("w") >= 0,
+          scaleH: dir.indexOf("n") >= 0 || dir.indexOf("s") >= 0,
+          x0: e.clientX,
+          y0: e.clientY,
+          w0: box.width || 1,
+          h0: box.height || 1,
+          tableW: Number(list.tableW) > 0 ? Number(list.tableW) : 100,
+          fx: 1,
+          fy: 1,
+          list: list,
+          wrap: wrap,
+          table: table,
+          rows: visibleRowIndices(list).map((ri) => ({
+            ri: ri,
+            em: rowEmOf(list, ri),
+            el: table.querySelector('tr[data-ri="' + ri + '"]'),
+          })),
+        };
+        try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+        document.body.classList.add("is-table-resizing", "is-table-resizing-" + cursorFor(dir));
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", stop);
+        document.addEventListener("pointercancel", stop);
+      });
+    })();
     (function bindZonePointer() {
       const sheets = $("sheets");
       const rectEl = $("selRect");
@@ -6803,7 +7180,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -7054,7 +7431,7 @@
         if (tr) tr.classList.add("is-row-drag");
         return;
       }
-      if (e.target.closest(".col-resizer") || e.target.closest(".col-del") || e.target.closest(".row-resizer") || e.target.closest(".row-del")) {
+      if (e.target.closest(".col-resizer") || e.target.closest(".col-del") || e.target.closest(".row-resizer") || e.target.closest(".row-del") || e.target.closest(".table-frame-h")) {
         e.preventDefault();
         return;
       }
@@ -7210,7 +7587,7 @@
       }
       if (state.activeFluo) {
         if (e.detail > 1) return;
-        if (e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del")) return;
+        if (e.target.closest(".row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del")) return;
         const hit = fluoHit(e);
         if (!hit) return;
         e.preventDefault();
@@ -7226,7 +7603,7 @@
         return;
       }
       if (!state.activeStamp) return;
-      if (e.target.closest("[contenteditable=true], .row-handle, .row-resizer, .row-del, .col-resizer, .col-del")) return;
+      if (e.target.closest("[contenteditable=true], .row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del")) return;
       const tr = e.target.closest("tr[data-lid][data-ri]");
       if (!tr) return;
       const list = state.lists.find((l) => String(l.id) === tr.dataset.lid);
@@ -7243,7 +7620,7 @@
 
     $("sheets").addEventListener("dblclick", (e) => {
       if (!state.activeFluo) return;
-      if (e.target.closest(".row-handle, .row-resizer, .row-del, .col-resizer, .col-del, th")) return;
+      if (e.target.closest(".row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del, th")) return;
       const hit = fluoHit(e);
       if (!hit) return;
       e.preventDefault();
@@ -7278,7 +7655,7 @@
       const targets = selectedLists();
       if (!targets.length) return;
       pushHist();
-      targets.forEach((list) => { list.widths = {}; });
+      targets.forEach((list) => { list.widths = {}; list.tableW = 100; });
       renderPreview();
     });
 
@@ -7471,6 +7848,8 @@
       $("loadFile").value = "";
     });
     $("styleBtn").addEventListener("click", openStyleModal);
+    const pageOrientToggle = $("pageOrientToggle");
+    if (pageOrientToggle) pageOrientToggle.addEventListener("click", toggleHudOrient);
     $("styleCancel").addEventListener("click", closeStyleModal);
     $("styleSave").addEventListener("click", saveStyleFile);
     $("styleLoad").addEventListener("click", () => $("styleFile").click());
@@ -7518,10 +7897,12 @@
       if (printBtn.disabled) return;
       const prev = document.title;
       document.title = " ";
-      const restore = () => { document.title = prev; window.removeEventListener("afterprint", restore); };
+      const restore = () => {
+        document.title = prev || "EpiCSV";
+        window.removeEventListener("afterprint", restore);
+      };
       window.addEventListener("afterprint", restore);
-      window.print();
-      setTimeout(restore, 1500);
+      try { window.print(); } finally { setTimeout(restore, 2000); }
     }
     printBtn.addEventListener("click", printLists);
     if (dockPrintBtn) dockPrintBtn.addEventListener("click", printLists);
