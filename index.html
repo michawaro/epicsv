@@ -456,10 +456,10 @@
     }
     .page-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 22px;
+      grid-template-columns: 22px minmax(0, 1fr) 22px;
       gap: 4px 8px;
       align-items: center;
-      padding: 8px 8px 8px 12px;
+      padding: 8px 8px 8px 10px;
       border-radius: 16px;
       background: rgba(255,255,255,0.16);
       color: var(--cream);
@@ -475,12 +475,70 @@
       font-weight: 600;
       opacity: 0.75;
     }
+    .page-row.is-picked {
+      box-shadow: inset 0 0 0 1.5px rgba(212, 236, 79, 0.55);
+    }
+    .page-row.is-on.is-picked {
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.62), inset 0 0 0 3px rgba(212, 236, 79, 0.35);
+    }
+    .page-check {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      justify-self: center;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--seal);
+      cursor: pointer;
+    }
     .page-name {
       display: flex;
       align-items: center;
       min-width: 0;
+      grid-column: 2;
       font-size: 12px;
       font-weight: 800;
+    }
+    .page-sel-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 8px;
+    }
+    .page-sel-bar button {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: var(--seal);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .page-gap-add {
+      display: flex;
+      justify-content: center;
+      margin: -2px 0;
+    }
+    .page-gap-add button {
+      width: 22px;
+      height: 22px;
+      border: 1.5px dashed rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 0;
+      cursor: pointer;
+    }
+    .page-gap-add button:hover {
+      background: rgba(255, 255, 255, 0.28);
+      border-color: #fff;
     }
     .page-name-field {
       width: 100%;
@@ -502,27 +560,14 @@
     }
     .page-name-field::placeholder { color: inherit; opacity: 0.45; }
     .page-status {
-      grid-column: 1;
+      grid-column: 2;
       font-style: normal;
       font-size: 11px;
       font-weight: 700;
       opacity: 0.8;
     }
-    .page-activate {
-      grid-column: 1;
-      justify-self: start;
-      border: 1.5px solid rgba(255, 255, 255, 0.5);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      font: inherit;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
     .page-row .x {
-      grid-column: 2;
+      grid-column: 3;
       grid-row: 1 / span 2;
       align-self: center;
     }
@@ -587,6 +632,21 @@
     .page-plus:hover {
       border-color: var(--teal-deep);
       background: #fff;
+    }
+    .page-insert {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: auto;
+      flex: none;
+      min-height: 28px;
+    }
+    .page-plus.page-plus-insert {
+      width: 28px;
+      height: 28px;
+      margin: 0;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(14, 143, 140, 0.12);
     }
 
     .field {
@@ -982,6 +1042,21 @@
       cursor: pointer;
     }
     .sel-bar button:hover { background: rgba(14, 143, 140, 0.2); }
+    .sel-bar .sel-del {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      background: rgba(196, 92, 74, 0.12);
+      color: #9a3328;
+    }
+    .sel-bar .sel-del:hover { background: rgba(196, 92, 74, 0.22); }
+    .sel-bar .sel-del svg { width: 16px; height: 16px; display: block; }
+    .sel-bar .sel-del:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
     .sel-bar .sel-x {
       background: transparent;
       padding: 4px 8px;
@@ -1345,7 +1420,7 @@
     .sheets {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 10px;
       align-items: center;
       position: relative;
       z-index: 1;
@@ -2453,7 +2528,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-sheet-del, .blank-hint { display: none !important; }
+      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint { display: none !important; }
       .list-block.is-editing { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
@@ -2516,8 +2591,12 @@
 
       <section class="block" id="filesBlock" hidden>
         <h2>Pages</h2>
-        <p class="hint-note" id="pagesHint" hidden style="margin:0 0 8px">Titre, commentaires et colonnes s’appliquent à la page active.</p>
+        <p class="hint-note" id="pagesHint" hidden style="margin:0 0 8px">Titre, commentaires, orientation et colonnes s’appliquent aux pages cochées.</p>
         <div class="page-list" id="chips"></div>
+        <div class="page-sel-bar" id="pageSelBar" hidden>
+          <button type="button" id="selAllLists">Tout sélectionner</button>
+          <button type="button" id="selNoneLists">Tout désélectionner</button>
+        </div>
       </section>
 
       <section class="block">
@@ -2536,6 +2615,7 @@
           <label><input type="radio" name="orient" value="portrait" /><span>Portrait</span></label>
           <label><input type="radio" name="orient" value="paysage" /><span>Paysage</span></label>
         </div>
+        <p class="hint-note" id="orientHint" hidden style="margin:8px 0 0"></p>
       </section>
 
       <section class="block" id="combineBlock" hidden>
@@ -2753,6 +2833,9 @@
       </select>
     </label>
     <label id="selAllWrap" hidden><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
+    <button type="button" class="sel-del" id="selDel" title="Supprimer la sélection (Suppr)" aria-label="Supprimer les lignes ou colonnes sélectionnées">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 8h12l-1 13H7L6 8z"/></svg>
+    </button>
     <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection">×</button>
   </div>
   <div class="sel-menu no-print" id="selMenu" hidden role="menu">
@@ -2783,6 +2866,18 @@
         <button class="btn btn-print" id="colDelOne" type="button">Cette page</button>
         <button class="btn btn-ghost" id="colDelAll" type="button">Toutes les pages</button>
         <button class="btn btn-ghost span-all" id="colDelCancel" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back no-print" id="zoneDelModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="zoneDelTitle">
+      <h3 id="zoneDelTitle">Supprimer la sélection ?</h3>
+      <p id="zoneDelText">Supprimer aussi sur les autres pages ? Seules les lignes ou colonnes correspondantes seront retirées.</p>
+      <div class="modal-actions">
+        <button class="btn btn-print" id="zoneDelOne" type="button">Cette page</button>
+        <button class="btn btn-ghost" id="zoneDelAll" type="button">Toutes les pages</button>
+        <button class="btn btn-ghost span-all" id="zoneDelCancel" type="button">Annuler</button>
       </div>
     </div>
   </div>
@@ -2903,6 +2998,7 @@
     const state = {
       lists: [],
       activeId: null,
+      selectedIds: [],
       marge: "moyennes",
       orient: "auto",
       combine: false,
@@ -3006,6 +3102,110 @@
 
     function activeList() {
       return state.lists.find((l) => l.id === state.activeId) || null;
+    }
+
+    function normalizeOrient(v) {
+      return v === "portrait" || v === "paysage" || v === "auto" ? v : "";
+    }
+
+    function listOrient(list) {
+      return normalizeOrient(list && list.orient) || normalizeOrient(state.orient) || "auto";
+    }
+
+    function defaultListOrient() {
+      const a = activeList();
+      return normalizeOrient(a && a.orient) || normalizeOrient(state.orient) || "auto";
+    }
+
+    function prunePageSelection() {
+      const valid = new Set(state.lists.map((l) => l.id));
+      if (!Array.isArray(state.selectedIds)) state.selectedIds = [];
+      state.selectedIds = state.selectedIds.filter((id) => valid.has(id));
+    }
+
+    function checkedLists() {
+      prunePageSelection();
+      const ids = new Set(state.selectedIds);
+      return state.lists.filter((l) => ids.has(l.id));
+    }
+
+    function selectedLists() {
+      const checked = checkedLists();
+      if (checked.length) return checked;
+      const active = activeList();
+      return active ? [active] : [];
+    }
+
+    function primaryList() {
+      const sel = selectedLists();
+      const active = activeList();
+      if (active && sel.some((l) => l.id === active.id)) return active;
+      return sel[0] || active || null;
+    }
+
+    function isListChecked(id) {
+      return (state.selectedIds || []).indexOf(id) >= 0;
+    }
+
+    function setListChecked(id, on) {
+      prunePageSelection();
+      const has = state.selectedIds.indexOf(id) >= 0;
+      if (on && !has) state.selectedIds.push(id);
+      if (!on && has) state.selectedIds = state.selectedIds.filter((x) => x !== id);
+    }
+
+    function pageSizeOf(orient) {
+      return orient === "paysage"
+        ? { w: "297mm", h: "210mm", css: "A4 landscape" }
+        : { w: "210mm", h: "297mm", css: "A4 portrait" };
+    }
+
+    function applySheetSize(el, orient) {
+      if (!el) return;
+      const size = pageSizeOf(orient);
+      el.style.setProperty("--page-w", size.w);
+      el.style.setProperty("--page-h", size.h);
+      el.classList.toggle("is-paysage", orient === "paysage");
+      el.classList.toggle("is-portrait", orient !== "paysage");
+    }
+
+    function resolvedOrient(list, colCount) {
+      if (combining()) return "paysage";
+      let orient = listOrient(list);
+      if (orient === "auto") orient = colCount >= 8 ? "paysage" : "portrait";
+      return orient;
+    }
+
+    function titlesOf(list) {
+      if (!list || !Array.isArray(list.titles) || !list.titles.length) return [""];
+      return list.titles;
+    }
+
+    function sharedTitleValue(targets, i) {
+      if (!targets.length) return { value: "", mixed: false };
+      const first = String(titlesOf(targets[0])[i] != null ? titlesOf(targets[0])[i] : "");
+      const mixed = targets.some((l) => String(titlesOf(l)[i] != null ? titlesOf(l)[i] : "") !== first);
+      return { value: mixed ? "" : first, mixed: mixed };
+    }
+
+    function setTitlesAt(targets, i, value) {
+      targets.forEach((l) => {
+        if (!Array.isArray(l.titles) || !l.titles.length) l.titles = [""];
+        while (l.titles.length <= i) l.titles.push("");
+        l.titles[i] = value;
+      });
+    }
+
+    function titleSlotCount(targets) {
+      return Math.max(1, ...targets.map((l) => (Array.isArray(l.titles) && l.titles.length) || 1));
+    }
+
+    function mapOrderKey(source, dest, key) {
+      if (key === "rq" || key === "marks") return key;
+      if (!source || !dest || dest === source) return key;
+      const name = source.headers[key];
+      const j = dest.headers.findIndex((h) => foldHeader(h) === foldHeader(name));
+      return j >= 0 ? j : null;
     }
 
     function setActiveList(id, opts) {
@@ -3144,7 +3344,12 @@
       state.badges = s.badges || [];
       state.badgeShape = normalizeBadgeShape(s.badgeShape);
       state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols : [];
-      state.lists.forEach((l) => { if (l) l.marks = hydrateMarks(l.marks); });
+      state.lists.forEach((l) => {
+        if (!l) return;
+        l.marks = hydrateMarks(l.marks);
+        if (!normalizeOrient(l.orient)) l.orient = normalizeOrient(state.orient) || "auto";
+      });
+      prunePageSelection();
       histBusy = false;
     }
 
@@ -3376,6 +3581,7 @@
         rowH: {},
         sample: false,
         blank: false,
+        orient: "auto",
       };
     }
 
@@ -3400,16 +3606,21 @@
       return list;
     }
 
-    async function addBlankPage() {
+    async function addBlankPage(index) {
       if (!state.lists.length) return;
       pushHist();
       const list = makeBlankList(nextBlankName());
-      state.lists.push(list);
+      list.orient = defaultListOrient();
+      const at = Number.isInteger(index) ? Math.max(0, Math.min(state.lists.length, index)) : state.lists.length;
+      state.lists.splice(at, 0, list);
       state.activeId = list.id;
+      state.selectedIds = [list.id];
       renderAll();
       if (isPhoneLayout()) showPreview();
       revealActivePage();
-      announce("Page blanche ajoutée. Déposez un fichier ou collez un tableau.");
+      announce(at < state.lists.length - 1
+        ? "Page blanche intercalée. Déposez un fichier ou collez un tableau."
+        : "Page blanche ajoutée. Déposez un fichier ou collez un tableau.");
     }
 
     function gridFromParsed(name, grid) {
@@ -3450,6 +3661,7 @@
     function addListFromGrid(name, grid) {
       const { headers, rows } = gridFromParsed(name, grid);
       const list = makeList(name, headers, rows);
+      list.orient = defaultListOrient();
       applySharedCols(list);
       state.lists.push(list);
       state.activeId = list.id;
@@ -3496,6 +3708,44 @@
       Object.keys(next).forEach((k) => { bag[k] = next[k]; });
     }
 
+    function remapBagAfterRowDeletes(bag, removedSet) {
+      if (!bag || !removedSet || !removedSet.size) return;
+      const next = {};
+      const removed = [...removedSet].sort((a, b) => a - b);
+      Object.keys(bag).forEach((k) => {
+        const i = Number(k);
+        if (!Number.isInteger(i) || removedSet.has(i)) return;
+        let shift = 0;
+        for (let r = 0; r < removed.length; r++) {
+          if (removed[r] < i) shift++;
+          else break;
+        }
+        if (bag[k]) next[i - shift] = bag[k];
+      });
+      Object.keys(bag).forEach((k) => { delete bag[k]; });
+      Object.keys(next).forEach((k) => { bag[k] = next[k]; });
+    }
+
+    function remapHlAfterRowDeletes(bag, removedSet) {
+      if (!bag || !removedSet || !removedSet.size) return;
+      const next = {};
+      const removed = [...removedSet].sort((a, b) => a - b);
+      Object.keys(bag).forEach((k) => {
+        const parts = String(k).split(":");
+        const i = Number(parts[0]);
+        const rest = parts.slice(1).join(":");
+        if (!Number.isInteger(i) || removedSet.has(i)) return;
+        let shift = 0;
+        for (let r = 0; r < removed.length; r++) {
+          if (removed[r] < i) shift++;
+          else break;
+        }
+        next[(i - shift) + ":" + rest] = bag[k];
+      });
+      Object.keys(bag).forEach((k) => { delete bag[k]; });
+      Object.keys(next).forEach((k) => { bag[k] = next[k]; });
+    }
+
     function hydrateList(raw) {
       const headers = Array.isArray(raw.headers) ? raw.headers.slice() : [];
       const rows = Array.isArray(raw.rows) ? raw.rows.map((r) => (Array.isArray(r) ? r.slice() : [])) : [];
@@ -3517,6 +3767,7 @@
       });
       if (raw.sample) list.sample = true;
       list.blank = Boolean(raw.blank) || (!headers.length && !rows.length);
+      list.orient = normalizeOrient(raw.orient) || normalizeOrient(state.orient) || "auto";
       list.rowH = {};
       Object.keys(raw.rowH || {}).forEach((k) => {
         const n = Number(raw.rowH[k]);
@@ -3575,6 +3826,84 @@
       list.widths = nextWidths;
       remapHlCols(list.hl, index);
       remapHlCols(list.hlText, index);
+    }
+
+    function removeRowsFromList(list, ris) {
+      if (!list || !Array.isArray(list.rows)) return false;
+      const unique = [...new Set((ris || []).map(Number).filter((i) => Number.isInteger(i) && i >= 0 && i < list.rows.length))];
+      if (!unique.length) return false;
+      const removed = new Set(unique);
+      unique.sort((a, b) => b - a).forEach((ri) => { list.rows.splice(ri, 1); });
+      remapBagAfterRowDeletes(list.hidden, removed);
+      remapBagAfterRowDeletes(list.notes, removed);
+      remapBagAfterRowDeletes(list.marks, removed);
+      remapBagAfterRowDeletes(list.rowH, removed);
+      remapHlAfterRowDeletes(list.hl, removed);
+      remapHlAfterRowDeletes(list.hlText, removed);
+      return true;
+    }
+
+    function rowIdentity(list, ri) {
+      const row = list && list.rows && list.rows[ri];
+      if (!row) return "";
+      let nom = "";
+      let prenom = "";
+      (list.headers || []).forEach((_, i) => {
+        const k = headerKindOf(list, i);
+        if (k === "nom" && !nom) nom = foldHeader(row[i]);
+        if (k === "prenom" && !prenom) prenom = foldHeader(row[i]);
+      });
+      if (nom || prenom) return nom + "|" + prenom;
+      return "";
+    }
+
+    function matchRowsOnList(src, ris, dest) {
+      if (!src || !dest) return [];
+      const visSrc = visibleRowIndices(src);
+      const visDest = visibleRowIndices(dest);
+      const used = new Set();
+      const out = [];
+      (ris || []).forEach((ri) => {
+        const id = rowIdentity(src, ri);
+        if (id) {
+          const hit = dest.rows.findIndex((_, i) => !used.has(i) && rowIdentity(dest, i) === id);
+          if (hit >= 0) {
+            used.add(hit);
+            out.push(hit);
+            return;
+          }
+        }
+        const pos = visSrc.indexOf(ri);
+        if (pos >= 0 && visDest[pos] != null && !used.has(visDest[pos])) {
+          used.add(visDest[pos]);
+          out.push(visDest[pos]);
+        }
+      });
+      return out;
+    }
+
+    function matchColsOnList(src, indices, dest) {
+      if (!src || !dest) return [];
+      const used = new Set();
+      const out = [];
+      (indices || []).forEach((i) => {
+        if (!Number.isInteger(i) || i < 0 || i >= src.headers.length) return;
+        const name = src.headers[i];
+        if (src.custom[i]) {
+          const j = dest.headers.findIndex((h, k) => !used.has(k) && dest.custom[k] && foldHeader(h) === foldHeader(name));
+          if (j >= 0) {
+            used.add(j);
+            out.push(j);
+          }
+          return;
+        }
+        const j = findHeaderIndex(dest, { name: name, kind: headerKindOf(src, i) }, used);
+        if (j >= 0) {
+          used.add(j);
+          out.push(j);
+        }
+      });
+      return out;
     }
 
     function removeCustomNamed(list, name) {
@@ -3770,8 +4099,8 @@
       return state.combine && state.lists.length >= 2;
     }
 
-    function layoutFor(colCount, nOnPage) {
-      let orient = combining() ? "paysage" : state.orient;
+    function layoutFor(colCount, nOnPage, list) {
+      let orient = combining() ? "paysage" : listOrient(list);
       if (orient === "auto") orient = colCount >= 8 ? "paysage" : "portrait";
       let font = 9.5;
       if (combining()) {
@@ -4117,7 +4446,7 @@
       if (!layout.length) {
         return '<p class="hint-note" style="color:var(--ink-soft)">Aucune colonne sélectionnée.</p>';
       }
-      const lay = layoutFor(Math.max(cols.length, 1), nOnPage);
+      const lay = layoutFor(Math.max(cols.length, 1), nOnPage, list);
       const widths = cols.length ? colWidths(list, cols) : [];
       const kinds = {};
       cols.forEach((i) => {
@@ -4316,20 +4645,31 @@
       return out;
     }
 
-    function applyPageStyle(orient, marge) {
-      const size = orient === "paysage" ? "A4 landscape" : "A4 portrait";
-      const w = orient === "paysage" ? "297mm" : "210mm";
-      const h = orient === "paysage" ? "210mm" : "297mm";
+    function applyPageStyle(orient, marge, sheetOrients) {
+      const size = pageSizeOf(orient);
       document.documentElement.style.setProperty("--page-margin", marge + "mm");
-      document.documentElement.style.setProperty("--page-w", w);
-      document.documentElement.style.setProperty("--page-h", h);
+      document.documentElement.style.setProperty("--page-w", size.w);
+      document.documentElement.style.setProperty("--page-h", size.h);
       const autoY = combining() || state.marge === "etroites" ? 0.26 : state.marge === "larges" ? 0.5 : 0.38;
       const rowY = state.rowY > 0 ? state.rowY : autoY;
       const rowX = combining() || state.marge === "etroites" ? "0.38em" : state.marge === "larges" ? "0.9em" : "0.7em";
       document.documentElement.style.setProperty("--row-y", rowY + "em");
       document.documentElement.style.setProperty("--row-x", rowX);
-      pageStyle.textContent =
-        "@media print { @page { size: " + size + "; margin: " + marge + "mm; } }";
+      const unique = [];
+      (sheetOrients && sheetOrients.length ? sheetOrients : [orient]).forEach((o) => {
+        const r = o === "paysage" ? "paysage" : "portrait";
+        if (unique.indexOf(r) < 0) unique.push(r);
+      });
+      let css = "@media print { @page { size: " + size.css + "; margin: " + marge + "mm; }";
+      if (unique.length > 1) {
+        css +=
+          " @page epicsv-portrait { size: A4 portrait; margin: " + marge + "mm; }" +
+          " @page epicsv-paysage { size: A4 landscape; margin: " + marge + "mm; }" +
+          " .sheet.is-portrait { page: epicsv-portrait; }" +
+          " .sheet.is-paysage { page: epicsv-paysage; }";
+      }
+      css += " }";
+      pageStyle.textContent = css;
     }
 
     function sheetCaption(orient, margeMm) {
@@ -4365,12 +4705,20 @@
       const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
       const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
       const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
-      const lay = layoutFor(maxCols, nFirst);
+      const ref = (groups[0] && groups[0][0]) || activeList();
+      const orients = groups.map((group) => {
+        const cols = Math.max(maxCols, ...group.map((l) => selectedCols(l).length));
+        const nOn = group.filter((l) => !isBlankList(l)).length || 1;
+        return layoutFor(cols, nOn, group[0]).orient;
+      });
+      const mixed = orients.length > 1 && orients.some((o) => o !== orients[0]);
+      const lay = layoutFor(maxCols, nFirst, ref);
       hud.hidden = false;
       hud.classList.toggle("is-overflow", over > 0);
-      hud.textContent = over
-        ? sheetCaption(lay.orient, lay.marge) + " · dépasse la feuille"
+      const cap = mixed
+        ? "A4 mixte · portrait et paysage · marges " + lay.marge + " mm"
         : sheetCaption(lay.orient, lay.marge);
+      hud.textContent = over ? cap + " · dépasse la feuille" : cap;
     }
 
     function defaultRowEm() {
@@ -4520,8 +4868,7 @@
 
     function setZone(next, opts) {
       zoneSel = next;
-      if (next && opts && opts.rect) zoneDim = inferZoneDim(opts.rect);
-      else if (next && (!opts || opts.bar !== false)) zoneDim = pickZoneDim(zoneDim);
+      if (next && (!opts || opts.bar !== false)) zoneDim = pickZoneDim("w");
       else if (!next) zoneDim = "w";
       paintZone(opts);
     }
@@ -4552,17 +4899,8 @@
       return hasW ? "w" : "h";
     }
 
-    function inferZoneDim(r) {
-      const list = zoneList();
-      const nCols = zoneDataCols(list).length;
-      const nRows = zoneSel && zoneSel.ris ? zoneSel.ris.length : 0;
-      if (nRows < 1) return nCols ? "w" : "h";
-      if (nCols < 1) return "h";
-      if (nRows <= 1 && nCols >= 1) return "w";
-      if (nCols <= 1 && nRows >= 1) return "h";
-      const dw = Math.abs((r && r.right) - (r && r.left)) || 0;
-      const dh = Math.abs((r && r.bottom) - (r && r.top)) || 0;
-      return dw >= dh ? "w" : "h";
+    function inferZoneDim() {
+      return pickZoneDim("w");
     }
 
     function setZoneDim(next) {
@@ -4616,7 +4954,7 @@
         return cssPx * 25.4 / 96;
       }
       const cols = list ? selectedCols(list).length : 6;
-      const orient = combining() ? "paysage" : (state.orient === "auto" ? (cols >= 8 ? "paysage" : "portrait") : state.orient);
+      const orient = resolvedOrient(list, cols);
       const pageW = orient === "paysage" ? 297 : 210;
       const inner = pageW - 2 * (MARGES[state.marge] || 14);
       if (!combining()) return inner;
@@ -4875,6 +5213,59 @@
       renderPreview();
     }
 
+    function zoneDeleteKind() {
+      const list = zoneList();
+      if (!list || !zoneSel) return null;
+      const dim = pickZoneDim(zoneDim);
+      if (dim === "h") return (zoneSel.ris && zoneSel.ris.length) ? "rows" : null;
+      return zoneDataCols(list).length ? "cols" : null;
+    }
+
+    function applyZoneDelete(scope) {
+      const list = zoneList();
+      const kind = zoneDeleteKind();
+      if (!list || !kind) return;
+      const ris = (zoneSel.ris || []).slice();
+      const cols = zoneDataCols(list).slice();
+      const colNames = cols.map((i) => list.headers[i]);
+      const plan = [{ list: list, rows: ris, cols: cols }];
+      if (scope === "all") {
+        state.lists.forEach((lst) => {
+          if (lst === list || isBlankList(lst)) return;
+          plan.push({
+            list: lst,
+            rows: kind === "rows" ? matchRowsOnList(list, ris, lst) : [],
+            cols: kind === "cols" ? matchColsOnList(list, cols, lst) : [],
+          });
+        });
+      }
+      pushHist();
+      let ok = false;
+      plan.forEach((p) => {
+        if (kind === "rows") {
+          if (removeRowsFromList(p.list, p.rows)) ok = true;
+        } else {
+          p.cols.slice().sort((a, b) => b - a).forEach((i) => {
+            removeColumnFromList(p.list, i);
+            ok = true;
+          });
+        }
+      });
+      if (!ok) {
+        discardLastHist();
+        return;
+      }
+      if (kind === "cols" && scope === "all") {
+        colNames.forEach((name) => {
+          const folded = foldHeader(name);
+          state.sharedCols = (state.sharedCols || []).filter((n) => foldHeader(n) !== folded);
+        });
+      }
+      clearZone();
+      renderAll();
+      announce(kind === "rows" ? "Lignes supprimées" : "Colonnes supprimées");
+    }
+
     function showSelMenu(x, y) {
       const menu = $("selMenu");
       if (!menu || !zoneSel) return;
@@ -4921,7 +5312,7 @@
       }
       if (parts.page) {
         out.settings.marge = state.marge;
-        out.settings.orient = state.orient;
+        out.settings.orient = listOrient(primaryList() || list) || state.orient;
         out.settings.vlines = state.vlines;
         out.settings.numbering = state.numbering;
         out.settings.numberFrom = state.numberFrom;
@@ -5009,7 +5400,10 @@
       }
       if (parts.page) {
         if (s.marge) state.marge = s.marge;
-        if (s.orient) state.orient = s.orient;
+        if (s.orient) {
+          state.orient = s.orient;
+          state.lists.forEach((l) => { l.orient = s.orient; });
+        }
         if (s.vlines != null) state.vlines = s.vlines !== false;
         if (s.numbering) state.numbering = s.numbering;
         if (s.numberFrom) state.numberFrom = s.numberFrom;
@@ -5113,12 +5507,18 @@
       const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
       const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
       const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
-      const lay = layoutFor(maxCols, nFirst);
-      applyPageStyle(lay.orient, lay.marge);
+      const firstRef = (groups[0] && groups[0][0]) || null;
+      const firstLay = layoutFor(maxCols, nFirst, firstRef);
+      const sheetOrients = [];
 
-      groups.forEach((group) => {
+      groups.forEach((group, gi) => {
+        const cols = Math.max(0, ...group.map((l) => selectedCols(l).length));
+        const nOn = group.filter((l) => !isBlankList(l)).length || 1;
+        const lay = layoutFor(cols || maxCols, nOn, group[0]);
+        sheetOrients.push(lay.orient);
         const frame = document.createElement("div");
         frame.className = "sheet-frame";
+        applySheetSize(frame, lay.orient);
         const hold = document.createElement("div");
         hold.className = "sheet-stage";
         const paper = document.createElement("div");
@@ -5130,7 +5530,8 @@
         limit.setAttribute("aria-hidden", "true");
         limit.innerHTML = "<span>Limite A4</span>";
         const sheet = document.createElement("div");
-        sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass();
+        sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass() +
+          (lay.orient === "paysage" ? " is-paysage" : " is-portrait");
         const grid = document.createElement("div");
         grid.className = "sheet-grid";
         grid.dataset.n = String(group.length);
@@ -5141,13 +5542,102 @@
         hold.appendChild(sheet);
         frame.appendChild(hold);
         sheetsEl.appendChild(frame);
+        if (gi < groups.length - 1) {
+          const at = state.lists.indexOf(group[group.length - 1]) + 1;
+          sheetsEl.appendChild(makePreviewInsert(at));
+        }
       });
 
+      applyPageStyle(firstLay.orient, firstLay.marge, sheetOrients);
       $("orientBlock").hidden = combining();
+      syncOrientHint();
       requestAnimationFrame(() => {
         fitStage();
         paintZone();
       });
+    }
+
+    function makePreviewInsert(index) {
+      const wrap = document.createElement("div");
+      wrap.className = "page-insert no-print";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "page-plus page-plus-insert";
+      btn.title = "Insérer une page blanche ici";
+      btn.setAttribute("aria-label", "Insérer une page blanche ici");
+      btn.textContent = "+";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        addBlankPage(index).catch((err) => showError(err.message || String(err)));
+      });
+      wrap.appendChild(btn);
+      return wrap;
+    }
+
+    function makePanelInsert(index) {
+      const wrap = document.createElement("div");
+      wrap.className = "page-gap-add";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.title = "Insérer une page blanche ici";
+      btn.setAttribute("aria-label", "Insérer une page blanche ici");
+      btn.textContent = "+";
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        addBlankPage(index).catch((err) => showError(err.message || String(err)));
+      });
+      wrap.appendChild(btn);
+      return wrap;
+    }
+
+    function syncPagesHint() {
+      const hint = $("pagesHint");
+      const bar = $("pageSelBar");
+      const many = state.lists.length > 1;
+      const n = checkedLists().length;
+      if (bar) bar.hidden = !many;
+      if (!hint) return;
+      hint.hidden = !many;
+      if (!many) return;
+      if (n <= 0) {
+        hint.textContent = "Aucune page cochée — titre, commentaires, orientation et colonnes s’appliquent à la page active.";
+      } else if (n === 1) {
+        hint.textContent = "1 page sélectionnée — titre, commentaires, orientation et colonnes s’y appliquent.";
+      } else {
+        hint.textContent = n + " pages sélectionnées — titre, commentaires, orientation et colonnes s’y appliquent.";
+      }
+    }
+
+    function syncOrientHint() {
+      const hint = $("orientHint");
+      if (!hint) return;
+      if (combining() || state.lists.length < 2) {
+        hint.hidden = true;
+        hint.textContent = "";
+        return;
+      }
+      const orients = state.lists.map((l) => resolvedOrient(l, selectedCols(l).length));
+      const mixed = orients.some((o) => o !== orients[0]);
+      hint.hidden = !mixed;
+      hint.textContent = mixed
+        ? "Aperçu : chaque feuille suit son orientation. À l’impression, le navigateur peut imposer un seul format si les pages mixtes ne sont pas prises en charge."
+        : "";
+    }
+
+    function syncOrientRadios() {
+      const targets = selectedLists();
+      const value = listOrient(primaryList() || targets[0]);
+      document.querySelectorAll('input[name="orient"]').forEach((el) => {
+        el.checked = el.value === value;
+      });
+    }
+
+    function onPageSelectionChange() {
+      renderChips();
+      renderTitles();
+      renderCols();
+      syncOrientRadios();
+      syncOrientHint();
     }
 
     function renderChips() {
@@ -5156,16 +5646,29 @@
       wrap.innerHTML = "";
       if (!state.lists.length) {
         block.hidden = true;
+        syncPagesHint();
         return;
       }
       block.hidden = false;
+      prunePageSelection();
       const many = state.lists.length > 1;
-      const hint = $("pagesHint");
-      if (hint) hint.hidden = !many;
-      state.lists.forEach((list) => {
+      state.lists.forEach((list, i) => {
         const on = list.id === state.activeId;
+        const picked = isListChecked(list.id);
         const row = document.createElement("div");
-        row.className = "page-row" + (on ? " is-on" : "") + (list.sample ? " is-sample" : "");
+        row.className = "page-row" + (on ? " is-on" : "") + (picked ? " is-picked" : "") + (list.sample ? " is-sample" : "");
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.className = "page-check";
+        box.checked = picked;
+        box.setAttribute("aria-label", "Sélectionner la page " + ((list.titles && list.titles[0]) || list.name || (i + 1)));
+        box.addEventListener("click", (e) => e.stopPropagation());
+        box.addEventListener("change", (e) => {
+          e.stopPropagation();
+          setListChecked(list.id, box.checked);
+          onPageSelectionChange();
+        });
+        row.appendChild(box);
         const nameWrap = document.createElement("span");
         nameWrap.className = "page-name";
         const name = document.createElement("input");
@@ -5194,26 +5697,14 @@
         });
         nameWrap.appendChild(name);
         row.appendChild(nameWrap);
-        if (many) {
-          if (on) {
-            const tag = document.createElement("em");
-            tag.className = "page-status";
-            tag.textContent = "Modifications actives";
-            row.appendChild(tag);
-          } else {
-            const act = document.createElement("button");
-            act.type = "button";
-            act.className = "page-activate";
-            act.textContent = "Activer les modifications";
-            act.addEventListener("click", (e) => {
-              e.stopPropagation();
-              setActiveList(list.id);
-            });
-            row.appendChild(act);
-          }
+        if (on && many) {
+          const tag = document.createElement("em");
+          tag.className = "page-status";
+          tag.textContent = "Aperçu";
+          row.appendChild(tag);
         }
         row.addEventListener("click", (e) => {
-          if (e.target.closest(".x") || e.target.closest(".page-activate") || e.target.closest(".page-name-field")) return;
+          if (e.target.closest(".x") || e.target.closest(".page-check") || e.target.closest(".page-name-field")) return;
           setActiveList(list.id);
         });
         if (on) {
@@ -5229,32 +5720,38 @@
           row.appendChild(x);
         }
         wrap.appendChild(row);
+        if (many && i < state.lists.length - 1) wrap.appendChild(makePanelInsert(i + 1));
       });
+      syncPagesHint();
     }
 
     function renderTitles() {
-      const list = activeList();
+      const targets = selectedLists();
+      const list = primaryList();
       const block = $("titlesBlock");
       const wrap = $("titleList");
       const comments = $("commentList");
       wrap.innerHTML = "";
       if (comments) comments.innerHTML = "";
-      if (!list) { block.hidden = true; return; }
+      if (!list || !targets.length) { block.hidden = true; return; }
       block.hidden = false;
-      if (!Array.isArray(list.titles)) list.titles = [];
-      if (!list.titles.length) list.titles.push("");
+      targets.forEach((l) => {
+        if (!Array.isArray(l.titles)) l.titles = [];
+        if (!l.titles.length) l.titles.push("");
+      });
 
       const addRow = (target, i, placeholder, canDelete) => {
+        const shared = sharedTitleValue(targets, i);
         const row = document.createElement("div");
         row.className = "title-row";
         const input = document.createElement("input");
         input.className = "field";
-        input.value = list.titles[i] || "";
-        input.placeholder = placeholder;
+        input.value = shared.value;
+        input.placeholder = shared.mixed ? "Plusieurs valeurs" : placeholder;
         input.setAttribute("aria-label", i === 0 ? "Titre de la page" : "Commentaire");
         input.addEventListener("focus", pushHist);
         input.addEventListener("input", () => {
-          list.titles[i] = input.value;
+          setTitlesAt(targets, i, input.value);
           renderPreview();
         });
         row.appendChild(input);
@@ -5267,8 +5764,11 @@
           del.setAttribute("aria-label", "Retirer le commentaire");
           del.addEventListener("click", () => {
             pushHist();
-            list.titles.splice(i, 1);
-            if (!list.titles.length) list.titles.push("");
+            targets.forEach((l) => {
+              if (!Array.isArray(l.titles)) l.titles = [""];
+              if (i < l.titles.length) l.titles.splice(i, 1);
+              if (!l.titles.length) l.titles.push("");
+            });
             renderPanel();
             renderPreview();
           });
@@ -5278,13 +5778,14 @@
       };
 
       addRow(wrap, 0, "Ex. 3e A — M. Dupont", false);
-      for (let i = 1; i < list.titles.length; i++) {
+      const n = titleSlotCount(targets);
+      for (let i = 1; i < n; i++) {
         addRow(comments, i, "Commentaire", true);
       }
     }
 
     function renderCols() {
-      const list = activeList();
+      const list = primaryList();
       colsEl.innerHTML = "";
       $("colsBlock").hidden = !list || isBlankList(list);
       if (!list || isBlankList(list)) return;
@@ -5318,7 +5819,12 @@
           const box = el.querySelector("input");
           box.addEventListener("change", () => {
             pushHist();
-            list.on[i] = box.checked;
+            const on = box.checked;
+            const header = list.headers[i];
+            selectedLists().forEach((lst) => {
+              const j = lst.headers.findIndex((h) => foldHeader(h) === foldHeader(header));
+              if (j >= 0) lst.on[j] = on;
+            });
             renderCols();
             renderPreview();
           });
@@ -5345,7 +5851,13 @@
           if (fromKey == null) return;
           if (list.order.indexOf(fromKey) < 0 || list.order.indexOf(key) < 0 || fromKey === key) return;
           pushHist();
-          moveOrderOnto(list, fromKey, key);
+          selectedLists().forEach((lst) => {
+            const from = mapOrderKey(list, lst, fromKey);
+            const onto = mapOrderKey(list, lst, key);
+            if (from == null || onto == null || from === onto) return;
+            if (lst.order.indexOf(from) < 0 || lst.order.indexOf(onto) < 0) return;
+            moveOrderOnto(lst, from, onto);
+          });
           syncNotesPosFrom(list);
           renderCols();
           renderDisplay();
@@ -5459,8 +5971,8 @@
       renderDisplay();
       const margeEl = document.querySelector('input[name="marge"][value="' + state.marge + '"]');
       if (margeEl) margeEl.checked = true;
-      const orientEl = document.querySelector('input[name="orient"][value="' + state.orient + '"]');
-      if (orientEl) orientEl.checked = true;
+      syncOrientRadios();
+      syncOrientHint();
     }
 
     function renderAll() {
@@ -5473,11 +5985,16 @@
     function removeList(id) {
       pushHist();
       state.lists = state.lists.filter((l) => l.id !== id);
+      state.selectedIds = (state.selectedIds || []).filter((x) => x !== id);
       if (state.activeId === id) {
         state.activeId = state.lists.length ? state.lists[state.lists.length - 1].id : null;
       }
       if (state.lists.length < 2) state.combine = false;
-      if (!state.lists.length) state.combineAsked = false;
+      if (!state.lists.length) {
+        state.combineAsked = false;
+        state.selectedIds = [];
+      }
+      prunePageSelection();
       renderAll();
     }
 
@@ -5503,12 +6020,10 @@
     }
 
     function syncStageHeight() {
-      const sheets = previewFrames();
-      if (!sheets.length) return;
+      const sheetsEl = $("sheets");
+      if (!sheetsEl || !sheetsEl.children.length) return;
       const scale = stageScale();
-      const gap = 28;
-      const total = sheets.reduce((a, s) => a + s.offsetHeight, 0) + gap * (Math.max(0, sheets.length - 1));
-      stage.style.height = (total * scale) + "px";
+      stage.style.height = (sheetsEl.offsetHeight * scale) + "px";
     }
 
     function parseHtmlTable(html) {
@@ -5691,6 +6206,43 @@
       });
     }
 
+    function askZoneDelete(kind) {
+      return new Promise((resolve) => {
+        const back = $("zoneDelModal");
+        if (!back) {
+          resolve(null);
+          return;
+        }
+        $("zoneDelTitle").textContent = kind === "rows" ? "Supprimer les lignes ?" : "Supprimer les colonnes ?";
+        $("zoneDelText").textContent = "Supprimer aussi sur les autres pages ? Seules les lignes ou colonnes correspondantes seront retirées ; les pages sans équivalent sont ignorées.";
+        back.hidden = false;
+        let restore;
+        const finish = (val) => {
+          if (restore) restore();
+          back.hidden = true;
+          $("zoneDelOne").onclick = null;
+          $("zoneDelAll").onclick = null;
+          $("zoneDelCancel").onclick = null;
+          resolve(val);
+        };
+        restore = attachDialog(back, () => finish(null));
+        $("zoneDelOne").onclick = () => finish("one");
+        $("zoneDelAll").onclick = () => finish("all");
+        $("zoneDelCancel").onclick = () => finish(null);
+      });
+    }
+
+    async function requestZoneDelete() {
+      if (!zoneSel || !zoneDeleteKind()) return;
+      let scope = "one";
+      if (zoneAllPages()) {
+        const choice = await askZoneDelete(zoneDeleteKind());
+        if (!choice) return;
+        scope = choice;
+      }
+      applyZoneDelete(scope);
+    }
+
     function askCombine() {
       return new Promise((resolve) => {
         const back = $("modal");
@@ -5716,6 +6268,7 @@
       if (addingReal && state.lists.length && state.lists.every((l) => l.sample)) {
         state.lists = [];
         state.activeId = null;
+        state.selectedIds = [];
         state.combineAsked = false;
       }
       const afterCount = state.lists.length + items.length - (activeList() ? 1 : 0);
@@ -5733,6 +6286,7 @@
         applyStyle(heldStyle, { hist: false, render: false });
         heldStyle = null;
       }
+      state.selectedIds = state.activeId != null ? [state.activeId] : [];
       showError("");
       renderAll();
       if (isPhoneLayout()) showPreview();
@@ -5772,6 +6326,7 @@
       state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols.slice() : inferSharedCols(state.lists);
       if ($("colAll")) $("colAll").checked = s.colAll != null ? Boolean(s.colAll) : state.sharedCols.length > 0;
       state.activeId = state.lists.length ? state.lists[0].id : null;
+      state.selectedIds = state.activeId != null ? [state.activeId] : [];
       const margeEl = document.querySelector('input[name="marge"][value="' + state.marge + '"]');
       if (margeEl) margeEl.checked = true;
       const orientEl = document.querySelector('input[name="orient"][value="' + state.orient + '"]');
@@ -5827,6 +6382,7 @@
           rowH: l.rowH || {},
           sample: Boolean(l.sample),
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
+          orient: listOrient(l),
         })),
       };
     }
@@ -5900,11 +6456,11 @@
 
     function addColumn() {
       const name = $("colInput").value.trim();
-      const list = activeList();
+      const list = primaryList();
       if (!list) return;
       pushHist();
       const all = $("colAll").checked;
-      const targets = all ? state.lists : [list];
+      const targets = all ? state.lists : selectedLists();
       targets.forEach((lst) => insertCustomCol(lst, name));
       if (all && name && state.sharedCols.indexOf(name) < 0) state.sharedCols.push(name);
       $("colInput").value = "";
@@ -5912,12 +6468,14 @@
     }
 
     function addComment() {
-      const list = activeList();
-      if (!list) return;
+      const targets = selectedLists();
+      if (!targets.length) return;
       pushHist();
-      if (!Array.isArray(list.titles) || !list.titles.length) list.titles = [""];
       const v = $("titleInput").value.trim();
-      list.titles.push(v);
+      targets.forEach((list) => {
+        if (!Array.isArray(list.titles) || !list.titles.length) list.titles = [""];
+        list.titles.push(v);
+      });
       $("titleInput").value = "";
       renderAll();
       const inputs = $("commentList").querySelectorAll("input");
@@ -5940,6 +6498,20 @@
     if (pageAddBtn) {
       pageAddBtn.addEventListener("click", () => {
         addBlankPage().catch((err) => showError(err.message || String(err)));
+      });
+    }
+    const selAllListsBtn = $("selAllLists");
+    if (selAllListsBtn) {
+      selAllListsBtn.addEventListener("click", () => {
+        state.selectedIds = state.lists.map((l) => l.id);
+        onPageSelectionChange();
+      });
+    }
+    const selNoneListsBtn = $("selNoneLists");
+    if (selNoneListsBtn) {
+      selNoneListsBtn.addEventListener("click", () => {
+        state.selectedIds = [];
+        onPageSelectionChange();
       });
     }
     workspace.addEventListener("dragover", (e) => {
@@ -6231,7 +6803,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -6689,24 +7261,24 @@
     });
 
     $("allOn").addEventListener("click", () => {
-      const list = activeList();
-      if (!list) return;
+      const targets = selectedLists().filter((l) => !isBlankList(l));
+      if (!targets.length) return;
       pushHist();
-      list.on = list.on.map(() => true);
+      targets.forEach((list) => { list.on = list.on.map(() => true); });
       renderAll();
     });
     $("allOff").addEventListener("click", () => {
-      const list = activeList();
-      if (!list) return;
+      const targets = selectedLists().filter((l) => !isBlankList(l));
+      if (!targets.length) return;
       pushHist();
-      list.on = list.on.map(() => false);
+      targets.forEach((list) => { list.on = list.on.map(() => false); });
       renderAll();
     });
     $("resetWidths").addEventListener("click", () => {
-      const list = activeList();
-      if (!list) return;
+      const targets = selectedLists();
+      if (!targets.length) return;
       pushHist();
-      list.widths = {};
+      targets.forEach((list) => { list.widths = {}; });
       renderPreview();
     });
 
@@ -6731,7 +7303,12 @@
     });
     document.querySelectorAll('input[name="orient"]').forEach((el) => {
       el.addEventListener("change", () => {
-        if (el.checked) { pushHist(); state.orient = el.value; renderPreview(); }
+        if (!el.checked) return;
+        pushHist();
+        state.orient = el.value;
+        selectedLists().forEach((l) => { l.orient = el.value; });
+        renderPreview();
+        syncOrientHint();
       });
     });
 
@@ -6740,12 +7317,29 @@
         if ($("styleModal") && !$("styleModal").hidden) return;
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
+        if ($("colDelModal") && !$("colDelModal").hidden) return;
+        if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
+        if ($("replaceModal") && !$("replaceModal").hidden) return;
         hideSelMenu();
         if (zoneSel) {
           e.preventDefault();
           clearZone();
           return;
         }
+        return;
+      }
+      if ((e.key === "Delete" || e.key === "Backspace") && zoneSel && zoneDeleteKind()) {
+        const tag = (e.target && e.target.tagName) || "";
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        if (e.target && e.target.isContentEditable) return;
+        if ($("styleModal") && !$("styleModal").hidden) return;
+        if ($("modal") && !$("modal").hidden) return;
+        if ($("pasteModal") && !$("pasteModal").hidden) return;
+        if ($("colDelModal") && !$("colDelModal").hidden) return;
+        if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
+        if ($("replaceModal") && !$("replaceModal").hidden) return;
+        e.preventDefault();
+        requestZoneDelete();
         return;
       }
       const key = e.key.toLowerCase();
@@ -6890,6 +7484,7 @@
     $("selEq").addEventListener("click", equalizeZone);
     $("selMenuW").addEventListener("click", () => { hideSelMenu(); setZoneDim("w"); equalizeZoneWidths(); });
     $("selMenuH").addEventListener("click", () => { hideSelMenu(); setZoneDim("h"); equalizeZoneHeights(); });
+    if ($("selDel")) $("selDel").addEventListener("click", () => { requestZoneDelete(); });
     $("selClear").addEventListener("click", clearZone);
     (function bindSelSize() {
       const input = $("selSizeVal");
