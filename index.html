@@ -3148,7 +3148,7 @@
         <label><input type="checkbox" id="stSizes" checked /><span>Tailles<small>Polices et hauteur de ligne</small></span></label>
         <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation</small></span></label>
         <label><input type="checkbox" id="stInfo" checked /><span>Informations<small>Pastilles, légende, colonne Rq.</small></span></label>
-        <label><input type="checkbox" id="stCols" checked /><span>Colonnes<small>Ordre, visibilité, largeurs, colonnes ajoutées</small></span></label>
+        <label><input type="checkbox" id="stCols" checked /><span>Colonnes<small>Ordre, visibilité, largeurs, alignements, colonnes ajoutées</small></span></label>
       </div>
       <div class="modal-actions">
         <button class="btn btn-print" id="styleSave" type="button">Enregistrer</button>
@@ -5859,7 +5859,11 @@
 
     function buildStylePayload() {
       const parts = stylePartsFromUi();
-      const list = activeList() || state.lists[0];
+      const list = (function () {
+        const active = activeList();
+        if (active && !isBlankList(active)) return active;
+        return state.lists.find((l) => l && !isBlankList(l)) || active || state.lists[0];
+      })();
       const out = {
         app: "epicsv-modele",
         version: 1,
@@ -5895,18 +5899,167 @@
         out.settings.badges = state.badges;
       }
       if (parts.columns && list) {
+        ensureAlign(list);
         out.settings.sharedCols = state.sharedCols;
         out.settings.colAll = Boolean($("colAll") && $("colAll").checked);
-        out.columns = list.headers.map((colName, i) => ({
-          name: colName,
-          kind: headerKindOf(list, i),
-          on: Boolean(list.on[i]),
-          width: list.widths && list.widths[i] > 0 ? list.widths[i] : null,
-          custom: Boolean(list.custom[i]),
-        }));
+        out.columns = list.headers.map((colName, i) => {
+          const spec = {
+            name: colName,
+            kind: headerKindOf(list, i),
+            on: Boolean(list.on[i]),
+            width: list.widths && list.widths[i] > 0 ? list.widths[i] : null,
+            custom: Boolean(list.custom[i]),
+          };
+          const thH = resolveAlign(list, "h", i, "h");
+          const thV = resolveAlign(list, "h", i, "v");
+          const colH = list.colAlignH[i] || list.colAlignH[String(i)];
+          const colV = list.colAlignV[i] || list.colAlignV[String(i)];
+          if (ALIGN_H_OK[thH]) spec.alignH = thH;
+          if (ALIGN_V_OK[thV]) spec.alignV = thV;
+          if (ALIGN_H_OK[colH]) spec.colAlignH = colH;
+          if (ALIGN_V_OK[colV]) spec.colAlignV = colV;
+          return spec;
+        });
         out.order = list.order.map((k) => (k === "rq" || k === "marks" ? k : list.headers[k]));
+        const rowH = {};
+        Object.keys(list.rowH || {}).forEach((k) => {
+          const n = Number(list.rowH[k]);
+          if (n > 0) rowH[k] = n;
+        });
+        const rqH = resolveAlign(list, "h", "rq", "h");
+        const rqV = resolveAlign(list, "h", "rq", "v");
+        out.align = {
+          cols: list.headers.length,
+          rows: (list.rows || []).length,
+          tableW: Number(list.tableW) > 0 ? Number(list.tableW) : 100,
+          rowH: rowH,
+          alignH: copyAlignMap(list.alignH, ALIGN_H_OK),
+          alignV: copyAlignMap(list.alignV, ALIGN_V_OK),
+          colAlignH: copyAlignMap(list.colAlignH, ALIGN_H_OK),
+          colAlignV: copyAlignMap(list.colAlignV, ALIGN_V_OK),
+        };
+        if (ALIGN_H_OK[rqH] || ALIGN_V_OK[rqV] || ALIGN_H_OK[list.colAlignH.rq] || ALIGN_V_OK[list.colAlignV.rq]) {
+          out.align.rq = {};
+          if (ALIGN_H_OK[rqH]) out.align.rq.alignH = rqH;
+          if (ALIGN_V_OK[rqV]) out.align.rq.alignV = rqV;
+          if (ALIGN_H_OK[list.colAlignH.rq]) out.align.rq.colAlignH = list.colAlignH.rq;
+          if (ALIGN_V_OK[list.colAlignV.rq]) out.align.rq.colAlignV = list.colAlignV.rq;
+        }
       }
       return out;
+    }
+
+    function styleColumnMap(list, cols) {
+      const map = {};
+      const used = new Set();
+      (cols || []).forEach((c, srcI) => {
+        if (!c || (!c.name && !c.kind)) return;
+        const i = findHeaderIndex(list, c, used);
+        if (i < 0) return;
+        used.add(i);
+        map[srcI] = i;
+      });
+      return map;
+    }
+
+    function remapStyleColAlign(src, colMap, allowed) {
+      const out = {};
+      if (!src || typeof src !== "object" || Array.isArray(src)) return out;
+      Object.keys(src).forEach((k) => {
+        const val = src[k];
+        if (!allowed[val]) return;
+        if (k === "rq") {
+          out.rq = val;
+          return;
+        }
+        const n = Number(k);
+        if (!Number.isInteger(n) || colMap[n] == null) return;
+        out[String(colMap[n])] = val;
+      });
+      return out;
+    }
+
+    function remapStyleCellAlign(src, colMap, allowed, opts) {
+      const out = {};
+      opts = opts || {};
+      if (!src || typeof src !== "object" || Array.isArray(src)) return out;
+      Object.keys(src).forEach((k) => {
+        const val = src[k];
+        if (!allowed[val]) return;
+        const parts = String(k).split(":");
+        const ri = parts[0];
+        const rest = parts.slice(1).join(":");
+        let destCi;
+        if (rest === "rq") destCi = "rq";
+        else {
+          const n = Number(rest);
+          if (!Number.isInteger(n) || colMap[n] == null) return;
+          destCi = colMap[n];
+        }
+        if (ri !== "h") {
+          if (opts.headersOnly) return;
+          const nri = Number(ri);
+          if (!Number.isInteger(nri) || nri < 0) return;
+          if (opts.maxRow != null && nri >= opts.maxRow) return;
+        }
+        out[ri + ":" + destCi] = val;
+      });
+      return out;
+    }
+
+    function assignAlignBag(dest, incoming) {
+      if (!dest || !incoming) return;
+      Object.keys(incoming).forEach((k) => { dest[k] = incoming[k]; });
+    }
+
+    function applyStyleAlignments(list, data) {
+      if (!list || isBlankList(list)) return;
+      ensureAlign(list);
+      const cols = Array.isArray(data && data.columns) ? data.columns : [];
+      const align = data && data.align && typeof data.align === "object" && !Array.isArray(data.align) ? data.align : null;
+      const colMap = styleColumnMap(list, cols);
+      Object.keys(colMap).forEach((srcKey) => {
+        const c = cols[srcKey];
+        const i = colMap[srcKey];
+        if (!c || i == null) return;
+        if (ALIGN_H_OK[c.alignH]) setCellAlign(list, "h", i, "h", c.alignH);
+        if (ALIGN_V_OK[c.alignV]) setCellAlign(list, "h", i, "v", c.alignV);
+      });
+      if (align && align.rq) {
+        if (ALIGN_H_OK[align.rq.alignH]) setCellAlign(list, "h", "rq", "h", align.rq.alignH);
+        if (ALIGN_V_OK[align.rq.alignV]) setCellAlign(list, "h", "rq", "v", align.rq.alignV);
+      }
+      if (align) {
+        assignAlignBag(list.alignH, remapStyleCellAlign(align.alignH, colMap, ALIGN_H_OK, { headersOnly: true }));
+        assignAlignBag(list.alignV, remapStyleCellAlign(align.alignV, colMap, ALIGN_V_OK, { headersOnly: true }));
+      }
+      const srcCols = align && Number(align.cols) > 0 ? Number(align.cols) : cols.length;
+      const srcRows = align && align.rows != null ? Number(align.rows) : NaN;
+      const sameCols = srcCols > 0 && list.headers.length === srcCols;
+      const sameRows = Number.isInteger(srcRows) && srcRows >= 0 && (list.rows || []).length === srcRows;
+      if (!sameCols) return;
+      Object.keys(colMap).forEach((srcKey) => {
+        const c = cols[srcKey];
+        const i = colMap[srcKey];
+        if (!c || i == null) return;
+        if (ALIGN_H_OK[c.colAlignH]) list.colAlignH[String(i)] = c.colAlignH;
+        if (ALIGN_V_OK[c.colAlignV]) list.colAlignV[String(i)] = c.colAlignV;
+      });
+      if (align) {
+        assignAlignBag(list.colAlignH, remapStyleColAlign(align.colAlignH, colMap, ALIGN_H_OK));
+        assignAlignBag(list.colAlignV, remapStyleColAlign(align.colAlignV, colMap, ALIGN_V_OK));
+        if (sameRows) {
+          assignAlignBag(list.alignH, remapStyleCellAlign(align.alignH, colMap, ALIGN_H_OK, { maxRow: (list.rows || []).length }));
+          assignAlignBag(list.alignV, remapStyleCellAlign(align.alignV, colMap, ALIGN_V_OK, { maxRow: (list.rows || []).length }));
+          Object.keys(align.rowH || {}).forEach((k) => {
+            const n = Number(align.rowH[k]);
+            if (!(n > 0)) return;
+            if (!list.rowH) list.rowH = {};
+            list.rowH[k] = n;
+          });
+        }
+        if (Number(align.tableW) > 0) list.tableW = Number(align.tableW);
+      }
     }
 
     function applyStyleColumns(list, data) {
@@ -5927,28 +6080,30 @@
           list.widths[i] = Number(c.width);
         }
       });
-      if (!Array.isArray(data.order)) return;
-      const seen = new Set();
-      const next = [];
-      data.order.forEach((k) => {
-        if (k === "rq" || k === "marks") {
-          if (!seen.has(k)) {
-            seen.add(k);
-            next.push(k);
+      if (Array.isArray(data.order)) {
+        const seen = new Set();
+        const next = [];
+        data.order.forEach((k) => {
+          if (k === "rq" || k === "marks") {
+            if (!seen.has(k)) {
+              seen.add(k);
+              next.push(k);
+            }
+            return;
           }
-          return;
-        }
-        const spec = cols.find((c) => c && c.name && (c.name === k || foldHeader(c.name) === foldHeader(k))) || k;
-        const i = findHeaderIndex(list, spec, seen);
-        if (i >= 0 && !seen.has(i)) {
-          seen.add(i);
-          next.push(i);
-        }
-      });
-      list.headers.forEach((_, i) => {
-        if (!seen.has(i)) next.push(i);
-      });
-      list.order = next;
+          const spec = cols.find((c) => c && c.name && (c.name === k || foldHeader(c.name) === foldHeader(k))) || k;
+          const i = findHeaderIndex(list, spec, seen);
+          if (i >= 0 && !seen.has(i)) {
+            seen.add(i);
+            next.push(i);
+          }
+        });
+        list.headers.forEach((_, i) => {
+          if (!seen.has(i)) next.push(i);
+        });
+        list.order = next;
+      }
+      applyStyleAlignments(list, data);
     }
 
     function applyStyle(data, opts) {
