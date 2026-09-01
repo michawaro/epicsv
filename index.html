@@ -414,12 +414,12 @@
     .yt-dock {
       position: fixed;
       top: max(10px, env(safe-area-inset-top, 0px));
-      right: max(12px, env(safe-area-inset-right, 0px));
+      right: max(36px, calc(env(safe-area-inset-right, 0px) + 24px));
       z-index: 11;
       display: flex;
       align-items: center;
       gap: 2px 8px;
-      max-width: min(280px, calc(100vw - 24px));
+      max-width: min(280px, calc(100vw - 48px));
       padding: 4px 8px 4px 6px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.86);
@@ -448,6 +448,64 @@
       height: 16px;
       flex: none;
       color: #e11d48;
+    }
+    .yt-dock-bell {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin-left: 2px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--teal-deep);
+      cursor: pointer;
+      text-decoration: none;
+      flex: none;
+    }
+    .yt-dock-bell:hover,
+    .yt-dock-bell:focus-visible {
+      background: rgba(14, 143, 140, 0.12);
+      color: #0a6561;
+    }
+    .yt-dock-bell svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+    .yt-dock-bell::after {
+      content: attr(data-tip);
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 12;
+      width: max-content;
+      max-width: min(240px, 70vw);
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1.35;
+      white-space: normal;
+      text-align: left;
+      box-shadow: 0 10px 24px rgba(14, 143, 140, 0.22);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+    .yt-dock-bell:hover::after,
+    .yt-dock-bell:focus::after,
+    .yt-dock-bell:focus-visible::after,
+    .yt-dock-bell.is-tip::after {
+      opacity: 1;
+      transform: none;
     }
     .yt-dock-sep {
       opacity: 0.35;
@@ -1956,8 +2014,20 @@
     }
     .list-block.is-tp-page .liste-wrap > .liste {
       width: 100%;
-      height: auto;
+      height: 1px;
       table-layout: fixed;
+    }
+    .list-block.is-tp-page tbody tr {
+      height: var(--row-h, auto);
+    }
+    .list-block.is-tp-page tbody td:not([rowspan]) {
+      height: var(--row-h, auto);
+      max-height: var(--row-h, none);
+      box-sizing: border-box;
+    }
+    .list-block.is-tp-page tbody td[rowspan] {
+      height: var(--span-h, auto);
+      box-sizing: border-box;
     }
     .list-block.is-tp-page thead.is-tp-ghost th {
       padding: 0;
@@ -1981,12 +2051,6 @@
       line-height: 1.12;
       vertical-align: middle;
       box-sizing: border-box;
-    }
-    .list-block.is-tp-page tbody tr {
-      height: var(--row-h, auto);
-    }
-    .list-block.is-tp-page tbody td:not([rowspan]) {
-      height: var(--row-h, auto);
     }
     .liste td[rowspan] .cell-edit { white-space: pre-wrap; }
     .list-block.is-tp-page td.is-tp-item,
@@ -2033,13 +2097,51 @@
       min-width: 0;
     }
     .list-block.is-tp-page tr.is-tp-section td,
-    .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td {
+    .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td,
+    .list-block.is-tp-page td.is-tp-label {
       font-weight: 800;
+      letter-spacing: 0.04em;
       background: rgba(14, 143, 140, 0.12);
-      color: var(--d-title, var(--teal-deep));
+      color: var(--d-title, var(--d-th, var(--teal-deep)));
     }
-    .list-block.is-tp-page tr.is-tp-section td.is-tp-item .cell-edit {
+    .list-block.is-tp-page tr.is-tp-section td.is-tp-item .cell-edit,
+    .list-block.is-tp-page td.is-tp-label .cell-edit,
+    .list-block.is-tp-page td.is-tp-label .tp-chip,
+    .list-block.is-tp-page td.is-tp-label .tp-struct-lab {
       font-weight: 800;
+      color: inherit;
+    }
+    .list-block.is-tp-page td.is-tp-label .tp-chip {
+      font-size: inherit;
+      border-bottom-color: currentColor;
+    }
+    .list-block.is-tp-page td.is-tp-mat {
+      cursor: pointer;
+    }
+    .list-block.is-tp-page td[data-tp-field] {
+      cursor: pointer;
+    }
+    .list-block.is-tp-page .tp-struct {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15em 0.45em;
+      max-width: 100%;
+      font-weight: 800;
+      color: inherit;
+    }
+    .list-block.is-tp-page .tp-struct-lab {
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
+    .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
+      background: var(--d-accent);
+      color: var(--d-accent-ink);
+    }
+    .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label .tp-chip {
+      color: inherit;
     }
     .list-block.is-tp-page td.is-tp-qty,
     .list-block.is-tp-page td.is-tp-total,
@@ -2154,6 +2256,33 @@
     }
     .tp-choice-menu button:hover,
     .tp-choice-menu button.is-on { background: rgba(14, 143, 140, 0.12); color: var(--teal-deep); }
+    .tp-choice-custom {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 8px 8px 6px;
+      margin-top: 4px;
+      border-top: 1px solid rgba(14, 143, 140, 0.16);
+    }
+    .tp-choice-custom input {
+      flex: 1;
+      min-width: 0;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      border: 1.15pt solid rgba(14, 143, 140, 0.28);
+      border-radius: 10px;
+      padding: 7px 10px;
+    }
+    .tp-choice-custom button {
+      width: auto;
+      flex: none;
+      background: rgba(14, 143, 140, 0.12);
+      color: var(--teal-deep);
+      font-weight: 800;
+      padding: 7px 12px;
+    }
     .modal.modal-tp-mat { width: min(560px, 100%); }
     .modal .tp-picks { margin-top: 8px; }
     .modal .tp-picks button {
@@ -3157,7 +3286,7 @@
       }
       .yt-dock {
         top: max(8px, env(safe-area-inset-top, 0px));
-        right: max(8px, env(safe-area-inset-right, 0px));
+        right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px));
         padding: 3px 4px;
         gap: 0;
       }
@@ -3304,10 +3433,27 @@
       .list-block.is-tp-page tbody tr {
         height: var(--row-h, auto);
       }
+      .list-block.is-tp-page tbody td:not([rowspan]) {
+        height: var(--row-h, auto);
+      }
+      .list-block.is-tp-page tbody td[rowspan] {
+        height: var(--span-h, auto);
+      }
+      .list-block.is-tp-page .liste-wrap > .liste {
+        height: 1px;
+      }
       .list-block.is-tp-page .liste-wrap { width: var(--tp-print-w, 100%) !important; }
       .list-block.is-tp-page tr.is-tp-section td,
-      .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td {
+      .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td,
+      .list-block.is-tp-page td.is-tp-label {
         background: rgba(14, 143, 140, 0.12) !important;
+        color: var(--d-title, var(--d-th, var(--teal-deep))) !important;
+        font-weight: 800 !important;
+      }
+      .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
+      .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
+        background: var(--d-accent) !important;
+        color: var(--d-accent-ink) !important;
       }
       .block-move { display: none !important; }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
@@ -3684,13 +3830,16 @@
     </main>
   </div>
 
-  <nav class="yt-dock no-print" aria-label="Chaîne YouTube Michawaro" title="Pour être notifié à chaque nouvelle vidéo, activez la cloche 🔔 sur Toutes.">
-    <a class="yt-dock-link is-sub" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" aria-label="S’abonner à la chaîne YouTube Michawaro" title="S’abonner à Michawaro — activez la cloche 🔔 sur Toutes">
+  <nav class="yt-dock no-print" aria-label="Chaîne YouTube Michawaro">
+    <a class="yt-dock-link is-sub" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" aria-label="S’abonner à la chaîne YouTube Michawaro" title="S’abonner">
       <svg class="yt-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 32 32 0 0 0 0 12a32 32 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A32 32 0 0 0 24 12a32 32 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/></svg>
       <span class="yt-dock-full">S’abonner</span>
     </a>
     <span class="yt-dock-sep yt-dock-full" aria-hidden="true">·</span>
-    <a class="yt-dock-link yt-dock-full" href="https://www.youtube.com/playlist?list=PLr4sKRS3Xhh6GozQuYuF8ZQ4P5d0OA0rU" target="_blank" rel="noopener noreferrer" aria-label="Voir la playlist YouTube des tutoriels logiciels">Tutoriels</a>
+    <a class="yt-dock-link yt-dock-full" href="https://www.youtube.com/playlist?list=PLr4sKRS3Xhh6GozQuYuF8ZQ4P5d0OA0rU" target="_blank" rel="noopener noreferrer" aria-label="Voir la playlist YouTube des tutoriels logiciels" title="Tutoriels">Tutoriels</a>
+    <a class="yt-dock-bell" id="ytBell" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" data-tip="Le meilleur moyen de ne pas passer à côté du prochain logiciel" title="Le meilleur moyen de ne pas passer à côté du prochain logiciel" aria-label="Le meilleur moyen de ne pas passer à côté du prochain logiciel">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.3 2.3 0 0 0 2.25-2.2h-4.5A2.3 2.3 0 0 0 12 22zm7-6.2V11a7 7 0 0 0-5.2-6.75V3.6a1.8 1.8 0 1 0-3.6 0v.65A7 7 0 0 0 5 11v4.8L3.2 17.6v1.15h17.6V17.6L19 15.8z"/></svg>
+    </a>
     <details class="yt-dock-more">
       <summary aria-label="Liens YouTube">···</summary>
       <div class="yt-dock-pop">
@@ -4033,8 +4182,8 @@
       ilots: "îlots",
     };
     const TP_SHEET_ROWS = 8;
-    const TP_PROF_SLOTS = 6;
-    const TP_SHARE_SLOTS = 6;
+    const TP_PROF_SLOTS = 7;
+    const TP_SHARE_SLOTS = 9;
     const TP_ORDER_SLOTS = 6;
     const TP_LABEL_PROF = "Pour l’enseignant";
     const TP_LABEL_SHARE = "Pour chaque poste";
@@ -4688,16 +4837,17 @@
     function hydrateTp(raw) {
       const d = defaultTp();
       if (!raw || typeof raw !== "object") return d;
-      if (raw.matiere === "SPC" || raw.matiere === "SVT") d.matiere = raw.matiere;
+      const mat = String(raw.matiere || "").trim();
+      if (mat) d.matiere = mat;
       d.titre = String(raw.titre || "");
-      if (TP_NIVEAUX.indexOf(raw.niveau) >= 0) d.niveau = raw.niveau;
+      const niv = String(raw.niveau || "").trim();
+      if (niv) d.niveau = niv;
       d.partie = String(raw.partie || "");
-      if (TP_GROUPES[raw.groupes]) d.groupes = raw.groupes;
+      const grp = String(raw.groupes || "").trim();
+      if (grp) d.groupes = grp;
       const n = Math.round(Number(raw.nGroupes));
       d.nGroupes = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 12;
       d.items = Array.isArray(raw.items) ? raw.items.map(hydrateTpItem).filter(Boolean) : [];
-      const parts = ((TP_PARTIES[d.matiere] || {})[d.niveau] || []);
-      if (d.partie && parts.indexOf(d.partie) < 0) d.partie = "";
       return d;
     }
 
@@ -4713,6 +4863,23 @@
 
     function tpPartiesOf(tp) {
       return ((TP_PARTIES[(tp && tp.matiere) || "SVT"] || {})[(tp && tp.niveau) || "6e"] || []).slice();
+    }
+
+    function tpGroupeLabel(tp) {
+      const g = (tp && tp.groupes) || "";
+      return TP_GROUPES[g] || g || "…";
+    }
+
+    function tpFieldIsCustom(list, field, value) {
+      const v = String(value == null ? "" : value);
+      if (field === "matiere") return v !== "" && v !== "SVT" && v !== "SPC";
+      if (field === "niveau") return v !== "" && TP_NIVEAUX.indexOf(v) < 0;
+      if (field === "groupes") return v !== "" && !TP_GROUPES[v];
+      if (field === "partie") {
+        const parts = tpPartiesOf(tpOf(list));
+        return v !== "" && parts.indexOf(v) < 0;
+      }
+      return false;
     }
 
     function tpMetaLine(tp) {
@@ -4859,9 +5026,17 @@
     }
 
     function tpHeightsNeedFit(list) {
-      if (!list || !isTpForm(list) || list.tpSized) return false;
+      if (!list || !isTpForm(list)) return false;
+      const key = tpFitSignature(list);
+      if (list.tpFitKey !== key) return true;
+      if (list.tpFitPending) return true;
+      if (list.tpSized) return false;
       if (!Object.keys(list.rowH || {}).length || tpRowHLooksLikeEm(list)) return true;
       return !list.tpFitted;
+    }
+
+    function tpFitSignature(list) {
+      return [state.marge || "moyennes", resolvedOrient(list, 4), TP_SHARE_SLOTS].join(":");
     }
 
     function tpPrintableInnerMm(list, sheet) {
@@ -4908,6 +5083,30 @@
       };
     }
 
+    function equalizeTpBandRowHeights(list) {
+      if (!list || !tpUsesRowMm(list)) return;
+      if (!list.rowH) list.rowH = {};
+      const bands = tpBandRowIndices(list);
+      ["share", "prof", "order"].forEach((key) => {
+        const ris = bands[key];
+        if (!ris.length) return;
+        const vals = ris.map((ri) => Number(list.rowH[ri]) || 0).filter((n) => n > 0);
+        const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 6;
+        const h = clampTpRowMm(avg);
+        ris.forEach((ri) => { list.rowH[ri] = h; });
+      });
+    }
+
+    function tpSpanHeightMm(list, ri, rs) {
+      const n = Math.max(1, Math.round(Number(rs) || 1));
+      let sum = 0;
+      for (let i = 0; i < n; i++) {
+        const h = Number(list && list.rowH && list.rowH[ri + i]);
+        sum += h > 0 ? h : (Number(list && list.rowH && list.rowH[ri]) || 6);
+      }
+      return Math.round(sum * 100) / 100;
+    }
+
     function distributeTpRowHeights(list, targetMm) {
       if (!list || !tpUsesRowMm(list) || !(targetMm > 20)) return false;
       const bands = tpBandRowIndices(list);
@@ -4946,6 +5145,7 @@
         });
       }
       list.rowH = next;
+      equalizeTpBandRowHeights(list);
       return true;
     }
 
@@ -4964,6 +5164,7 @@
       absorb.forEach((ri, i) => {
         list.rowH[ri] = clampTpRowMm(weights[i] + deltaMm * (weights[i] / sum));
       });
+      equalizeTpBandRowHeights(list);
       return true;
     }
 
@@ -5029,11 +5230,75 @@
       return { share: share, prof: prof, order: order, n: rows.length };
     }
 
+    function tpFormLabelKind(list, ri, ci) {
+      if (!isTpForm(list)) return "";
+      const b = tpFormBands(list);
+      if (ri === 0 && ci === 0) return "groupes";
+      if (ri === 0 && ci === 1) return "titre";
+      if (ri === 0 && ci === 2) return "niveau";
+      if (ri === 1 && ci === 0) return "ngroups";
+      if (ri === 1 && ci === 2) return "partie";
+      if (ri === 2 && ci === 0) return "materiel";
+      if (ri === 2 && ci === 2) return "total";
+      if (b.share >= 0 && ri === b.share && ci === 0) return "share";
+      if (b.share >= 0 && ri === b.share && ci === 2) return "times";
+      if (b.prof >= 0 && ri === b.prof && ci === 0) return "prof";
+      if (b.prof >= 0 && ri === b.prof && ci === 2) return "dates";
+      if (b.prof >= 0 && ri === b.prof && ci === 3) return "salles";
+      if (b.order >= 0 && ri === b.order && ci === 0) return "order";
+      return "";
+    }
+
+    function tpFormMatCell(list, ri, ci) {
+      if (!isTpForm(list) || ci !== 1) return false;
+      const b = tpFormBands(list);
+      if (b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)) return true;
+      if (b.prof >= 0 && ri === b.prof) return true;
+      if (b.order >= 0 && ri === b.order) return true;
+      return false;
+    }
+
+    function tpFormFieldAt(list, ri, ci) {
+      const kind = tpFormLabelKind(list, ri, ci);
+      if (kind === "groupes") return "groupes";
+      if (kind === "niveau") return "niveau";
+      if (kind === "partie") return "partie";
+      return "";
+    }
+
+    function tpFormCellInner(list, ri, ci, text, freeze) {
+      const tp = tpOf(list);
+      const kind = tpFormLabelKind(list, ri, ci);
+      if (kind === "groupes") {
+        return '<span class="tp-struct"><span class="tp-struct-lab">Groupes de</span>' +
+          tpChipHtml(list, "groupes", "Type de groupes", tpGroupeLabel(tp)) + "</span>";
+      }
+      if (kind === "niveau") {
+        return '<span class="tp-struct">' +
+          tpChipHtml(list, "matiere", "Matière", tp.matiere) +
+          tpChipHtml(list, "niveau", "Niveau", tp.niveau || "Niveau", "Niveau") +
+          "</span>";
+      }
+      if (kind === "partie") {
+        return tpChipHtml(list, "partie", "Partie", tp.partie, "Partie");
+      }
+      if (kind === "ngroups") {
+        return '<span class="tp-struct"><span class="tp-struct-lab">Nombre de groupe</span>' +
+          '<span class="cell-edit tp-ngroups" contenteditable="' + (canWriteCells() ? "true" : "false") +
+          '" spellcheck="false" data-lid="' + list.id + '" data-tp-ngroups="1">' +
+          escapeHtml(String(tp.nGroupes)) + "</span></span>";
+      }
+      if (kind === "titre") {
+        return cellEditHtml(text, list.id, ri, ci, list, freeze);
+      }
+      return cellEditHtml(text, list.id, ri, ci, list, freeze);
+    }
+
     function tpRowKindAt(list, ri) {
       if (isTpForm(list)) {
         const b = tpFormBands(list);
         if (b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)) {
-          return ri === b.share ? "sec-share" : "item-share";
+          return "item-share";
         }
         if (b.prof >= 0 && ri >= b.prof && (b.order < 0 || ri < b.order)) {
           return ri === b.prof ? "sec-prof" : "item-prof";
@@ -5067,10 +5332,15 @@
     function tpLayoutStale(list) {
       if (!list || !list.headers || list.headers.length !== 4) return true;
       const rows = list.rows || [];
-      if (rows.length < 16) return true;
+      if (rows.length < 3 + TP_SHARE_SLOTS + TP_PROF_SLOTS + TP_ORDER_SLOTS - 4) return true;
       if (!rows.some((row) => isTpShareSection((row && row[0]) || ""))) return true;
       if (!rows.some((row) => isTpProfSection((row && row[0]) || ""))) return true;
       if (!rows.some((row) => isTpOrderLabel((row && row[0]) || ""))) return true;
+      const b = tpFormBands(list);
+      if (b.share >= 0) {
+        const end = b.prof >= 0 ? b.prof : (b.order >= 0 ? b.order : rows.length);
+        if (end - b.share < TP_SHARE_SLOTS) return true;
+      }
       return false;
     }
 
@@ -5265,13 +5535,13 @@
     function rebuildTpRows(list, sizeOpts) {
       const tp = tpOf(list);
       const n = Number(tp.nGroupes) || 0;
-      const shareN = Math.max(6, Math.round(Number(sizeOpts && sizeOpts.shareRows) || TP_SHARE_SLOTS) || TP_SHARE_SLOTS);
-      const profN = Math.max(7, Math.round(Number(sizeOpts && sizeOpts.profRows) || 7) || 7);
-      const orderN = Math.max(6, Math.round(Number(sizeOpts && sizeOpts.orderRows) || TP_ORDER_SLOTS) || TP_ORDER_SLOTS);
       const items = Array.isArray(tp.items) ? tp.items : [];
       const profItems = items.filter((it) => (Number(it.extra) || 0) > 0);
       const shareItems = items.filter((it) => (Number(it.qty) || 0) > 0);
-      const groupeLab = TP_GROUPES[tp.groupes] || "…";
+      const shareN = Math.max(TP_SHARE_SLOTS, shareItems.length, Math.round(Number(sizeOpts && sizeOpts.shareRows) || 0) || 0);
+      const profN = Math.max(TP_PROF_SLOTS, Math.round(Number(sizeOpts && sizeOpts.profRows) || 0) || 0);
+      const orderN = Math.max(TP_ORDER_SLOTS, Math.round(Number(sizeOpts && sizeOpts.orderRows) || 0) || 0);
+      const groupeLab = tpGroupeLabel(tp);
       const titre = ((list.titles && list.titles[0]) || tp.titre || TP_TITLE_DEFAULT).trim() || TP_TITLE_DEFAULT;
       const rows = [];
       const cell = (a, b, c, d) => {
@@ -5283,7 +5553,7 @@
         return row;
       };
       rows.push(cell("Groupes de " + groupeLab, titre, tp.niveau || "Niveau", ""));
-      rows.push(cell("Nombre de groupe", "", tp.partie || "Partie", ""));
+      rows.push(cell(String(n || ""), "", tp.partie || "Partie", ""));
       rows.push(cell("Matériel", "", "Total", ""));
       for (let i = 0; i < shareN; i++) {
         const it = shareItems[i];
@@ -5309,11 +5579,27 @@
       list.merges = tpFormMerges(shareN, profN, orderN);
     }
 
+    function writeTpFormMeta(list) {
+      if (!isTpForm(list) || !list.rows || !list.rows.length) return;
+      const tp = tpOf(list);
+      const n = Number(tp.nGroupes) || 0;
+      const titre = ((list.titles && list.titles[0]) || tp.titre || TP_TITLE_DEFAULT).trim() || TP_TITLE_DEFAULT;
+      while (list.rows.length < 3) list.rows.push(tpBlankRow(list));
+      if (!list.rows[0]) list.rows[0] = tpBlankRow(list);
+      if (!list.rows[1]) list.rows[1] = tpBlankRow(list);
+      list.rows[0][0] = "Groupes de " + tpGroupeLabel(tp);
+      list.rows[0][1] = titre;
+      list.rows[0][2] = tp.niveau || "Niveau";
+      list.rows[1][0] = String(n || "");
+      list.rows[1][2] = tp.partie || "Partie";
+    }
+
     function writeTpComputed(list) {
       if (!list || !list.rows) return;
       const tp = tpOf(list);
       const n = Number(tp.nGroupes) || 0;
       if (isTpForm(list)) {
+        writeTpFormMeta(list);
         const b = tpFormBands(list);
         if (b.share >= 0 && list.rows[b.share]) {
           const tot = (tp.items || []).reduce((s, it) => s + tpItemTotal(it, n), 0);
@@ -5387,6 +5673,8 @@
       });
       if (!fromItems) tpOf(list).items = [];
       rebuildTpRows(list, opts && opts.size);
+      list.tpFitKey = "";
+      list.tpFitPending = false;
       if (!hasTpCustomSize(list) && !(opts && opts.keepHeights)) {
         list.tpFitted = false;
         distributeTpRowHeights(list, tpPrintableInnerMm(list, null));
@@ -5449,6 +5737,7 @@
         ? tpMatTarget.ri : -1;
       const targetKind = targetRi >= 0 ? tpRowKindAt(list, targetRi) : "item-share";
       const asProf = targetKind === "item-prof" || targetKind === "sec-prof";
+      const asOrder = targetKind === "item-order" || targetKind === "sec-order";
       const item = asProf
         ? { name: name, qty: 0, extra: clampTpQty(qty, 1) || 1 }
         : { name: name, qty: clampTpQty(qty, 1) || 1, extra: 0 };
@@ -5460,16 +5749,24 @@
       const canWrite = (ri) => {
         if (!list.rows[ri]) return false;
         const kind = tpRowKindAt(list, ri);
-        if (kind === "poste" || kind === "sec-prof" || kind === "sec-share" || kind === "sec-order") return false;
+        if (kind === "poste") return false;
+        if (isTpForm(list)) {
+          const b = tpFormBands(list);
+          if (asProf) return ri === b.prof;
+          if (asOrder) return ri === b.order;
+          if (b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)) return isEmptyItem(ri);
+          return false;
+        }
+        if (kind === "sec-prof" || kind === "sec-share" || kind === "sec-order") return false;
         if (asProf && kind !== "item-prof") return false;
         if (!asProf && kind !== "item-share") return false;
         return isEmptyItem(ri);
       };
       const writeAt = (ri) => {
         if (!list.rows[ri]) list.rows[ri] = tpBlankRow(list);
-        if (isTpForm(list) && asProf) {
+        if (isTpForm(list) && (asProf || asOrder)) {
           const b = tpFormBands(list);
-          const at = b.prof >= 0 ? b.prof : ri;
+          const at = asProf ? (b.prof >= 0 ? b.prof : ri) : (b.order >= 0 ? b.order : ri);
           const cur = String((list.rows[at] && list.rows[at][itemI]) || "").trim();
           const add = String(name || "").trim();
           list.rows[at][itemI] = cur && cur !== add ? cur + "\n" + add : add;
@@ -5532,19 +5829,23 @@
     function applyTpField(list, field, value) {
       if (!list) return;
       const tp = tpOf(list);
+      const next = String(value == null ? "" : value).trim();
       if (field === "matiere") {
-        tp.matiere = value === "SPC" ? "SPC" : "SVT";
+        const prevParts = tpPartiesOf(tp);
+        tp.matiere = next || "SVT";
         const parts = tpPartiesOf(tp);
-        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+        if (tp.partie && prevParts.indexOf(tp.partie) >= 0 && parts.indexOf(tp.partie) < 0) tp.partie = "";
       } else if (field === "niveau") {
-        if (TP_NIVEAUX.indexOf(value) >= 0) tp.niveau = value;
+        const prevParts = tpPartiesOf(tp);
+        if (next) tp.niveau = next;
         const parts = tpPartiesOf(tp);
-        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+        if (tp.partie && prevParts.indexOf(tp.partie) >= 0 && parts.indexOf(tp.partie) < 0) tp.partie = "";
       } else if (field === "partie") {
-        tp.partie = String(value || "");
+        tp.partie = String(value == null ? "" : value);
       } else if (field === "groupes") {
-        if (TP_GROUPES[value]) tp.groupes = value;
+        if (next) tp.groupes = next;
       }
+      writeTpFormMeta(list);
     }
 
     function tpFieldChoices(list, field) {
@@ -5569,7 +5870,7 @@
 
     function tpMetaBarHtml(list) {
       const tp = tpOf(list);
-      const groupeLab = TP_GROUPES[tp.groupes] || tp.groupes;
+      const groupeLab = tpGroupeLabel(tp);
       let html = '<div class="tp-meta-bar">';
       html += '<div class="tp-meta-main">';
       html += tpChipHtml(list, "matiere", "Matière", tp.matiere);
@@ -6819,11 +7120,11 @@
         const rowY = list.rowH && Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 0;
         const tpKind = isTpList(list) ? tpRowKindAt(list, ri) : "";
         const trCls = [stampCls.trim(), fluoCls.trim()];
-        if (tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") trCls.push("is-tp-section");
+        if (!tpForm && (tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order")) trCls.push("is-tp-section");
         if (tpKind === "poste") trCls.push("is-tp-poste");
         if (tpKind === "item-prof" || tpKind === "item-share" || tpKind === "item-order") trCls.push("is-tp-item");
         let trStyle = "";
-        if (tpForm && rowY > 0) trStyle = ' style="--row-h:' + rowY + 'mm"';
+        if (tpForm && rowY > 0) trStyle = ' style="height:' + rowY + 'mm;--row-h:' + rowY + 'mm"';
         else if (!tpForm && rowY) trStyle = ' style="--row-y:' + rowY + 'em"';
         html += '<tr class="' + trCls.filter(Boolean).join(" ") + '" data-lid="' + list.id + '" data-ri="' + ri + '"' + trStyle + '>';
         let lead = true;
@@ -6864,10 +7165,17 @@
             if (role) cls.push("is-tp-" + role);
           }
           const role = isTpList(list) ? tpColRole(list, i) : "";
+          const labelKind = tpForm ? tpFormLabelKind(list, ri, i) : "";
+          const matCell = tpForm && tpFormMatCell(list, ri, i);
+          const fieldAt = tpForm ? tpFormFieldAt(list, ri, i) : "";
+          if (labelKind) cls.push("is-tp-label");
+          if (matCell) cls.push("is-tp-mat");
           const freeze = !tpForm && (role === "classe" || role === "total" || role === "poste"
             || (isTpList(list) && (tpKind === "poste" || tpKind === "item-order" || ((tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") && role !== "item") || (role === "qty" && (tpKind === "poste" || tpKind.indexOf("sec-") === 0)))));
           let inner;
-          if (!tpForm && isTpList(list) && role === "item") {
+          if (tpForm) {
+            inner = tpFormCellInner(list, ri, i, row[i] || "", freeze);
+          } else if (!tpForm && isTpList(list) && role === "item") {
             const gutter = tpKind === "poste" ? escapeHtml(String(row[i] || "").trim()) : "";
             const shown = tpKind === "poste" ? "" : (row[i] || "");
             inner = '<span class="tp-item-line"><span class="tp-poste-gutter">' + gutter + "</span>" +
@@ -6878,6 +7186,12 @@
           let spanAttr = "";
           if (rs > 1) spanAttr += ' rowspan="' + rs + '" data-rs="' + rs + '"';
           if (cs > 1) spanAttr += ' colspan="' + cs + '" data-cs="' + cs + '"';
+          if (fieldAt) spanAttr += ' data-tp-field="' + fieldAt + '" data-lid="' + list.id + '"';
+          if (matCell) spanAttr += ' title="Double-clic pour choisir dans la liste de matériel"';
+          if (tpForm && rs > 1) {
+            const spanH = tpSpanHeightMm(list, ri, rs);
+            if (spanH > 0) spanAttr += ' style="--span-h:' + spanH + 'mm;height:' + spanH + 'mm"';
+          }
           html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '"' + spanAttr + '>' + handle() + inner;
           if (lastVis) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
@@ -6954,7 +7268,7 @@
             list.titles[0] = v;
             tp.titre = v;
           }
-          if (ri === 0 && ci === 2 && TP_NIVEAUX.indexOf(v) >= 0) tp.niveau = v;
+          if (ri === 0 && ci === 2) tp.niveau = v || tp.niveau;
           if (ri === 1 && ci === 2) tp.partie = (v === "Partie" ? "" : v);
           if (ri === 1 && ci === 0) {
             const parsed = Math.round(Number(String(v).replace(/[^\d]/g, "")));
@@ -7197,7 +7511,13 @@
       if (!targets.length) return;
       pushHist();
       state.orient = next;
-      targets.forEach((l) => { l.orient = next; });
+      targets.forEach((l) => {
+        l.orient = next;
+        if (isTpForm(l)) {
+          l.tpFitted = false;
+          l.tpFitPending = false;
+        }
+      });
       renderPreview();
       syncOrientRadios();
       syncOrientHint();
@@ -7208,6 +7528,10 @@
       const next = resolvedOrient(list, selectedCols(list).length) === "paysage" ? "portrait" : "paysage";
       pushHist();
       list.orient = next;
+      if (isTpForm(list)) {
+        list.tpFitted = false;
+        list.tpFitPending = false;
+      }
       renderPreview();
       syncOrientRadios();
       syncOrientHint();
@@ -7257,6 +7581,7 @@
             const cur = Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 6;
             list.rowH[ri] = clampTpRowMm(cur * fy);
           });
+          equalizeTpBandRowHeights(list);
         } else {
           visibleRowIndices(list).forEach((ri) => {
             const cur = rowEmOf(list, ri);
@@ -8461,30 +8786,42 @@
     }
 
     function fillTpToPage(list) {
-      if (!list || list.tpSized || !isTpForm(list)) return false;
+      if (!list || !isTpForm(list)) return false;
       const block = $("sheets").querySelector('.list-block[data-lid="' + list.id + '"]');
       const table = block && block.querySelector("table.liste");
       const sheet = block && block.closest(".sheet");
       const metrics = tpPageMetrics(list, sheet, block);
+      const key = tpFitSignature(list);
+      const keyChanged = list.tpFitKey !== key;
       if (!table || !sheet) {
         const ok = distributeTpRowHeights(list, metrics.targetMm);
-        if (!ok) list.tpFitted = true;
+        list.tpFitKey = key;
+        list.tpFitPending = true;
+        list.tpFitted = false;
+        if (!ok) {
+          list.tpFitted = true;
+          list.tpFitPending = false;
+        }
         return ok;
       }
       const hasMm = Object.keys(list.rowH || {}).length && !tpRowHLooksLikeEm(list);
-      if (!hasMm) {
+      if (keyChanged || !hasMm) {
         const ok = distributeTpRowHeights(list, metrics.targetMm);
-        if (!ok) list.tpFitted = true;
+        list.tpFitKey = key;
+        list.tpFitPending = true;
+        list.tpFitted = false;
         return ok;
       }
       const tableMm = table.offsetHeight * metrics.mmPerPx;
       const delta = metrics.targetMm - tableMm;
       if (Math.abs(delta) < 0.55) {
         list.tpFitted = true;
+        list.tpFitPending = false;
         return false;
       }
       const ok = adjustTpAbsorbHeights(list, delta);
       list.tpFitted = true;
+      list.tpFitPending = false;
       return ok;
     }
 
@@ -8907,14 +9244,17 @@
         ? tpMatTarget.ri : -1;
       const targetKind = targetRi >= 0 ? tpRowKindAt(list, targetRi) : "item-share";
       const asProf = targetKind === "item-prof" || targetKind === "sec-prof";
+      const asOrder = targetKind === "item-order" || targetKind === "sec-order";
       const row = (list.rows || []).find((r, ri) => {
         if (String((r && r[itemI]) || "").toLowerCase() !== label.toLowerCase()) return false;
         const k = tpRowKindAt(list, ri);
-        return asProf ? k === "item-prof" : k === "item-share";
+        if (asProf) return k === "item-prof" || k === "sec-prof";
+        if (asOrder) return k === "item-order" || k === "sec-order";
+        return k === "item-share";
       });
-      if (row) {
+      if (row && !asOrder && !isTpForm(list)) {
         row[qtyI] = String(clampTpQty((Number(row[qtyI]) || 0) + (qty || 1), asProf ? 0 : 1) || 1);
-      } else {
+      } else if (!row || asOrder) {
         placeTpItemOnRow(list, label, clampTpQty(qty, 1) || 1);
       }
       pullTpItemsFromRows(list);
@@ -9287,7 +9627,7 @@
         state.selectedIds = [];
         state.combineAsked = false;
       }
-      const shareRows = Math.max(6, Math.min(40, (clampEmptyRows(nRows) || 22) - 16));
+      const shareRows = Math.max(TP_SHARE_SLOTS, Math.min(40, (clampEmptyRows(nRows) || 22) - 16));
       const active = activeList();
       let list;
       if (active && (isBlankList(active) || isTpList(active))) {
@@ -10701,7 +11041,7 @@
         return;
       }
       if (e.target.closest(".block-move, [data-move-block]")) return;
-      if (e.target.closest("[data-tp-mat], .tp-chip, .tp-meta-bar")) {
+      if (e.target.closest("[data-tp-mat], .tp-chip, .tp-meta-bar, [data-tp-field]")) {
         const block = e.target.closest(".list-block[data-lid]");
         if (block) {
           const lid = Number(block.dataset.lid);
@@ -10822,12 +11162,15 @@
       const list = state.lists.find((l) => String(l.id) === String(block.dataset.lid));
       if (!list || !isTpList(list)) return;
       const cell = e.target.closest("td[data-ci], th[data-ci]");
+      const tr = e.target.closest("tr[data-ri]");
       const ci = cell ? Number(cell.dataset.ci) : tpColIndex(list, "item");
-      if (!Number.isInteger(ci) || tpColRole(list, ci) !== "item") return;
+      const ri = tr ? Number(tr.dataset.ri) : -1;
+      const formMat = isTpForm(list) && Number.isInteger(ri) && Number.isInteger(ci) && tpFormMatCell(list, ri, ci);
+      const oldMat = !isTpForm(list) && Number.isInteger(ci) && tpColRole(list, ci) === "item";
+      if (!formMat && !oldMat) return;
       e.preventDefault();
       if (list.id !== state.activeId) setActiveList(list.id, { scroll: false });
-      const tr = e.target.closest("tr[data-ri]");
-      tpMatTarget = { lid: list.id, ri: tr ? Number(tr.dataset.ri) : -1 };
+      tpMatTarget = { lid: list.id, ri: ri };
       openTpMatModal();
     });
 
@@ -10869,7 +11212,16 @@
     });
     document.querySelectorAll('input[name="marge"]').forEach((el) => {
       el.addEventListener("change", () => {
-        if (el.checked) { pushHist(); state.marge = el.value; renderPreview(); }
+        if (el.checked) {
+          pushHist();
+          state.marge = el.value;
+          state.lists.forEach((l) => {
+            if (!isTpForm(l)) return;
+            l.tpFitted = false;
+            l.tpFitPending = false;
+          });
+          renderPreview();
+        }
       });
     });
     document.querySelectorAll('input[name="orient"]').forEach((el) => {
@@ -10877,7 +11229,13 @@
         if (!el.checked) return;
         pushHist();
         state.orient = el.value;
-        selectedLists().forEach((l) => { l.orient = el.value; });
+        selectedLists().forEach((l) => {
+          l.orient = el.value;
+          if (isTpForm(l)) {
+            l.tpFitted = false;
+            l.tpFitPending = false;
+          }
+        });
         renderPreview();
         syncOrientHint();
       });
@@ -11046,6 +11404,13 @@
       $("loadFile").value = "";
     });
     $("styleBtn").addEventListener("click", openStyleModal);
+    const ytBell = $("ytBell");
+    if (ytBell) {
+      ytBell.addEventListener("click", () => {
+        ytBell.classList.add("is-tip");
+        window.setTimeout(() => ytBell.classList.remove("is-tip"), 3200);
+      });
+    }
     const pageOrientToggle = $("pageOrientToggle");
     if (pageOrientToggle) pageOrientToggle.addEventListener("click", toggleHudOrient);
 
@@ -11067,6 +11432,13 @@
         : field === "niveau" ? tp.niveau
         : field === "groupes" ? tp.groupes
         : (tp.partie || "");
+      const customOn = tpFieldIsCustom(list, field, current);
+      const pick = (val) => {
+        pushHist();
+        applyTpField(list, field, val);
+        closeTpChoiceMenu();
+        renderPreview();
+      };
       menu.innerHTML = "";
       choices.forEach((pair) => {
         const val = pair[0];
@@ -11075,20 +11447,46 @@
         btn.type = "button";
         btn.setAttribute("role", "option");
         btn.textContent = lab;
-        btn.classList.toggle("is-on", String(val) === String(current));
+        btn.classList.toggle("is-on", !customOn && String(val) === String(current));
         btn.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          pushHist();
-          applyTpField(list, field, val);
-          closeTpChoiceMenu();
-          renderPreview();
+          pick(val);
         });
         menu.appendChild(btn);
       });
+      const custom = document.createElement("div");
+      custom.className = "tp-choice-custom";
+      const input = document.createElement("input");
+      input.type = "text";
+      input.setAttribute("aria-label", "Autre valeur");
+      input.placeholder = "Autre…";
+      if (customOn) input.value = current;
+      const ok = document.createElement("button");
+      ok.type = "button";
+      ok.textContent = "OK";
+      const commit = () => {
+        const v = input.value.trim();
+        if (!v && field !== "partie") return;
+        pick(v);
+      };
+      ok.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        commit();
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commit();
+        }
+      });
+      custom.appendChild(input);
+      custom.appendChild(ok);
+      menu.appendChild(custom);
       menu.hidden = false;
       const r = anchor.getBoundingClientRect();
-      const mw = Math.max(r.width, 148);
+      const mw = Math.max(r.width, 168);
       menu.style.minWidth = mw + "px";
       let left = r.left;
       let top = r.bottom + 6;
@@ -11098,6 +11496,8 @@
         if (top + box.height > window.innerHeight - 8) top = Math.max(8, r.top - box.height - 6);
         menu.style.left = left + "px";
         menu.style.top = top + "px";
+        if (customOn) input.focus();
+        else input.blur();
       });
       menu.style.left = left + "px";
       menu.style.top = top + "px";
@@ -11129,23 +11529,28 @@
         openTpMatModal();
         return;
       }
-      const chip = e.target.closest(".tp-chip[data-tp-field]");
-      if (!chip) return;
+      const fieldEl = e.target.closest("[data-tp-field]");
+      if (!fieldEl) return;
+      if (e.target.closest(".tp-ngroups, .row-handle, .row-del, .row-resizer, .col-resizer")) return;
       e.preventDefault();
-      const list = state.lists.find((l) => String(l.id) === chip.dataset.lid);
+      const block = fieldEl.closest(".list-block[data-lid]");
+      const lid = fieldEl.dataset.lid || (block && block.dataset.lid);
+      const list = state.lists.find((l) => String(l.id) === String(lid));
       if (!list || !isTpList(list)) return;
       if (list.id !== state.activeId) setActiveList(list.id, { scroll: false });
-      if (!$("tpChoiceMenu").hidden && $("tpChoiceMenu").dataset.field === chip.dataset.tpField) {
+      const field = fieldEl.dataset.tpField;
+      if (!$("tpChoiceMenu").hidden && $("tpChoiceMenu").dataset.field === field && $("tpChoiceMenu").dataset.lid === String(list.id)) {
         closeTpChoiceMenu();
         return;
       }
-      $("tpChoiceMenu").dataset.field = chip.dataset.tpField;
-      openTpChoiceMenu(chip, list, chip.dataset.tpField);
+      $("tpChoiceMenu").dataset.field = field;
+      $("tpChoiceMenu").dataset.lid = String(list.id);
+      openTpChoiceMenu(fieldEl, list, field);
     });
     document.addEventListener("pointerdown", (e) => {
       const menu = $("tpChoiceMenu");
       if (!menu || menu.hidden) return;
-      if (e.target.closest("#tpChoiceMenu") || e.target.closest(".tp-chip[data-tp-field]")) return;
+      if (e.target.closest("#tpChoiceMenu") || e.target.closest("[data-tp-field]")) return;
       closeTpChoiceMenu();
     });
     const tpOpenCatalog = $("tpOpenCatalog");
