@@ -211,6 +211,9 @@
     .fold-panel {
       padding: 4px 18px 10px;
     }
+    #modeFoldWrap .fold-panel {
+      padding-bottom: max(18px, env(safe-area-inset-bottom, 0px));
+    }
     .menu-fold > .btn { width: 100%; }
     .fold-head {
       appearance: none;
@@ -258,7 +261,9 @@
     .fold-head[hidden],
     .menu-fold[hidden],
     .fold-panel[hidden],
-    #displayFoldWrap[hidden] { display: none !important; }
+    #displayFoldWrap[hidden],
+    #modeFoldWrap[hidden],
+    #infoBlock[hidden] { display: none !important; }
 
     .brand {
       display: flex;
@@ -590,10 +595,27 @@
     }
 
     .list-block.is-editing {
-      outline: 2px dashed var(--seal);
-      outline-offset: 6px;
-      border-radius: 8px;
       position: relative;
+    }
+    .list-block.is-editing .liste-wrap {
+      border-radius: 3px;
+    }
+    .app.edit-frame-dash .list-block.is-editing .liste-wrap,
+    .app.edit-frame-dash .list-block.is-editing.is-blank-page,
+    .app.edit-frame-dash .list-block.is-editing.is-tp-page {
+      outline: 2px dashed var(--seal);
+      outline-offset: 5px;
+    }
+    .app.edit-frame-solid .list-block.is-editing .liste-wrap,
+    .app.edit-frame-solid .list-block.is-editing.is-blank-page,
+    .app.edit-frame-solid .list-block.is-editing.is-tp-page {
+      outline: 2px solid var(--seal);
+      outline-offset: 5px;
+    }
+    .app.edit-frame-off .list-block.is-editing .liste-wrap,
+    .app.edit-frame-off .list-block.is-editing.is-blank-page,
+    .app.edit-frame-off .list-block.is-editing.is-tp-page {
+      outline: none;
     }
     .page-sheet-del {
       display: none;
@@ -1625,6 +1647,18 @@
     .page-orient-toggle.is-paysage .page-orient-sheet {
       transform: rotate(90deg);
     }
+    .sheet-caption {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 7;
+      pointer-events: auto;
+    }
+    .sheet-caption .page-orient-toggle {
+      width: 34px;
+      height: 34px;
+      box-shadow: 0 6px 16px rgba(14, 143, 140, 0.28);
+    }
 
     .sheet-frame {
       width: var(--page-w);
@@ -1787,6 +1821,169 @@
       flex-direction: column;
     }
     .list-block.is-blank-page .blank-hint { flex: 1; }
+    .list-block.is-tp-page {
+      min-height: calc(var(--page-h) - 2 * var(--page-margin));
+      display: flex;
+      flex-direction: column;
+    }
+    .tp-sheet {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      gap: 3.5mm;
+    }
+    .tp-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 3.5mm;
+      align-items: center;
+      padding-bottom: 2.5mm;
+      border-bottom: 1.4pt solid var(--d-line, var(--teal-deep));
+    }
+    .tp-badge {
+      background: var(--d-accent, var(--teal-deep));
+      color: var(--d-accent-ink, #fff);
+      font-weight: 800;
+      font-size: 11pt;
+      letter-spacing: 0.06em;
+      padding: 3px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .tp-title {
+      font-size: var(--title-pt, 14pt);
+      font-weight: 800;
+      color: var(--d-title, var(--teal-deep));
+      margin: 0;
+      line-height: 1.2;
+    }
+    .tp-niveau {
+      font-weight: 800;
+      color: var(--d-title, var(--teal-deep));
+      font-size: 12pt;
+      white-space: nowrap;
+    }
+    .tp-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5mm 8mm;
+      font-size: 10pt;
+      color: var(--d-sub, var(--ink-soft));
+      font-weight: 700;
+    }
+    .tp-meta strong { color: var(--d-title, var(--teal-deep)); }
+    .tp-table-wrap { flex: 1; }
+    .tp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+    }
+    .tp-table th {
+      text-align: left;
+      font-size: var(--th-pt, 7.5pt);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--d-th, var(--teal-deep));
+      border-bottom: 1.2pt solid var(--d-line, var(--teal-deep));
+      padding: 0.35em 0.55em;
+    }
+    .tp-table td {
+      border-bottom: 0.4pt solid var(--d-rule, var(--rule));
+      padding: 0.42em 0.55em;
+      vertical-align: middle;
+    }
+    .tp-table tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)); }
+    .tp-table .num {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      width: 16%;
+      white-space: nowrap;
+    }
+    .tp-table tfoot td {
+      font-weight: 800;
+      border-top: 1.2pt solid var(--d-line, var(--teal-deep));
+      border-bottom: 0;
+      background: transparent;
+    }
+    .tp-empty { color: var(--ink-soft); font-style: italic; }
+    .sheet.design-bandeau .tp-head {
+      background: var(--d-accent, var(--teal-deep));
+      color: var(--d-accent-ink, #fff);
+      padding: 3.5mm 4mm;
+      border: 0;
+      border-radius: 4px;
+    }
+    .sheet.design-bandeau .tp-title,
+    .sheet.design-bandeau .tp-niveau { color: inherit; }
+    .sheet.design-bandeau .tp-badge {
+      background: rgba(255, 255, 255, 0.18);
+      color: inherit;
+    }
+
+    .seg.niveaux {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-radius: 18px;
+    }
+    .seg.quad {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-radius: 18px;
+    }
+    .tp-picks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 8px;
+    }
+    .tp-picks button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.16);
+      color: var(--cream);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.25;
+    }
+    .tp-picks button.is-on {
+      background: #fff;
+      color: var(--teal-deep);
+    }
+    .tp-cat-items button { max-width: 100%; }
+    .tp-item-head,
+    .tp-item-row {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 48px 40px 34px;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .tp-item-head {
+      margin: 0 0 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+    }
+    .tp-item-row .field { padding: 6px 8px; border-radius: 12px; }
+    .tp-item-tot {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--cream);
+    }
+    .tp-item-sum {
+      margin: 4px 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cream-dim);
+    }
     .list-block + .list-block {
       padding-left: 3.5mm;
       border-left: 0.4pt solid var(--d-rule, var(--rule));
@@ -1990,6 +2187,8 @@
       position: relative;
       width: 100%;
       max-width: none;
+      box-sizing: border-box;
+      overflow: visible;
     }
     .liste-wrap > .liste { width: 100%; }
 
@@ -2760,7 +2959,7 @@
       }
 
       .sheets { gap: 0; align-items: stretch; }
-      .sheet-meta, .sheet-paper, .sheet-guide, .sheet-limit, .page-format-hud { display: none !important; }
+      .sheet-meta, .sheet-paper, .sheet-guide, .sheet-limit, .page-format-hud, .sheet-caption { display: none !important; }
       .sheet-frame, .sheet-stage { display: contents; }
 
       .sheet {
@@ -2802,6 +3001,19 @@
         print-color-adjust: exact;
       }
       .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
+      .tp-table th,
+      .tp-table td,
+      .tp-badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .tp-table tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
+      .sheet.design-bandeau .tp-head {
+        background: var(--d-accent) !important;
+        color: var(--d-accent-ink) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
       .liste td.is-fluo-vert,
       .liste tbody tr:nth-child(even) td.is-fluo-vert { background: #d4f5c8 !important; }
@@ -2836,7 +3048,8 @@
       }
       .dot path { fill: currentColor !important; }
       .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint { display: none !important; }
-      .list-block.is-editing { outline: none !important; }
+      .list-block.is-editing,
+      .list-block.is-editing .liste-wrap { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
       .list-title:focus,
@@ -2850,7 +3063,7 @@
 <body>
   <a class="skip-link" href="#workspace">Aller à l’aperçu</a>
   <div class="sr-only" id="a11yStatus" aria-live="polite" aria-atomic="true"></div>
-  <div class="app" id="app">
+  <div class="app edit-frame-dash" id="app">
     <aside class="panel no-print" id="panel" aria-label="Options EpiCSV">
       <div class="panel-waves" aria-hidden="true"></div>
       <div class="panel-head">
@@ -3049,13 +3262,17 @@
         </div>
         </div>
         <button type="button" class="linkish" id="restoreRows" hidden style="margin-top:8px"></button>
-      </section>
-      </div>
-      </div>
-      <div class="panel-body">
 
+        <div class="opt-label">Cadre d’édition</div>
+        <div class="seg" id="editFrameSeg">
+          <label><input type="radio" name="editFrame" value="off" /><span>Aucun</span></label>
+          <label><input type="radio" name="editFrame" value="tirets" checked /><span>Tirets</span></label>
+          <label><input type="radio" name="editFrame" value="plein" /><span>Plein</span></label>
+        </div>
+        <p class="hint-note" style="margin:8px 0 0">Autour du tableau de la page active. Suit largeur et hauteur.</p>
+      </section>
       <section class="block" id="infoBlock" hidden>
-        <h2>Informations</h2>
+        <div class="opt-label" style="margin-top:0">Informations</div>
         <div class="info-line">
           <label class="check-row" style="margin-top:0">
             <input type="checkbox" id="optBadges" />
@@ -3101,6 +3318,64 @@
         </div>
         </div>
       </section>
+      </div>
+      </div>
+      <div id="modeFoldWrap">
+      <button class="fold-head" id="modeFoldBtn" type="button" aria-expanded="true" aria-controls="modeFold">
+        Mode
+        <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
+      </button>
+      <div class="fold-panel" id="modeFold">
+      <section class="block" id="modeBlock">
+        <div class="seg duo" id="pageModeSeg">
+          <label><input type="radio" name="pageMode" value="liste" checked /><span>Liste</span></label>
+          <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
+        </div>
+        <div id="tpForm" hidden>
+          <div class="opt-label">Matière</div>
+          <div class="seg duo">
+            <label><input type="radio" name="tpMatiere" value="SVT" checked /><span>SVT</span></label>
+            <label><input type="radio" name="tpMatiere" value="SPC" /><span>SPC</span></label>
+          </div>
+          <div class="opt-label">Titre</div>
+          <input class="field" id="tpTitre" type="text" placeholder="Titre de la séance" aria-label="Titre de la séance" />
+          <div class="opt-label">Niveau</div>
+          <div class="seg niveaux" id="tpNiveauSeg">
+            <label><input type="radio" name="tpNiveau" value="6e" checked /><span>6e</span></label>
+            <label><input type="radio" name="tpNiveau" value="5e" /><span>5e</span></label>
+            <label><input type="radio" name="tpNiveau" value="4e" /><span>4e</span></label>
+            <label><input type="radio" name="tpNiveau" value="3e" /><span>3e</span></label>
+            <label><input type="radio" name="tpNiveau" value="2nde" /><span>2nde</span></label>
+            <label><input type="radio" name="tpNiveau" value="1re" /><span>1re</span></label>
+            <label><input type="radio" name="tpNiveau" value="Tle" /><span>Tle</span></label>
+          </div>
+          <div class="opt-label">Partie</div>
+          <div class="tp-picks" id="tpParties"></div>
+          <div class="opt-label">Groupes</div>
+          <div class="seg quad">
+            <label><input type="radio" name="tpGroupes" value="individuels" /><span>Individuels</span></label>
+            <label><input type="radio" name="tpGroupes" value="binomes" checked /><span>Binômes</span></label>
+            <label><input type="radio" name="tpGroupes" value="trinomes" /><span>Trinômes</span></label>
+            <label><input type="radio" name="tpGroupes" value="ilots" /><span>Îlots</span></label>
+          </div>
+          <div class="opt-label">Nombre de groupes</div>
+          <input class="field field-num" id="tpNGroupes" type="number" min="1" max="40" value="12" aria-label="Nombre de groupes" />
+          <div class="opt-label">Matériel par poste</div>
+          <p class="hint-note">Quantité par poste × groupes, plus l’extra professeur (défaut +1).</p>
+          <div class="tp-item-head" aria-hidden="true"><span>Poste</span><span>Nom</span><span>Prof</span><span>Total</span><span></span></div>
+          <div id="tpItems"></div>
+          <p class="tp-item-sum" id="tpItemsSum"></p>
+          <div class="opt-label">Catalogue</div>
+          <input class="field" id="tpSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
+          <div class="tp-picks" id="tpCats"></div>
+          <div class="tp-picks tp-cat-items" id="tpCatItems"></div>
+          <div class="add-line">
+            <input class="field" id="tpCustom" type="text" placeholder="Matériel libre (ex. bouchons)" aria-label="Nom de matériel libre" />
+            <button class="btn-mini" id="tpCustomBtn" type="button">Ajouter</button>
+          </div>
+        </div>
+      </section>
+      </div>
       </div>
     </aside>
 
@@ -3254,7 +3529,7 @@
       <div class="style-picks">
         <label><input type="checkbox" id="stDesign" checked /><span>Design<small>Style, couleurs, forme, titre</small></span></label>
         <label><input type="checkbox" id="stSizes" checked /><span>Tailles<small>Polices et hauteur de ligne</small></span></label>
-        <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation</small></span></label>
+        <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation, cadre d’édition</small></span></label>
         <label><input type="checkbox" id="stInfo" checked /><span>Informations<small>Pastilles, légende, colonne Rq.</small></span></label>
         <label><input type="checkbox" id="stCols" checked /><span>Colonnes<small>Ordre, visibilité, largeurs, alignements, colonnes ajoutées</small></span></label>
       </div>
@@ -3406,6 +3681,7 @@
       ],
       badgeShape: "rond",
       sharedCols: [],
+      editFrame: "tirets",
     };
 
     let nextId = 1;
@@ -3424,6 +3700,48 @@
     let heldStyle = null;
     let styleDlgRestore = null;
     const HIST_MAX = 80;
+    let tpUi = { cat: "", q: "" };
+    const ORIENT_TOGGLE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
+    const MATERIEL_CATALOG = [{"id":"1","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"50 mL"},{"id":"2","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"100 mL"},{"id":"3","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"250 mL"},{"id":"4","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"10 mL"},{"id":"5","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"25 mL"},{"id":"6","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"50 mL"},{"id":"7","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"10 mL"},{"id":"8","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"50 mL"},{"id":"9","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"100 mL"},{"id":"10","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"100 mL"},{"id":"11","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"250 mL"},{"id":"12","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"500 mL"},{"id":"13","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"50 mL"},{"id":"14","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"100 mL"},{"id":"15","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"250 mL"},{"id":"16","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"1 mL"},{"id":"17","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"5 mL"},{"id":"18","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"10 mL"},{"id":"19","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"5 mL"},{"id":"20","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"10 mL"},{"id":"21","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"20 mL"},{"id":"22","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"10 mL"},{"id":"23","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"15 mL"},{"id":"24","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"20 mL"},{"id":"25","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 60 mm"},{"id":"26","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 80 mm"},{"id":"27","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 100 mm"},{"id":"28","rubrique":"materielMesure","sous":"","nom":"Balance électronique","details":""},{"id":"29","rubrique":"materielMesure","sous":"","nom":"Chronomètre","details":""},{"id":"30","rubrique":"materielMesure","sous":"","nom":"Loupe","details":""},{"id":"31","rubrique":"materielMesure","sous":"","nom":"Microscope optique","details":""},{"id":"32","rubrique":"materielMesure","sous":"","nom":"Papier pH","details":""},{"id":"33","rubrique":"materielMesure","sous":"","nom":"pH-mètre","details":""},{"id":"34","rubrique":"materielMesure","sous":"","nom":"Règle graduée","details":""},{"id":"35","rubrique":"materielMesure","sous":"","nom":"Thermomètre","details":""},{"id":"36","rubrique":"chauffageSupport","sous":"","nom":"Agitateur magnétique","details":""},{"id":"37","rubrique":"chauffageSupport","sous":"","nom":"Barreau aimanté","details":""},{"id":"38","rubrique":"chauffageSupport","sous":"","nom":"Bec Bunsen","details":""},{"id":"39","rubrique":"chauffageSupport","sous":"","nom":"Plaque chauffante","details":""},{"id":"40","rubrique":"chauffageSupport","sous":"","nom":"Support universel","details":""},{"id":"41","rubrique":"chauffageSupport","sous":"","nom":"Trépied","details":""},{"id":"42","rubrique":"materielBiologique","sous":"","nom":"Boîte de Pétri","details":""},{"id":"43","rubrique":"materielBiologique","sous":"","nom":"Ciseaux","details":""},{"id":"44","rubrique":"materielBiologique","sous":"","nom":"Épingles de dissection","details":""},{"id":"45","rubrique":"materielBiologique","sous":"","nom":"Lame porte-objet","details":""},{"id":"46","rubrique":"materielBiologique","sous":"","nom":"Lamelle couvre-objet","details":""},{"id":"47","rubrique":"materielBiologique","sous":"","nom":"Pipette Pasteur","details":""},{"id":"48","rubrique":"materielBiologique","sous":"","nom":"Scalpel","details":""},{"id":"49","rubrique":"materielBiologique","sous":"","nom":"Spatule","details":""},{"id":"50","rubrique":"indicateurs","sous":"","nom":"Bleu de bromothymol (BBT) - Indicateur de CO₂ / pH physiologique (jaune ↔ vert ↔ bleu)","details":""},{"id":"51","rubrique":"indicateurs","sous":"","nom":"Eau iodée - Indicateur de l’amidon (jaune ↔ bleu-noir)","details":""},{"id":"52","rubrique":"indicateurs","sous":"","nom":"Lugol - Indicateur de l’amidon (version iodée plus concentrée)","details":""},{"id":"53","rubrique":"indicateurs","sous":"","nom":"Phénolphtaléine - Indicateur de pH (incolore ↔ rose, milieu basique)","details":""},{"id":"54","rubrique":"indicateurs","sous":"","nom":"Rouge de méthyle - Indicateur de pH (rouge ↔ jaune)","details":""},{"id":"55","rubrique":"indicateurs","sous":"","nom":"Vert de bromocrésol - Indicateur de pH (jaune ↔ bleu)","details":""},{"id":"56","rubrique":"indicateurs","sous":"","nom":"Papier pH universel - Indicateur multi-plages de pH","details":""},{"id":"57","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,1 mol·L⁻¹"},{"id":"58","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,5 mol·L⁻¹"},{"id":"59","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"1,0 mol·L⁻¹"},{"id":"60","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,1 mol·L⁻¹"},{"id":"61","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,5 mol·L⁻¹"},{"id":"62","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"1,0 mol·L⁻¹"},{"id":"63","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"rinçage"},{"id":"64","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"solvant de dilution"},{"id":"65","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"10 g·L⁻¹"},{"id":"66","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"20 g·L⁻¹"},{"id":"67","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"50 g·L⁻¹"},{"id":"68","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,1 mol·L⁻¹"},{"id":"69","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,5 mol·L⁻¹"},{"id":"70","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,01 mol·L⁻¹"},{"id":"71","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,05 mol·L⁻¹"},{"id":"72","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (respiration)","details":""},{"id":"73","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (réaction contrôlée)","details":""},{"id":"74","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"1 g·L⁻¹"},{"id":"75","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"5 g·L⁻¹"},{"id":"76","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"diluée"},{"id":"77","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"standard"},{"id":"78","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"dilué"},{"id":"79","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"standard"},{"id":"80","rubrique":"microscopieSV","sous":"","nom":"Cellules buccales humaines","details":""},{"id":"81","rubrique":"microscopieSV","sous":"","nom":"Coupe d’anthère (pollen)","details":""},{"id":"82","rubrique":"microscopieSV","sous":"","nom":"Coupe d’intestin grêle","details":""},{"id":"83","rubrique":"microscopieSV","sous":"","nom":"Coupe de feuille (dicotylédone)","details":""},{"id":"84","rubrique":"microscopieSV","sous":"","nom":"Coupe de racine","details":""},{"id":"85","rubrique":"microscopieSV","sous":"","nom":"Coupe de tige","details":""},{"id":"86","rubrique":"microscopieSV","sous":"","nom":"Épiderme d’oignon","details":""},{"id":"87","rubrique":"microscopieSV","sous":"","nom":"Foie (tissu hépatique)","details":""},{"id":"88","rubrique":"microscopieSV","sous":"","nom":"Levures","details":""},{"id":"89","rubrique":"microscopieSV","sous":"","nom":"Muscle lisse","details":""},{"id":"90","rubrique":"microscopieSV","sous":"","nom":"Muscle strié","details":""},{"id":"91","rubrique":"microscopieSV","sous":"","nom":"Ovaires (coupe histologique)","details":""},{"id":"92","rubrique":"microscopieSV","sous":"","nom":"Pancréas (îlots de Langerhans)","details":""},{"id":"93","rubrique":"microscopieSV","sous":"","nom":"Peau humaine","details":""},{"id":"94","rubrique":"microscopieSV","sous":"","nom":"Poumon (alvéoles)","details":""},{"id":"95","rubrique":"microscopieSV","sous":"","nom":"Rein (néphron)","details":""},{"id":"96","rubrique":"microscopieSV","sous":"","nom":"Sang humain (frottis)","details":""},{"id":"97","rubrique":"microscopieSV","sous":"","nom":"Spermatozoïdes","details":""},{"id":"98","rubrique":"microscopieSV","sous":"","nom":"Testicule (tubes séminifères)","details":""},{"id":"99","rubrique":"microscopieSV","sous":"","nom":"Tissu nerveux","details":""},{"id":"100","rubrique":"microscopieSV","sous":"","nom":"Xylème","details":""},{"id":"101","rubrique":"microscopieSV","sous":"","nom":"Phloème","details":""},{"id":"102","rubrique":"microscopieST","sous":"","nom":"Basalte (structure microlitique)","details":""},{"id":"103","rubrique":"microscopieST","sous":"","nom":"Calcaire à foraminifères","details":""},{"id":"104","rubrique":"microscopieST","sous":"","nom":"Foraminifères Crétacé (= Maastrichtien) il y a 66 Ma","details":""},{"id":"105","rubrique":"microscopieST","sous":"","nom":"Foraminifères Tertiaire (= Danien) il y a 64 Ma","details":""},{"id":"106","rubrique":"microscopieST","sous":"","nom":"Gabbro","details":""},{"id":"107","rubrique":"microscopieST","sous":"","nom":"Gneiss (métamorphisme régional)","details":""},{"id":"108","rubrique":"microscopieST","sous":"","nom":"Granite","details":""},{"id":"109","rubrique":"microscopieST","sous":"","nom":"Marbre (métamorphisme du calcaire)","details":""},{"id":"110","rubrique":"microscopieST","sous":"","nom":"Péridotite","details":""},{"id":"111","rubrique":"microscopieST","sous":"","nom":"Quartzite","details":""},{"id":"112","rubrique":"microscopieST","sous":"","nom":"Schiste (foliation métamorphique)","details":""},{"id":"113","rubrique":"microscopieST","sous":"","nom":"Amphibolite (métamorphisme)","details":""},{"id":"114","rubrique":"microscopieST","sous":"","nom":"Éclogite (métamorphisme haute pression)","details":""},{"id":"115","rubrique":"microscopieST","sous":"","nom":"Radiolarites (crises océaniques)","details":""},{"id":"116","rubrique":"microscopieST","sous":"","nom":"Grès (sédimentaire)","details":""},{"id":"117","rubrique":"microscopieST","sous":"","nom":"Calcite recristallisée (diagenèse)","details":""},{"id":"118","rubrique":"geologieMac","sous":"","nom":"Argile","details":""},{"id":"119","rubrique":"geologieMac","sous":"","nom":"Basalte","details":""},{"id":"120","rubrique":"geologieMac","sous":"","nom":"Calcaire","details":""},{"id":"121","rubrique":"geologieMac","sous":"","nom":"Gabbro","details":""},{"id":"122","rubrique":"geologieMac","sous":"","nom":"Gneiss","details":""},{"id":"123","rubrique":"geologieMac","sous":"","nom":"Granite","details":""},{"id":"124","rubrique":"geologieMac","sous":"","nom":"Grès","details":""},{"id":"125","rubrique":"geologieMac","sous":"","nom":"Marbre","details":""},{"id":"126","rubrique":"geologieMac","sous":"","nom":"Péridotite","details":""},{"id":"127","rubrique":"geologieMac","sous":"","nom":"Schiste","details":""},{"id":"128","rubrique":"securite","sous":"","nom":"Blouse","details":""},{"id":"129","rubrique":"securite","sous":"","nom":"Gants","details":""},{"id":"130","rubrique":"securite","sous":"","nom":"Lunettes de protection","details":""}];
+    const MATERIEL_RUBRIQUES = [
+      ["verrerie", "Verrerie"],
+      ["materielMesure", "Mesure"],
+      ["chauffageSupport", "Chauffage"],
+      ["materielBiologique", "Biologie"],
+      ["indicateurs", "Indicateurs"],
+      ["solutions", "Solutions"],
+      ["microscopieSV", "Lames SV"],
+      ["microscopieST", "Lames ST"],
+      ["geologieMac", "Géologie"],
+      ["securite", "Sécurité"],
+    ];
+    const TP_NIVEAUX = ["6e", "5e", "4e", "3e", "2nde", "1re", "Tle"];
+    const TP_GROUPES = {
+      individuels: "individuels",
+      binomes: "binômes",
+      trinomes: "trinômes",
+      ilots: "îlots",
+    };
+    const TP_PARTIES = {
+      SVT: {
+        "6e": ["Le vivant et son environnement", "Peuplement d’un milieu", "Origine de la matière des êtres vivants", "Diversité, parentés et unité du vivant", "La Terre, une planète du système solaire"],
+        "5e": ["Respiration et occupation des milieux", "Fonctionnement de l’organisme et besoin d’énergie", "Reproduction des êtres vivants", "Géologie : érosion et sédimentation"],
+        "4e": ["Nutrition et digestion", "Circulation et échanges", "Relais nerveux", "Reproduction sexuée", "Activité interne du globe"],
+        "3e": ["Diversité et stabilité génétique", "Évolution des espèces", "Responsabilité humaine en matière de santé et d’environnement", "Risques sismiques et volcaniques"],
+        "2nde": ["La Terre, la vie et l’organisation du vivant", "Enjeux contemporains de la planète", "Corps humain et santé"],
+        "1re": ["Génétique et expression du patrimoine", "La Terre, la vie et l’évolution du vivant", "Enjeux contemporains de la planète"],
+        "Tle": ["Génétique et évolution", "À la recherche du passé géologique de notre planète", "De la plante sauvage à la plante domestiquée", "Corps humain et santé"],
+      },
+      SPC: {
+        "6e": ["Matière à l’échelle macroscopique", "Mélanges et séparations", "États de la matière", "Circuits électriques simples"],
+        "5e": ["Constitution de la matière", "Transformations chimiques", "Signaux sonores"],
+        "4e": ["Organisation et transformations de la matière", "Mouvement et interactions", "Énergie", "Signaux"],
+        "3e": ["Organisation et transformations de la matière", "Mouvements et interactions", "Énergie : conversions et transferts", "Signaux et information"],
+        "2nde": ["Constitution et transformations de la matière", "Mouvement et interactions", "Ondes et signaux", "L’énergie"],
+        "1re": ["Constitution et transformations de la matière", "Mouvement et interactions", "Énergie : conversions et transferts", "Ondes et signaux"],
+        "Tle": ["Constitution et transformations de la matière", "Mouvement et gravitation", "Énergie : conversions et transferts", "Ondes et matière"],
+      },
+    };
     const $ = (id) => document.getElementById(id);
     const drop = $("drop");
     const fileInput = $("file");
@@ -3487,6 +3805,23 @@
 
     function normalizeOrient(v) {
       return v === "portrait" || v === "paysage" || v === "auto" ? v : "";
+    }
+
+    function normalizeEditFrame(v) {
+      return v === "off" || v === "plein" || v === "tirets" ? v : "tirets";
+    }
+
+    function syncEditFrame() {
+      const v = normalizeEditFrame(state.editFrame);
+      state.editFrame = v;
+      if (appEl) {
+        appEl.classList.toggle("edit-frame-off", v === "off");
+        appEl.classList.toggle("edit-frame-solid", v === "plein");
+        appEl.classList.toggle("edit-frame-dash", v === "tirets");
+      }
+      document.querySelectorAll('input[name="editFrame"]').forEach((el) => {
+        el.checked = el.value === v;
+      });
     }
 
     function listOrient(list) {
@@ -3553,7 +3888,9 @@
     function resolvedOrient(list, colCount) {
       if (combining()) return "paysage";
       let orient = listOrient(list);
-      if (orient === "auto") orient = colCount >= 8 ? "paysage" : "portrait";
+      if (orient === "auto") {
+        orient = isTpList(list) ? "paysage" : (colCount >= 8 ? "paysage" : "portrait");
+      }
       return orient;
     }
 
@@ -3644,6 +3981,7 @@
         badges: state.badges,
         badgeShape: state.badgeShape,
         sharedCols: state.sharedCols,
+        editFrame: state.editFrame,
       }));
     }
 
@@ -3725,10 +4063,17 @@
       state.badges = s.badges || [];
       state.badgeShape = normalizeBadgeShape(s.badgeShape);
       state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols : [];
+      state.editFrame = normalizeEditFrame(s.editFrame);
       state.lists.forEach((l) => {
         if (!l) return;
         l.marks = hydrateMarks(l.marks);
         if (!normalizeOrient(l.orient)) l.orient = normalizeOrient(state.orient) || "auto";
+        if (l.mode === "tp") {
+          l.tp = hydrateTp(l.tp);
+          l.blank = false;
+        } else {
+          l.mode = "";
+        }
         ensureAlign(l);
       });
       prunePageSelection();
@@ -3970,13 +4315,109 @@
         blank: false,
         keepEmptyRows: false,
         orient: "auto",
+        mode: "",
+        tp: null,
       };
+    }
+
+    function isTpList(list) {
+      return Boolean(list && list.mode === "tp");
     }
 
     function isBlankList(list) {
       if (!list) return false;
+      if (isTpList(list)) return false;
       if (list.blank) return true;
       return !list.headers.length && !list.rows.length;
+    }
+
+    function defaultTp() {
+      return {
+        matiere: "SVT",
+        titre: "",
+        niveau: "6e",
+        partie: "",
+        groupes: "binomes",
+        nGroupes: 12,
+        items: [],
+      };
+    }
+
+    function clampTpQty(n, fallback) {
+      const v = Math.round(Number(n));
+      if (!Number.isFinite(v) || v < 0) return fallback;
+      return Math.min(999, v);
+    }
+
+    function hydrateTpItem(raw) {
+      if (!raw) return null;
+      const name = String(raw.name || "").trim();
+      if (!name) return null;
+      return {
+        name: name,
+        qty: clampTpQty(raw.qty, 1) || 1,
+        extra: raw.extra == null ? 1 : clampTpQty(raw.extra, 1),
+      };
+    }
+
+    function hydrateTp(raw) {
+      const d = defaultTp();
+      if (!raw || typeof raw !== "object") return d;
+      if (raw.matiere === "SPC" || raw.matiere === "SVT") d.matiere = raw.matiere;
+      d.titre = String(raw.titre || "");
+      if (TP_NIVEAUX.indexOf(raw.niveau) >= 0) d.niveau = raw.niveau;
+      d.partie = String(raw.partie || "");
+      if (TP_GROUPES[raw.groupes]) d.groupes = raw.groupes;
+      const n = Math.round(Number(raw.nGroupes));
+      d.nGroupes = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 12;
+      d.items = Array.isArray(raw.items) ? raw.items.map(hydrateTpItem).filter(Boolean) : [];
+      const parts = ((TP_PARTIES[d.matiere] || {})[d.niveau] || []);
+      if (d.partie && parts.indexOf(d.partie) < 0) d.partie = "";
+      return d;
+    }
+
+    function tpOf(list) {
+      if (!list) return defaultTp();
+      if (!list.tp) list.tp = defaultTp();
+      return list.tp;
+    }
+
+    function tpItemTotal(item, nGroupes) {
+      return (Number(item.qty) || 0) * (Number(nGroupes) || 0) + (Number(item.extra) || 0);
+    }
+
+    function tpPartiesOf(tp) {
+      return ((TP_PARTIES[(tp && tp.matiere) || "SVT"] || {})[(tp && tp.niveau) || "6e"] || []).slice();
+    }
+
+    function materielLabel(item) {
+      const nom = (item && item.nom) || "";
+      const d = (item && item.details) || "";
+      return d ? nom + " — " + d : nom;
+    }
+
+    function convertToTp(list) {
+      if (!list) return list;
+      list.mode = "tp";
+      list.blank = false;
+      list.orient = "paysage";
+      list.tp = hydrateTp(list.tp);
+      if (!list.name || /^Page \d+$/i.test(list.name)) list.name = "Demande de matériel";
+      return list;
+    }
+
+    function makeTpList() {
+      return convertToTp(makeBlankList("Demande de matériel"));
+    }
+
+    function clearTpMode(list) {
+      if (!list) return;
+      list.mode = "";
+      list.tp = null;
+    }
+
+    function listIsPrintable(list) {
+      return isTpList(list) || (!isBlankList(list) && selectedCols(list).length);
     }
 
     function nextBlankName() {
@@ -4046,6 +4487,7 @@
       list.blank = false;
       list.sample = false;
       list.keepEmptyRows = Boolean(opts && opts.keepEmptyRows);
+      clearTpMode(list);
       applySharedCols(list);
       if (state.showNotes) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
@@ -4258,6 +4700,14 @@
       list.blank = Boolean(raw.blank) || (!headers.length && !rows.length);
       list.keepEmptyRows = Boolean(raw.keepEmptyRows);
       list.orient = normalizeOrient(raw.orient) || normalizeOrient(state.orient) || "auto";
+      if (raw.mode === "tp") {
+        list.mode = "tp";
+        list.tp = hydrateTp(raw.tp);
+        list.blank = false;
+      } else {
+        list.mode = "";
+        list.tp = null;
+      }
       list.rowH = {};
       Object.keys(raw.rowH || {}).forEach((k) => {
         const n = Number(raw.rowH[k]);
@@ -4427,7 +4877,7 @@
     }
 
     function inferSharedCols(lists) {
-      const filled = (lists || []).filter((l) => !isBlankList(l));
+      const filled = (lists || []).filter((l) => !isBlankList(l) && !isTpList(l));
       if (!filled.length) return [];
       const names = filled[0].headers.filter((h, i) => filled[0].custom[i]);
       return names.filter((name) => filled.every((l) => listHasCustom(l, name)));
@@ -4615,7 +5065,7 @@
 
     function layoutFor(colCount, nOnPage, list) {
       let orient = combining() ? "paysage" : listOrient(list);
-      if (orient === "auto") orient = colCount >= 8 ? "paysage" : "portrait";
+      if (orient === "auto") orient = isTpList(list) ? "paysage" : (colCount >= 8 ? "paysage" : "portrait");
       let font = 9.5;
       if (combining()) {
         if (nOnPage >= 4) font = 6.8;
@@ -5158,9 +5608,10 @@
       const comments = (list.titles || []).slice(1).map((t) => String(t).trim()).filter(Boolean);
       const editing = list.id === state.activeId;
       const blank = isBlankList(list);
-      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + '" data-lid="' + list.id + '">';
+      const tp = isTpList(list);
+      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + (tp ? " is-tp-page" : "") + '" data-lid="' + list.id + '">';
       html += '<button type="button" class="page-sheet-del no-print" data-del-page="' + list.id + '" title="Supprimer cette page" aria-label="Supprimer cette page">×</button>';
-      if (title || comments.length) {
+      if (!tp && (title || comments.length)) {
         html += '<div class="list-head">';
         if (title) {
           html += '<h2 class="list-title" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="0">' + escapeHtml(title) + "</h2>";
@@ -5173,13 +5624,51 @@
         });
         html += "</div>";
       }
-      if (blank) {
+      if (tp) {
+        html += tpSheetHtml(list);
+      } else if (blank) {
         html += '<div class="blank-hint"><p>Déposez un fichier ou collez un tableau pour remplir cette page.</p></div>';
       } else {
         html += tableHtml(list, nOnPage);
         html += legendHtml(list);
       }
       html += "</section>";
+      return html;
+    }
+
+    function tpSheetHtml(list) {
+      const tp = hydrateTp(list && list.tp);
+      const n = tp.nGroupes;
+      const titre = (tp.titre || "").trim() || "Demande de matériel";
+      let html = '<div class="tp-sheet">';
+      html += '<header class="tp-head">';
+      html += '<span class="tp-badge">' + escapeHtml(tp.matiere) + "</span>";
+      html += '<h2 class="tp-title">' + escapeHtml(titre) + "</h2>";
+      html += '<div class="tp-niveau">' + escapeHtml(tp.niveau) + "</div>";
+      html += "</header>";
+      html += '<div class="tp-meta">';
+      if (tp.partie) html += "<span>Partie : <strong>" + escapeHtml(tp.partie) + "</strong></span>";
+      html += "<span>Groupes : <strong>" + escapeHtml(TP_GROUPES[tp.groupes] || tp.groupes) + "</strong> × " + n + "</span>";
+      html += "</div>";
+      html += '<div class="tp-table-wrap"><table class="tp-table"><thead><tr>';
+      html += '<th>Matériel</th><th class="num">Par poste</th><th class="num">Prof</th><th class="num">Total</th>';
+      html += "</tr></thead><tbody>";
+      if (!tp.items.length) {
+        html += '<tr><td class="tp-empty" colspan="4">Ajoutez du matériel dans l’onglet Mode.</td></tr></tbody>';
+      } else {
+        let totPost = 0;
+        let totProf = 0;
+        let totAll = 0;
+        tp.items.forEach((it) => {
+          const tot = tpItemTotal(it, n);
+          totPost += (Number(it.qty) || 0) * n;
+          totProf += Number(it.extra) || 0;
+          totAll += tot;
+          html += "<tr><td>" + escapeHtml(it.name) + '</td><td class="num">' + it.qty + '</td><td class="num">' + it.extra + '</td><td class="num">' + tot + "</td></tr>";
+        });
+        html += '</tbody><tfoot><tr><td>Total</td><td class="num">' + totPost + '</td><td class="num">' + totProf + '</td><td class="num">' + totAll + "</td></tr></tfoot>";
+      }
+      html += "</table></div></div>";
       return html;
     }
 
@@ -5278,17 +5767,13 @@
         return;
       }
       const groups = previewGroups();
-      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const filled = state.lists.filter((l) => !isBlankList(l) && !isTpList(l) && selectedCols(l).length);
       const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
-      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
-      const ref = (groups[0] && groups[0][0]) || activeList();
-      const orients = groups.map((group) => {
-        const cols = Math.max(maxCols, ...group.map((l) => selectedCols(l).length));
-        const nOn = group.filter((l) => !isBlankList(l)).length || 1;
-        return layoutFor(cols, nOn, group[0]).orient;
-      });
+      const orients = groups.map((group) => sheetLayoutFor(group, maxCols).orient);
       const mixed = orients.length > 1 && orients.some((o) => o !== orients[0]);
-      const lay = layoutFor(maxCols, nFirst, ref);
+      const ref = activeList() || (groups[0] && groups[0][0]);
+      const activeGroup = groups.find((g) => g && g[0] && g[0].id === (ref && ref.id)) || groups[0] || (ref ? [ref] : []);
+      const lay = sheetLayoutFor(activeGroup, maxCols);
       hud.hidden = false;
       hud.classList.toggle("is-overflow", over > 0);
       const cap = mixed
@@ -5301,12 +5786,11 @@
 
     function hudPreviewOrient() {
       const groups = previewGroups();
-      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const filled = state.lists.filter((l) => !isBlankList(l) && !isTpList(l) && selectedCols(l).length);
       const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
-      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
       const ref = activeList() || (groups[0] && groups[0][0]);
-      const cols = ref ? Math.max(maxCols, selectedCols(ref).length) : maxCols;
-      return layoutFor(cols || 1, nFirst, ref).orient;
+      const group = groups.find((g) => g && g[0] && g[0].id === (ref && ref.id)) || groups[0] || (ref ? [ref] : []);
+      return sheetLayoutFor(group, maxCols).orient;
     }
 
     function syncPageOrientToggle(orient) {
@@ -5336,14 +5820,24 @@
       syncOrientHint();
     }
 
+    function toggleListOrient(list) {
+      if (!list || combining()) return;
+      const next = resolvedOrient(list, selectedCols(list).length) === "paysage" ? "portrait" : "paysage";
+      pushHist();
+      list.orient = next;
+      renderPreview();
+      syncOrientRadios();
+      syncOrientHint();
+    }
+
     function defaultRowEm() {
       if (state.rowY > 0) return state.rowY;
       return combining() || state.marge === "etroites" ? 0.26 : state.marge === "larges" ? 0.5 : 0.38;
     }
 
     function tableScaleTargets(list) {
-      if (zoneAllPages()) return state.lists.filter((l) => !isBlankList(l));
-      const sel = selectedLists().filter((l) => !isBlankList(l));
+      if (zoneAllPages()) return state.lists.filter((l) => !isBlankList(l) && !isTpList(l));
+      const sel = selectedLists().filter((l) => !isBlankList(l) && !isTpList(l));
       if (sel.length > 1) return sel;
       return list && !isBlankList(list) ? [list] : [];
     }
@@ -5691,7 +6185,7 @@
       const targets = [];
       if (zoneAllPages()) {
         state.lists.forEach((lst) => {
-          if (!isBlankList(lst)) targets.push(lst);
+          if (!isBlankList(lst) && !isTpList(lst)) targets.push(lst);
         });
         if (targets.indexOf(src) < 0) targets.unshift(src);
       } else {
@@ -6102,6 +6596,7 @@
         out.settings.numbering = state.numbering;
         out.settings.numberFrom = state.numberFrom;
         out.settings.combine = state.combine;
+        out.settings.editFrame = normalizeEditFrame(state.editFrame);
       }
       if (parts.info) {
         out.settings.legend = state.legend;
@@ -6347,6 +6842,7 @@
           state.combine = Boolean(s.combine);
           state.combineAsked = true;
         }
+        if (s.editFrame) state.editFrame = normalizeEditFrame(s.editFrame);
       }
       if (parts.info) {
         if (s.legend != null) state.legend = s.legend !== false;
@@ -6364,7 +6860,9 @@
       if (parts.columns) {
         if (Array.isArray(s.sharedCols)) state.sharedCols = s.sharedCols.slice();
         if ($("colAll") && s.colAll != null) $("colAll").checked = Boolean(s.colAll);
-        state.lists.forEach((lst) => applyStyleColumns(lst, data));
+        state.lists.forEach((lst) => {
+          if (!isTpList(lst)) applyStyleColumns(lst, data);
+        });
       }
       if (opts.render !== false) renderAll();
       announce("Style de mise en page appliqué.");
@@ -6395,6 +6893,32 @@
       closeStyleModal();
     }
 
+    function sheetLayoutFor(group, maxCols) {
+      const list = (group && group[0]) || null;
+      const nOn = (group || []).filter((l) => !isBlankList(l) && !isTpList(l)).length || 1;
+      const cols = isTpList(list)
+        ? 1
+        : Math.max(0, maxCols || 0, ...((group || []).map((l) => selectedCols(l).length)));
+      return layoutFor(cols || 1, nOn, list);
+    }
+
+    function makeSheetOrientToggle(list, orient) {
+      const wrap = document.createElement("div");
+      wrap.className = "sheet-caption no-print";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "page-orient-toggle";
+      btn.setAttribute("data-orient-lid", String(list.id));
+      btn.innerHTML = ORIENT_TOGGLE_SVG;
+      const cur = orient || resolvedOrient(list, selectedCols(list).length);
+      btn.classList.toggle("is-paysage", cur === "paysage");
+      const lab = cur !== "paysage" ? "Passer en paysage" : "Passer en portrait";
+      btn.title = lab;
+      btn.setAttribute("aria-label", lab);
+      wrap.appendChild(btn);
+      return wrap;
+    }
+
     function previewGroups() {
       if (!combining()) return state.lists.map((l) => [l]);
       const groups = [];
@@ -6406,7 +6930,7 @@
         }
       };
       state.lists.forEach((l) => {
-        if (isBlankList(l) || !selectedCols(l).length) {
+        if (isBlankList(l) || isTpList(l) || !selectedCols(l).length) {
           flush();
           groups.push([l]);
           return;
@@ -6434,23 +6958,19 @@
       }
 
       empty.style.display = "none";
-      const printable = state.lists.some((l) => !isBlankList(l) && selectedCols(l).length);
+      const printable = state.lists.some(listIsPrintable);
       printBtn.disabled = !printable;
       if (dockPrintBtn) dockPrintBtn.disabled = !printable;
       $("saveBtn").disabled = false;
 
       const groups = previewGroups();
-      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const filled = state.lists.filter((l) => !isBlankList(l) && !isTpList(l) && selectedCols(l).length);
       const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
-      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
-      const firstRef = (groups[0] && groups[0][0]) || null;
-      const firstLay = layoutFor(maxCols, nFirst, firstRef);
+      const firstLay = sheetLayoutFor(groups[0] || [], maxCols);
       const sheetOrients = [];
 
       groups.forEach((group, gi) => {
-        const cols = Math.max(0, ...group.map((l) => selectedCols(l).length));
-        const nOn = group.filter((l) => !isBlankList(l)).length || 1;
-        const lay = layoutFor(cols || maxCols, nOn, group[0]);
+        const lay = sheetLayoutFor(group, maxCols);
         sheetOrients.push(lay.orient);
         const frame = document.createElement("div");
         frame.className = "sheet-frame";
@@ -6465,6 +6985,9 @@
         limit.className = "sheet-limit no-print";
         limit.setAttribute("aria-hidden", "true");
         limit.innerHTML = "<span>Limite A4</span>";
+        if (!combining() && group.length === 1 && group[0]) {
+          hold.appendChild(makeSheetOrientToggle(group[0], lay.orient));
+        }
         const sheet = document.createElement("div");
         sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass() +
           (lay.orient === "paysage" ? " is-paysage" : " is-portrait");
@@ -6572,6 +7095,7 @@
       renderChips();
       renderTitles();
       renderCols();
+      renderMode();
       syncOrientRadios();
       syncOrientHint();
     }
@@ -6669,7 +7193,7 @@
       const comments = $("commentList");
       wrap.innerHTML = "";
       if (comments) comments.innerHTML = "";
-      if (!list || !targets.length) { block.hidden = true; return; }
+      if (!list || !targets.length || isTpList(list)) { block.hidden = true; return; }
       block.hidden = false;
       targets.forEach((l) => {
         if (!Array.isArray(l.titles)) l.titles = [];
@@ -6723,8 +7247,8 @@
     function renderCols() {
       const list = primaryList();
       colsEl.innerHTML = "";
-      $("colsBlock").hidden = !list || isBlankList(list);
-      if (!list || isBlankList(list)) return;
+      $("colsBlock").hidden = !list || isBlankList(list) || isTpList(list);
+      if (!list || isBlankList(list) || isTpList(list)) return;
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
       list.order.forEach((key) => {
@@ -6856,10 +7380,227 @@
       });
     }
 
+    function ensureTpPages() {
+      const selected = selectedLists();
+      const selectedTp = selected.filter(isTpList);
+      if (selectedTp.length) {
+        selectedTp.forEach((l) => { l.tp = hydrateTp(l.tp); });
+        if (!isTpList(activeList())) setActiveList(selectedTp[0].id, { scroll: false });
+        return selectedTp[0];
+      }
+      const selectedBlank = selected.filter(isBlankList);
+      const anyTp = state.lists.find(isTpList);
+      if (!selectedBlank.length && anyTp) {
+        anyTp.tp = hydrateTp(anyTp.tp);
+        setActiveList(anyTp.id, { scroll: false });
+        return anyTp;
+      }
+      pushHist();
+      if (selectedBlank.length) {
+        selectedBlank.forEach(convertToTp);
+        setActiveList(selectedBlank[0].id, { scroll: false });
+        return selectedBlank[0];
+      }
+      const list = makeTpList();
+      state.lists.push(list);
+      state.activeId = list.id;
+      state.selectedIds = [list.id];
+      return list;
+    }
+
+    function activateListePages() {
+      if (activeList() && !isTpList(activeList())) return;
+      const selected = selectedLists().filter((l) => !isTpList(l));
+      if (selected.length) {
+        setActiveList(selected[0].id, { scroll: false });
+        return;
+      }
+      const any = state.lists.find((l) => !isTpList(l));
+      if (any) setActiveList(any.id, { scroll: false });
+    }
+
+    function addTpItem(name, qty) {
+      const list = activeList();
+      if (!isTpList(list)) return;
+      const label = String(name || "").trim();
+      if (!label) return;
+      const tp = tpOf(list);
+      const hit = tp.items.find((it) => it.name.toLowerCase() === label.toLowerCase());
+      if (hit) hit.qty = clampTpQty((Number(hit.qty) || 0) + (qty || 1), 1) || 1;
+      else tp.items.push({ name: label, qty: clampTpQty(qty, 1) || 1, extra: 1 });
+    }
+
+    function renderTpParties() {
+      const wrap = $("tpParties");
+      if (!wrap) return;
+      const list = activeList();
+      wrap.innerHTML = "";
+      if (!isTpList(list)) return;
+      const tp = tpOf(list);
+      const parts = tpPartiesOf(tp);
+      if (!parts.length) {
+        wrap.innerHTML = '<p class="hint-note" style="margin:0">Aucune partie pour ce niveau.</p>';
+        return;
+      }
+      parts.forEach((name) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = name;
+        btn.classList.toggle("is-on", tp.partie === name);
+        btn.setAttribute("aria-pressed", tp.partie === name ? "true" : "false");
+        btn.addEventListener("click", () => {
+          pushHist();
+          tp.partie = tp.partie === name ? "" : name;
+          renderTpParties();
+          renderPreview();
+        });
+        wrap.appendChild(btn);
+      });
+    }
+
+    function renderTpItems() {
+      const wrap = $("tpItems");
+      const sumEl = $("tpItemsSum");
+      if (!wrap) return;
+      const list = activeList();
+      wrap.innerHTML = "";
+      if (!isTpList(list)) {
+        if (sumEl) sumEl.textContent = "";
+        return;
+      }
+      const tp = tpOf(list);
+      const n = tp.nGroupes;
+      let totAll = 0;
+      tp.items.forEach((it, idx) => {
+        const tot = tpItemTotal(it, n);
+        totAll += tot;
+        const row = document.createElement("div");
+        row.className = "tp-item-row";
+        row.innerHTML =
+          '<input class="field field-num" type="number" min="0" max="999" value="' + it.qty + '" aria-label="Quantité par poste" data-tp-qty="' + idx + '" />' +
+          '<input class="field" type="text" value="' + escapeHtml(it.name) + '" aria-label="Nom du matériel" data-tp-name="' + idx + '" />' +
+          '<input class="field field-num" type="number" min="0" max="999" value="' + it.extra + '" aria-label="Extra professeur" title="Quantité professeur" data-tp-extra="' + idx + '" />' +
+          '<span class="tp-item-tot" data-tp-tot="' + idx + '">' + tot + "</span>" +
+          '<button type="button" class="icon-btn" data-tp-del="' + idx + '" aria-label="Retirer ce matériel">×</button>';
+        wrap.appendChild(row);
+      });
+      if (sumEl) {
+        sumEl.textContent = tp.items.length
+          ? ("Total à préparer : " + totAll + " (poste × " + n + " groupes + prof)")
+          : "Aucun matériel pour l’instant.";
+      }
+    }
+
+    function refreshTpItemTotals() {
+      const list = activeList();
+      if (!isTpList(list)) return;
+      const tp = tpOf(list);
+      const n = tp.nGroupes;
+      let totAll = 0;
+      tp.items.forEach((it, idx) => {
+        const tot = tpItemTotal(it, n);
+        totAll += tot;
+        const el = document.querySelector('[data-tp-tot="' + idx + '"]');
+        if (el) el.textContent = String(tot);
+      });
+      const sumEl = $("tpItemsSum");
+      if (sumEl) {
+        sumEl.textContent = tp.items.length
+          ? ("Total à préparer : " + totAll + " (poste × " + n + " groupes + prof)")
+          : "Aucun matériel pour l’instant.";
+      }
+    }
+
+    function renderTpCatalog() {
+      const cats = $("tpCats");
+      const itemsEl = $("tpCatItems");
+      if (!cats || !itemsEl) return;
+      cats.innerHTML = "";
+      itemsEl.innerHTML = "";
+      const q = (tpUi.q || "").trim().toLowerCase();
+      MATERIEL_RUBRIQUES.forEach((pair) => {
+        const id = pair[0];
+        const label = pair[1];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = label;
+        btn.classList.toggle("is-on", tpUi.cat === id);
+        btn.setAttribute("aria-pressed", tpUi.cat === id ? "true" : "false");
+        btn.addEventListener("click", () => {
+          tpUi.cat = tpUi.cat === id ? "" : id;
+          renderTpCatalog();
+        });
+        cats.appendChild(btn);
+      });
+      let rows = MATERIEL_CATALOG.slice();
+      if (tpUi.cat) rows = rows.filter((r) => r.rubrique === tpUi.cat);
+      if (q) {
+        rows = rows.filter((r) => {
+          const blob = [r.nom, r.details, r.sous, r.rubrique].join(" ").toLowerCase();
+          return blob.indexOf(q) >= 0;
+        });
+      }
+      if (!q && !tpUi.cat) {
+        itemsEl.innerHTML = '<p class="hint-note" style="margin:0">Choisissez une catégorie ou recherchez un nom.</p>';
+        return;
+      }
+      if (!rows.length) {
+        itemsEl.innerHTML = '<p class="hint-note" style="margin:0">Aucun matériel ne correspond.</p>';
+        return;
+      }
+      rows.slice(0, 80).forEach((item) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = materielLabel(item);
+        btn.addEventListener("click", () => {
+          const list = activeList();
+          if (!isTpList(list)) return;
+          pushHist();
+          addTpItem(materielLabel(item), 1);
+          renderTpItems();
+          renderPreview();
+        });
+        itemsEl.appendChild(btn);
+      });
+    }
+
+    function renderMode() {
+      const form = $("tpForm");
+      if (!form) return;
+      const list = activeList();
+      const tpOn = isTpList(list);
+      document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
+        el.checked = el.value === (tpOn ? "tp" : "liste");
+      });
+      form.hidden = !tpOn;
+      if (!tpOn) return;
+      const tp = tpOf(list);
+      const parts = tpPartiesOf(tp);
+      if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+      document.querySelectorAll('input[name="tpMatiere"]').forEach((el) => {
+        el.checked = el.value === tp.matiere;
+      });
+      document.querySelectorAll('input[name="tpNiveau"]').forEach((el) => {
+        el.checked = el.value === tp.niveau;
+      });
+      document.querySelectorAll('input[name="tpGroupes"]').forEach((el) => {
+        el.checked = el.value === tp.groupes;
+      });
+      const titre = $("tpTitre");
+      if (titre && document.activeElement !== titre) titre.value = tp.titre || "";
+      const nEl = $("tpNGroupes");
+      if (nEl && document.activeElement !== nEl) nEl.value = String(tp.nGroupes);
+      const search = $("tpSearch");
+      if (search && document.activeElement !== search) search.value = tpUi.q || "";
+      renderTpParties();
+      renderTpItems();
+      renderTpCatalog();
+    }
+
     function renderDisplay() {
       const on = state.lists.length > 0;
       $("displayFoldWrap").hidden = !on;
-      $("infoBlock").hidden = !on;
+      $("infoBlock").hidden = !on || isTpList(activeList());
       if (!on) return;
       $("optVlines").checked = state.vlines;
       $("optBadges").checked = state.showBadges;
@@ -6868,6 +7609,7 @@
       $("notesPos").value = rqPlacement(activeList()) === "left" ? "0" : "1";
       $("optLegend").checked = state.legend;
       $("badgeWrap").hidden = !state.showBadges;
+      syncEditFrame();
       document.querySelectorAll('input[name="design"]').forEach((el) => {
         el.checked = el.value === state.design;
       });
@@ -6905,6 +7647,7 @@
       renderTitles();
       renderCols();
       renderDisplay();
+      renderMode();
       const margeEl = document.querySelector('input[name="marge"][value="' + state.marge + '"]');
       if (margeEl) margeEl.checked = true;
       syncOrientRadios();
@@ -7316,6 +8059,7 @@
       const listsRaw = data.lists || [];
       state.showNotes = s.showNotes != null ? Boolean(s.showNotes) : listsRaw.some((l) => l.notes && Object.keys(l.notes).length);
       state.notesPos = s.notesPos === "left" || s.notesPos === "custom" ? s.notesPos : "right";
+      state.editFrame = normalizeEditFrame(s.editFrame);
       state.lists = listsRaw.map((raw) => hydrateList(raw));
       if (state.showNotes) {
         const pos = state.notesPos === "left" ? "left" : "right";
@@ -7355,6 +8099,7 @@
           palette: state.palette,
           forme: state.forme,
           titre: state.titre,
+          editFrame: normalizeEditFrame(state.editFrame),
           fontPt: state.fontPt,
           titlePt: state.titlePt,
           thPt: state.thPt,
@@ -7387,6 +8132,8 @@
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
           keepEmptyRows: Boolean(l.keepEmptyRows),
           orient: listOrient(l),
+          mode: l.mode === "tp" ? "tp" : "",
+          tp: l.mode === "tp" ? hydrateTp(l.tp) : null,
         })),
       };
     }
@@ -7619,6 +8366,14 @@
         pushHist();
         state.forme = el.value;
         renderPreview();
+      });
+    });
+    document.querySelectorAll('input[name="editFrame"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        if (!el.checked) return;
+        pushHist();
+        state.editFrame = normalizeEditFrame(el.value);
+        syncEditFrame();
       });
     });
     bindPtSlider("titlePt", applyTitleNow);
@@ -7947,7 +8702,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -7976,6 +8731,7 @@
         if (e.button != null && e.button !== 0) return false;
         if (editing(e.target)) return false;
         if (!e.target.closest(".sheet")) return false;
+        if (e.target.closest(".list-block.is-tp-page")) return false;
         return Boolean(lidFromTarget(e.target, e.clientX, e.clientY));
       };
       const clearSel = () => {
@@ -8314,6 +9070,15 @@
         if (id) removeList(id);
         return;
       }
+      const orientBtn = e.target.closest("[data-orient-lid]");
+      if (orientBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number(orientBtn.getAttribute("data-orient-lid"));
+        const list = state.lists.find((l) => l.id === id);
+        if (list) toggleListOrient(list);
+        return;
+      }
       const block = e.target.closest(".list-block[data-lid]");
       if (block) {
         const lid = Number(block.dataset.lid);
@@ -8405,14 +9170,14 @@
     });
 
     $("allOn").addEventListener("click", () => {
-      const targets = selectedLists().filter((l) => !isBlankList(l));
+      const targets = selectedLists().filter((l) => !isBlankList(l) && !isTpList(l));
       if (!targets.length) return;
       pushHist();
       targets.forEach((list) => { list.on = list.on.map(() => true); });
       renderAll();
     });
     $("allOff").addEventListener("click", () => {
-      const targets = selectedLists().filter((l) => !isBlankList(l));
+      const targets = selectedLists().filter((l) => !isBlankList(l) && !isTpList(l));
       if (!targets.length) return;
       pushHist();
       targets.forEach((list) => { list.on = list.on.map(() => false); });
@@ -8540,6 +9305,10 @@
         open: "Afficher les options d’affichage",
         close: "Réduire les options d’affichage"
       });
+      bind("modeFoldBtn", "modeFold", "epicsv-fold-mode", {
+        open: "Afficher le mode",
+        close: "Réduire le mode"
+      });
     })();
 
     document.querySelectorAll(".seg").forEach((seg) => {
@@ -8617,6 +9386,159 @@
     $("styleBtn").addEventListener("click", openStyleModal);
     const pageOrientToggle = $("pageOrientToggle");
     if (pageOrientToggle) pageOrientToggle.addEventListener("click", toggleHudOrient);
+
+    document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        if (!el.checked) return;
+        if (el.value === "tp") {
+          ensureTpPages();
+          renderAll();
+          if (isPhoneLayout()) showPreview();
+          revealActivePage();
+          announce("Mode TP : demande de matériel");
+          return;
+        }
+        activateListePages();
+        renderAll();
+        announce("Mode liste");
+      });
+    });
+
+    function activeTpOrNull() {
+      const list = activeList();
+      return isTpList(list) ? list : null;
+    }
+
+    document.querySelectorAll('input[name="tpMatiere"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        if (!el.checked) return;
+        const list = activeTpOrNull();
+        if (!list) return;
+        pushHist();
+        const tp = tpOf(list);
+        tp.matiere = el.value === "SPC" ? "SPC" : "SVT";
+        const parts = tpPartiesOf(tp);
+        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+        renderTpParties();
+        renderPreview();
+      });
+    });
+    document.querySelectorAll('input[name="tpNiveau"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        if (!el.checked) return;
+        const list = activeTpOrNull();
+        if (!list) return;
+        pushHist();
+        const tp = tpOf(list);
+        tp.niveau = el.value;
+        const parts = tpPartiesOf(tp);
+        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+        renderTpParties();
+        renderPreview();
+      });
+    });
+    document.querySelectorAll('input[name="tpGroupes"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        if (!el.checked) return;
+        const list = activeTpOrNull();
+        if (!list) return;
+        pushHist();
+        tpOf(list).groupes = el.value;
+        renderPreview();
+      });
+    });
+    const tpTitre = $("tpTitre");
+    if (tpTitre) {
+      tpTitre.addEventListener("focus", () => { if (activeTpOrNull()) pushHist(); });
+      tpTitre.addEventListener("input", () => {
+        const list = activeTpOrNull();
+        if (!list) return;
+        tpOf(list).titre = tpTitre.value;
+        renderPreview();
+      });
+    }
+    const tpNGroupes = $("tpNGroupes");
+    if (tpNGroupes) {
+      tpNGroupes.addEventListener("focus", () => { if (activeTpOrNull()) pushHist(); });
+      tpNGroupes.addEventListener("input", () => {
+        const list = activeTpOrNull();
+        if (!list) return;
+        const n = Math.round(Number(tpNGroupes.value));
+        tpOf(list).nGroupes = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 1;
+        refreshTpItemTotals();
+        renderPreview();
+      });
+    }
+    const tpItems = $("tpItems");
+    if (tpItems) {
+      tpItems.addEventListener("focusin", (e) => {
+        if (e.target.matches("input") && activeTpOrNull()) pushHist();
+      });
+      tpItems.addEventListener("input", (e) => {
+        const list = activeTpOrNull();
+        if (!list) return;
+        const tp = tpOf(list);
+        const qty = e.target.getAttribute("data-tp-qty");
+        const name = e.target.getAttribute("data-tp-name");
+        const extra = e.target.getAttribute("data-tp-extra");
+        if (qty != null) {
+          const i = Number(qty);
+          if (tp.items[i]) tp.items[i].qty = clampTpQty(e.target.value, 1) || 0;
+          refreshTpItemTotals();
+          renderPreview();
+        } else if (name != null) {
+          const i = Number(name);
+          if (tp.items[i]) tp.items[i].name = e.target.value;
+          renderPreview();
+        } else if (extra != null) {
+          const i = Number(extra);
+          if (tp.items[i]) tp.items[i].extra = clampTpQty(e.target.value, 0);
+          refreshTpItemTotals();
+          renderPreview();
+        }
+      });
+      tpItems.addEventListener("click", (e) => {
+        const del = e.target.closest("[data-tp-del]");
+        if (!del) return;
+        const list = activeTpOrNull();
+        if (!list) return;
+        const i = Number(del.getAttribute("data-tp-del"));
+        pushHist();
+        tpOf(list).items.splice(i, 1);
+        renderTpItems();
+        renderPreview();
+      });
+    }
+    const tpSearch = $("tpSearch");
+    if (tpSearch) {
+      tpSearch.addEventListener("input", () => {
+        tpUi.q = tpSearch.value;
+        renderTpCatalog();
+      });
+    }
+    function addCustomMateriel() {
+      const input = $("tpCustom");
+      const list = activeTpOrNull();
+      if (!input || !list) return;
+      const name = input.value.trim();
+      if (!name) return;
+      pushHist();
+      addTpItem(name, 1);
+      input.value = "";
+      renderTpItems();
+      renderPreview();
+    }
+    const tpCustomBtn = $("tpCustomBtn");
+    if (tpCustomBtn) tpCustomBtn.addEventListener("click", addCustomMateriel);
+    const tpCustom = $("tpCustom");
+    if (tpCustom) {
+      tpCustom.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addCustomMateriel();
+        }
+      });
+    }
     $("styleCancel").addEventListener("click", closeStyleModal);
     $("styleSave").addEventListener("click", saveStyleFile);
     $("styleLoad").addEventListener("click", () => $("styleFile").click());
