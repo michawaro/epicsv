@@ -1632,6 +1632,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
+    .modal-actions[hidden] { display: none !important; }
     .modal-actions .span-all { grid-column: 1 / -1; }
     .modal .btn-ghost {
       color: var(--teal-deep);
@@ -1703,6 +1704,56 @@
     }
     .create-size-fields .field:focus {
       outline: 2px solid var(--teal-deep);
+    }
+    .merge-insert {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 2px;
+    }
+    .merge-insert button {
+      appearance: none;
+      width: 46px;
+      height: 46px;
+      padding: 0;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(14, 143, 140, 0.12);
+      color: var(--teal-deep);
+      font: inherit;
+      cursor: pointer;
+    }
+    .merge-insert button:hover:not(:disabled) {
+      background: rgba(14, 143, 140, 0.22);
+    }
+    .merge-insert button:disabled {
+      opacity: 0.38;
+      cursor: default;
+    }
+    .merge-insert svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+    .sel-bar .sel-insert {
+      padding-left: 6px;
+      margin-left: 2px;
+      border-left: 1px solid rgba(14, 143, 140, 0.22);
+    }
+    .sel-bar .sel-insert button {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+    }
+    .sel-bar .sel-insert svg {
+      width: 16px;
+      height: 16px;
+      display: block;
     }
 
     .workspace {
@@ -4198,6 +4249,20 @@
     </div>
     <button type="button" id="selEq">Uniformiser</button>
     <button type="button" id="selMerge" title="Fusionner ou fractionner les cellules">Fusionner</button>
+    <div class="sel-dim sel-insert" role="group" aria-label="Insérer une ligne ou une colonne">
+      <button type="button" id="selInsertRowAbove" title="Insérer une ligne au-dessus" aria-label="Insérer une ligne au-dessus">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.1l4.5 5.1h-9z"/><rect x="11.05" y="7.8" width="1.9" height="6.4" fill="currentColor"/><rect x="4.6" y="16.6" width="14.8" height="2.3" rx="1.15" fill="currentColor"/></svg>
+      </button>
+      <button type="button" id="selInsertRowBelow" title="Insérer une ligne en dessous" aria-label="Insérer une ligne en dessous">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.6" y="5.1" width="14.8" height="2.3" rx="1.15" fill="currentColor"/><rect x="11.05" y="9.8" width="1.9" height="6.4" fill="currentColor"/><path fill="currentColor" d="M12 20.9l-4.5-5.1h9z"/></svg>
+      </button>
+      <button type="button" id="selInsertColLeft" title="Insérer une colonne à gauche" aria-label="Insérer une colonne à gauche">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 12l5.1-4.5v9z"/><rect x="7.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><rect x="16.6" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/></svg>
+      </button>
+      <button type="button" id="selInsertColRight" title="Insérer une colonne à droite" aria-label="Insérer une colonne à droite">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.1" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/><rect x="9.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><path fill="currentColor" d="M20.9 12l-5.1 4.5v-9z"/></svg>
+      </button>
+    </div>
     <label class="sel-size">
       Taille
       <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille" />
@@ -4341,6 +4406,20 @@
         <button class="btn btn-ghost" id="createTableCancel" type="button">Annuler</button>
       </div>
       <div class="modal-actions" id="createTableMergeActions" hidden>
+        <div class="merge-insert span-all" id="mergeInsertBar" role="group" aria-label="Insérer une ligne ou une colonne">
+          <button type="button" id="mergeInsertRowAbove" title="Insérer une ligne au-dessus" aria-label="Insérer une ligne au-dessus">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.1l4.5 5.1h-9z"/><rect x="11.05" y="7.8" width="1.9" height="6.4" fill="currentColor"/><rect x="4.6" y="16.6" width="14.8" height="2.3" rx="1.15" fill="currentColor"/></svg>
+          </button>
+          <button type="button" id="mergeInsertRowBelow" title="Insérer une ligne en dessous" aria-label="Insérer une ligne en dessous">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.6" y="5.1" width="14.8" height="2.3" rx="1.15" fill="currentColor"/><rect x="11.05" y="9.8" width="1.9" height="6.4" fill="currentColor"/><path fill="currentColor" d="M12 20.9l-4.5-5.1h9z"/></svg>
+          </button>
+          <button type="button" id="mergeInsertColLeft" title="Insérer une colonne à gauche" aria-label="Insérer une colonne à gauche">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 12l5.1-4.5v9z"/><rect x="7.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><rect x="16.6" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/></svg>
+          </button>
+          <button type="button" id="mergeInsertColRight" title="Insérer une colonne à droite" aria-label="Insérer une colonne à droite">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.1" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/><rect x="9.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><path fill="currentColor" d="M20.9 12l-5.1 4.5v-9z"/></svg>
+          </button>
+        </div>
         <button class="btn btn-print" id="mergeCellsBtn" type="button">Fusionner</button>
         <button class="btn btn-print" id="splitCellsBtn" type="button">Fractionner</button>
         <button class="btn btn-ghost span-all" id="mergeCellsCancel" type="button">Annuler</button>
@@ -7747,6 +7826,110 @@
       return i;
     }
 
+    function sheetHasFixedCols(list) {
+      return Boolean(list && (isTpForm(list) || isProgList(list)));
+    }
+
+    function zoneInsertAnchor(list) {
+      if (!list) return null;
+      const rect = zoneMergeRect(list);
+      if (rect) return rect;
+      if (!zoneSel || String(zoneSel.lid) !== String(list.id)) return null;
+      const nR = (list.rows || []).length;
+      const nC = (list.headers || []).length;
+      const ris = (zoneSel.ris || []).filter((ri) => Number.isInteger(ri) && ri >= 0 && ri < nR);
+      const cols = (zoneSel.keys || []).filter((k) => Number.isInteger(k) && k >= 0 && k < nC);
+      if (!ris.length && !cols.length) return null;
+      return {
+        r0: ris.length ? Math.min.apply(null, ris) : 0,
+        r1: ris.length ? Math.max.apply(null, ris) : Math.max(0, nR - 1),
+        c0: cols.length ? Math.min.apply(null, cols) : 0,
+        c1: cols.length ? Math.max.apply(null, cols) : Math.max(0, nC - 1),
+      };
+    }
+
+    function syncMergeInsertBtns() {
+      const list = zoneList();
+      const box = zoneInsertAnchor(list);
+      const rowOk = Boolean(box) && (list.rows || []).length < EMPTY_ROWS_MAX;
+      const colOk = Boolean(box) && !sheetHasFixedCols(list) && (list.headers || []).length < EMPTY_COLS_MAX;
+      const ids = {
+        mergeInsertRowAbove: rowOk,
+        mergeInsertRowBelow: rowOk,
+        selInsertRowAbove: rowOk,
+        selInsertRowBelow: rowOk,
+        mergeInsertColLeft: colOk,
+        mergeInsertColRight: colOk,
+        selInsertColLeft: colOk,
+        selInsertColRight: colOk,
+      };
+      Object.keys(ids).forEach((id) => {
+        const el = $(id);
+        if (el) el.disabled = !ids[id];
+      });
+    }
+
+    function insertZoneAxis(kind, side) {
+      const list = zoneList();
+      const box = zoneInsertAnchor(list);
+      if (!list || !box) {
+        announce("Sélectionnez une ligne ou une colonne.");
+        return false;
+      }
+      if (kind === "col" && sheetHasFixedCols(list)) {
+        announce("Les colonnes de cette fiche sont fixes.");
+        return false;
+      }
+      if (kind === "row" && (list.rows || []).length >= EMPTY_ROWS_MAX) {
+        announce("Nombre maximal de lignes atteint.");
+        return false;
+      }
+      if (kind === "col" && (list.headers || []).length >= EMPTY_COLS_MAX) {
+        announce("Nombre maximal de colonnes atteint.");
+        return false;
+      }
+      const at = kind === "row"
+        ? (side === "before" ? box.r0 : box.r1 + 1)
+        : (side === "before" ? box.c0 : box.c1 + 1);
+      pushHist();
+      const ok = kind === "row"
+        ? insertRowAt(list, at, blankDataRow(list)) >= 0
+        : insertColAt(list, at) >= 0;
+      if (!ok) {
+        discardLastHist();
+        return false;
+      }
+      if (zoneSel) {
+        if (kind === "row") {
+          zoneSel.ris = (zoneSel.ris || []).map((ri) => (ri >= at ? ri + 1 : ri));
+        } else {
+          zoneSel.keys = (zoneSel.keys || []).map((k) => (typeof k === "number" && k >= at ? k + 1 : k));
+        }
+      }
+      if (isTpList(list)) writeTpComputed(list);
+      dirty = true;
+      renderAll();
+      if (zoneSel) {
+        setZone({
+          lid: zoneSel.lid,
+          keys: (zoneSel.keys || []).slice(),
+          ris: (zoneSel.ris || []).slice(),
+        }, { bar: tableModalMode !== "cells" || !$("createTableModal") || $("createTableModal").hidden });
+      }
+      if (tableModalMode === "cells" && $("createTableModal") && !$("createTableModal").hidden) {
+        const rect = zoneMergeRect(zoneList());
+        if (rect) {
+          syncCreateSizeFields(rect.c1 - rect.c0 + 1, rect.r1 - rect.r0 + 1);
+          if ($("mergeCellsBtn")) $("mergeCellsBtn").disabled = !(rect.r1 > rect.r0 || rect.c1 > rect.c0);
+        }
+      }
+      syncMergeInsertBtns();
+      announce(kind === "row"
+        ? (side === "before" ? "Ligne insérée au-dessus." : "Ligne insérée en dessous.")
+        : (side === "before" ? "Colonne insérée à gauche." : "Colonne insérée à droite."));
+      return true;
+    }
+
     function rowIdentity(list, ri) {
       const row = list && list.rows && list.rows[ri];
       if (!row) return "";
@@ -9246,6 +9429,7 @@
       const mergeRect = zoneMergeRect(list);
       if ($("selMerge")) $("selMerge").disabled = !mergeRect;
       if ($("selMenuMerge")) $("selMenuMerge").disabled = !mergeRect;
+      syncMergeInsertBtns();
       syncSelSizeInput();
       syncSelAlign();
     }
@@ -11226,6 +11410,7 @@
       const canMerge = (rows > 1 || cols > 1);
       if ($("mergeCellsBtn")) $("mergeCellsBtn").disabled = !canMerge;
       if ($("splitCellsBtn")) $("splitCellsBtn").disabled = false;
+      syncMergeInsertBtns();
       tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
     }
 
@@ -11848,6 +12033,23 @@
     if ($("mergeCellsCancel")) $("mergeCellsCancel").addEventListener("click", closeCreateTableModal);
     if ($("selMerge")) $("selMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
     if ($("selMenuMerge")) $("selMenuMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
+    [
+      ["mergeInsertRowAbove", "row", "before"],
+      ["mergeInsertRowBelow", "row", "after"],
+      ["mergeInsertColLeft", "col", "before"],
+      ["mergeInsertColRight", "col", "after"],
+      ["selInsertRowAbove", "row", "before"],
+      ["selInsertRowBelow", "row", "after"],
+      ["selInsertColLeft", "col", "before"],
+      ["selInsertColRight", "col", "after"],
+    ].forEach((spec) => {
+      const el = $(spec[0]);
+      if (!el) return;
+      el.addEventListener("click", () => {
+        hideSelMenu();
+        insertZoneAxis(spec[1], spec[2]);
+      });
+    });
     $("createCols").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
     $("createRows").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
     $("createCols").addEventListener("change", () => {
