@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="palette-teal">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
@@ -1486,12 +1486,12 @@
     }
     .liste td.is-zone,
     .liste th.is-zone {
-      box-shadow: inset 0 0 0 2.2px var(--teal-deep);
-      background: rgba(18, 197, 184, 0.32) !important;
+      box-shadow: inset 0 0 0 2.2px var(--d-accent, var(--teal-deep));
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 28%, transparent) !important;
     }
     .liste thead th.is-zone {
-      color: #fff;
-      background: var(--teal-deep) !important;
+      color: var(--d-accent-ink, #fff);
+      background: var(--d-accent, var(--teal-deep)) !important;
     }
     .style-picks {
       display: grid;
@@ -1932,72 +1932,96 @@
       --d-accent-ink: #fff;
       --d-title: #0e8f8c;
       --d-sub: #5d7378;
-      --d-zebra: rgba(26, 196, 190, 0.075);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
       --d-rule: rgba(14, 143, 140, 0.2);
       --d-line: #0e8f8c;
       --d-th: #0e8f8c;
       --d-vline-th: rgba(14, 143, 140, 0.2);
       --d-num-th: #5d7378;
     }
-    .sheet.palette-marine {
+    .sheet.palette-marine,
+    html.palette-marine {
       --d-accent: #1b365d;
       --d-accent-ink: #fff;
       --d-title: #1b365d;
       --d-sub: #4a6080;
-      --d-zebra: rgba(27, 54, 93, 0.07);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
       --d-rule: rgba(27, 54, 93, 0.2);
       --d-line: #1b365d;
       --d-th: #1b365d;
       --d-vline-th: rgba(27, 54, 93, 0.2);
       --d-num-th: #4a6080;
     }
-    .sheet.palette-carmin {
+    .sheet.palette-carmin,
+    html.palette-carmin {
       --d-accent: #8c2f3a;
       --d-accent-ink: #fff;
       --d-title: #8c2f3a;
       --d-sub: #a45c66;
-      --d-zebra: rgba(140, 47, 58, 0.06);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
       --d-rule: rgba(140, 47, 58, 0.22);
       --d-line: #8c2f3a;
       --d-th: #8c2f3a;
       --d-vline-th: rgba(140, 47, 58, 0.22);
       --d-num-th: #8c2f3a;
     }
-    .sheet.palette-safran {
+    .sheet.palette-safran,
+    html.palette-safran {
       --d-accent: #e8a317;
       --d-accent-ink: #4a2e00;
       --d-title: #6b3e08;
       --d-sub: #9a6410;
-      --d-zebra: rgba(232, 163, 23, 0.14);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 36%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 48%, #fff);
       --d-rule: rgba(196, 123, 23, 0.3);
       --d-line: #c47b17;
       --d-th: #6b3e08;
       --d-vline-th: rgba(196, 123, 23, 0.3);
       --d-num-th: #9a6410;
     }
-    .sheet.palette-foret {
+    .sheet.palette-foret,
+    html.palette-foret {
       --d-accent: #a8d4b0;
       --d-accent-ink: #1e3d2a;
       --d-title: #3f7a52;
       --d-sub: #6e9578;
-      --d-zebra: rgba(140, 196, 152, 0.16);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 48%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 62%, #fff);
       --d-rule: rgba(90, 150, 108, 0.26);
       --d-line: #6fa87c;
       --d-th: #3f7a52;
       --d-vline-th: rgba(90, 150, 108, 0.26);
       --d-num-th: #6e9578;
     }
-    .sheet.palette-prune {
+    .sheet.palette-prune,
+    html.palette-prune {
       --d-accent: #6b2d6e;
       --d-accent-ink: #fff;
       --d-title: #6b2d6e;
       --d-sub: #8a5a8c;
-      --d-zebra: rgba(107, 45, 110, 0.07);
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
       --d-rule: rgba(107, 45, 110, 0.22);
       --d-line: #6b2d6e;
       --d-th: #6b2d6e;
       --d-vline-th: rgba(107, 45, 110, 0.22);
       --d-num-th: #8a5a8c;
+    }
+    html.palette-teal {
+      --d-accent: #0e8f8c;
+      --d-accent-ink: #fff;
+      --d-title: #0e8f8c;
+      --d-sub: #5d7378;
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
+      --d-rule: rgba(14, 143, 140, 0.2);
+      --d-line: #0e8f8c;
+      --d-th: #0e8f8c;
+      --d-vline-th: rgba(14, 143, 140, 0.2);
+      --d-num-th: #5d7378;
     }
 
     .sheet-grid {
@@ -2065,7 +2089,6 @@
     }
     .list-block.is-tp-page tbody td:not([rowspan]) {
       height: var(--row-h, auto);
-      max-height: var(--row-h, none);
       box-sizing: border-box;
     }
     .list-block.is-tp-page tbody td[rowspan] {
@@ -2143,8 +2166,8 @@
     .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td,
     .list-block.is-tp-page td.is-tp-label {
       font-weight: 800;
-      letter-spacing: 0.04em;
-      background: rgba(14, 143, 140, 0.12);
+      letter-spacing: 0.06em;
+      background: var(--d-tint, var(--d-zebra, color-mix(in srgb, var(--d-accent, var(--teal-deep)) 24%, #fff)));
       color: var(--d-title, var(--d-th, var(--teal-deep)));
     }
     .list-block.is-tp-page tr.is-tp-section td.is-tp-item .cell-edit,
@@ -2152,6 +2175,7 @@
     .list-block.is-tp-page td.is-tp-label .tp-chip,
     .list-block.is-tp-page td.is-tp-label .tp-struct-lab {
       font-weight: 800;
+      letter-spacing: inherit;
       color: inherit;
     }
     .list-block.is-tp-page td.is-tp-label .tp-chip {
@@ -2176,7 +2200,7 @@
     }
     .list-block.is-tp-page .tp-struct-lab {
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
     }
     .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
     .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
@@ -2298,14 +2322,17 @@
       cursor: pointer;
     }
     .tp-choice-menu button:hover,
-    .tp-choice-menu button.is-on { background: rgba(14, 143, 140, 0.12); color: var(--teal-deep); }
+    .tp-choice-menu button.is-on {
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 16%, #fff);
+      color: var(--d-title, var(--teal-deep));
+    }
     .tp-choice-custom {
       display: flex;
       gap: 6px;
       align-items: center;
       padding: 8px 8px 6px;
       margin-top: 4px;
-      border-top: 1px solid rgba(14, 143, 140, 0.16);
+      border-top: 1px solid color-mix(in srgb, var(--d-accent, var(--teal-deep)) 22%, transparent);
     }
     .tp-choice-custom input {
       flex: 1;
@@ -2314,27 +2341,27 @@
       font-size: 14px;
       font-weight: 700;
       color: var(--ink);
-      border: 1.15pt solid rgba(14, 143, 140, 0.28);
+      border: 1.15pt solid color-mix(in srgb, var(--d-accent, var(--teal-deep)) 32%, transparent);
       border-radius: 10px;
       padding: 7px 10px;
     }
     .tp-choice-custom button {
       width: auto;
       flex: none;
-      background: rgba(14, 143, 140, 0.12);
-      color: var(--teal-deep);
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 16%, #fff);
+      color: var(--d-title, var(--teal-deep));
       font-weight: 800;
       padding: 7px 12px;
     }
     .modal.modal-tp-mat { width: min(560px, 100%); }
     .modal .tp-picks { margin-top: 8px; }
     .modal .tp-picks button {
-      background: rgba(14, 143, 140, 0.1);
-      color: var(--teal-deep);
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 12%, #fff);
+      color: var(--d-title, var(--teal-deep));
     }
     .modal .tp-picks button.is-on {
-      background: var(--teal-deep);
-      color: #fff;
+      background: var(--d-accent, var(--teal-deep));
+      color: var(--d-accent-ink, #fff);
     }
     .tp-mat-picked {
       margin: 10px 0 4px;
@@ -2526,6 +2553,10 @@
       --d-vline-th: rgba(43, 61, 66, 0.22);
       --d-num-th: var(--ink);
     }
+    .sheet.design-classique.palette-teal .list-block.is-tp-page {
+      --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
+      --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
+    }
     .sheet.design-classique .list-title {
       font-family: Georgia, "Times New Roman", serif;
       font-size: var(--title-pt, var(--t-size));
@@ -2634,21 +2665,25 @@
       position: absolute;
       box-sizing: border-box;
       pointer-events: none;
+      z-index: 6;
+      touch-action: none;
     }
     .list-block.is-editing .table-frame-h { pointer-events: auto; }
     .table-frame-h[data-dir="n"] {
-      left: 12px;
-      right: 12px;
-      top: -8px;
-      height: 8px;
+      left: 8px;
+      right: 8px;
+      top: -14px;
+      height: 22px;
       cursor: ns-resize;
+      z-index: 8;
     }
     .table-frame-h[data-dir="s"] {
-      left: 12px;
-      right: 12px;
-      bottom: -10px;
-      height: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: -14px;
+      height: 22px;
       cursor: ns-resize;
+      z-index: 8;
     }
     .table-frame-h[data-dir="e"] {
       top: 2.5em;
@@ -2668,26 +2703,27 @@
     .table-frame-h[data-dir="ne"],
     .table-frame-h[data-dir="sw"],
     .table-frame-h[data-dir="se"] {
-      width: 12px;
-      height: 12px;
+      width: 16px;
+      height: 16px;
     }
-    .table-frame-h[data-dir="nw"] { top: -8px; left: -8px; cursor: nwse-resize; }
-    .table-frame-h[data-dir="se"] { bottom: -10px; right: -8px; cursor: nwse-resize; }
-    .table-frame-h[data-dir="ne"] { top: -8px; right: -8px; cursor: nesw-resize; }
-    .table-frame-h[data-dir="sw"] { bottom: -10px; left: -8px; cursor: nesw-resize; }
+    .table-frame-h[data-dir="nw"] { top: -10px; left: -8px; cursor: nwse-resize; }
+    .table-frame-h[data-dir="se"] { bottom: -12px; right: -8px; cursor: nwse-resize; }
+    .table-frame-h[data-dir="ne"] { top: -10px; right: -8px; cursor: nesw-resize; }
+    .table-frame-h[data-dir="sw"] { bottom: -12px; left: -8px; cursor: nesw-resize; }
     .table-frame-h::after {
       content: "";
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      background: var(--teal-deep);
+      background: var(--d-accent, var(--teal-deep));
       border: 1.5px solid #fff;
-      box-shadow: 0 1px 4px rgba(14, 143, 140, 0.35);
+      box-shadow: 0 1px 4px color-mix(in srgb, var(--d-accent, var(--teal-deep)) 40%, transparent);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.12s ease;
     }
+    .list-block.is-editing .table-frame-h::after,
     .list-block.is-editing:hover .table-frame-h::after,
     body.is-table-resizing .table-frame-h::after {
       opacity: 0.92;
@@ -2753,6 +2789,9 @@
       text-align: center;
     }
     .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)); }
+    .list-block.is-tp-page .liste tbody tr:nth-child(even) td:not(.is-tp-label):not([class*="is-fluo-"]) {
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 30%, #fff);
+    }
     .liste tbody tr:last-child td { border-bottom: 1.2pt solid var(--d-line, var(--teal-deep)); }
     .liste td.is-nom,
     .liste td.is-prenom { text-align: left; }
@@ -2818,7 +2857,7 @@
     .th-edit:focus,
     .list-title:focus,
     .list-sub:focus {
-      background: rgba(14, 143, 140, 0.1);
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 12%, transparent);
     }
     .list-title, .list-sub { outline: none; cursor: text; }
 
@@ -3464,6 +3503,9 @@
         print-color-adjust: exact;
       }
       .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
+      .list-block.is-tp-page .liste tbody tr:nth-child(even) td:not(.is-tp-label):not([class*="is-fluo-"]) {
+        background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 30%, #fff) !important;
+      }
       .tp-chip::after { content: none !important; }
       .tp-chip, .tp-ngroups { border-bottom: 0 !important; }
       .tp-mat-open { cursor: default; }
@@ -3489,9 +3531,10 @@
       .list-block.is-tp-page tr.is-tp-section td,
       .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td,
       .list-block.is-tp-page td.is-tp-label {
-        background: rgba(14, 143, 140, 0.12) !important;
+        background: var(--d-tint, var(--d-zebra)) !important;
         color: var(--d-title, var(--d-th, var(--teal-deep))) !important;
         font-weight: 800 !important;
+        letter-spacing: 0.06em !important;
       }
       .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
       .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
@@ -5457,8 +5500,8 @@
       if (!list || !isTpForm(list)) return false;
       const key = tpFitSignature(list);
       if (list.tpFitKey !== key) return true;
-      if (list.tpFitPending) return true;
       if (list.tpSized) return false;
+      if (list.tpFitPending) return true;
       if (!Object.keys(list.rowH || {}).length || tpRowHLooksLikeEm(list)) return true;
       return !list.tpFitted;
     }
@@ -5719,6 +5762,11 @@
       if (kind === "titre") {
         return cellEditHtml(text, list.id, ri, ci, list, freeze);
       }
+      if (kind === "share" || kind === "prof" || kind === "dates" || kind === "salles"
+        || kind === "order" || kind === "materiel" || kind === "total" || kind === "times") {
+        return '<span class="tp-struct"><span class="tp-struct-lab">' +
+          cellEditHtml(text, list.id, ri, ci, list, freeze) + "</span></span>";
+      }
       return cellEditHtml(text, list.id, ri, ci, list, freeze);
     }
 
@@ -5928,6 +5976,8 @@
         { r: s, c: 2, rs: shareN, cs: 2 },
         { r: p, c: 0, rs: profN, cs: 1 },
         { r: p, c: 1, rs: profN, cs: 1 },
+        { r: p, c: 2, rs: profN, cs: 1 },
+        { r: p, c: 3, rs: profN, cs: 1 },
         { r: o, c: 0, rs: orderN, cs: 1 },
         { r: o, c: 1, rs: orderN, cs: 1 },
       ];
@@ -6005,6 +6055,49 @@
       }
       list.rows = rows;
       list.merges = tpFormMerges(shareN, profN, orderN);
+    }
+
+    function isTpHeadingText(v) {
+      const t = String(v || "").trim();
+      if (!t) return false;
+      if (t === TP_LABEL_PROF || t === TP_LABEL_SHARE || t === TP_LABEL_ORDER) return true;
+      if (t === "Dates" || t === "Salles" || t === "Matériel" || t === "Total") return true;
+      if (t === "× nb de groupe" || /^× /.test(t)) return true;
+      return isTpProfSection(t) || isTpShareSection(t) || isTpOrderLabel(t);
+    }
+
+    function mergeCoversCell(list, r, c) {
+      return (list.merges || []).some((m) => (
+        r >= m.r && r < m.r + m.rs && c >= m.c && c < m.c + m.cs
+      ));
+    }
+
+    function ensureTpHeadingMerges(list) {
+      if (!isTpForm(list) || !list.rows) return;
+      const b = tpFormBands(list);
+      if (b.prof < 0) return;
+      const end = b.order >= 0 ? b.order : list.rows.length;
+      const rs = end - b.prof;
+      if (rs < 2) return;
+      const emptyBelow = (ci) => {
+        for (let ri = b.prof + 1; ri < end; ri++) {
+          if (String((list.rows[ri] || [])[ci] || "").trim()) return false;
+        }
+        return true;
+      };
+      const add = (ci) => {
+        if (!emptyBelow(ci)) return;
+        const existing = (list.merges || []).find((m) => m.r === b.prof && m.c === ci);
+        if (existing) {
+          if (existing.cs === 1 && existing.rs < rs) existing.rs = rs;
+          return;
+        }
+        if (mergeCoversCell(list, b.prof, ci)) return;
+        if (!list.merges) list.merges = [];
+        list.merges.push({ r: b.prof, c: ci, rs: rs, cs: 1 });
+      };
+      add(2);
+      add(3);
     }
 
     function writeTpFormMeta(list) {
@@ -6335,6 +6428,7 @@
           syncTpPosteRows(list);
         }
         writeTpComputed(list);
+        ensureTpHeadingMerges(list);
       }
       applyTpMainTitle(list, fill);
       return list;
@@ -6670,6 +6764,7 @@
         list.blank = false;
         ensureTpTable(list, { fillGroups: !headers.length || !rows.length });
         if (savedMerges.length && isTpForm(list) && !tpLayoutStale(list)) list.merges = savedMerges;
+        if (isTpForm(list)) ensureTpHeadingMerges(list);
       } else {
         list.mode = "";
         list.tp = null;
@@ -7647,7 +7742,7 @@
           const labelKind = tpForm ? tpFormLabelKind(list, contentRi, contentCi) : "";
           const matCell = tpForm && tpFormMatCell(list, contentRi, contentCi);
           const fieldAt = tpForm ? tpFormFieldAt(list, contentRi, contentCi) : "";
-          if (labelKind) cls.push("is-tp-label");
+          if (labelKind || (tpForm && isTpHeadingText(contentRow[contentCi]))) cls.push("is-tp-label");
           if (matCell) cls.push("is-tp-mat");
           const freeze = !tpForm && (role === "classe" || role === "total" || role === "poste"
             || (isTpList(list) && (tpKind === "poste" || tpKind === "item-order" || ((tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") && role !== "item") || (role === "qty" && (tpKind === "poste" || tpKind.indexOf("sec-") === 0)))));
@@ -7883,6 +7978,14 @@
         " palette-" + (state.palette || "teal") +
         " forme-" + (state.forme || "rectiligne") +
         " titre-" + (state.titre || "moyen");
+    }
+
+    function applyRootTheme() {
+      const pal = state.palette || "teal";
+      const root = document.documentElement;
+      ["teal", "marine", "carmin", "safran", "foret", "prune"].forEach((p) => {
+        root.classList.toggle("palette-" + p, p === pal);
+      });
     }
 
     function chunk(arr, size) {
@@ -9185,6 +9288,7 @@
     }
 
     function renderPreview() {
+      applyRootTheme();
       const sheetsEl = $("sheets");
       sheetsEl.innerHTML = "";
       syncImportUi();
@@ -9207,6 +9311,7 @@
 
       state.lists.forEach((l) => {
         if (isTpList(l) && tpLayoutStale(l)) ensureTpTable(l, { fillGroups: true });
+        else if (isTpForm(l)) ensureTpHeadingMerges(l);
       });
 
       const groups = previewGroups();
@@ -9278,6 +9383,7 @@
       const metrics = tpPageMetrics(list, sheet, block);
       const key = tpFitSignature(list);
       const keyChanged = list.tpFitKey !== key;
+      if (list.tpSized && !keyChanged) return false;
       if (!table || !sheet) {
         const ok = distributeTpRowHeights(list, metrics.targetMm);
         list.tpFitKey = key;
@@ -11037,12 +11143,28 @@
           d.rows.forEach((r) => {
             if (d.tpForm) {
               const next = clampTpRowMm(r.mm * fy);
-              if (r.el) r.el.style.setProperty("--row-h", next + "mm");
+              if (r.el) {
+                r.el.style.setProperty("--row-h", next + "mm");
+                r.el.style.height = next + "mm";
+              }
             } else {
               const next = Math.max(0.06, Math.min(2.4, r.em * fy));
               if (r.el) r.el.style.setProperty("--row-y", next + "em");
             }
           });
+          if (d.tpForm && d.spans) {
+            d.spans.forEach((sp) => {
+              let sum = 0;
+              for (let i = 0; i < sp.rs; i++) {
+                const row = d.rows.find((x) => x.ri === sp.r0 + i);
+                sum += row ? clampTpRowMm(row.mm * fy) : 0;
+              }
+              if (sum > 0 && sp.el) {
+                sp.el.style.setProperty("--span-h", sum + "mm");
+                sp.el.style.height = sum + "mm";
+              }
+            });
+          }
         }
       };
       const onMove = (e) => {
@@ -11130,6 +11252,16 @@
               : 0;
             return { ri: ri, em: rowEmOf(list, ri), mm: mm, el: el };
           }),
+          spans: tpForm
+            ? [...table.querySelectorAll("td[rowspan]")].map((el) => {
+              const tr = el.closest("tr");
+              return {
+                el: el,
+                r0: Number(tr && tr.dataset.ri) || 0,
+                rs: Math.max(1, Number(el.dataset.rs) || Number(el.rowSpan) || 1),
+              };
+            })
+            : [],
         };
         try { handle.setPointerCapture(e.pointerId); } catch (_) {}
         document.body.classList.add("is-table-resizing", "is-table-resizing-" + cursorFor(dir));
