@@ -2266,6 +2266,19 @@
       font-weight: 800;
       color: var(--d-title, var(--teal-deep));
     }
+    .list-block.is-tp-page tr.is-tp-band-share td.is-tp-total {
+      font-size: 0.9em;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      letter-spacing: 0;
+    }
+    .list-block.is-tp-page tr.is-tp-band-share td.is-tp-total .cell-edit {
+      display: block;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
     .list-block.is-tp-page td.is-tp-ngroups,
     .list-block.is-tp-page td.is-tp-salles {
       border-left: 0.45pt solid var(--d-rule, var(--rule));
@@ -4469,6 +4482,7 @@
       ["securite", "Sécurité"],
     ];
     const TP_NIVEAUX = ["6e", "5e", "4e", "3e", "2nde", "1re", "Tle"];
+    const TP_MATIERES = ["SVT", "SPC", "BPH"];
     const TP_GROUPES = {
       individuels: "individuels",
       binomes: "binômes",
@@ -4501,6 +4515,26 @@
         "2nde": ["Constitution et transformations de la matière", "Mouvement et interactions", "Ondes et signaux", "L’énergie"],
         "1re": ["Constitution et transformations de la matière", "Mouvement et interactions", "Énergie : conversions et transferts", "Ondes et signaux"],
         "Tle": ["Constitution et transformations de la matière", "Mouvement et gravitation", "Énergie : conversions et transferts", "Ondes et matière"],
+      },
+      // BPH = Biologie et physiopathologie humaines (spécialité ST2S).
+      // Pas de programme BPH en 2nde ni au collège : la spécialité commence en 1re ST2S
+      // (BO spécial n° 1 du 22 janvier 2019). L’option 2nde officielle est « Santé et social », distincte.
+      // Terminale : partie BPH de CBPH (BO spécial n° 8 du 25 juillet 2019).
+      BPH: {
+        "2nde": [],
+        "1re": [
+          "Organisation et fonctionnement intégré de l’être humain",
+          "Appareil locomoteur et motricité",
+          "Appareil digestif et nutrition",
+          "Appareil cardio-vasculaire et circulation sanguine",
+          "Appareil respiratoire et échanges gazeux",
+        ],
+        "Tle": [
+          "Milieu intérieur et homéostasie",
+          "Système immunitaire et défense de l’organisme",
+          "Appareil reproducteur et transmission de la vie",
+          "Gènes et transmission de l’information génétique",
+        ],
       },
     };
     const $ = (id) => document.getElementById(id);
@@ -5189,7 +5223,7 @@
 
     function tpFieldIsCustom(list, field, value) {
       const v = String(value == null ? "" : value);
-      if (field === "matiere") return v !== "" && v !== "SVT" && v !== "SPC";
+      if (field === "matiere") return v !== "" && TP_MATIERES.indexOf(v) < 0;
       if (field === "niveau") return v !== "" && TP_NIVEAUX.indexOf(v) < 0;
       if (field === "groupes") return v !== "" && !TP_GROUPES[v];
       if (field === "partie") {
@@ -6010,7 +6044,6 @@
       if (ri === 2 && ci === 0) return "materiel";
       if (ri === 2 && ci === 2) return "total";
       if (b.share >= 0 && ri === b.share && ci === 0) return "share";
-      if (b.share >= 0 && ri === b.share && ci === 2) return "times";
       if (b.prof >= 0 && ri === b.prof && ci === 0) return "prof";
       if (b.prof >= 0 && ri === b.prof && ci === 2) return "dates";
       if (b.prof >= 0 && ri === b.prof && ci === 3 && list.headers.length >= 5) return "nbgroupes";
@@ -6026,6 +6059,109 @@
       if (b.prof >= 0 && ri === b.prof) return true;
       if (b.order >= 0 && ri === b.order) return true;
       return false;
+    }
+
+    function tpFormShareBandRow(list, ri) {
+      if (!isTpForm(list)) return false;
+      const b = tpFormBands(list);
+      if (b.share < 0) return false;
+      return ri >= b.share && (b.prof < 0 || ri < b.prof);
+    }
+
+    function tpFormTotalCell(list, ri, ci) {
+      return Boolean(isTpForm(list) && ci >= 2 && tpFormShareBandRow(list, ri));
+    }
+
+    function tpFormNbGroupesValueCell(list, ri, ci) {
+      if (!isTpForm(list) || list.headers.length < 5 || ci !== 3) return false;
+      const b = tpFormBands(list);
+      if (b.prof >= 0 && ri === b.prof) return false;
+      if (tpFormShareBandRow(list, ri)) return false;
+      if (b.prof >= 0 && ri > b.prof) return true;
+      if (b.prof < 0 && b.order >= 0 && ri >= b.order) return true;
+      return false;
+    }
+
+    function parseTpLineQty(text) {
+      const t = String(text || "").replace(/^[•\-–—]\s*/, "").trim();
+      if (!t || t === "-" || t === "—" || t === "–") return { empty: true, qty: null };
+      const m = t.match(/(\d+(?:[.,]\d+)?)/);
+      if (!m) return { empty: false, qty: null };
+      const n = Number(String(m[1]).replace(",", "."));
+      return { empty: false, qty: Number.isFinite(n) ? n : null };
+    }
+
+    function parseTpGroupCountCell(v) {
+      const t = String(v == null ? "" : v).trim();
+      if (!t || t === TP_LABEL_NBGROUPES || t === "Dates" || t === "Salles" || t === "Total") return 0;
+      if (/^(?:×|x)\s/i.test(t)) return 0;
+      const m = t.match(/(\d+)/);
+      if (!m) return 0;
+      const n = Math.round(Number(m[1]));
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    }
+
+    function tpFormGroupFactors(list) {
+      const factors = [];
+      const add = (n) => {
+        const v = Math.round(Number(n));
+        if (!(v > 0)) return;
+        if (factors.indexOf(v) >= 0) return;
+        if (factors.length >= 3) return;
+        factors.push(v);
+      };
+      add(tpOf(list).nGroupes);
+      const ngCol = list && list.headers && list.headers.length >= 5 ? 3 : -1;
+      if (ngCol < 0) return factors;
+      const b = tpFormBands(list);
+      const start = b.prof >= 0 ? b.prof : (b.order >= 0 ? b.order : (list.rows || []).length);
+      for (let ri = start; ri < (list.rows || []).length; ri++) {
+        add(parseTpGroupCountCell((list.rows[ri] || [])[ngCol]));
+      }
+      return factors;
+    }
+
+    function formatTpFactorTotal(qty, factor) {
+      if (!(factor > 0)) return "";
+      const head = "× " + factor + " =";
+      if (qty == null || !Number.isFinite(Number(qty))) return head;
+      const prod = Number(qty) * factor;
+      const shown = Math.round(prod * 1000) / 1000;
+      return head + " " + (Number.isInteger(shown) ? String(shown) : String(shown));
+    }
+
+    function writeTpFormShareTotals(list) {
+      if (!isTpForm(list) || !list.rows) return;
+      const b = tpFormBands(list);
+      if (b.share < 0) return;
+      const factors = tpFormGroupFactors(list);
+      const end = b.prof >= 0 ? b.prof : (b.order >= 0 ? b.order : list.rows.length);
+      const maxCol = Math.min(4, Math.max(2, (list.headers || []).length - 1));
+      for (let ri = b.share; ri < end; ri++) {
+        const row = list.rows[ri];
+        if (!row) continue;
+        while (row.length <= maxCol) row.push("");
+        const parsed = parseTpLineQty(row[1]);
+        for (let k = 0; k < 3; k++) {
+          const ci = 2 + k;
+          if (ci > maxCol) break;
+          const factor = factors[k];
+          row[ci] = (!factor || parsed.empty) ? "" : formatTpFactorTotal(parsed.qty, factor);
+        }
+      }
+    }
+
+    function paintTpShareTotalsDom(list) {
+      if (!list || !isTpForm(list)) return;
+      const root = document.querySelector('.list-block[data-lid="' + list.id + '"]');
+      if (!root) return;
+      root.querySelectorAll(".cell-edit[data-tp-total]").forEach((el) => {
+        const ri = Number(el.dataset.ri);
+        const ci = Number(el.dataset.ci);
+        if (!Number.isInteger(ri) || !Number.isInteger(ci) || !list.rows[ri]) return;
+        const next = list.rows[ri][ci] || "";
+        if (el.textContent !== next) el.textContent = next;
+      });
     }
 
     function tpFormFieldAt(list, ri, ci) {
@@ -6061,8 +6197,13 @@
       if (kind === "titre") {
         return cellEditHtml(text, list.id, ri, ci, list, freeze);
       }
+      if (tpFormTotalCell(list, ri, ci)) {
+        return '<span class="cell-edit is-locked" spellcheck="false" data-lid="' + list.id +
+          '" data-ri="' + ri + '" data-ci="' + ci + '" data-tp-total="' + (ci - 2) + '">' +
+          escapeHtml(text || "") + "</span>";
+      }
       if (kind === "share" || kind === "prof" || kind === "dates" || kind === "salles"
-        || kind === "nbgroupes" || kind === "order" || kind === "materiel" || kind === "total" || kind === "times") {
+        || kind === "nbgroupes" || kind === "order" || kind === "materiel" || kind === "total") {
         return '<span class="tp-struct"><span class="tp-struct-lab">' +
           cellEditHtml(text, list.id, ri, ci, list, freeze) + "</span></span>";
       }
@@ -6336,7 +6477,7 @@
         rows.push(cell(
           i === 0 ? TP_LABEL_SHARE : "",
           it ? it.name : "-",
-          i === 0 ? (n ? ("× " + n) : "× nb de groupe") : "",
+          "",
           "",
           ""
         ));
@@ -6362,7 +6503,7 @@
       if (!t) return false;
       if (t === TP_LABEL_PROF || t === TP_LABEL_SHARE || t === TP_LABEL_ORDER) return true;
       if (t === "Dates" || t === "Salles" || t === TP_LABEL_NBGROUPES || t === "Matériel" || t === "Total") return true;
-      if (t === "× nb de groupe" || /^× /.test(t)) return true;
+      if (t === "× nb de groupe" || /^× \d+(\s*·|$)/.test(t)) return true;
       return isTpProfSection(t) || isTpShareSection(t) || isTpOrderLabel(t);
     }
 
@@ -6413,11 +6554,7 @@
       const n = Number(tp.nGroupes) || 0;
       if (isTpForm(list)) {
         writeTpFormMeta(list);
-        const b = tpFormBands(list);
-        if (b.share >= 0 && list.rows[b.share]) {
-          const tot = (tp.items || []).reduce((s, it) => s + tpItemTotal(it, n), 0);
-          list.rows[b.share][2] = n ? ("× " + n + (tot ? ("  ·  " + tot) : "")) : "× nb de groupe";
-        }
+        writeTpFormShareTotals(list);
         return;
       }
       const itemI = tpColIndex(list, "item");
@@ -6497,6 +6634,7 @@
         seedTpFormAlign(list);
         list.tpAlignReady = true;
       }
+      writeTpComputed(list);
     }
 
     function ensureTpColMeta(list) {
@@ -6664,7 +6802,7 @@
 
     function tpFieldChoices(list, field) {
       const tp = tpOf(list);
-      if (field === "matiere") return [["SVT", "SVT"], ["SPC", "SPC"]];
+      if (field === "matiere") return TP_MATIERES.map((m) => [m, m]);
       if (field === "niveau") return TP_NIVEAUX.map((n) => [n, n]);
       if (field === "groupes") return Object.keys(TP_GROUPES).map((k) => [k, TP_GROUPES[k]]);
       if (field === "partie") {
@@ -6721,9 +6859,9 @@
         if (tpPosteCount(list) !== (Number(tpOf(list).nGroupes) || 0)) {
           syncTpPosteRows(list);
         }
-        writeTpComputed(list);
-        ensureTpHeadingMerges(list);
       }
+      writeTpComputed(list);
+      ensureTpHeadingMerges(list);
       applyTpMainTitle(list, fill);
       return list;
     }
@@ -8053,10 +8191,12 @@
           const labelKind = tpForm ? tpFormLabelKind(list, contentRi, contentCi) : "";
           const matCell = tpForm && tpFormMatCell(list, contentRi, contentCi);
           const fieldAt = tpForm ? tpFormFieldAt(list, contentRi, contentCi) : "";
-          if (labelKind || (tpForm && isTpHeadingText(contentRow[contentCi]))) cls.push("is-tp-label");
-          if (tpForm && !labelKind && !(tpForm && isTpHeadingText(contentRow[contentCi]))) {
+          const shareTotal = tpForm && tpFormTotalCell(list, contentRi, contentCi);
+          if (!shareTotal && (labelKind || (tpForm && isTpHeadingText(contentRow[contentCi])))) cls.push("is-tp-label");
+          if (tpForm && (shareTotal || (!labelKind && !isTpHeadingText(contentRow[contentCi])))) {
             cls.push((contentRi % 2) ? "is-tp-odd" : "is-tp-even");
           }
+          if (shareTotal) cls.push("is-tp-total");
           if (matCell) cls.push("is-tp-mat");
           const freeze = !tpForm && (role === "classe" || role === "total" || role === "poste"
             || (isTpList(list) && (tpKind === "poste" || tpKind === "item-order" || ((tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") && role !== "item") || (role === "qty" && (tpKind === "poste" || tpKind.indexOf("sec-") === 0)))));
@@ -8138,10 +8278,12 @@
         const n = Math.round(Number(String(v).replace(/[^\d]/g, "")));
         const next = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 1;
         tpOf(list).nGroupes = next;
+        writeTpComputed(list);
         if (trim) {
           el.textContent = String(next);
           syncTpPosteRows(list);
-          writeTpComputed(list);
+        } else {
+          paintTpShareTotalsDom(list);
         }
         return "tp-n";
       }
@@ -8151,6 +8293,7 @@
         if (!list.rows[ri]) return null;
         if (isTpForm(list)) {
           while (list.rows[ri].length <= ci) list.rows[ri].push("");
+          if (tpFormTotalCell(list, ri, ci)) return "cell";
           list.rows[ri][ci] = v;
           if (trim && el.textContent !== v) el.textContent = v;
           const tp = tpOf(list);
@@ -8165,9 +8308,12 @@
             const parsed = Math.round(Number(String(v).replace(/[^\d]/g, "")));
             if (Number.isFinite(parsed) && parsed > 0) tp.nGroupes = Math.min(40, parsed);
           }
-          if (trim && ci === 1) {
-            pullTpItemsFromRows(list);
+          const touchedMat = ci === 1;
+          const touchedNb = tpFormNbGroupesValueCell(list, ri, ci);
+          if (touchedMat || touchedNb || (ri === 1 && ci === 0)) {
+            if (touchedMat) pullTpItemsFromRows(list);
             writeTpComputed(list);
+            paintTpShareTotalsDom(list);
           }
           return "cell";
         }
