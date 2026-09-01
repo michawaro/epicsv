@@ -2276,6 +2276,38 @@
     .list-block.is-tp-page .liste td.is-tp-label {
       border-bottom-color: var(--d-head-rule, rgba(255, 255, 255, 0.78));
     }
+    .list-block.is-tp-page .liste.has-tp-inner {
+      --tp-inner: 1.65pt solid #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-mat-head td {
+      border-bottom: var(--tp-inner);
+      border-bottom-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-section,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-section {
+      border-right: var(--tp-inner);
+      border-right-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-start td {
+      border-top: var(--tp-inner);
+      border-top-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
+      border-bottom: var(--tp-inner);
+      border-bottom-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section {
+      border-bottom: var(--tp-inner);
+      border-bottom-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-mat-head td.is-tp-dates,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-dates,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-dates,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-dates {
+      border-left: var(--tp-inner);
+      border-left-color: #111;
+    }
     .tp-meta-bar {
       display: flex;
       flex-wrap: wrap;
@@ -3643,6 +3675,27 @@
         letter-spacing: 0.06em !important;
         border-color: var(--d-head-rule, rgba(255, 255, 255, 0.78)) !important;
       }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-mat-head td {
+        border-bottom: 1.65pt solid #111 !important;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-section,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-section {
+        border-right: 1.65pt solid #111 !important;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-start td {
+        border-top: 1.65pt solid #111 !important;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section {
+        border-bottom: 1.65pt solid #111 !important;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-mat-head td.is-tp-dates,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-dates,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-dates,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-dates {
+        border-left: 1.65pt solid #111 !important;
+      }
       .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
       .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
         background: var(--d-head, var(--d-accent)) !important;
@@ -3894,6 +3947,10 @@
         <label class="check-row">
           <input type="checkbox" id="optVlines" checked />
           Traits de séparation verticaux
+        </label>
+        <label class="check-row" id="optTpInnerWrap" hidden>
+          <input type="checkbox" id="optTpInner" checked />
+          Contour interne des fiches TP
         </label>
 
         <div class="opt-label">Numérotation</div>
@@ -4161,7 +4218,7 @@
       <div class="style-picks">
         <label><input type="checkbox" id="stDesign" checked /><span>Design<small>Style, couleurs, forme, titre</small></span></label>
         <label><input type="checkbox" id="stSizes" checked /><span>Tailles<small>Polices et hauteur de ligne</small></span></label>
-        <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation, cadre d’édition</small></span></label>
+        <label><input type="checkbox" id="stPage" checked /><span>Page<small>Marges, orientation, traits, numérotation, cadre d’édition, contour interne TP</small></span></label>
         <label><input type="checkbox" id="stInfo" checked /><span>Informations<small>Pastilles, légende, colonne Rq.</small></span></label>
         <label><input type="checkbox" id="stCols" checked /><span>Colonnes<small>Ordre, visibilité, largeurs, alignements, colonnes ajoutées</small></span></label>
       </div>
@@ -4339,6 +4396,7 @@
       badgeShape: "rond",
       sharedCols: [],
       editFrame: "tirets",
+      tpInner: true,
     };
 
     let nextId = 1;
@@ -4478,6 +4536,26 @@
     function normalizeEditFrame(v) {
       return v === "off" || v === "plein" || v === "tirets" ? v : "tirets";
     }
+
+    function normalizeTpInner(v) {
+      if (v === false || v === 0 || v === "0" || v === "off" || v === "false") return false;
+      return true;
+    }
+
+    function persistTpInner() {
+      try { localStorage.setItem("epicsv-tp-inner", state.tpInner ? "1" : "0"); } catch (_) {}
+    }
+
+    function readStoredTpInner() {
+      try {
+        const v = localStorage.getItem("epicsv-tp-inner");
+        if (v === "0") return false;
+        if (v === "1") return true;
+      } catch (_) {}
+      return true;
+    }
+
+    state.tpInner = readStoredTpInner();
 
     function syncEditFrame() {
       const v = normalizeEditFrame(state.editFrame);
@@ -4651,6 +4729,7 @@
         badgeShape: state.badgeShape,
         sharedCols: state.sharedCols,
         editFrame: state.editFrame,
+        tpInner: state.tpInner !== false,
       }));
     }
 
@@ -4733,6 +4812,8 @@
       state.badgeShape = normalizeBadgeShape(s.badgeShape);
       state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols : [];
       state.editFrame = normalizeEditFrame(s.editFrame);
+      state.tpInner = s.tpInner != null ? normalizeTpInner(s.tpInner) : true;
+      persistTpInner();
       state.lists.forEach((l) => {
         if (!l) return;
         l.marks = hydrateMarks(l.marks);
@@ -7785,7 +7866,7 @@
       const showNum = state.numbering !== "off" && !isTpList(list);
       const vis = visibleRowIndices(list);
       let html = '<div class="liste-wrap" style="width:' + tableW + '%">';
-      html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + (isTpList(list) ? " is-tp" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
+      html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + (isTpList(list) ? " is-tp" : "") + (isTpForm(list) && state.tpInner !== false ? " has-tp-inner" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
       html += "<colgroup>";
       if (showNum) html += '<col class="col-num">';
       let wi = 0;
@@ -7839,9 +7920,14 @@
           const b = tpFormBands(list);
           const shareStart = b.share >= 0 ? b.share : vis.length;
           if (ri < shareStart) trCls.push("is-tp-head");
-          else if (b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)) trCls.push("is-tp-band-share");
-          else if (b.prof >= 0 && ri >= b.prof && (b.order < 0 || ri < b.order)) trCls.push("is-tp-band-prof");
-          else if (b.order >= 0 && ri >= b.order) trCls.push("is-tp-band-order");
+          if (ri === 2) trCls.push("is-tp-mat-head");
+          if (b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)) {
+            trCls.push("is-tp-band-share");
+            if (b.prof >= 0 && ri === b.prof - 1) trCls.push("is-tp-share-end");
+          } else if (b.prof >= 0 && ri >= b.prof && (b.order < 0 || ri < b.order)) {
+            trCls.push("is-tp-band-prof");
+            if (ri === b.prof) trCls.push("is-tp-prof-start");
+          } else if (b.order >= 0 && ri >= b.order) trCls.push("is-tp-band-order");
         }
         let trStyle = "";
         if (tpForm && rowY > 0) trStyle = ' style="height:' + rowY + 'mm;--row-h:' + rowY + 'mm"';
@@ -9092,6 +9178,7 @@
         out.settings.numberFrom = state.numberFrom;
         out.settings.combine = state.combine;
         out.settings.editFrame = normalizeEditFrame(state.editFrame);
+        out.settings.tpInner = state.tpInner !== false;
       }
       if (parts.info) {
         out.settings.legend = state.legend;
@@ -9342,6 +9429,10 @@
           state.combineAsked = true;
         }
         if (s.editFrame) state.editFrame = normalizeEditFrame(s.editFrame);
+        if (s.tpInner != null) {
+          state.tpInner = normalizeTpInner(s.tpInner);
+          persistTpInner();
+        }
       }
       if (parts.info) {
         if (s.legend != null) state.legend = s.legend !== false;
@@ -10192,6 +10283,10 @@
       $("infoBlock").hidden = !on;
       if (!on) return;
       $("optVlines").checked = state.vlines;
+      const tpInnerWrap = $("optTpInnerWrap");
+      const tpInnerEl = $("optTpInner");
+      if (tpInnerWrap) tpInnerWrap.hidden = !state.lists.some(isTpList);
+      if (tpInnerEl) tpInnerEl.checked = state.tpInner !== false;
       $("optBadges").checked = state.showBadges;
       $("optNotes").checked = state.showNotes;
       $("notesPosWrap").hidden = !state.showNotes;
@@ -10769,6 +10864,8 @@
       state.showNotes = s.showNotes != null ? Boolean(s.showNotes) : listsRaw.some((l) => l.notes && Object.keys(l.notes).length);
       state.notesPos = s.notesPos === "left" || s.notesPos === "custom" ? s.notesPos : "right";
       state.editFrame = normalizeEditFrame(s.editFrame);
+      state.tpInner = s.tpInner != null ? normalizeTpInner(s.tpInner) : true;
+      persistTpInner();
       state.lists = listsRaw.map((raw) => hydrateList(raw));
       if (state.showNotes) {
         const pos = state.notesPos === "left" ? "left" : "right";
@@ -10809,6 +10906,7 @@
           forme: state.forme,
           titre: state.titre,
           editFrame: normalizeEditFrame(state.editFrame),
+          tpInner: state.tpInner !== false,
           fontPt: state.fontPt,
           titlePt: state.titlePt,
           thPt: state.thPt,
@@ -11076,6 +11174,12 @@
     $("optVlines").addEventListener("change", () => {
       pushHist();
       state.vlines = $("optVlines").checked;
+      renderPreview();
+    });
+    $("optTpInner").addEventListener("change", () => {
+      pushHist();
+      state.tpInner = $("optTpInner").checked;
+      persistTpInner();
       renderPreview();
     });
     document.querySelectorAll('input[name="design"]').forEach((el) => {
