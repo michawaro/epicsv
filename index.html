@@ -411,6 +411,43 @@
     .files-export .files-group-label {
       color: #f7ffc4;
     }
+    .yt-promo {
+      margin: 4px 0 2px;
+      padding: 10px 10px 11px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    }
+    .yt-promo-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .yt-promo a.btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      box-sizing: border-box;
+      min-height: 40px;
+      padding: 8px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: normal;
+    }
+    .yt-promo .btn-yt-sub {
+      background: linear-gradient(180deg, #e6f66f, #d4ec4f);
+      color: #2b3d12;
+      box-shadow: 0 6px 16px rgba(43, 61, 18, 0.16);
+    }
+    .yt-promo-note {
+      margin: 8px 0 0;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--cream-dim);
+    }
 
     .block h2 {
       margin: 0 0 10px;
@@ -1826,99 +1863,170 @@
       display: flex;
       flex-direction: column;
     }
-    .tp-sheet {
+    .list-block.is-tp-page .list-head { text-align: left; }
+    .list-block.is-tp-page .list-title,
+    .list-block.is-tp-page .list-sub { text-align: left; }
+    .list-block.is-tp-page .liste-wrap {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      gap: 3.5mm;
     }
-    .tp-head {
-      display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      gap: 3.5mm;
-      align-items: center;
-      padding-bottom: 2.5mm;
-      border-bottom: 1.4pt solid var(--d-line, var(--teal-deep));
+    .list-block.is-tp-page table.liste {
+      flex: 1;
+      height: 100%;
     }
-    .tp-badge {
-      background: var(--d-accent, var(--teal-deep));
-      color: var(--d-accent-ink, #fff);
+    .list-block.is-tp-page td.is-tp-poste {
+      text-align: center;
       font-weight: 800;
-      font-size: 11pt;
-      letter-spacing: 0.06em;
-      padding: 3px 10px;
-      border-radius: 6px;
+      font-variant-numeric: tabular-nums;
       white-space: nowrap;
+      width: 9%;
     }
-    .tp-title {
-      font-size: var(--title-pt, 14pt);
+    .list-block.is-tp-page td.is-tp-binome {
+      text-align: left;
+    }
+    .list-block.is-tp-page td.is-tp-binome .cell-edit {
+      display: block;
+      min-height: 2.4em;
+      white-space: pre-wrap;
+    }
+    .list-block.is-tp-page td.is-tp-prof {
+      text-align: left;
+      width: 16%;
+      font-size: 0.95em;
+    }
+    .list-block.is-tp-page td.is-tp-prof .cell-edit {
+      display: block;
+      min-height: 1.2em;
+    }
+    .list-block.is-tp-page tr.is-tp-order td {
       font-weight: 800;
-      color: var(--d-title, var(--teal-deep));
-      margin: 0;
-      line-height: 1.2;
+      vertical-align: top;
+      border-top: 1.3pt solid var(--d-line, var(--teal-deep));
+      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 9%, var(--paper));
     }
-    .tp-niveau {
-      font-weight: 800;
-      color: var(--d-title, var(--teal-deep));
-      font-size: 12pt;
-      white-space: nowrap;
+    .list-block.is-tp-page tr.is-tp-order td.is-tp-poste {
+      text-align: left;
+      white-space: normal;
+      font-size: 0.78em;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      width: 14%;
     }
-    .tp-meta {
+    .list-block.is-tp-page tr.is-tp-order {
+      height: 22%;
+    }
+    .list-block.is-tp-page tr.is-tp-order td.is-tp-binome .cell-edit {
+      min-height: 4.5em;
+    }
+    .tp-meta-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 1.5mm 8mm;
-      font-size: 10pt;
-      color: var(--d-sub, var(--ink-soft));
+      align-items: center;
+      gap: 1.6mm 4mm;
+      margin: 0 0 2.8mm;
+      font-size: 10.5pt;
       font-weight: 700;
+      color: var(--d-sub, var(--ink-soft));
     }
-    .tp-meta strong { color: var(--d-title, var(--teal-deep)); }
-    .tp-table-wrap { flex: 1; }
-    .tp-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 10pt;
-    }
-    .tp-table th {
-      text-align: left;
-      font-size: var(--th-pt, 7.5pt);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--d-th, var(--teal-deep));
-      border-bottom: 1.2pt solid var(--d-line, var(--teal-deep));
-      padding: 0.35em 0.55em;
-    }
-    .tp-table td {
-      border-bottom: 0.4pt solid var(--d-rule, var(--rule));
-      padding: 0.42em 0.55em;
-      vertical-align: middle;
-    }
-    .tp-table tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)); }
-    .tp-table .num {
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      width: 16%;
-      white-space: nowrap;
-    }
-    .tp-table tfoot td {
-      font-weight: 800;
-      border-top: 1.2pt solid var(--d-line, var(--teal-deep));
-      border-bottom: 0;
-      background: transparent;
-    }
-    .tp-empty { color: var(--ink-soft); font-style: italic; }
-    .sheet.design-bandeau .tp-head {
-      background: var(--d-accent, var(--teal-deep));
-      color: var(--d-accent-ink, #fff);
-      padding: 3.5mm 4mm;
+    .tp-chip {
+      appearance: none;
       border: 0;
-      border-radius: 4px;
+      background: transparent;
+      font: inherit;
+      font-weight: 800;
+      color: var(--d-title, var(--teal-deep));
+      cursor: pointer;
+      padding: 0.08em 0.2em 0.12em;
+      border-bottom: 1.15pt dashed var(--d-line, var(--teal-deep));
+      line-height: 1.2;
     }
-    .sheet.design-bandeau .tp-title,
-    .sheet.design-bandeau .tp-niveau { color: inherit; }
-    .sheet.design-bandeau .tp-badge {
-      background: rgba(255, 255, 255, 0.18);
+    .tp-chip::after {
+      content: " ▾";
+      font-size: 0.72em;
+      font-weight: 700;
+      opacity: 0.7;
+    }
+    .tp-chip.is-placeholder { font-weight: 700; opacity: 0.72; }
+    .tp-chip-mat::after { content: none; }
+    .tp-meta-n { color: var(--d-title, var(--teal-deep)); font-weight: 800; }
+    .tp-ngroups {
+      display: inline-block;
+      min-width: 1.4em;
+      text-align: center;
+      border-bottom: 1.15pt dashed var(--d-line, var(--teal-deep));
+      padding: 0 0.15em;
+    }
+    .tp-mat-open {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-weight: 800;
       color: inherit;
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      letter-spacing: inherit;
+      text-transform: inherit;
+    }
+    .tp-choice-menu {
+      position: fixed;
+      z-index: 55;
+      min-width: 148px;
+      max-width: min(420px, 92vw);
+      max-height: min(52vh, 420px);
+      overflow: auto;
+      background: #fff;
+      color: var(--ink);
+      border-radius: 16px;
+      padding: 6px;
+      box-shadow: 0 18px 48px rgba(14, 143, 140, 0.28);
+    }
+    .tp-choice-menu[hidden] { display: none !important; }
+    .tp-choice-menu button {
+      display: block;
+      width: 100%;
+      appearance: none;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .tp-choice-menu button:hover,
+    .tp-choice-menu button.is-on { background: rgba(14, 143, 140, 0.12); color: var(--teal-deep); }
+    .modal.modal-tp-mat { width: min(560px, 100%); }
+    .modal .tp-picks { margin-top: 8px; }
+    .modal .tp-picks button {
+      background: rgba(14, 143, 140, 0.1);
+      color: var(--teal-deep);
+    }
+    .modal .tp-picks button.is-on {
+      background: var(--teal-deep);
+      color: #fff;
+    }
+    .tp-mat-picked {
+      margin: 10px 0 4px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-soft);
+    }
+    .tp-mat-picked button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--teal-deep);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      margin-left: 4px;
     }
 
     .seg.niveaux {
@@ -3001,19 +3109,15 @@
         print-color-adjust: exact;
       }
       .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
-      .tp-table th,
-      .tp-table td,
-      .tp-badge {
+      .list-block.is-tp-page tr.is-tp-order td {
+        background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 9%, #fff) !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      .tp-table tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
-      .sheet.design-bandeau .tp-head {
-        background: var(--d-accent) !important;
-        color: var(--d-accent-ink) !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+      .tp-chip::after { content: none !important; }
+      .tp-chip, .tp-ngroups { border-bottom: 0 !important; }
+      .tp-chip-mat { display: none !important; }
+      .tp-mat-open { cursor: default; }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
       .liste td.is-fluo-vert,
       .liste tbody tr:nth-child(even) td.is-fluo-vert { background: #d4f5c8 !important; }
@@ -3117,6 +3221,14 @@
           <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
           <button class="btn btn-save" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
         </div>
+      </div>
+
+      <div class="yt-promo" role="complementary" aria-label="Chaîne YouTube Michawaro">
+        <div class="yt-promo-btns">
+          <a class="btn btn-yt-sub" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" aria-label="S’abonner à la chaîne YouTube Michawaro">S’abonner à Michawaro</a>
+          <a class="btn btn-ghost" href="https://www.youtube.com/playlist?list=PLr4sKRS3Xhh6GozQuYuF8ZQ4P5d0OA0rU" target="_blank" rel="noopener noreferrer" aria-label="Voir la playlist YouTube des tutoriels logiciels">Voir les tutoriels logiciels</a>
+        </div>
+        <p class="yt-promo-note">Pour être notifié à chaque nouvelle vidéo, activez la cloche 🔔 sur Toutes.</p>
       </div>
 
       <div class="err" id="err" role="alert" aria-live="assertive"></div>
@@ -3332,47 +3444,8 @@
           <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
         </div>
         <div id="tpForm" hidden>
-          <div class="opt-label">Matière</div>
-          <div class="seg duo">
-            <label><input type="radio" name="tpMatiere" value="SVT" checked /><span>SVT</span></label>
-            <label><input type="radio" name="tpMatiere" value="SPC" /><span>SPC</span></label>
-          </div>
-          <div class="opt-label">Titre</div>
-          <input class="field" id="tpTitre" type="text" placeholder="Titre de la séance" aria-label="Titre de la séance" />
-          <div class="opt-label">Niveau</div>
-          <div class="seg niveaux" id="tpNiveauSeg">
-            <label><input type="radio" name="tpNiveau" value="6e" checked /><span>6e</span></label>
-            <label><input type="radio" name="tpNiveau" value="5e" /><span>5e</span></label>
-            <label><input type="radio" name="tpNiveau" value="4e" /><span>4e</span></label>
-            <label><input type="radio" name="tpNiveau" value="3e" /><span>3e</span></label>
-            <label><input type="radio" name="tpNiveau" value="2nde" /><span>2nde</span></label>
-            <label><input type="radio" name="tpNiveau" value="1re" /><span>1re</span></label>
-            <label><input type="radio" name="tpNiveau" value="Tle" /><span>Tle</span></label>
-          </div>
-          <div class="opt-label">Partie</div>
-          <div class="tp-picks" id="tpParties"></div>
-          <div class="opt-label">Groupes</div>
-          <div class="seg quad">
-            <label><input type="radio" name="tpGroupes" value="individuels" /><span>Individuels</span></label>
-            <label><input type="radio" name="tpGroupes" value="binomes" checked /><span>Binômes</span></label>
-            <label><input type="radio" name="tpGroupes" value="trinomes" /><span>Trinômes</span></label>
-            <label><input type="radio" name="tpGroupes" value="ilots" /><span>Îlots</span></label>
-          </div>
-          <div class="opt-label">Nombre de groupes</div>
-          <input class="field field-num" id="tpNGroupes" type="number" min="1" max="40" value="12" aria-label="Nombre de groupes" />
-          <div class="opt-label">Matériel par poste</div>
-          <p class="hint-note">Quantité par poste × groupes, plus l’extra professeur (défaut +1).</p>
-          <div class="tp-item-head" aria-hidden="true"><span>Poste</span><span>Nom</span><span>Prof</span><span>Total</span><span></span></div>
-          <div id="tpItems"></div>
-          <p class="tp-item-sum" id="tpItemsSum"></p>
-          <div class="opt-label">Catalogue</div>
-          <input class="field" id="tpSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
-          <div class="tp-picks" id="tpCats"></div>
-          <div class="tp-picks tp-cat-items" id="tpCatItems"></div>
-          <div class="add-line">
-            <input class="field" id="tpCustom" type="text" placeholder="Matériel libre (ex. bouchons)" aria-label="Nom de matériel libre" />
-            <button class="btn-mini" id="tpCustomBtn" type="button">Ajouter</button>
-          </div>
+          <p class="hint-note" style="margin:8px 0 10px">Cliquez le tableau : titre, niveau, matière, groupes, cellules. Le catalogue s’ouvre depuis <strong>Matériel</strong> ou la ligne « Matériel à commander ».</p>
+          <button type="button" class="btn-mini" id="tpOpenCatalog">Catalogue matériel</button>
         </div>
       </section>
       </div>
@@ -3573,6 +3646,26 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-back no-print" id="tpMatModal" hidden>
+    <div class="modal modal-tp-mat" role="dialog" aria-modal="true" aria-labelledby="tpMatTitle">
+      <h3 id="tpMatTitle">Catalogue matériel</h3>
+      <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Les totaux vont dans la ligne « Matériel à commander ».</p>
+      <input class="field" id="tpMatSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
+      <div class="tp-picks" id="tpMatCats"></div>
+      <div class="tp-picks tp-cat-items" id="tpMatItems"></div>
+      <div class="add-line">
+        <input class="field" id="tpMatCustom" type="text" placeholder="Matériel libre (ex. bouchons)" aria-label="Nom de matériel libre" />
+        <button class="btn-mini" id="tpMatCustomBtn" type="button">Ajouter</button>
+      </div>
+      <div class="tp-mat-picked" id="tpMatPicked"></div>
+      <div class="modal-actions">
+        <button class="btn btn-print span-all" id="tpMatDone" type="button">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tp-choice-menu no-print" id="tpChoiceMenu" hidden role="listbox"></div>
 
   <script>
     const MARGES = { etroites: 8, moyennes: 14, larges: 22 };
@@ -3911,6 +4004,7 @@
         if (!Array.isArray(l.titles) || !l.titles.length) l.titles = [""];
         while (l.titles.length <= i) l.titles.push("");
         l.titles[i] = value;
+        if (isTpList(l) && i === 0) tpOf(l).titre = value;
       });
     }
 
@@ -4071,6 +4165,7 @@
         if (l.mode === "tp") {
           l.tp = hydrateTp(l.tp);
           l.blank = false;
+          ensureTpTable(l, { fillGroups: !l.headers.length || !l.rows.length });
         } else {
           l.mode = "";
         }
@@ -4390,6 +4485,272 @@
       return ((TP_PARTIES[(tp && tp.matiere) || "SVT"] || {})[(tp && tp.niveau) || "6e"] || []).slice();
     }
 
+    function tpMetaLine(tp) {
+      const t = tp || defaultTp();
+      const bits = [t.matiere, t.niveau];
+      if (t.partie) bits.push(t.partie);
+      bits.push((TP_GROUPES[t.groupes] || t.groupes) + " × " + t.nGroupes);
+      return bits.join(" · ");
+    }
+
+    function tpOrderText(tp) {
+      const t = tp || defaultTp();
+      if (!t.items || !t.items.length) return "";
+      return t.items.map((it) => it.name + " × " + tpItemTotal(it, t.nGroupes)).join("  ·  ");
+    }
+
+    function isTpOrderLabel(v) {
+      const n = foldHeader(v);
+      return n === "materiel a commander" || n === "materiel commander" || /materiel a? commander/.test(n);
+    }
+
+    function tpColRole(list, i) {
+      const h = foldHeader((list && list.headers && list.headers[i]) || "");
+      if (/bureau|\bprof\b/.test(h)) return "prof";
+      if (/^(poste|groupe|n)$/.test(h)) return "poste";
+      if (/commander/.test(h)) return "binome";
+      if (/materiel|binome|ilot/.test(h)) return "binome";
+      if (i === 0) return "poste";
+      if (list && list.headers && list.headers.length >= 3 && i === list.headers.length - 1) return "prof";
+      return "binome";
+    }
+
+    function tpColIndex(list, role) {
+      if (!list || !list.headers) return 0;
+      for (let i = 0; i < list.headers.length; i++) {
+        if (tpColRole(list, i) === role) return i;
+      }
+      if (role === "poste") return 0;
+      if (role === "prof") return Math.max(0, list.headers.length - 1);
+      return Math.min(1, Math.max(0, list.headers.length - 1));
+    }
+
+    function isTpOrderRow(list, ri) {
+      const row = list && list.rows && list.rows[ri];
+      if (!row) return false;
+      const i = tpColIndex(list, "poste");
+      return isTpOrderLabel(row[i] || row[0] || "");
+    }
+
+    function findTpOrderIndex(list) {
+      if (!list || !list.rows) return -1;
+      for (let i = list.rows.length - 1; i >= 0; i--) {
+        if (isTpOrderRow(list, i)) return i;
+      }
+      return -1;
+    }
+
+    function tpGroupIndices(list) {
+      const out = [];
+      (list.rows || []).forEach((_, ri) => {
+        if (!isTpOrderRow(list, ri)) out.push(ri);
+      });
+      return out;
+    }
+
+    function tpBlankRow(list, poste) {
+      const n = Math.max(1, (list.headers || []).length);
+      const row = Array.from({ length: n }, () => "");
+      if (poste != null) row[tpColIndex(list, "poste")] = String(poste);
+      return row;
+    }
+
+    function looksAutoPoste(v, i) {
+      const s = String(v || "").trim();
+      return !s || s === String(i + 1) || s === String(i) || /^poste\s*\d+$/i.test(s);
+    }
+
+    function applyTpMetaTitle(list, force) {
+      const tp = tpOf(list);
+      const meta = tpMetaLine(tp);
+      if (!Array.isArray(list.titles) || !list.titles.length) list.titles = [""];
+      if (list.titles.length < 2) list.titles.push(meta);
+      else if (force || !String(list.titles[1] || "").trim() || list.titles[1] === (tp.metaStamp || "")) {
+        list.titles[1] = meta;
+      }
+      tp.metaStamp = list.titles[1];
+    }
+
+    function applyTpMainTitle(list, force) {
+      const tp = tpOf(list);
+      const titre = (tp.titre || "").trim() || "Demande de matériel";
+      if (!Array.isArray(list.titles) || !list.titles.length) list.titles = [""];
+      if (force || !String(list.titles[0] || "").trim()) list.titles[0] = titre;
+      if (!tp.titre) tp.titre = list.titles[0];
+    }
+
+    function syncTpGroupRows(list) {
+      const tp = tpOf(list);
+      const n = Math.max(1, Math.min(40, Number(tp.nGroupes) || 12));
+      tp.nGroupes = n;
+      const posteI = tpColIndex(list, "poste");
+      let groups = tpGroupIndices(list);
+      while (groups.length < n) {
+        const orderI = findTpOrderIndex(list);
+        const at = orderI >= 0 ? orderI : list.rows.length;
+        const ri = insertRowAt(list, at, tpBlankRow(list, String(groups.length + 1)));
+        if (!list.rowH) list.rowH = {};
+        list.rowH[ri] = 0.7;
+        groups = tpGroupIndices(list);
+      }
+      while (groups.length > n) {
+        removeRowsFromList(list, [groups[groups.length - 1]]);
+        groups = tpGroupIndices(list);
+      }
+      tpGroupIndices(list).forEach((ri, i) => {
+        const cur = (list.rows[ri] && list.rows[ri][posteI]) || "";
+        if (looksAutoPoste(cur, i)) list.rows[ri][posteI] = String(i + 1);
+      });
+    }
+
+    function syncTpOrderRow(list, force) {
+      const tp = tpOf(list);
+      const posteI = tpColIndex(list, "poste");
+      const binI = tpColIndex(list, "binome");
+      let ri = findTpOrderIndex(list);
+      if (ri < 0) {
+        ri = insertRowAt(list, list.rows.length, tpBlankRow(list, "Matériel à commander"));
+        if (!list.rowH) list.rowH = {};
+        list.rowH[ri] = 1.35;
+      } else if (!(list.rowH && Number(list.rowH[ri]) > 0)) {
+        if (!list.rowH) list.rowH = {};
+        list.rowH[ri] = 1.35;
+      }
+      const label = (list.rows[ri] && list.rows[ri][posteI]) || "";
+      if (!String(label).trim() || isTpOrderLabel(label)) {
+        list.rows[ri][posteI] = "Matériel à commander";
+      }
+      const text = tpOrderText(tp);
+      const cur = (list.rows[ri] && list.rows[ri][binI]) || "";
+      if (force || !String(cur).trim() || cur === (tp.orderStamp || "")) {
+        list.rows[ri][binI] = text;
+        tp.orderStamp = text;
+      }
+    }
+
+    function pullTpGroupCount(list) {
+      if (!isTpList(list)) return;
+      const n = tpGroupIndices(list).length;
+      if (n > 0) tpOf(list).nGroupes = Math.min(40, n);
+    }
+
+    function touchTpFromPanel(list, what) {
+      if (!list) return;
+      ensureTpTable(list, { fillGroups: false });
+      if (what === "title" || what === "all") applyTpMainTitle(list, true);
+      if (what === "groups" || what === "all") syncTpGroupRows(list);
+      if (what === "order" || what === "groups" || what === "all") syncTpOrderRow(list, true);
+    }
+
+    function applyTpField(list, field, value) {
+      if (!list) return;
+      const tp = tpOf(list);
+      if (field === "matiere") {
+        tp.matiere = value === "SPC" ? "SPC" : "SVT";
+        const parts = tpPartiesOf(tp);
+        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+      } else if (field === "niveau") {
+        if (TP_NIVEAUX.indexOf(value) >= 0) tp.niveau = value;
+        const parts = tpPartiesOf(tp);
+        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
+      } else if (field === "partie") {
+        tp.partie = String(value || "");
+      } else if (field === "groupes") {
+        if (TP_GROUPES[value]) tp.groupes = value;
+      }
+    }
+
+    function tpFieldChoices(list, field) {
+      const tp = tpOf(list);
+      if (field === "matiere") return [["SVT", "SVT"], ["SPC", "SPC"]];
+      if (field === "niveau") return TP_NIVEAUX.map((n) => [n, n]);
+      if (field === "groupes") return Object.keys(TP_GROUPES).map((k) => [k, TP_GROUPES[k]]);
+      if (field === "partie") {
+        const parts = tpPartiesOf(tp);
+        return [["", "Aucune"]].concat(parts.map((p) => [p, p]));
+      }
+      return [];
+    }
+
+    function tpChipHtml(list, field, label, value, placeholder) {
+      const empty = !String(value || "").trim();
+      const shown = empty ? (placeholder || label) : value;
+      return '<button type="button" class="tp-chip' + (empty ? " is-placeholder" : "") + '" data-tp-field="' + field +
+        '" data-lid="' + list.id + '" aria-haspopup="listbox" aria-label="' + escapeHtml(label) + '">' +
+        escapeHtml(shown) + "</button>";
+    }
+
+    function tpMetaBarHtml(list) {
+      const tp = tpOf(list);
+      const groupeLab = TP_GROUPES[tp.groupes] || tp.groupes;
+      let html = '<div class="tp-meta-bar">';
+      html += tpChipHtml(list, "matiere", "Matière", tp.matiere);
+      html += tpChipHtml(list, "niveau", "Niveau", tp.niveau);
+      html += tpChipHtml(list, "partie", "Partie", tp.partie, "Partie");
+      html += tpChipHtml(list, "groupes", "Type de groupes", groupeLab);
+      html += '<span class="tp-meta-n">× <span class="cell-edit tp-ngroups" contenteditable="true" spellcheck="false" data-lid="' +
+        list.id + '" data-tp-ngroups="1">' + escapeHtml(String(tp.nGroupes)) + "</span> groupes</span>";
+      html += '<button type="button" class="tp-chip tp-chip-mat" data-tp-mat="1" data-lid="' + list.id +
+        '" aria-label="Catalogue matériel">Matériel</button>';
+      html += "</div>";
+      return html;
+    }
+
+    function ensureTpTable(list, opts) {
+      if (!list) return list;
+      const fill = Boolean(opts && opts.fillGroups);
+      const tp = tpOf(list);
+      list.mode = "tp";
+      list.blank = false;
+      list.keepEmptyRows = true;
+      if (!list.orient || list.orient === "auto") list.orient = "paysage";
+      ensureAlign(list);
+      if (!list.headers || list.headers.length < 1) {
+        list.headers = ["Poste", "Matériel binôme", "Bureau du prof"];
+        list.rows = [];
+        list.order = [0, 1, 2];
+        list.on = [true, true, true];
+        list.custom = {};
+        if (!list.hidden) list.hidden = {};
+        if (!list.marks) list.marks = {};
+        if (!list.notes) list.notes = {};
+        if (!list.hl) list.hl = {};
+        if (!list.hlText) list.hlText = {};
+        list.colAlignH = { 0: "center", 1: "left", 2: "left" };
+        list.colAlignV = { 1: "top", 2: "top" };
+        list.widths = { 0: 11, 1: 72, 2: 17 };
+        if (!list.rowH) list.rowH = {};
+        list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
+      } else {
+        if (!Array.isArray(list.on) || list.on.length !== list.headers.length) {
+          list.on = list.headers.map(() => true);
+        }
+        if (!Array.isArray(list.order) || !list.order.length) {
+          list.order = list.headers.map((_, i) => i);
+        }
+        if (!list.widths) list.widths = {};
+        list.headers.forEach((_, i) => {
+          if (!(Number(list.widths[i]) > 0)) {
+            const role = tpColRole(list, i);
+            list.widths[i] = role === "poste" ? 11 : role === "prof" ? 17 : 72;
+          }
+        });
+      }
+      list.rows.forEach((r) => {
+        if (!Array.isArray(r)) return;
+        while (r.length < list.headers.length) r.push("");
+      });
+      applyTpMainTitle(list, fill);
+      if (fill) syncTpGroupRows(list);
+      else {
+        const n = tpGroupIndices(list).length;
+        if (n > 0) tp.nGroupes = Math.min(40, n);
+        else syncTpGroupRows(list);
+      }
+      syncTpOrderRow(list, fill);
+      return list;
+    }
+
     function materielLabel(item) {
       const nom = (item && item.nom) || "";
       const d = (item && item.details) || "";
@@ -4403,6 +4764,7 @@
       list.orient = "paysage";
       list.tp = hydrateTp(list.tp);
       if (!list.name || /^Page \d+$/i.test(list.name)) list.name = "Demande de matériel";
+      ensureTpTable(list, { fillGroups: true });
       return list;
     }
 
@@ -4704,6 +5066,7 @@
         list.mode = "tp";
         list.tp = hydrateTp(raw.tp);
         list.blank = false;
+        ensureTpTable(list, { fillGroups: !headers.length || !rows.length });
       } else {
         list.mode = "";
         list.tp = null;
@@ -4805,6 +5168,50 @@
       remapHlAfterRowDeletes(list.alignH, removed);
       remapHlAfterRowDeletes(list.alignV, removed);
       return true;
+    }
+
+    function shiftBagsAfterRowInsert(list, at) {
+      const shiftIndexBag = (bag) => {
+        if (!bag) return;
+        Object.keys(bag).map(Number).filter(Number.isInteger).sort((a, b) => b - a).forEach((k) => {
+          if (k >= at) {
+            bag[k + 1] = bag[k];
+            delete bag[k];
+          }
+        });
+      };
+      const shiftHlBag = (bag) => {
+        if (!bag) return;
+        const next = {};
+        Object.keys(bag).forEach((k) => {
+          const parts = String(k).split(":");
+          const i = Number(parts[0]);
+          const rest = parts.slice(1).join(":");
+          if (!Number.isInteger(i)) {
+            next[k] = bag[k];
+            return;
+          }
+          next[(i >= at ? i + 1 : i) + ":" + rest] = bag[k];
+        });
+        Object.keys(bag).forEach((k) => { delete bag[k]; });
+        Object.keys(next).forEach((k) => { bag[k] = next[k]; });
+      };
+      shiftIndexBag(list.hidden);
+      shiftIndexBag(list.notes);
+      shiftIndexBag(list.marks);
+      shiftIndexBag(list.rowH);
+      shiftHlBag(list.hl);
+      shiftHlBag(list.hlText);
+      shiftHlBag(list.alignH);
+      shiftHlBag(list.alignV);
+    }
+
+    function insertRowAt(list, at, row) {
+      if (!list || !Array.isArray(list.rows)) return -1;
+      const i = Math.max(0, Math.min(list.rows.length, Number(at)));
+      shiftBagsAfterRowInsert(list, i);
+      list.rows.splice(i, 0, row);
+      return i;
     }
 
     function rowIdentity(list, ri) {
@@ -5473,7 +5880,7 @@
       const showNum = state.numbering !== "off";
       const vis = visibleRowIndices(list);
       let html = '<div class="liste-wrap" style="width:' + tableW + '%">';
-      html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
+      html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + (isTpList(list) ? " is-tp" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
       html += "<colgroup>";
       if (showNum) html += '<col class="col-num">';
       let wi = 0;
@@ -5506,7 +5913,8 @@
         const stampCls = (state.activeStamp || state.activeFluo) ? " is-stamping" : "";
         const fluoCls = state.activeFluo ? " is-fluoing" : "";
         const rowY = list.rowH && Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 0;
-        html += '<tr class="' + (stampCls + fluoCls).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
+        const orderRow = isTpList(list) && isTpOrderRow(list, ri);
+        html += '<tr class="' + (stampCls + fluoCls + (orderRow ? " is-tp-order" : "")).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
           (rowY ? ' style="--row-y:' + rowY + 'em"' : "") + '>';
         let lead = true;
         const handle = () => {
@@ -5536,7 +5944,24 @@
           }
           if (kind === "mail" || kind === "id") cls.push("is-mute");
           if (kind === "date" || kind === "id") cls.push("is-nums");
-          html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '">' + handle() + cellEditHtml(row[i] || "", list.id, ri, i, list);
+          if (isTpList(list)) {
+            const role = tpColRole(list, i);
+            if (role) cls.push("is-tp-" + role);
+          }
+          const orderRow = isTpList(list) && isTpOrderRow(list, ri);
+          const role = isTpList(list) ? tpColRole(list, i) : "";
+          let inner;
+          if (orderRow && role === "poste") {
+            inner = '<button type="button" class="tp-mat-open" data-tp-mat="1" data-lid="' + list.id + '" title="Ouvrir le catalogue">' +
+              escapeHtml(row[i] || "Matériel à commander") + "</button>";
+          } else {
+            inner = cellEditHtml(row[i] || "", list.id, ri, i, list);
+            if (orderRow && role === "binome") {
+              inner += '<button type="button" class="tp-mat-open no-print" data-tp-mat="1" data-lid="' + list.id +
+                '" title="Catalogue matériel" aria-label="Catalogue matériel">＋</button>';
+            }
+          }
+          html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '">' + handle() + inner;
           if (last) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
         });
@@ -5574,6 +5999,7 @@
         if (!Array.isArray(list.titles)) list.titles = [""];
         while (list.titles.length <= ti) list.titles.push("");
         list.titles[ti] = v;
+        if (isTpList(list) && ti === 0) tpOf(list).titre = v;
         if (trim && el.textContent !== v) el.textContent = v;
         return "title";
       }
@@ -5584,6 +6010,18 @@
         else delete list.notes[ri];
         if (trim && el.textContent !== v) el.textContent = v;
         return "note";
+      }
+      if (el.classList.contains("tp-ngroups") || el.getAttribute("data-tp-ngroups") != null) {
+        if (!isTpList(list)) return null;
+        const n = Math.round(Number(String(v).replace(/[^\d]/g, "")));
+        const next = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 1;
+        tpOf(list).nGroupes = next;
+        if (trim) {
+          el.textContent = String(next);
+          syncTpGroupRows(list);
+          syncTpOrderRow(list, true);
+        }
+        return "tp-n";
       }
       if (el.classList.contains("cell-edit")) {
         const ri = Number(el.dataset.ri);
@@ -5611,64 +6049,30 @@
       const tp = isTpList(list);
       let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + (tp ? " is-tp-page" : "") + '" data-lid="' + list.id + '">';
       html += '<button type="button" class="page-sheet-del no-print" data-del-page="' + list.id + '" title="Supprimer cette page" aria-label="Supprimer cette page">×</button>';
-      if (!tp && (title || comments.length)) {
+      if (tp || title || comments.length) {
         html += '<div class="list-head">';
-        if (title) {
-          html += '<h2 class="list-title" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="0">' + escapeHtml(title) + "</h2>";
+        if (title || tp) {
+          const shown = title || "Demande de matériel";
+          html += '<h2 class="list-title" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="0">' + escapeHtml(shown) + "</h2>";
         }
-        (list.titles || []).forEach((t, i) => {
-          if (i === 0) return;
-          const v = String(t).trim();
-          if (!v) return;
-          html += '<div class="list-sub" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="' + i + '">' + escapeHtml(v) + "</div>";
-        });
+        if (tp) html += tpMetaBarHtml(list);
+        else {
+          (list.titles || []).forEach((t, i) => {
+            if (i === 0) return;
+            const v = String(t).trim();
+            if (!v) return;
+            html += '<div class="list-sub" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="' + i + '">' + escapeHtml(v) + "</div>";
+          });
+        }
         html += "</div>";
       }
-      if (tp) {
-        html += tpSheetHtml(list);
-      } else if (blank) {
+      if (blank) {
         html += '<div class="blank-hint"><p>Déposez un fichier ou collez un tableau pour remplir cette page.</p></div>';
       } else {
         html += tableHtml(list, nOnPage);
         html += legendHtml(list);
       }
       html += "</section>";
-      return html;
-    }
-
-    function tpSheetHtml(list) {
-      const tp = hydrateTp(list && list.tp);
-      const n = tp.nGroupes;
-      const titre = (tp.titre || "").trim() || "Demande de matériel";
-      let html = '<div class="tp-sheet">';
-      html += '<header class="tp-head">';
-      html += '<span class="tp-badge">' + escapeHtml(tp.matiere) + "</span>";
-      html += '<h2 class="tp-title">' + escapeHtml(titre) + "</h2>";
-      html += '<div class="tp-niveau">' + escapeHtml(tp.niveau) + "</div>";
-      html += "</header>";
-      html += '<div class="tp-meta">';
-      if (tp.partie) html += "<span>Partie : <strong>" + escapeHtml(tp.partie) + "</strong></span>";
-      html += "<span>Groupes : <strong>" + escapeHtml(TP_GROUPES[tp.groupes] || tp.groupes) + "</strong> × " + n + "</span>";
-      html += "</div>";
-      html += '<div class="tp-table-wrap"><table class="tp-table"><thead><tr>';
-      html += '<th>Matériel</th><th class="num">Par poste</th><th class="num">Prof</th><th class="num">Total</th>';
-      html += "</tr></thead><tbody>";
-      if (!tp.items.length) {
-        html += '<tr><td class="tp-empty" colspan="4">Ajoutez du matériel dans l’onglet Mode.</td></tr></tbody>';
-      } else {
-        let totPost = 0;
-        let totProf = 0;
-        let totAll = 0;
-        tp.items.forEach((it) => {
-          const tot = tpItemTotal(it, n);
-          totPost += (Number(it.qty) || 0) * n;
-          totProf += Number(it.extra) || 0;
-          totAll += tot;
-          html += "<tr><td>" + escapeHtml(it.name) + '</td><td class="num">' + it.qty + '</td><td class="num">' + it.extra + '</td><td class="num">' + tot + "</td></tr>";
-        });
-        html += '</tbody><tfoot><tr><td>Total</td><td class="num">' + totPost + '</td><td class="num">' + totProf + '</td><td class="num">' + totAll + "</td></tr></tfoot>";
-      }
-      html += "</table></div></div>";
       return html;
     }
 
@@ -6896,9 +7300,7 @@
     function sheetLayoutFor(group, maxCols) {
       const list = (group && group[0]) || null;
       const nOn = (group || []).filter((l) => !isBlankList(l) && !isTpList(l)).length || 1;
-      const cols = isTpList(list)
-        ? 1
-        : Math.max(0, maxCols || 0, ...((group || []).map((l) => selectedCols(l).length)));
+      const cols = Math.max(0, maxCols || 0, ...((group || []).map((l) => selectedCols(l).length)));
       return layoutFor(cols || 1, nOn, list);
     }
 
@@ -7193,7 +7595,7 @@
       const comments = $("commentList");
       wrap.innerHTML = "";
       if (comments) comments.innerHTML = "";
-      if (!list || !targets.length || isTpList(list)) { block.hidden = true; return; }
+      if (!list || !targets.length) { block.hidden = true; return; }
       block.hidden = false;
       targets.forEach((l) => {
         if (!Array.isArray(l.titles)) l.titles = [];
@@ -7247,8 +7649,8 @@
     function renderCols() {
       const list = primaryList();
       colsEl.innerHTML = "";
-      $("colsBlock").hidden = !list || isBlankList(list) || isTpList(list);
-      if (!list || isBlankList(list) || isTpList(list)) return;
+      $("colsBlock").hidden = !list || isBlankList(list);
+      if (!list || isBlankList(list)) return;
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
       list.order.forEach((key) => {
@@ -7384,7 +7786,10 @@
       const selected = selectedLists();
       const selectedTp = selected.filter(isTpList);
       if (selectedTp.length) {
-        selectedTp.forEach((l) => { l.tp = hydrateTp(l.tp); });
+        selectedTp.forEach((l) => {
+          l.tp = hydrateTp(l.tp);
+          ensureTpTable(l, { fillGroups: !l.headers.length || !l.rows.length });
+        });
         if (!isTpList(activeList())) setActiveList(selectedTp[0].id, { scroll: false });
         return selectedTp[0];
       }
@@ -7392,6 +7797,7 @@
       const anyTp = state.lists.find(isTpList);
       if (!selectedBlank.length && anyTp) {
         anyTp.tp = hydrateTp(anyTp.tp);
+        ensureTpTable(anyTp, { fillGroups: !anyTp.headers.length || !anyTp.rows.length });
         setActiveList(anyTp.id, { scroll: false });
         return anyTp;
       }
@@ -7428,92 +7834,47 @@
       const hit = tp.items.find((it) => it.name.toLowerCase() === label.toLowerCase());
       if (hit) hit.qty = clampTpQty((Number(hit.qty) || 0) + (qty || 1), 1) || 1;
       else tp.items.push({ name: label, qty: clampTpQty(qty, 1) || 1, extra: 1 });
+      syncTpOrderRow(list, true);
     }
 
-    function renderTpParties() {
-      const wrap = $("tpParties");
+    function renderTpMatPicked() {
+      const wrap = $("tpMatPicked");
       if (!wrap) return;
       const list = activeList();
-      wrap.innerHTML = "";
-      if (!isTpList(list)) return;
-      const tp = tpOf(list);
-      const parts = tpPartiesOf(tp);
-      if (!parts.length) {
-        wrap.innerHTML = '<p class="hint-note" style="margin:0">Aucune partie pour ce niveau.</p>';
+      if (!isTpList(list)) {
+        wrap.textContent = "";
         return;
       }
-      parts.forEach((name) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = name;
-        btn.classList.toggle("is-on", tp.partie === name);
-        btn.setAttribute("aria-pressed", tp.partie === name ? "true" : "false");
-        btn.addEventListener("click", () => {
+      const tp = tpOf(list);
+      const n = tp.nGroupes;
+      if (!tp.items.length) {
+        wrap.textContent = "Aucun matériel pour l’instant.";
+        return;
+      }
+      wrap.innerHTML = "";
+      tp.items.forEach((it, idx) => {
+        const row = document.createElement("div");
+        const tot = tpItemTotal(it, n);
+        row.appendChild(document.createTextNode(it.name + " · poste " + it.qty + " · prof " + it.extra + " · total " + tot + " "));
+        const del = document.createElement("button");
+        del.type = "button";
+        del.textContent = "×";
+        del.setAttribute("aria-label", "Retirer " + it.name);
+        del.addEventListener("click", () => {
           pushHist();
-          tp.partie = tp.partie === name ? "" : name;
-          renderTpParties();
+          tp.items.splice(idx, 1);
+          syncTpOrderRow(list, true);
+          renderTpMatPicked();
           renderPreview();
         });
-        wrap.appendChild(btn);
-      });
-    }
-
-    function renderTpItems() {
-      const wrap = $("tpItems");
-      const sumEl = $("tpItemsSum");
-      if (!wrap) return;
-      const list = activeList();
-      wrap.innerHTML = "";
-      if (!isTpList(list)) {
-        if (sumEl) sumEl.textContent = "";
-        return;
-      }
-      const tp = tpOf(list);
-      const n = tp.nGroupes;
-      let totAll = 0;
-      tp.items.forEach((it, idx) => {
-        const tot = tpItemTotal(it, n);
-        totAll += tot;
-        const row = document.createElement("div");
-        row.className = "tp-item-row";
-        row.innerHTML =
-          '<input class="field field-num" type="number" min="0" max="999" value="' + it.qty + '" aria-label="Quantité par poste" data-tp-qty="' + idx + '" />' +
-          '<input class="field" type="text" value="' + escapeHtml(it.name) + '" aria-label="Nom du matériel" data-tp-name="' + idx + '" />' +
-          '<input class="field field-num" type="number" min="0" max="999" value="' + it.extra + '" aria-label="Extra professeur" title="Quantité professeur" data-tp-extra="' + idx + '" />' +
-          '<span class="tp-item-tot" data-tp-tot="' + idx + '">' + tot + "</span>" +
-          '<button type="button" class="icon-btn" data-tp-del="' + idx + '" aria-label="Retirer ce matériel">×</button>';
+        row.appendChild(del);
         wrap.appendChild(row);
       });
-      if (sumEl) {
-        sumEl.textContent = tp.items.length
-          ? ("Total à préparer : " + totAll + " (poste × " + n + " groupes + prof)")
-          : "Aucun matériel pour l’instant.";
-      }
-    }
-
-    function refreshTpItemTotals() {
-      const list = activeList();
-      if (!isTpList(list)) return;
-      const tp = tpOf(list);
-      const n = tp.nGroupes;
-      let totAll = 0;
-      tp.items.forEach((it, idx) => {
-        const tot = tpItemTotal(it, n);
-        totAll += tot;
-        const el = document.querySelector('[data-tp-tot="' + idx + '"]');
-        if (el) el.textContent = String(tot);
-      });
-      const sumEl = $("tpItemsSum");
-      if (sumEl) {
-        sumEl.textContent = tp.items.length
-          ? ("Total à préparer : " + totAll + " (poste × " + n + " groupes + prof)")
-          : "Aucun matériel pour l’instant.";
-      }
     }
 
     function renderTpCatalog() {
-      const cats = $("tpCats");
-      const itemsEl = $("tpCatItems");
+      const cats = $("tpMatCats");
+      const itemsEl = $("tpMatItems");
       if (!cats || !itemsEl) return;
       cats.innerHTML = "";
       itemsEl.innerHTML = "";
@@ -7541,11 +7902,11 @@
         });
       }
       if (!q && !tpUi.cat) {
-        itemsEl.innerHTML = '<p class="hint-note" style="margin:0">Choisissez une catégorie ou recherchez un nom.</p>';
+        itemsEl.innerHTML = '<p class="hint-note" style="margin:0;color:inherit">Choisissez une catégorie ou recherchez un nom.</p>';
         return;
       }
       if (!rows.length) {
-        itemsEl.innerHTML = '<p class="hint-note" style="margin:0">Aucun matériel ne correspond.</p>';
+        itemsEl.innerHTML = '<p class="hint-note" style="margin:0;color:inherit">Aucun matériel ne correspond.</p>';
         return;
       }
       rows.slice(0, 80).forEach((item) => {
@@ -7557,11 +7918,36 @@
           if (!isTpList(list)) return;
           pushHist();
           addTpItem(materielLabel(item), 1);
-          renderTpItems();
+          renderTpMatPicked();
           renderPreview();
         });
         itemsEl.appendChild(btn);
       });
+    }
+
+    let tpMatDlgRestore = null;
+    function closeTpMatModal() {
+      const back = $("tpMatModal");
+      if (back) back.hidden = true;
+      if (tpMatDlgRestore) {
+        tpMatDlgRestore();
+        tpMatDlgRestore = null;
+      }
+    }
+
+    function openTpMatModal() {
+      const list = activeList();
+      if (!isTpList(list)) return;
+      const back = $("tpMatModal");
+      if (!back) return;
+      closeTpChoiceMenu();
+      back.hidden = false;
+      const search = $("tpMatSearch");
+      if (search && document.activeElement !== search) search.value = tpUi.q || "";
+      renderTpCatalog();
+      renderTpMatPicked();
+      if (tpMatDlgRestore) tpMatDlgRestore();
+      tpMatDlgRestore = attachDialog(back, closeTpMatModal);
     }
 
     function renderMode() {
@@ -7573,34 +7959,12 @@
         el.checked = el.value === (tpOn ? "tp" : "liste");
       });
       form.hidden = !tpOn;
-      if (!tpOn) return;
-      const tp = tpOf(list);
-      const parts = tpPartiesOf(tp);
-      if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
-      document.querySelectorAll('input[name="tpMatiere"]').forEach((el) => {
-        el.checked = el.value === tp.matiere;
-      });
-      document.querySelectorAll('input[name="tpNiveau"]').forEach((el) => {
-        el.checked = el.value === tp.niveau;
-      });
-      document.querySelectorAll('input[name="tpGroupes"]').forEach((el) => {
-        el.checked = el.value === tp.groupes;
-      });
-      const titre = $("tpTitre");
-      if (titre && document.activeElement !== titre) titre.value = tp.titre || "";
-      const nEl = $("tpNGroupes");
-      if (nEl && document.activeElement !== nEl) nEl.value = String(tp.nGroupes);
-      const search = $("tpSearch");
-      if (search && document.activeElement !== search) search.value = tpUi.q || "";
-      renderTpParties();
-      renderTpItems();
-      renderTpCatalog();
     }
 
     function renderDisplay() {
       const on = state.lists.length > 0;
       $("displayFoldWrap").hidden = !on;
-      $("infoBlock").hidden = !on || isTpList(activeList());
+      $("infoBlock").hidden = !on;
       if (!on) return;
       $("optVlines").checked = state.vlines;
       $("optBadges").checked = state.showBadges;
@@ -8702,7 +9066,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption, .tp-meta-bar, .tp-chip, .tp-mat-open, .tp-choice-menu, [data-tp-mat], [data-tp-field]");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -8731,7 +9095,6 @@
         if (e.button != null && e.button !== 0) return false;
         if (editing(e.target)) return false;
         if (!e.target.closest(".sheet")) return false;
-        if (e.target.closest(".list-block.is-tp-page")) return false;
         return Boolean(lidFromTarget(e.target, e.clientX, e.clientY));
       };
       const clearSel = () => {
@@ -8930,6 +9293,7 @@
       const kind = applyPreviewEdit(e.target, true);
       if (kind === "header") renderCols();
       if (kind === "title") renderTitles();
+      if (kind === "tp-n") renderPreview();
     });
     $("sheets").addEventListener("keydown", (e) => {
       if (!e.target.isContentEditable) return;
@@ -9060,6 +9424,14 @@
       if (zoneSuppressClick) {
         e.preventDefault();
         e.stopPropagation();
+        return;
+      }
+      if (e.target.closest("[data-tp-mat], .tp-chip, .tp-meta-bar")) {
+        const block = e.target.closest(".list-block[data-lid]");
+        if (block) {
+          const lid = Number(block.dataset.lid);
+          if (lid) setActiveList(lid, { scroll: false });
+        }
         return;
       }
       const delPage = e.target.closest("[data-del-page]");
@@ -9387,6 +9759,60 @@
     const pageOrientToggle = $("pageOrientToggle");
     if (pageOrientToggle) pageOrientToggle.addEventListener("click", toggleHudOrient);
 
+    function closeTpChoiceMenu() {
+      const menu = $("tpChoiceMenu");
+      if (menu) {
+        menu.hidden = true;
+        menu.innerHTML = "";
+      }
+    }
+
+    function openTpChoiceMenu(anchor, list, field) {
+      const menu = $("tpChoiceMenu");
+      if (!menu || !anchor || !list) return;
+      const choices = tpFieldChoices(list, field);
+      if (!choices.length) return;
+      const tp = tpOf(list);
+      const current = field === "matiere" ? tp.matiere
+        : field === "niveau" ? tp.niveau
+        : field === "groupes" ? tp.groupes
+        : (tp.partie || "");
+      menu.innerHTML = "";
+      choices.forEach((pair) => {
+        const val = pair[0];
+        const lab = pair[1];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("role", "option");
+        btn.textContent = lab;
+        btn.classList.toggle("is-on", String(val) === String(current));
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          pushHist();
+          applyTpField(list, field, val);
+          closeTpChoiceMenu();
+          renderPreview();
+        });
+        menu.appendChild(btn);
+      });
+      menu.hidden = false;
+      const r = anchor.getBoundingClientRect();
+      const mw = Math.max(r.width, 148);
+      menu.style.minWidth = mw + "px";
+      let left = r.left;
+      let top = r.bottom + 6;
+      requestAnimationFrame(() => {
+        const box = menu.getBoundingClientRect();
+        if (left + box.width > window.innerWidth - 8) left = Math.max(8, window.innerWidth - box.width - 8);
+        if (top + box.height > window.innerHeight - 8) top = Math.max(8, r.top - box.height - 6);
+        menu.style.left = left + "px";
+        menu.style.top = top + "px";
+      });
+      menu.style.left = left + "px";
+      menu.style.top = top + "px";
+    }
+
     document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
@@ -9404,135 +9830,71 @@
       });
     });
 
-    function activeTpOrNull() {
-      const list = activeList();
-      return isTpList(list) ? list : null;
-    }
-
-    document.querySelectorAll('input[name="tpMatiere"]').forEach((el) => {
-      el.addEventListener("change", () => {
-        if (!el.checked) return;
-        const list = activeTpOrNull();
-        if (!list) return;
-        pushHist();
-        const tp = tpOf(list);
-        tp.matiere = el.value === "SPC" ? "SPC" : "SVT";
-        const parts = tpPartiesOf(tp);
-        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
-        renderTpParties();
-        renderPreview();
-      });
+    $("sheets").addEventListener("click", (e) => {
+      if (e.target.closest("[data-tp-mat]")) {
+        e.preventDefault();
+        const lid = e.target.closest("[data-lid]");
+        const list = lid ? state.lists.find((l) => String(l.id) === lid.dataset.lid) : activeList();
+        if (list && isTpList(list) && list.id !== state.activeId) setActiveList(list.id, { scroll: false });
+        openTpMatModal();
+        return;
+      }
+      const chip = e.target.closest(".tp-chip[data-tp-field]");
+      if (!chip) return;
+      e.preventDefault();
+      const list = state.lists.find((l) => String(l.id) === chip.dataset.lid);
+      if (!list || !isTpList(list)) return;
+      if (list.id !== state.activeId) setActiveList(list.id, { scroll: false });
+      if (!$("tpChoiceMenu").hidden && $("tpChoiceMenu").dataset.field === chip.dataset.tpField) {
+        closeTpChoiceMenu();
+        return;
+      }
+      $("tpChoiceMenu").dataset.field = chip.dataset.tpField;
+      openTpChoiceMenu(chip, list, chip.dataset.tpField);
     });
-    document.querySelectorAll('input[name="tpNiveau"]').forEach((el) => {
-      el.addEventListener("change", () => {
-        if (!el.checked) return;
-        const list = activeTpOrNull();
-        if (!list) return;
-        pushHist();
-        const tp = tpOf(list);
-        tp.niveau = el.value;
-        const parts = tpPartiesOf(tp);
-        if (tp.partie && parts.indexOf(tp.partie) < 0) tp.partie = "";
-        renderTpParties();
-        renderPreview();
-      });
+    document.addEventListener("pointerdown", (e) => {
+      const menu = $("tpChoiceMenu");
+      if (!menu || menu.hidden) return;
+      if (e.target.closest("#tpChoiceMenu") || e.target.closest(".tp-chip[data-tp-field]")) return;
+      closeTpChoiceMenu();
     });
-    document.querySelectorAll('input[name="tpGroupes"]').forEach((el) => {
-      el.addEventListener("change", () => {
-        if (!el.checked) return;
-        const list = activeTpOrNull();
-        if (!list) return;
-        pushHist();
-        tpOf(list).groupes = el.value;
-        renderPreview();
-      });
+    const tpOpenCatalog = $("tpOpenCatalog");
+    if (tpOpenCatalog) tpOpenCatalog.addEventListener("click", () => {
+      if (!isTpList(activeList())) ensureTpPages();
+      openTpMatModal();
     });
-    const tpTitre = $("tpTitre");
-    if (tpTitre) {
-      tpTitre.addEventListener("focus", () => { if (activeTpOrNull()) pushHist(); });
-      tpTitre.addEventListener("input", () => {
-        const list = activeTpOrNull();
-        if (!list) return;
-        tpOf(list).titre = tpTitre.value;
-        renderPreview();
+    const tpMatDone = $("tpMatDone");
+    if (tpMatDone) tpMatDone.addEventListener("click", closeTpMatModal);
+    const tpMatBack = $("tpMatModal");
+    if (tpMatBack) {
+      tpMatBack.addEventListener("click", (e) => {
+        if (e.target === tpMatBack) closeTpMatModal();
       });
     }
-    const tpNGroupes = $("tpNGroupes");
-    if (tpNGroupes) {
-      tpNGroupes.addEventListener("focus", () => { if (activeTpOrNull()) pushHist(); });
-      tpNGroupes.addEventListener("input", () => {
-        const list = activeTpOrNull();
-        if (!list) return;
-        const n = Math.round(Number(tpNGroupes.value));
-        tpOf(list).nGroupes = Number.isFinite(n) && n > 0 ? Math.min(40, n) : 1;
-        refreshTpItemTotals();
-        renderPreview();
-      });
-    }
-    const tpItems = $("tpItems");
-    if (tpItems) {
-      tpItems.addEventListener("focusin", (e) => {
-        if (e.target.matches("input") && activeTpOrNull()) pushHist();
-      });
-      tpItems.addEventListener("input", (e) => {
-        const list = activeTpOrNull();
-        if (!list) return;
-        const tp = tpOf(list);
-        const qty = e.target.getAttribute("data-tp-qty");
-        const name = e.target.getAttribute("data-tp-name");
-        const extra = e.target.getAttribute("data-tp-extra");
-        if (qty != null) {
-          const i = Number(qty);
-          if (tp.items[i]) tp.items[i].qty = clampTpQty(e.target.value, 1) || 0;
-          refreshTpItemTotals();
-          renderPreview();
-        } else if (name != null) {
-          const i = Number(name);
-          if (tp.items[i]) tp.items[i].name = e.target.value;
-          renderPreview();
-        } else if (extra != null) {
-          const i = Number(extra);
-          if (tp.items[i]) tp.items[i].extra = clampTpQty(e.target.value, 0);
-          refreshTpItemTotals();
-          renderPreview();
-        }
-      });
-      tpItems.addEventListener("click", (e) => {
-        const del = e.target.closest("[data-tp-del]");
-        if (!del) return;
-        const list = activeTpOrNull();
-        if (!list) return;
-        const i = Number(del.getAttribute("data-tp-del"));
-        pushHist();
-        tpOf(list).items.splice(i, 1);
-        renderTpItems();
-        renderPreview();
-      });
-    }
-    const tpSearch = $("tpSearch");
-    if (tpSearch) {
-      tpSearch.addEventListener("input", () => {
-        tpUi.q = tpSearch.value;
+    const tpMatSearch = $("tpMatSearch");
+    if (tpMatSearch) {
+      tpMatSearch.addEventListener("input", () => {
+        tpUi.q = tpMatSearch.value;
         renderTpCatalog();
       });
     }
     function addCustomMateriel() {
-      const input = $("tpCustom");
-      const list = activeTpOrNull();
-      if (!input || !list) return;
+      const input = $("tpMatCustom");
+      const list = activeList();
+      if (!input || !isTpList(list)) return;
       const name = input.value.trim();
       if (!name) return;
       pushHist();
       addTpItem(name, 1);
       input.value = "";
-      renderTpItems();
+      renderTpMatPicked();
       renderPreview();
     }
-    const tpCustomBtn = $("tpCustomBtn");
-    if (tpCustomBtn) tpCustomBtn.addEventListener("click", addCustomMateriel);
-    const tpCustom = $("tpCustom");
-    if (tpCustom) {
-      tpCustom.addEventListener("keydown", (e) => {
+    const tpMatCustomBtn = $("tpMatCustomBtn");
+    if (tpMatCustomBtn) tpMatCustomBtn.addEventListener("click", addCustomMateriel);
+    const tpMatCustom = $("tpMatCustom");
+    if (tpMatCustom) {
+      tpMatCustom.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
           addCustomMateriel();
