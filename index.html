@@ -1895,57 +1895,118 @@
       flex-direction: column;
     }
     .list-block.is-blank-page .blank-hint { flex: 1; }
+    .sheet:has(.is-tp-page) .sheet-grid[data-n="1"] {
+      min-height: calc(var(--page-h) - 2 * var(--page-margin));
+      height: calc(var(--page-h) - 2 * var(--page-margin));
+      align-items: stretch;
+    }
     .list-block.is-tp-page {
-      --row-y: 0.16em;
-      --row-x: 0.42em;
+      --row-y: 0.12em;
+      --row-x: 0.38em;
+      width: 100%;
+      height: 100%;
+      min-height: calc(var(--page-h) - 2 * var(--page-margin));
       display: flex;
       flex-direction: column;
     }
     .list-block.is-tp-page .list-head {
       text-align: left;
-      margin-bottom: 1.5mm;
+      margin-bottom: 1.2mm;
+      flex: none;
     }
     .list-block.is-tp-page .list-title {
       text-align: left;
-      font-size: calc(var(--title-pt, 14pt) * 1.18);
-      margin: 0 0 0.18em;
-      line-height: 1.12;
+      font-size: calc(var(--title-pt, 14pt) * 1.28);
+      margin: 0 0 0.12em;
+      line-height: 1.1;
     }
     .list-block.is-tp-page .list-sub { text-align: left; }
+    .list-block.is-tp-page .liste-wrap {
+      flex: 1 1 auto;
+      width: 100% !important;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .list-block.is-tp-page .liste-wrap > .liste {
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+      table-layout: fixed;
+    }
     .list-block.is-tp-page .liste thead th {
-      padding: 0.18em 0.35em;
-      line-height: 1.15;
+      padding: 0.16em 0.32em;
+      line-height: 1.12;
+      vertical-align: bottom;
     }
     .list-block.is-tp-page .liste td {
-      padding: 0.14em 0.38em;
-      line-height: 1.15;
+      padding: 0.1em 0.32em;
+      line-height: 1.12;
       vertical-align: middle;
     }
+    .list-block.is-tp-page tr.is-tp-section { height: 0; }
+    .list-block.is-tp-page tr.is-tp-item { height: 0; }
+    .list-block.is-tp-page tr.is-tp-poste { height: auto; }
     .list-block.is-tp-page td.is-tp-item,
     .list-block.is-tp-page th.is-tp-item {
       text-align: left;
     }
+    .list-block.is-tp-page .tp-col-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.12em;
+      width: 100%;
+    }
+    .list-block.is-tp-page .tp-head-split,
+    .list-block.is-tp-page .tp-item-line {
+      display: grid;
+      grid-template-columns: 2.15em minmax(0, 1fr);
+      align-items: center;
+      gap: 0.35em;
+      min-width: 0;
+    }
+    .list-block.is-tp-page .tp-poste-label,
+    .list-block.is-tp-page .tp-poste-gutter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+    .list-block.is-tp-page .tp-poste-label {
+      font-size: 0.92em;
+      color: var(--d-title, var(--teal-deep));
+    }
+    .list-block.is-tp-page tr.is-tp-poste td.is-tp-item .tp-poste-gutter {
+      min-height: 1.35em;
+      border: 1.1pt solid var(--d-line, var(--teal-deep));
+      border-radius: 4px;
+      font-size: 1.05em;
+    }
     .list-block.is-tp-page td.is-tp-item .cell-edit {
       display: block;
       min-height: 1.05em;
+      min-width: 0;
+    }
+    .list-block.is-tp-page tr.is-tp-section td,
+    .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td {
+      font-weight: 800;
+      background: rgba(14, 143, 140, 0.12);
+      color: var(--d-title, var(--teal-deep));
+    }
+    .list-block.is-tp-page tr.is-tp-section td.is-tp-item .cell-edit {
+      font-weight: 800;
     }
     .list-block.is-tp-page td.is-tp-qty,
-    .list-block.is-tp-page td.is-tp-classe,
     .list-block.is-tp-page td.is-tp-total,
     .list-block.is-tp-page th.is-tp-qty,
-    .list-block.is-tp-page th.is-tp-classe,
     .list-block.is-tp-page th.is-tp-total {
       text-align: center;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
-    .list-block.is-tp-page td.is-tp-prof,
-    .list-block.is-tp-page th.is-tp-prof {
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      width: 12%;
-    }
-    .list-block.is-tp-page td.is-tp-classe,
     .list-block.is-tp-page td.is-tp-total {
       font-weight: 800;
       color: var(--d-title, var(--teal-deep));
@@ -1957,15 +2018,15 @@
       justify-content: space-between;
       gap: 1mm 5mm;
       margin: 0 0 1.2mm;
-      font-size: 11pt;
-      font-weight: 700;
-      color: var(--d-sub, var(--ink-soft));
+      font-size: 12.5pt;
+      font-weight: 800;
+      color: var(--d-title, var(--teal-deep));
     }
     .tp-meta-main {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
-      gap: 0.8mm 4.2mm;
+      gap: 0.8mm 4.6mm;
       min-width: 0;
     }
     .tp-meta-groups {
@@ -1979,7 +2040,7 @@
     .tp-chip-partie {
       font-size: 1.28em;
     }
-    .tp-chip-matiere { font-size: 1.12em; }
+    .tp-chip-matiere { font-size: 1.2em; }
     .tp-chip {
       appearance: none;
       border: 0;
@@ -3161,6 +3222,15 @@
       .tp-chip::after { content: none !important; }
       .tp-chip, .tp-ngroups { border-bottom: 0 !important; }
       .tp-mat-open { cursor: default; }
+      .list-block.is-tp-page {
+        min-height: calc(var(--page-h) - 2 * var(--page-margin));
+        height: auto;
+      }
+      .list-block.is-tp-page .liste-wrap { width: 100% !important; }
+      .list-block.is-tp-page tr.is-tp-section td,
+      .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td {
+        background: rgba(14, 143, 140, 0.12) !important;
+      }
       .block-move { display: none !important; }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
       .liste td.is-fluo-vert,
@@ -3488,7 +3558,7 @@
           <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
         </div>
         <div id="tpForm" hidden>
-          <p class="hint-note" style="margin:8px 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel par poste</strong> pour le catalogue. Cliquez une quantité pour la modifier.</p>
+          <p class="hint-note" style="margin:8px 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel</strong> pour le catalogue. Cliquez une quantité pour la modifier.</p>
           <button type="button" class="btn-mini" id="tpOpenCatalog">Catalogue matériel</button>
         </div>
       </section>
@@ -3694,7 +3764,7 @@
   <div class="modal-back no-print" id="tpMatModal" hidden>
     <div class="modal modal-tp-mat" role="dialog" aria-modal="true" aria-labelledby="tpMatTitle">
       <h3 id="tpMatTitle">Catalogue matériel</h3>
-      <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Même jeu à chaque poste : les quantités se calculent pour la classe et le bureau professeur.</p>
+      <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Le matériel commun est listé une fois : la quantité par poste, le besoin du prof et le total salle se calculent tout seuls.</p>
       <input class="field" id="tpMatSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
       <div class="tp-picks" id="tpMatCats"></div>
       <div class="tp-picks tp-cat-items" id="tpMatItems"></div>
@@ -3861,6 +3931,12 @@
       ilots: "îlots",
     };
     const TP_SHEET_ROWS = 8;
+    const TP_PROF_SLOTS = 3;
+    const TP_SHARE_SLOTS = 5;
+    const TP_ORDER_SLOTS = 2;
+    const TP_LABEL_PROF = "Bureau du prof";
+    const TP_LABEL_SHARE = "Matériel à partager entre les postes";
+    const TP_LABEL_ORDER = "Matériel à commander";
     const TP_TITLE_DEFAULT = "Installation de TP";
     const TP_PARTIES = {
       SVT: {
@@ -4497,10 +4573,12 @@
       if (!raw) return null;
       const name = String(raw.name || "").trim();
       if (!name) return null;
+      const qty = clampTpQty(raw.qty, 0);
+      const extra = raw.extra == null ? (qty ? 1 : 0) : clampTpQty(raw.extra, 0);
       return {
         name: name,
-        qty: clampTpQty(raw.qty, 1) || 1,
-        extra: raw.extra == null ? 1 : clampTpQty(raw.extra, 1),
+        qty: qty,
+        extra: extra,
       };
     }
 
@@ -4547,16 +4625,35 @@
       return n === "materiel a commander" || n === "materiel commander" || /materiel a? commander/.test(n);
     }
 
+    function isTpProfSection(v) {
+      const n = foldHeader(v);
+      return n === "bureau prof" || n === "bureau professeur" || n === "poste prof";
+    }
+
+    function isTpShareSection(v) {
+      const n = foldHeader(v);
+      return n === "materiel partager entre postes" || /materiel partager/.test(n);
+    }
+
+    function isTpPosteNum(v) {
+      return /^\d+$/.test(String(v || "").trim());
+    }
+
+    function isTpStructureLabel(v) {
+      return isTpProfSection(v) || isTpShareSection(v) || isTpOrderLabel(v) || isTpPosteNum(v);
+    }
+
     function tpDefaultHeaders() {
-      return ["Matériel par poste", "Par poste", "Pour la classe", "Bureau professeur", "Total salle"];
+      return ["Matériel", "Quantité", "Total"];
     }
 
     function tpColRole(list, i) {
       const h = foldHeader((list && list.headers && list.headers[i]) || "");
+      if (/quantite|^qte$|^par poste$/.test(h)) return "qty";
+      if (/total/.test(h)) return "total";
       if (/materiel par poste|^materiel$|installation/.test(h)) return "item";
       if (/par poste/.test(h)) return "qty";
-      if (/total/.test(h)) return "total";
-      if (/bureau|\bprof\b/.test(h)) return "prof";
+      if (/bureau professeur/.test(h) || (h === "bureau prof" && i > 0)) return "prof";
       if (/classe/.test(h)) return "classe";
       if (/^(poste|groupe|n)$/.test(h)) return "poste";
       if (/commander/.test(h)) return "item";
@@ -4566,7 +4663,9 @@
       if (list && list.headers && list.headers.length >= 5) {
         return ["item", "qty", "classe", "prof", "total"][i] || "item";
       }
-      if (list && list.headers && list.headers.length >= 3 && i === list.headers.length - 1) return "prof";
+      if (list && list.headers && list.headers.length === 3) {
+        return ["item", "qty", "total"][i] || "item";
+      }
       return "item";
     }
 
@@ -4578,18 +4677,49 @@
       if (role === "item" || role === "poste") return 0;
       if (role === "qty") return Math.min(1, Math.max(0, list.headers.length - 1));
       if (role === "classe") return Math.min(2, Math.max(0, list.headers.length - 1));
-      if (role === "prof") return Math.min(3, Math.max(0, list.headers.length - 1));
+      if (role === "prof") return Math.min(1, Math.max(0, list.headers.length - 1));
       if (role === "total") return Math.max(0, list.headers.length - 1);
       return Math.min(1, Math.max(0, list.headers.length - 1));
     }
 
+    function tpRowKindAt(list, ri) {
+      const itemI = tpColIndex(list, "item");
+      const v = String((list.rows[ri] || [])[itemI] || "").trim();
+      if (isTpProfSection(v)) return "sec-prof";
+      if (isTpShareSection(v)) return "sec-share";
+      if (isTpOrderLabel(v)) return "sec-order";
+      if (isTpPosteNum(v)) return "poste";
+      let slot = "share";
+      const rows = list.rows || [];
+      for (let i = 0; i < ri; i++) {
+        const n = String((rows[i] || [])[itemI] || "").trim();
+        if (isTpProfSection(n)) slot = "prof";
+        else if (isTpShareSection(n)) slot = "share";
+        else if (isTpOrderLabel(n)) slot = "order";
+        else if (isTpPosteNum(n)) slot = "poste";
+      }
+      if (slot === "prof") return "item-prof";
+      if (slot === "order") return "item-order";
+      if (slot === "poste") return "item-share";
+      return "item-share";
+    }
+
     function tpLayoutStale(list) {
-      if (!list || !list.headers || !list.headers.length) return true;
-      const folded = list.headers.map((h) => foldHeader(h || ""));
-      if (folded.indexOf("poste") >= 0) return true;
-      if (folded.some((h) => h === "materiel binome" || /commander/.test(h))) return true;
-      if ((list.rows || []).some((row) => isTpOrderLabel((row && row[0]) || ""))) return true;
+      if (!list || !list.headers || list.headers.length !== 3) return true;
+      const roles = list.headers.map((_, i) => tpColRole(list, i));
+      if (roles[0] !== "item" || roles[1] !== "qty" || roles[2] !== "total") return true;
+      if (roles.indexOf("prof") >= 0 || roles.indexOf("classe") >= 0) return true;
+      const rows = list.rows || [];
+      const itemI = tpColIndex(list, "item");
+      if (!rows.some((row) => isTpProfSection((row && row[itemI]) || ""))) return true;
+      if (!rows.some((row) => isTpShareSection((row && row[itemI]) || ""))) return true;
+      if (!rows.some((row) => isTpOrderLabel((row && row[itemI]) || ""))) return true;
       return false;
+    }
+
+    function tpPosteCount(list) {
+      const itemI = tpColIndex(list, "item");
+      return (list.rows || []).filter((row) => isTpPosteNum((row && row[itemI]) || "")).length;
     }
 
     function tpBlankRow(list) {
@@ -4597,52 +4727,16 @@
       return Array.from({ length: n }, () => "");
     }
 
-    function applyItemToRow(list, row, item, nGroupes) {
-      const itemI = tpColIndex(list, "item");
-      const qtyI = tpColIndex(list, "qty");
-      const classeI = tpColIndex(list, "classe");
-      const profI = tpColIndex(list, "prof");
-      const totalI = tpColIndex(list, "total");
-      while (row.length < list.headers.length) row.push("");
-      if (!item || !item.name) return row;
-      const qty = Number(item.qty) || 0;
-      const extra = Number(item.extra) || 0;
-      const n = Number(nGroupes) || 0;
-      row[itemI] = item.name;
-      row[qtyI] = String(qty);
-      row[classeI] = String(qty * n);
-      row[profI] = String(extra);
-      row[totalI] = String(qty * n + extra);
-      return row;
-    }
-
-    function writeTpComputed(list) {
-      if (!list || !list.rows) return;
-      const tp = tpOf(list);
-      const n = Number(tp.nGroupes) || 0;
-      const itemI = tpColIndex(list, "item");
-      const qtyI = tpColIndex(list, "qty");
-      const classeI = tpColIndex(list, "classe");
-      const profI = tpColIndex(list, "prof");
-      const totalI = tpColIndex(list, "total");
-      list.rows.forEach((row) => {
-        if (!Array.isArray(row)) return;
-        while (row.length < list.headers.length) row.push("");
-        const name = String(row[itemI] || "").trim();
-        if (!name) {
-          row[classeI] = "";
-          row[totalI] = "";
-          return;
-        }
-        const qty = clampTpQty(row[qtyI], 1) || 1;
-        const extra = clampTpQty(row[profI], 0);
-        if (qtyI !== itemI) row[qtyI] = String(qty);
-        if (profI !== itemI && profI !== qtyI) row[profI] = String(extra);
-        if (classeI !== itemI && classeI !== qtyI && classeI !== profI) row[classeI] = String(qty * n);
-        if (totalI !== itemI && totalI !== qtyI && totalI !== profI && totalI !== classeI) {
-          row[totalI] = String(qty * n + extra);
-        }
-      });
+    function mergeTpItem(map, name, patch) {
+      const key = name.toLowerCase();
+      let it = map[key];
+      if (!it) {
+        it = { name: name, qty: 0, extra: 0 };
+        map[key] = it;
+      }
+      if (patch.qty != null) it.qty = patch.qty;
+      if (patch.extra != null) it.extra = patch.extra;
+      return it;
     }
 
     function pullTpItemsFromRows(list) {
@@ -4651,41 +4745,172 @@
       const itemI = tpColIndex(list, "item");
       const qtyI = tpColIndex(list, "qty");
       const profI = tpColIndex(list, "prof");
-      tp.items = (list.rows || []).map((row) => {
+      const hasProfCol = list.headers && list.headers.length >= 4 && profI !== itemI && profI !== qtyI && tpColRole(list, profI) === "prof";
+      const map = {};
+      let slot = "share";
+      (list.rows || []).forEach((row) => {
         const name = String((row && row[itemI]) || "").trim();
-        if (!name) return null;
-        return {
-          name: name,
-          qty: clampTpQty(row[qtyI], 1) || 1,
-          extra: clampTpQty(row[profI], 0),
-        };
-      }).filter(Boolean);
+        if (!name) return;
+        if (isTpProfSection(name)) { slot = "prof"; return; }
+        if (isTpShareSection(name)) { slot = "share"; return; }
+        if (isTpOrderLabel(name)) { slot = "order"; return; }
+        if (isTpPosteNum(name)) { slot = "poste"; return; }
+        if (slot === "order" || slot === "poste") return;
+        if (hasProfCol) {
+          mergeTpItem(map, name, {
+            qty: clampTpQty(row[qtyI], 1) || 1,
+            extra: clampTpQty(row[profI], 0),
+          });
+          return;
+        }
+        const q = clampTpQty(row[qtyI], 0);
+        if (slot === "prof") mergeTpItem(map, name, { extra: q });
+        else mergeTpItem(map, name, { qty: q || 1 });
+      });
+      tp.items = Object.keys(map).map((k) => map[k]).filter((it) => it.name && (it.qty || it.extra));
+    }
+
+    function fitTpSheet(list, opts) {
+      if (!(opts && opts.keepWidths)) {
+        list.tableW = 100;
+        list.widths = { 0: 72, 1: 13, 2: 15 };
+      } else {
+        list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
+      }
+      list.colAlignH = Object.assign({ 0: "left", 1: "center", 2: "center" }, list.colAlignH || {});
+      list.colAlignV = Object.assign({ 0: "middle", 1: "middle", 2: "middle" }, list.colAlignV || {});
+      if (!(opts && opts.keepHeights)) list.rowH = {};
+      if (!(opts && opts.keepPos) && !(Number(list.posX) || Number(list.posY))) {
+        list.posX = 0;
+        list.posY = 0;
+      }
+    }
+
+    function applyItemToRow(list, row, item, nGroupes, mode) {
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const totalI = tpColIndex(list, "total");
+      while (row.length < list.headers.length) row.push("");
+      for (let i = 0; i < row.length; i++) row[i] = "";
+      if (!item || !item.name) return row;
+      const qty = Number(item.qty) || 0;
+      const extra = Number(item.extra) || 0;
+      const n = Number(nGroupes) || 0;
+      const tot = qty * n + extra;
+      row[itemI] = item.name;
+      if (mode === "prof") {
+        row[qtyI] = extra ? String(extra) : "";
+        row[totalI] = "";
+      } else if (mode === "order") {
+        row[qtyI] = "";
+        row[totalI] = tot ? String(tot) : "";
+      } else {
+        row[qtyI] = qty ? String(qty) : "";
+        row[totalI] = tot ? String(tot) : "";
+      }
+      return row;
+    }
+
+    function tpSectionRow(list, label) {
+      const row = tpBlankRow(list);
+      row[tpColIndex(list, "item")] = label;
+      return row;
+    }
+
+    function tpPosteRow(list, num) {
+      const row = tpBlankRow(list);
+      row[tpColIndex(list, "item")] = String(num);
+      return row;
+    }
+
+    function rebuildTpRows(list) {
+      const tp = tpOf(list);
+      const n = Number(tp.nGroupes) || 0;
+      const items = Array.isArray(tp.items) ? tp.items : [];
+      const profItems = items.filter((it) => (Number(it.extra) || 0) > 0);
+      const shareItems = items.filter((it) => (Number(it.qty) || 0) > 0);
+      const rows = [];
+      rows.push(tpSectionRow(list, TP_LABEL_PROF));
+      const profStart = rows.length;
+      profItems.forEach((it) => rows.push(applyItemToRow(list, tpBlankRow(list), it, n, "prof")));
+      while (rows.length - profStart < TP_PROF_SLOTS) rows.push(tpBlankRow(list));
+      rows.push(tpSectionRow(list, TP_LABEL_SHARE));
+      const shareStart = rows.length;
+      shareItems.forEach((it) => rows.push(applyItemToRow(list, tpBlankRow(list), it, n, "share")));
+      while (rows.length - shareStart < TP_SHARE_SLOTS) rows.push(tpBlankRow(list));
+      for (let i = 1; i <= n; i++) rows.push(tpPosteRow(list, i));
+      rows.push(tpSectionRow(list, TP_LABEL_ORDER));
+      const orderStart = rows.length;
+      while (rows.length - orderStart < TP_ORDER_SLOTS) rows.push(tpBlankRow(list));
+      list.rows = rows;
+    }
+
+    function writeTpComputed(list) {
+      if (!list || !list.rows) return;
+      const tp = tpOf(list);
+      const n = Number(tp.nGroupes) || 0;
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const totalI = tpColIndex(list, "total");
+      const extras = {};
+      list.rows.forEach((row, ri) => {
+        if (!Array.isArray(row)) return;
+        const kind = tpRowKindAt(list, ri);
+        if (kind !== "item-prof") return;
+        const name = String(row[itemI] || "").trim();
+        if (!name) return;
+        extras[name.toLowerCase()] = clampTpQty(row[qtyI], 0);
+      });
+      list.rows.forEach((row, ri) => {
+        if (!Array.isArray(row)) return;
+        while (row.length < list.headers.length) row.push("");
+        const kind = tpRowKindAt(list, ri);
+        if (kind === "sec-prof" || kind === "sec-share" || kind === "sec-order" || kind === "poste") {
+          row[qtyI] = "";
+          row[totalI] = "";
+          return;
+        }
+        const name = String(row[itemI] || "").trim();
+        if (!name) {
+          row[qtyI] = row[qtyI] || "";
+          row[totalI] = "";
+          return;
+        }
+        if (kind === "item-prof") {
+          const extra = clampTpQty(row[qtyI], 0);
+          row[qtyI] = extra ? String(extra) : "";
+          row[totalI] = "";
+          return;
+        }
+        const qty = clampTpQty(row[qtyI], kind === "item-order" ? 0 : 1);
+        const extra = extras[name.toLowerCase()] != null ? extras[name.toLowerCase()] : 0;
+        if (kind === "item-order") {
+          const shareQty = (tp.items || []).reduce((acc, it) => (
+            String(it.name).toLowerCase() === name.toLowerCase() ? (Number(it.qty) || 0) : acc
+          ), qty);
+          row[qtyI] = "";
+          row[totalI] = String((shareQty || 0) * n + extra);
+          return;
+        }
+        row[qtyI] = qty ? String(qty) : "";
+        row[totalI] = String((qty || 0) * n + extra);
+      });
     }
 
     function applyTpSheetFrame(list, opts) {
-      const tp = tpOf(list);
       const fromItems = Boolean(opts && opts.rowsFromItems);
-      const minRows = opts && opts.minRows != null ? opts.minRows : TP_SHEET_ROWS;
       list.headers = tpDefaultHeaders();
-      list.order = [0, 1, 2, 3, 4];
-      list.on = [true, true, true, true, true];
+      list.order = [0, 1, 2];
+      list.on = [true, true, true];
       list.custom = {};
       if (!list.hidden) list.hidden = {};
       if (!list.marks) list.marks = {};
       if (!list.notes) list.notes = {};
       if (!list.hl) list.hl = {};
       if (!list.hlText) list.hlText = {};
-      list.colAlignH = { 0: "left", 1: "center", 2: "center", 3: "center", 4: "center" };
-      list.colAlignV = { 0: "middle", 1: "middle", 2: "middle", 3: "middle", 4: "middle" };
-      list.widths = { 0: 50, 1: 10, 2: 13, 3: 14, 4: 13 };
-      list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
-      list.rowH = {};
-      if (fromItems && tp.items && tp.items.length) {
-        list.rows = tp.items.map((it) => applyItemToRow(list, tpBlankRow(list), it, tp.nGroupes));
-      } else {
-        list.rows = [];
-      }
-      while (list.rows.length < minRows) list.rows.push(tpBlankRow(list));
+      fitTpSheet(list, { keepPos: Boolean(opts && opts.keepPos) });
+      if (!fromItems) tpOf(list).items = [];
+      rebuildTpRows(list);
     }
 
     function ensureTpColMeta(list) {
@@ -4699,32 +4924,72 @@
       list.headers.forEach((_, i) => {
         if (Number(list.widths[i]) > 0) return;
         const role = tpColRole(list, i);
-        list.widths[i] = role === "item" ? 50 : role === "prof" ? 14 : 12;
+        list.widths[i] = role === "item" ? 72 : 14;
       });
+    }
+
+    function syncTpPosteRows(list) {
+      const n = Number(tpOf(list).nGroupes) || 0;
+      if (tpLayoutStale(list)) {
+        pullTpItemsFromRows(list);
+        applyTpSheetFrame(list, { rowsFromItems: true, keepPos: true });
+        return;
+      }
+      if (tpPosteCount(list) === n) return;
+      const itemI = tpColIndex(list, "item");
+      const rows = list.rows || [];
+      for (let i = rows.length - 1; i >= 0; i--) {
+        if (isTpPosteNum(String((rows[i] && rows[i][itemI]) || ""))) rows.splice(i, 1);
+      }
+      let at = rows.findIndex((row) => isTpOrderLabel(String((row && row[itemI]) || "")));
+      if (at < 0) at = rows.length;
+      const posts = [];
+      for (let i = 1; i <= n; i++) posts.push(tpPosteRow(list, i));
+      rows.splice(at, 0, ...posts);
+      list.rows = rows;
+      fitTpSheet(list, { keepPos: true, keepWidths: true });
     }
 
     function placeTpItemOnRow(list, name, qty) {
       const itemI = tpColIndex(list, "item");
       const nGroupes = tpOf(list).nGroupes;
-      const extra = 1;
       const targetRi = (tpMatTarget && tpMatTarget.lid === list.id && Number.isInteger(tpMatTarget.ri))
         ? tpMatTarget.ri : -1;
+      const targetKind = targetRi >= 0 ? tpRowKindAt(list, targetRi) : "item-share";
+      const asProf = targetKind === "item-prof" || targetKind === "sec-prof";
+      const item = asProf
+        ? { name: name, qty: 0, extra: clampTpQty(qty, 1) || 1 }
+        : { name: name, qty: clampTpQty(qty, 1) || 1, extra: 0 };
+      const mode = asProf ? "prof" : "share";
+      const canWrite = (ri) => {
+        if (!list.rows[ri]) return false;
+        const kind = tpRowKindAt(list, ri);
+        if (kind === "poste" || kind === "sec-prof" || kind === "sec-share" || kind === "sec-order") return false;
+        if (asProf && kind !== "item-prof") return false;
+        if (!asProf && kind !== "item-share") return false;
+        return !String(list.rows[ri][itemI] || "").trim();
+      };
       const writeAt = (ri) => {
         if (!list.rows[ri]) list.rows[ri] = tpBlankRow(list);
-        applyItemToRow(list, list.rows[ri], { name: name, qty: qty, extra: extra }, nGroupes);
+        applyItemToRow(list, list.rows[ri], item, nGroupes, mode);
         tpMatTarget.ri = ri + 1;
       };
-      if (targetRi >= 0 && list.rows[targetRi] && !String(list.rows[targetRi][itemI] || "").trim()) {
+      if (targetRi >= 0 && canWrite(targetRi)) {
         writeAt(targetRi);
         return;
       }
-      const empty = list.rows.findIndex((row) => !String((row && row[itemI]) || "").trim());
+      const empty = list.rows.findIndex((_, ri) => canWrite(ri));
       if (empty >= 0) {
         writeAt(empty);
         return;
       }
-      list.rows.push(tpBlankRow(list));
-      writeAt(list.rows.length - 1);
+      const insertAt = list.rows.findIndex((row, ri) => {
+        const kind = tpRowKindAt(list, ri);
+        return asProf ? kind === "sec-share" : kind === "poste";
+      });
+      const at = insertAt >= 0 ? insertAt : list.rows.length;
+      list.rows.splice(at, 0, tpBlankRow(list));
+      writeAt(at);
     }
 
     function applyTpMetaTitle(list, force) {
@@ -4754,6 +5019,7 @@
       if (what === "title" || what === "all") applyTpMainTitle(list, true);
       if (what === "order" || what === "groups" || what === "all") {
         pullTpItemsFromRows(list);
+        if (what === "groups" || what === "all") syncTpPosteRows(list);
         writeTpComputed(list);
       }
     }
@@ -4817,22 +5083,22 @@
     function ensureTpTable(list, opts) {
       if (!list) return list;
       const fill = Boolean(opts && opts.fillGroups);
-      const tp = tpOf(list);
       list.mode = "tp";
       list.blank = false;
       list.keepEmptyRows = true;
       if (!list.orient || list.orient === "auto") list.orient = "paysage";
       ensureAlign(list);
       if (tpLayoutStale(list)) {
-        applyTpSheetFrame(list, { rowsFromItems: true, minRows: TP_SHEET_ROWS });
+        if ((list.rows || []).length) pullTpItemsFromRows(list);
+        applyTpSheetFrame(list, { rowsFromItems: true, keepPos: !fill });
       } else {
         ensureTpColMeta(list);
         (list.rows || []).forEach((r) => {
           if (!Array.isArray(r)) return;
           while (r.length < list.headers.length) r.push("");
         });
-        if (!list.rows.length) {
-          while (list.rows.length < TP_SHEET_ROWS) list.rows.push(tpBlankRow(list));
+        if (tpPosteCount(list) !== (Number(tpOf(list).nGroupes) || 0)) {
+          syncTpPosteRows(list);
         }
         writeTpComputed(list);
       }
@@ -4851,6 +5117,9 @@
       list.mode = "tp";
       list.blank = false;
       list.orient = "paysage";
+      list.posX = 0;
+      list.posY = 0;
+      list.tableW = 100;
       list.tp = hydrateTp(list.tp);
       if (!list.name || /^Page \d+$/i.test(list.name) || foldHeader(list.name) === "demande materiel") {
         list.name = "Installation TP";
@@ -6000,7 +6269,13 @@
           const role = tpColRole(list, col.i);
           if (role) thCls.push("is-tp-" + role);
         }
-        html += '<th class="' + thCls.filter(Boolean).join(" ") + '" draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '" data-ck="' + col.i + '"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
+        html += '<th class="' + thCls.filter(Boolean).join(" ") + '" draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '" data-ck="' + col.i + '">';
+        if (isTpList(list) && tpColRole(list, col.i) === "item") {
+          html += '<span class="tp-col-stack"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
+          html += '<span class="tp-head-split"><span class="tp-poste-label">Poste</span><span></span></span></span>';
+        } else {
+          html += '<span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
+        }
         if (list.custom[col.i]) {
           html += '<button type="button" class="col-del no-print" data-del-col="' + list.id + ':' + col.i + '" title="Supprimer la colonne" aria-label="Supprimer la colonne">×</button>';
         }
@@ -6013,7 +6288,12 @@
         const stampCls = (state.activeStamp || state.activeFluo) ? " is-stamping" : "";
         const fluoCls = state.activeFluo ? " is-fluoing" : "";
         const rowY = list.rowH && Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 0;
-        html += '<tr class="' + (stampCls + fluoCls).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
+        const tpKind = isTpList(list) ? tpRowKindAt(list, ri) : "";
+        const trCls = [stampCls.trim(), fluoCls.trim()];
+        if (tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") trCls.push("is-tp-section");
+        if (tpKind === "poste") trCls.push("is-tp-poste");
+        if (tpKind === "item-prof" || tpKind === "item-share" || tpKind === "item-order") trCls.push("is-tp-item");
+        html += '<tr class="' + trCls.filter(Boolean).join(" ") + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
           (rowY ? ' style="--row-y:' + rowY + 'em"' : "") + '>';
         let lead = true;
         const handle = () => {
@@ -6048,8 +6328,17 @@
             if (role) cls.push("is-tp-" + role);
           }
           const role = isTpList(list) ? tpColRole(list, i) : "";
-          const freeze = role === "classe" || role === "total";
-          const inner = cellEditHtml(row[i] || "", list.id, ri, i, list, freeze);
+          const freeze = role === "classe" || role === "total" || role === "poste"
+            || (isTpList(list) && (tpKind === "poste" || tpKind === "item-order" || ((tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") && role !== "item") || (role === "qty" && (tpKind === "poste" || tpKind.indexOf("sec-") === 0))));
+          let inner;
+          if (isTpList(list) && role === "item") {
+            const gutter = tpKind === "poste" ? escapeHtml(String(row[i] || "").trim()) : "";
+            const shown = tpKind === "poste" ? "" : (row[i] || "");
+            inner = '<span class="tp-item-line"><span class="tp-poste-gutter">' + gutter + "</span>" +
+              cellEditHtml(shown, list.id, ri, i, list, freeze || tpKind === "poste") + "</span>";
+          } else {
+            inner = cellEditHtml(row[i] || "", list.id, ri, i, list, freeze);
+          }
           html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '">' + handle() + inner;
           if (last) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
@@ -6107,6 +6396,7 @@
         tpOf(list).nGroupes = next;
         if (trim) {
           el.textContent = String(next);
+          syncTpPosteRows(list);
           writeTpComputed(list);
         }
         return "tp-n";
@@ -6115,22 +6405,37 @@
         const ri = Number(el.dataset.ri);
         const ci = Number(el.dataset.ci);
         if (!list.rows[ri]) return null;
-        list.rows[ri][ci] = v;
-        if (trim && el.textContent !== v) el.textContent = v;
         if (isTpList(list)) {
           const role = tpColRole(list, ci);
-          if (role === "qty" || role === "prof") {
-            const n = clampTpQty(String(v).replace(",", "."), role === "prof" ? 0 : 1);
-            const shown = role === "qty" && !String(v).trim() ? "" : String(n);
+          const kind = tpRowKindAt(list, ri);
+          if (kind === "poste" && role === "item") return "tp-item";
+          if (kind === "poste" || kind.indexOf("sec-") === 0) {
+            if (role === "qty" || role === "total") {
+              list.rows[ri][ci] = "";
+              if (trim) el.textContent = "";
+              return "tp-item";
+            }
+          } else if (role === "total") {
+            return "tp-item";
+          } else if (role === "qty") {
+            const fallback = kind === "item-prof" ? 0 : 1;
+            const n = clampTpQty(String(v).replace(",", "."), fallback);
+            const shown = !String(v).trim() && kind === "item-prof" ? "" : String(n);
             list.rows[ri][ci] = shown;
             if (trim) el.textContent = shown;
+          } else {
+            list.rows[ri][ci] = v;
+            if (trim && el.textContent !== v) el.textContent = v;
           }
-          if (trim && (role === "item" || role === "qty" || role === "prof")) {
-            pullTpItemsFromRows(list);
+          if (trim && (role === "item" || role === "qty") && kind !== "poste") {
+            if (kind !== "item-order") pullTpItemsFromRows(list);
             writeTpComputed(list);
             return "tp-item";
           }
+          return "cell";
         }
+        list.rows[ri][ci] = v;
+        if (trim && el.textContent !== v) el.textContent = v;
         return "cell";
       }
       return null;
@@ -7952,9 +8257,17 @@
       pullTpItemsFromRows(list);
       const itemI = tpColIndex(list, "item");
       const qtyI = tpColIndex(list, "qty");
-      const row = (list.rows || []).find((r) => String((r && r[itemI]) || "").toLowerCase() === label.toLowerCase());
+      const targetRi = (tpMatTarget && tpMatTarget.lid === list.id && Number.isInteger(tpMatTarget.ri))
+        ? tpMatTarget.ri : -1;
+      const targetKind = targetRi >= 0 ? tpRowKindAt(list, targetRi) : "item-share";
+      const asProf = targetKind === "item-prof" || targetKind === "sec-prof";
+      const row = (list.rows || []).find((r, ri) => {
+        if (String((r && r[itemI]) || "").toLowerCase() !== label.toLowerCase()) return false;
+        const k = tpRowKindAt(list, ri);
+        return asProf ? k === "item-prof" : k === "item-share";
+      });
       if (row) {
-        row[qtyI] = String(clampTpQty((Number(row[qtyI]) || 0) + (qty || 1), 1) || 1);
+        row[qtyI] = String(clampTpQty((Number(row[qtyI]) || 0) + (qty || 1), asProf ? 0 : 1) || 1);
       } else {
         placeTpItemOnRow(list, label, clampTpQty(qty, 1) || 1);
       }
