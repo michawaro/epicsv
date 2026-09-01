@@ -2293,11 +2293,20 @@
       border-top: var(--tp-inner);
       border-top-color: #111;
     }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-order-start td {
+      border-top: var(--tp-inner);
+      border-top-color: #111;
+    }
     .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
       border-bottom: var(--tp-inner);
       border-bottom-color: #111;
     }
-    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section {
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td {
+      border-bottom: var(--tp-inner);
+      border-bottom-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-section {
       border-bottom: var(--tp-inner);
       border-bottom-color: #111;
     }
@@ -3683,11 +3692,14 @@
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-section {
         border-right: 1.65pt solid #111 !important;
       }
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-start td {
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-start td,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-order-start td {
         border-top: 1.65pt solid #111 !important;
       }
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td,
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section {
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-section,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-section {
         border-bottom: 1.65pt solid #111 !important;
       }
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-mat-head td.is-tp-dates,
@@ -7927,7 +7939,11 @@
           } else if (b.prof >= 0 && ri >= b.prof && (b.order < 0 || ri < b.order)) {
             trCls.push("is-tp-band-prof");
             if (ri === b.prof) trCls.push("is-tp-prof-start");
-          } else if (b.order >= 0 && ri >= b.order) trCls.push("is-tp-band-order");
+            if (b.order >= 0 && ri === b.order - 1) trCls.push("is-tp-prof-end");
+          } else if (b.order >= 0 && ri >= b.order) {
+            trCls.push("is-tp-band-order");
+            if (ri === b.order) trCls.push("is-tp-order-start");
+          }
         }
         let trStyle = "";
         if (tpForm && rowY > 0) trStyle = ' style="height:' + rowY + 'mm;--row-h:' + rowY + 'mm"';
