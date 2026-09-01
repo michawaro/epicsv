@@ -419,7 +419,7 @@
       display: flex;
       align-items: center;
       gap: 2px 8px;
-      max-width: min(280px, calc(100vw - 48px));
+      max-width: min(320px, calc(100vw - 48px));
       padding: 4px 8px 4px 6px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.86);
@@ -475,6 +475,45 @@
       width: 14px;
       height: 14px;
       display: block;
+      transform-origin: 50% 8%;
+      animation: yt-bell-shake 5.2s ease-in-out infinite;
+    }
+    .yt-dock-bell::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #e11d48;
+      box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.45);
+      animation: yt-bell-ping 5.2s ease-out infinite;
+      pointer-events: none;
+    }
+    .yt-dock-bell:hover svg,
+    .yt-dock-bell:focus-visible svg,
+    .yt-dock-bell.is-tip svg {
+      animation-play-state: paused;
+    }
+    .yt-dock-bell:hover::before,
+    .yt-dock-bell:focus-visible::before,
+    .yt-dock-bell.is-tip::before {
+      animation-play-state: paused;
+    }
+    @keyframes yt-bell-shake {
+      0%, 78%, 100% { transform: rotate(0deg); }
+      81% { transform: rotate(16deg); }
+      84% { transform: rotate(-14deg); }
+      87% { transform: rotate(10deg); }
+      90% { transform: rotate(-8deg); }
+      93% { transform: rotate(4deg); }
+      96% { transform: rotate(-2deg); }
+    }
+    @keyframes yt-bell-ping {
+      0%, 76% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
+      82% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+      88%, 100% { transform: scale(0.85); box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
     }
     .yt-dock-bell::after {
       content: attr(data-tip);
@@ -483,15 +522,15 @@
       top: calc(100% + 8px);
       z-index: 12;
       width: max-content;
-      max-width: min(240px, 70vw);
-      padding: 8px 10px;
-      border-radius: 10px;
+      max-width: min(340px, calc(100vw - 24px));
+      padding: 10px 12px;
+      border-radius: 12px;
       background: #fff;
       color: var(--ink);
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       letter-spacing: 0;
-      line-height: 1.35;
+      line-height: 1.4;
       white-space: normal;
       text-align: left;
       box-shadow: 0 10px 24px rgba(14, 143, 140, 0.22);
@@ -1243,6 +1282,10 @@
       opacity: 1;
     }
     .sel-dim button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .sel-bar > button:disabled {
       opacity: 0.4;
       cursor: default;
     }
@@ -3836,15 +3879,15 @@
       <span class="yt-dock-full">S’abonner</span>
     </a>
     <span class="yt-dock-sep yt-dock-full" aria-hidden="true">·</span>
-    <a class="yt-dock-link yt-dock-full" href="https://www.youtube.com/playlist?list=PLr4sKRS3Xhh6GozQuYuF8ZQ4P5d0OA0rU" target="_blank" rel="noopener noreferrer" aria-label="Voir la playlist YouTube des tutoriels logiciels" title="Tutoriels">Tutoriels</a>
-    <a class="yt-dock-bell" id="ytBell" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" data-tip="Le meilleur moyen de ne pas passer à côté du prochain logiciel" title="Le meilleur moyen de ne pas passer à côté du prochain logiciel" aria-label="Le meilleur moyen de ne pas passer à côté du prochain logiciel">
+    <a class="yt-dock-link yt-dock-full" href="https://youtu.be/mq8bfjaVKV8" target="_blank" rel="noopener noreferrer" aria-label="Voir le tutoriel YouTube" title="Tutoriel">Tutoriel</a>
+    <a class="yt-dock-bell" id="ytBell" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer" data-tip="Le saviez-vous ? Cliquez sur la cloche YouTube, puis choisissez « Toutes », pour ne pas passer à côté du prochain logiciel." aria-label="Le saviez-vous ? Cliquez sur la cloche YouTube, puis choisissez Toutes, pour ne pas passer à côté du prochain logiciel.">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 22a2.3 2.3 0 0 0 2.25-2.2h-4.5A2.3 2.3 0 0 0 12 22zm7-6.2V11a7 7 0 0 0-5.2-6.75V3.6a1.8 1.8 0 1 0-3.6 0v.65A7 7 0 0 0 5 11v4.8L3.2 17.6v1.15h17.6V17.6L19 15.8z"/></svg>
     </a>
     <details class="yt-dock-more">
       <summary aria-label="Liens YouTube">···</summary>
       <div class="yt-dock-pop">
         <a class="yt-dock-link is-sub" href="https://www.youtube.com/@michawaro?sub_confirmation=1" target="_blank" rel="noopener noreferrer">S’abonner</a>
-        <a class="yt-dock-link" href="https://www.youtube.com/playlist?list=PLr4sKRS3Xhh6GozQuYuF8ZQ4P5d0OA0rU" target="_blank" rel="noopener noreferrer">Tutoriels</a>
+        <a class="yt-dock-link" href="https://youtu.be/mq8bfjaVKV8" target="_blank" rel="noopener noreferrer">Tutoriel</a>
       </div>
     </details>
   </nav>
@@ -3867,6 +3910,7 @@
       <button type="button" id="selDimH" aria-pressed="false">Hauteurs</button>
     </div>
     <button type="button" id="selEq">Uniformiser</button>
+    <button type="button" id="selMerge" title="Fusionner ou fractionner les cellules">Fusionner</button>
     <label class="sel-size">
       Taille
       <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille" />
@@ -3907,6 +3951,7 @@
     <span class="sel-label">Uniformiser</span>
     <button type="button" id="selMenuW" role="menuitem">Égaliser les largeurs</button>
     <button type="button" id="selMenuH" role="menuitem">Égaliser les hauteurs</button>
+    <button type="button" id="selMenuMerge" role="menuitem">Fusionner / fractionner</button>
   </div>
 
   <div class="modal-back no-print" id="modal" hidden>
@@ -3993,7 +4038,7 @@
   <div class="modal-back no-print" id="createTableModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="createTableTitle">
       <h3 id="createTableTitle">Créer un tableau</h3>
-      <p>Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.</p>
+      <p id="createTableLead">Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.</p>
       <div class="size-picker" id="tablePicker" role="grid" aria-label="Taille du tableau"></div>
       <div class="size-picker-label" id="tablePickerLabel" aria-live="polite">4 × 8</div>
       <div class="create-size-fields">
@@ -4004,9 +4049,14 @@
           <input class="field" id="createRows" type="number" min="1" max="80" value="8" inputmode="numeric" aria-label="Nombre de lignes" />
         </label>
       </div>
-      <div class="modal-actions">
+      <div class="modal-actions" id="createTableCreateActions">
         <button class="btn btn-print" id="createTableOk" type="button">OK</button>
         <button class="btn btn-ghost" id="createTableCancel" type="button">Annuler</button>
+      </div>
+      <div class="modal-actions" id="createTableMergeActions" hidden>
+        <button class="btn btn-print" id="mergeCellsBtn" type="button">Fusionner</button>
+        <button class="btn btn-print" id="splitCellsBtn" type="button">Fractionner</button>
+        <button class="btn btn-ghost span-all" id="mergeCellsCancel" type="button">Annuler</button>
       </div>
     </div>
   </div>
@@ -4149,6 +4199,7 @@
     let pasteDialogRestore = null;
     let tableDlgRestore = null;
     let createAsTp = false;
+    let tableModalMode = "create";
     let sizeDrag = null;
     let dragRow = null;
     let fluoClickTimer = null;
@@ -4952,6 +5003,334 @@
       return mergeCoverMap(list)[ri + ":" + ci] || null;
     }
 
+    function mergePaintInfo(list, vis, dataCols, ri, ci) {
+      const span = mergeAt(list, ri, ci);
+      if (!span) return { skip: false, rs: 1, cs: 1, contentRi: ri, contentCi: ci };
+      const visRows = [];
+      for (let d = 0; d < span.rs; d++) {
+        if (vis.indexOf(span.r + d) >= 0) visRows.push(span.r + d);
+      }
+      const visCols = [];
+      (dataCols || []).forEach((c) => {
+        if (c >= span.c && c < span.c + span.cs) visCols.push(c);
+      });
+      if (!visRows.length || !visCols.length) return { skip: true };
+      if (ri !== visRows[0] || ci !== visCols[0]) return { skip: true };
+      return {
+        skip: false,
+        rs: visRows.length,
+        cs: visCols.length,
+        contentRi: span.r,
+        contentCi: span.c,
+        visRows: visRows,
+      };
+    }
+
+    function rectsOverlap(a, b) {
+      return a.r0 <= b.r1 && a.r1 >= b.r0 && a.c0 <= b.c1 && a.c1 >= b.c0;
+    }
+
+    function mergeToRect(m) {
+      const rs = Math.max(1, Number(m.rs) || 1);
+      const cs = Math.max(1, Number(m.cs) || 1);
+      return { r0: m.r, r1: m.r + rs - 1, c0: m.c, c1: m.c + cs - 1 };
+    }
+
+    function expandRectToMerges(list, rect) {
+      let next = { r0: rect.r0, r1: rect.r1, c0: rect.c0, c1: rect.c1 };
+      let changed = true;
+      while (changed) {
+        changed = false;
+        (list && list.merges || []).forEach((m) => {
+          const mr = mergeToRect(m);
+          if (!rectsOverlap(next, mr)) return;
+          if (mr.r0 < next.r0) { next.r0 = mr.r0; changed = true; }
+          if (mr.r1 > next.r1) { next.r1 = mr.r1; changed = true; }
+          if (mr.c0 < next.c0) { next.c0 = mr.c0; changed = true; }
+          if (mr.c1 > next.c1) { next.c1 = mr.c1; changed = true; }
+        });
+      }
+      return next;
+    }
+
+    function removeMergesInRect(list, rect) {
+      if (!list) return;
+      list.merges = (list.merges || []).filter((m) => !rectsOverlap(mergeToRect(m), rect));
+    }
+
+    function zoneMergeRect(list) {
+      if (!list || !zoneSel || String(zoneSel.lid) !== String(list.id)) return null;
+      const ris = (zoneSel.ris || []).filter((ri) => Number.isInteger(ri) && ri >= 0);
+      const keys = zoneSel.keys || [];
+      let k0 = -1;
+      let k1 = -1;
+      for (let i = 0; i < keys.length; i++) {
+        if (typeof keys[i] !== "number") continue;
+        if (k0 < 0) k0 = i;
+        k1 = i;
+      }
+      if (!ris.length || k0 < 0) return null;
+      const cols = [];
+      for (let i = k0; i <= k1; i++) {
+        if (typeof keys[i] !== "number") return null;
+        cols.push(keys[i]);
+      }
+      for (let i = 1; i < cols.length; i++) {
+        if (cols[i] !== cols[i - 1] + 1) return null;
+      }
+      const rect = {
+        r0: Math.min.apply(null, ris),
+        r1: Math.max.apply(null, ris),
+        c0: cols[0],
+        c1: cols[cols.length - 1],
+      };
+      if (rect.r0 < 0 || rect.c0 < 0) return null;
+      if (rect.r1 >= (list.rows || []).length) return null;
+      if (rect.c1 >= (list.headers || []).length) return null;
+      return expandRectToMerges(list, rect);
+    }
+
+    function rectHasMerge(list, rect) {
+      return (list && list.merges || []).some((m) => rectsOverlap(mergeToRect(m), rect));
+    }
+
+    function eachMergeCell(list, ri, ci, fn) {
+      if (ri !== "h" && typeof ci === "number") {
+        const m = mergeAt(list, ri, ci);
+        if (m) {
+          for (let dr = 0; dr < m.rs; dr++) {
+            for (let dc = 0; dc < m.cs; dc++) fn(m.r + dr, m.c + dc);
+          }
+          return;
+        }
+      }
+      fn(ri, ci);
+    }
+
+    function coalesceMergeText(list, rect) {
+      if (!list || !list.rows || !list.rows[rect.r0]) return;
+      const origin = String((list.rows[rect.r0][rect.c0] != null ? list.rows[rect.r0][rect.c0] : "")).trim();
+      if (origin) return;
+      for (let r = rect.r0; r <= rect.r1; r++) {
+        for (let c = rect.c0; c <= rect.c1; c++) {
+          const t = String((list.rows[r] && list.rows[r][c] != null ? list.rows[r][c] : "")).trim();
+          if (!t) continue;
+          list.rows[rect.r0][rect.c0] = list.rows[r][c];
+          return;
+        }
+      }
+    }
+
+    function readCellLooks(list, ri, ci) {
+      ensureAlign(list);
+      if (!list.hl) list.hl = {};
+      if (!list.hlText) list.hlText = {};
+      const k = fluoKey(ri, ci);
+      return {
+        text: list.rows && list.rows[ri] ? list.rows[ri][ci] : "",
+        hl: list.hl[k],
+        hlText: list.hlText[k],
+        alignH: list.alignH[k],
+        alignV: list.alignV[k],
+      };
+    }
+
+    function writeCellLooks(list, ri, ci, looks, fillEmptyText) {
+      if (!list || !list.rows || !list.rows[ri] || looks == null) return;
+      ensureAlign(list);
+      if (!list.hl) list.hl = {};
+      if (!list.hlText) list.hlText = {};
+      while (list.rows[ri].length <= ci) list.rows[ri].push("");
+      if (fillEmptyText && !String(list.rows[ri][ci] != null ? list.rows[ri][ci] : "").trim()) {
+        list.rows[ri][ci] = looks.text != null ? looks.text : "";
+      }
+      const k = fluoKey(ri, ci);
+      if (looks.hl) list.hl[k] = looks.hl;
+      else delete list.hl[k];
+      if (looks.hlText) list.hlText[k] = looks.hlText;
+      else delete list.hlText[k];
+      if (looks.alignH) list.alignH[k] = looks.alignH;
+      else delete list.alignH[k];
+      if (looks.alignV) list.alignV[k] = looks.alignV;
+      else delete list.alignV[k];
+    }
+
+    function spreadRectLooks(list, rect, looks) {
+      if (!list || !rect || !looks) return;
+      for (let r = rect.r0; r <= rect.r1; r++) {
+        for (let c = rect.c0; c <= rect.c1; c++) writeCellLooks(list, r, c, looks, true);
+      }
+    }
+
+    function evenParts(total, parts) {
+      const n = Math.max(1, Math.min(total, Math.round(Number(parts) || 1)));
+      const base = Math.floor(total / n);
+      const extra = total % n;
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(base + (i < extra ? 1 : 0));
+      return out;
+    }
+
+    function blankDataRow(list) {
+      const n = Math.max(0, (list && list.headers || []).length);
+      return Array.from({ length: n }, () => "");
+    }
+
+    function canGrowMergeGrid(list) {
+      return Boolean(list && !isTpForm(list));
+    }
+
+    function redistributeRectHeights(list, r0, count, sum) {
+      if (!list || count < 1 || !(sum > 0)) return;
+      if (!list.rowH) list.rowH = {};
+      const each = sum / count;
+      for (let i = 0; i < count; i++) {
+        list.rowH[r0 + i] = tpUsesRowMm(list) ? clampTpRowMm(each) : Math.round(Math.max(0.06, each) * 1000) / 1000;
+      }
+    }
+
+    function redistributeRectWidths(list, c0, count, sum) {
+      if (!list || count < 1 || !(sum > 0)) return;
+      if (!list.widths) list.widths = {};
+      const each = Math.round((sum / count) * 1000) / 1000;
+      for (let i = 0; i < count; i++) list.widths[c0 + i] = each;
+    }
+
+    function extendNeighborsAfterRowInsert(list, box, at, count) {
+      if (!list || !count) return;
+      if (!list.merges) list.merges = [];
+      const nCols = (list.headers || []).length;
+      for (let c = 0; c < nCols; c++) {
+        if (c >= box.c0 && c <= box.c1) continue;
+        const cover = mergeAt(list, box.r1, c);
+        if (cover) {
+          if (cover.c !== c) continue;
+          const merge = list.merges.find((m) => m.r === cover.r && m.c === cover.c);
+          if (merge && merge.r + merge.rs === at) merge.rs += count;
+        } else {
+          list.merges.push({ r: box.r1, c: c, rs: 1 + count, cs: 1 });
+        }
+      }
+      list.merges = normalizeMerges(list.merges);
+    }
+
+    function extendNeighborsAfterColInsert(list, box, at, count) {
+      if (!list || !count) return;
+      if (!list.merges) list.merges = [];
+      const nRows = (list.rows || []).length;
+      for (let r = 0; r < nRows; r++) {
+        if (r >= box.r0 && r <= box.r1) continue;
+        const cover = mergeAt(list, r, box.c1);
+        if (cover) {
+          if (cover.r !== r) continue;
+          const merge = list.merges.find((m) => m.r === cover.r && m.c === cover.c);
+          if (merge && merge.c + merge.cs === at) merge.cs += count;
+        } else {
+          list.merges.push({ r: r, c: box.c1, rs: 1, cs: 1 + count });
+        }
+      }
+      list.merges = normalizeMerges(list.merges);
+    }
+
+    function tileRectMerges(list, box, nCols, nRows) {
+      const rs = box.r1 - box.r0 + 1;
+      const cs = box.c1 - box.c0 + 1;
+      const rowParts = evenParts(rs, nRows);
+      const colParts = evenParts(cs, nCols);
+      let r = box.r0;
+      rowParts.forEach((spanR) => {
+        let c = box.c0;
+        colParts.forEach((spanC) => {
+          if (spanR > 1 || spanC > 1) list.merges.push({ r: r, c: c, rs: spanR, cs: spanC });
+          c += spanC;
+        });
+        r += spanR;
+      });
+    }
+
+    function mergeCellsRect(list, rect) {
+      if (!list || !rect) return null;
+      const box = expandRectToMerges(list, rect);
+      const rs = box.r1 - box.r0 + 1;
+      const cs = box.c1 - box.c0 + 1;
+      if (rs < 2 && cs < 2) return null;
+      if (!list.merges) list.merges = [];
+      coalesceMergeText(list, box);
+      removeMergesInRect(list, box);
+      list.merges.push({ r: box.r0, c: box.c0, rs: rs, cs: cs });
+      list.merges = normalizeMerges(list.merges);
+      return { ok: true, box: box, inserted: false };
+    }
+
+    function splitCellsRect(list, rect, nCols, nRows) {
+      if (!list || !rect) return null;
+      const box = expandRectToMerges(list, rect);
+      let rs = box.r1 - box.r0 + 1;
+      let cs = box.c1 - box.c0 + 1;
+      if (!list.merges) list.merges = [];
+      let wantC = Math.max(1, Math.round(Number(nCols) || cs));
+      let wantR = Math.max(1, Math.round(Number(nRows) || rs));
+      const grow = canGrowMergeGrid(list);
+      if (!grow) {
+        wantC = Math.min(wantC, cs);
+        wantR = Math.min(wantR, rs);
+      } else {
+        wantC = Math.min(wantC, EMPTY_COLS_MAX);
+        wantR = Math.min(wantR, EMPTY_ROWS_MAX);
+      }
+      const hadMerge = rectHasMerge(list, box);
+      const extraR = grow ? Math.max(0, wantR - rs) : 0;
+      const extraC = grow ? Math.max(0, wantC - cs) : 0;
+      if (!hadMerge && extraR < 1 && extraC < 1 && wantR === rs && wantC === cs) return null;
+      const looks = readCellLooks(list, box.r0, box.c0);
+      const origR1 = box.r1;
+      const origC1 = box.c1;
+      let inserted = false;
+      if (extraR) {
+        const at = box.r1 + 1;
+        let sumH = 0;
+        for (let i = 0; i < rs; i++) {
+          const v = Number(list.rowH && list.rowH[box.r0 + i]);
+          if (v > 0) sumH += v;
+        }
+        for (let i = 0; i < extraR; i++) insertRowAt(list, at, blankDataRow(list));
+        extendNeighborsAfterRowInsert(list, box, at, extraR);
+        box.r1 += extraR;
+        rs += extraR;
+        redistributeRectHeights(list, box.r0, rs, sumH);
+        inserted = true;
+      }
+      if (extraC) {
+        const at = box.c1 + 1;
+        if (!list.widths) list.widths = {};
+        let sumW = 0;
+        for (let i = 0; i < cs; i++) {
+          const v = Number(list.widths[box.c0 + i]);
+          if (v > 0) sumW += v;
+        }
+        for (let i = 0; i < extraC; i++) insertColAt(list, at);
+        extendNeighborsAfterColInsert(list, box, at, extraC);
+        box.c1 += extraC;
+        cs += extraC;
+        redistributeRectWidths(list, box.c0, cs, sumW);
+        inserted = true;
+      }
+      if (extraR) {
+        for (let r = origR1 + 1; r <= box.r1; r++) {
+          for (let c = box.c0; c <= box.c1; c++) writeCellLooks(list, r, c, looks, true);
+        }
+      }
+      if (extraC) {
+        for (let r = box.r0; r <= origR1; r++) {
+          for (let c = origC1 + 1; c <= box.c1; c++) writeCellLooks(list, r, c, looks, true);
+        }
+      }
+      removeMergesInRect(list, box);
+      tileRectMerges(list, box, wantC, wantR);
+      list.merges = normalizeMerges(list.merges);
+      return { ok: true, box: box, inserted: inserted };
+    }
+
     function remapMergesAfterRowDeletes(list, removedSet) {
       if (!list || !Array.isArray(list.merges) || !list.merges.length) return;
       const removed = [...removedSet].map(Number).filter(Number.isInteger).sort((a, b) => a - b);
@@ -4991,6 +5370,55 @@
         if (m.r >= at) m.r += 1;
         else if (m.r + m.rs > at) m.rs += 1;
       });
+    }
+
+    function shiftMergesAfterColInsert(list, at) {
+      if (!list || !Array.isArray(list.merges)) return;
+      list.merges.forEach((m) => {
+        if (m.c >= at) m.c += 1;
+        else if (m.c + m.cs > at) m.cs += 1;
+      });
+    }
+
+    function shiftHlAfterColInsert(bag, at) {
+      if (!bag) return;
+      const next = {};
+      Object.keys(bag).forEach((k) => {
+        const parts = String(k).split(":");
+        const ri = parts[0];
+        const ci = parts[1];
+        if (ci === "rq") {
+          next[k] = bag[k];
+          return;
+        }
+        const n = Number(ci);
+        if (!Number.isInteger(n)) {
+          next[k] = bag[k];
+          return;
+        }
+        next[ri + ":" + (n >= at ? n + 1 : n)] = bag[k];
+      });
+      Object.keys(bag).forEach((k) => { delete bag[k]; });
+      Object.keys(next).forEach((k) => { bag[k] = next[k]; });
+    }
+
+    function shiftColAlignAfterInsert(bag, at) {
+      if (!bag) return;
+      const next = {};
+      Object.keys(bag).forEach((k) => {
+        if (k === "rq") {
+          next[k] = bag[k];
+          return;
+        }
+        const n = Number(k);
+        if (!Number.isInteger(n)) {
+          next[k] = bag[k];
+          return;
+        }
+        next[String(n >= at ? n + 1 : n)] = bag[k];
+      });
+      Object.keys(bag).forEach((k) => { delete bag[k]; });
+      Object.keys(next).forEach((k) => { bag[k] = next[k]; });
     }
 
     function tpDefaultHeaders() {
@@ -6241,11 +6669,12 @@
         list.tp = hydrateTp(raw.tp);
         list.blank = false;
         ensureTpTable(list, { fillGroups: !headers.length || !rows.length });
+        if (savedMerges.length && isTpForm(list) && !tpLayoutStale(list)) list.merges = savedMerges;
       } else {
         list.mode = "";
         list.tp = null;
+        list.merges = savedMerges;
       }
-      if (savedMerges.length && isTpForm(list) && !tpLayoutStale(list)) list.merges = savedMerges;
       list.rowH = {};
       Object.keys(raw.rowH || {}).forEach((k) => {
         const n = Number(raw.rowH[k]);
@@ -6393,6 +6822,48 @@
       const i = Math.max(0, Math.min(list.rows.length, Number(at)));
       shiftBagsAfterRowInsert(list, i);
       list.rows.splice(i, 0, row);
+      return i;
+    }
+
+    function insertColAt(list, at) {
+      if (!list || !Array.isArray(list.headers)) return -1;
+      const i = Math.max(0, Math.min(list.headers.length, Number(at)));
+      list.headers.splice(i, 0, "");
+      (list.rows || []).forEach((row) => {
+        if (Array.isArray(row)) row.splice(i, 0, "");
+      });
+      if (Array.isArray(list.on)) list.on.splice(i, 0, true);
+      const nextCustom = {};
+      Object.keys(list.custom || {}).forEach((k) => {
+        const n = Number(k);
+        if (!Number.isInteger(n) || !list.custom[k]) return;
+        nextCustom[n >= i ? n + 1 : n] = true;
+      });
+      nextCustom[i] = true;
+      list.custom = nextCustom;
+      const nextW = {};
+      Object.keys(list.widths || {}).forEach((k) => {
+        const n = Number(k);
+        const v = list.widths[k];
+        if (!Number.isInteger(n) || !(v > 0)) return;
+        nextW[n >= i ? n + 1 : n] = v;
+      });
+      list.widths = nextW;
+      shiftHlAfterColInsert(list.hl, i);
+      shiftHlAfterColInsert(list.hlText, i);
+      shiftHlAfterColInsert(list.alignH, i);
+      shiftHlAfterColInsert(list.alignV, i);
+      shiftColAlignAfterInsert(list.colAlignH, i);
+      shiftColAlignAfterInsert(list.colAlignV, i);
+      shiftMergesAfterColInsert(list, i);
+      list.order = (list.order || []).map((k) => (typeof k === "number" && k >= i ? k + 1 : k));
+      const pos = list.order.indexOf(i + 1);
+      if (pos >= 0) list.order.splice(pos, 0, i);
+      else {
+        let insertAt = list.order.length;
+        while (insertAt > 0 && (list.order[insertAt - 1] === "rq" || list.order[insertAt - 1] === "marks")) insertAt--;
+        list.order.splice(insertAt, 0, i);
+      }
       return i;
     }
 
@@ -6963,19 +7434,25 @@
     function applyFluo(list, ri, ci, color, toggle) {
       if (!list.hl) list.hl = {};
       if (!list.hlText) list.hlText = {};
-      const k = fluoKey(ri, ci);
-      delete list.hlText[k];
-      if (toggle && list.hl[k] === color) delete list.hl[k];
-      else list.hl[k] = color;
+      const off = toggle && list.hl[fluoKey(ri, ci)] === color;
+      eachMergeCell(list, ri, ci, (r, c) => {
+        const k = fluoKey(r, c);
+        delete list.hlText[k];
+        if (off) delete list.hl[k];
+        else list.hl[k] = color;
+      });
     }
 
     function applyFluoText(list, ri, ci, color, toggle) {
       if (!list.hl) list.hl = {};
       if (!list.hlText) list.hlText = {};
-      const k = fluoKey(ri, ci);
-      delete list.hl[k];
-      if (toggle && list.hlText[k] === color) delete list.hlText[k];
-      else list.hlText[k] = color;
+      const off = toggle && list.hlText[fluoKey(ri, ci)] === color;
+      eachMergeCell(list, ri, ci, (r, c) => {
+        const k = fluoKey(r, c);
+        delete list.hl[k];
+        if (off) delete list.hlText[k];
+        else list.hlText[k] = color;
+      });
     }
 
     function fluoHit(e) {
@@ -7081,7 +7558,6 @@
         else if (col.type === "rq") html += '<col class="col-rq">';
         else html += '<col data-ci="' + col.i + '" style="width:' + widths[wi++].toFixed(2) + '%">';
       });
-      const cover = mergeCoverMap(list);
       const tpForm = isTpForm(list);
       html += "</colgroup><thead" + (tpForm ? ' class="is-tp-ghost"' : "") + "><tr>";
       if (showNum) html += '<th class="col-num" data-lid="' + list.id + '" data-slot="num" data-ck="num">N°</th>';
@@ -7145,10 +7621,13 @@
             return;
           }
           const i = col.i;
-          const spanInfo = cover[ri + ":" + i];
-          if (spanInfo && !spanInfo.origin) return;
-          const rs = spanInfo && spanInfo.origin ? spanInfo.rs : 1;
-          const cs = spanInfo && spanInfo.origin ? spanInfo.cs : 1;
+          const paint = mergePaintInfo(list, vis, cols, ri, i);
+          if (paint.skip) return;
+          const rs = paint.rs;
+          const cs = paint.cs;
+          const contentRi = paint.contentRi;
+          const contentCi = paint.contentCi;
+          const contentRow = list.rows[contentRi] || row;
           const lastVis = last || (cs > 1 && layout.slice(k + 1).every((c2) => c2.type !== "data" || (c2.i >= i && c2.i < i + cs)));
           const kind = kinds[i];
           const cls = [];
@@ -7165,23 +7644,23 @@
             if (role) cls.push("is-tp-" + role);
           }
           const role = isTpList(list) ? tpColRole(list, i) : "";
-          const labelKind = tpForm ? tpFormLabelKind(list, ri, i) : "";
-          const matCell = tpForm && tpFormMatCell(list, ri, i);
-          const fieldAt = tpForm ? tpFormFieldAt(list, ri, i) : "";
+          const labelKind = tpForm ? tpFormLabelKind(list, contentRi, contentCi) : "";
+          const matCell = tpForm && tpFormMatCell(list, contentRi, contentCi);
+          const fieldAt = tpForm ? tpFormFieldAt(list, contentRi, contentCi) : "";
           if (labelKind) cls.push("is-tp-label");
           if (matCell) cls.push("is-tp-mat");
           const freeze = !tpForm && (role === "classe" || role === "total" || role === "poste"
             || (isTpList(list) && (tpKind === "poste" || tpKind === "item-order" || ((tpKind === "sec-prof" || tpKind === "sec-share" || tpKind === "sec-order") && role !== "item") || (role === "qty" && (tpKind === "poste" || tpKind.indexOf("sec-") === 0)))));
           let inner;
           if (tpForm) {
-            inner = tpFormCellInner(list, ri, i, row[i] || "", freeze);
+            inner = tpFormCellInner(list, contentRi, contentCi, contentRow[contentCi] || "", freeze);
           } else if (!tpForm && isTpList(list) && role === "item") {
-            const gutter = tpKind === "poste" ? escapeHtml(String(row[i] || "").trim()) : "";
-            const shown = tpKind === "poste" ? "" : (row[i] || "");
+            const gutter = tpKind === "poste" ? escapeHtml(String(contentRow[contentCi] || "").trim()) : "";
+            const shown = tpKind === "poste" ? "" : (contentRow[contentCi] || "");
             inner = '<span class="tp-item-line"><span class="tp-poste-gutter">' + gutter + "</span>" +
-              cellEditHtml(shown, list.id, ri, i, list, freeze || tpKind === "poste") + "</span>";
+              cellEditHtml(shown, list.id, contentRi, contentCi, list, freeze || tpKind === "poste") + "</span>";
           } else {
-            inner = cellEditHtml(row[i] || "", list.id, ri, i, list, freeze);
+            inner = cellEditHtml(contentRow[contentCi] || "", list.id, contentRi, contentCi, list, freeze);
           }
           let spanAttr = "";
           if (rs > 1) spanAttr += ' rowspan="' + rs + '" data-rs="' + rs + '"';
@@ -7189,10 +7668,13 @@
           if (fieldAt) spanAttr += ' data-tp-field="' + fieldAt + '" data-lid="' + list.id + '"';
           if (matCell) spanAttr += ' title="Double-clic pour choisir dans la liste de matériel"';
           if (tpForm && rs > 1) {
-            const spanH = tpSpanHeightMm(list, ri, rs);
-            if (spanH > 0) spanAttr += ' style="--span-h:' + spanH + 'mm;height:' + spanH + 'mm"';
+            const spanH = (paint.visRows || []).reduce((sum, r) => {
+              const h = Number(list.rowH && list.rowH[r]);
+              return sum + (h > 0 ? h : 6);
+            }, 0);
+            if (spanH > 0) spanAttr += ' style="--span-h:' + (Math.round(spanH * 100) / 100) + 'mm;height:' + (Math.round(spanH * 100) / 100) + 'mm"';
           }
-          html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '"' + spanAttr + '>' + handle() + inner;
+          html += '<td class="' + cls.join(" ") + fluoClass(list, contentRi, contentCi) + alignClass(list, contentRi, contentCi) + '" data-ci="' + i + '" data-ck="' + i + '"' + spanAttr + '>' + handle() + inner;
           if (lastVis) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
         });
@@ -7830,6 +8312,9 @@
       const input = $("selSizeVal");
       if (input) input.setAttribute("aria-label", isW ? "Taille de colonne" : "Hauteur de ligne");
       if ($("selEq")) $("selEq").disabled = isW ? zoneDataCols(list).length < 2 : !hasH;
+      const mergeRect = zoneMergeRect(list);
+      if ($("selMerge")) $("selMerge").disabled = !mergeRect;
+      if ($("selMenuMerge")) $("selMenuMerge").disabled = !mergeRect;
       syncSelSizeInput();
       syncSelAlign();
     }
@@ -9598,14 +10083,57 @@
       }
     }
 
+    function syncCreateTableModalMode() {
+      const merge = tableModalMode === "cells";
+      const createActions = $("createTableCreateActions");
+      const mergeActions = $("createTableMergeActions");
+      const lead = $("createTableLead");
+      const title = $("createTableTitle");
+      const picker = $("tablePicker");
+      if (createActions) createActions.hidden = merge;
+      if (mergeActions) mergeActions.hidden = !merge;
+      if (picker) picker.setAttribute("aria-label", merge ? "Taille de fusion ou de fractionnement" : "Taille du tableau");
+      if (title) {
+        title.textContent = merge
+          ? "Fusionner ou fractionner"
+          : (createAsTp ? "Créer une fiche TP" : "Créer un tableau");
+      }
+      if (lead) {
+        lead.textContent = merge
+          ? "Le damier indique la grille (colonnes × lignes) dans la sélection. Fusionner assemble les cellules choisies. Fractionner redistribue une fusion selon le damier, sans perdre contenu, fluo, pastilles, alignements ni menus."
+          : "Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.";
+      }
+    }
+
     function openCreateTableModal(asTp) {
+      tableModalMode = "create";
       createAsTp = Boolean(asTp);
       buildTablePicker();
       $("createTableModal").hidden = false;
-      const title = $("createTableTitle");
-      if (title) title.textContent = createAsTp ? "Créer une fiche TP" : "Créer un tableau";
+      syncCreateTableModalMode();
       if (createAsTp) syncCreateSizeFields(4, 22);
       else syncCreateSizeFields(EMPTY_COLS_DEF, EMPTY_ROWS_DEF);
+      tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
+    }
+
+    function openMergeCellsModal() {
+      const list = zoneList();
+      const rect = zoneMergeRect(list);
+      if (!list || !rect) {
+        announce("Sélectionnez un rectangle de cellules à fusionner ou fractionner.");
+        return;
+      }
+      tableModalMode = "cells";
+      createAsTp = false;
+      buildTablePicker();
+      $("createTableModal").hidden = false;
+      syncCreateTableModalMode();
+      const cols = rect.c1 - rect.c0 + 1;
+      const rows = rect.r1 - rect.r0 + 1;
+      syncCreateSizeFields(cols, rows);
+      const canMerge = (rows > 1 || cols > 1);
+      if ($("mergeCellsBtn")) $("mergeCellsBtn").disabled = !canMerge;
+      if ($("splitCellsBtn")) $("splitCellsBtn").disabled = false;
       tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
     }
 
@@ -9615,8 +10143,42 @@
       if (restore) restore();
       $("createTableModal").hidden = true;
       createAsTp = false;
-      const title = $("createTableTitle");
-      if (title) title.textContent = "Créer un tableau";
+      tableModalMode = "create";
+      syncCreateTableModalMode();
+    }
+
+    function setZoneFromRect(list, box) {
+      if (!list || !box) return;
+      const keys = [];
+      for (let c = box.c0; c <= box.c1; c++) keys.push(c);
+      const ris = [];
+      for (let r = box.r0; r <= box.r1; r++) ris.push(r);
+      setZone({ lid: String(list.id), keys: keys, ris: ris });
+    }
+
+    function applyMergeFromModal(asSplit) {
+      const list = zoneList();
+      const rect = zoneMergeRect(list);
+      if (!list || !rect) {
+        closeCreateTableModal();
+        return;
+      }
+      const size = readCreateSize();
+      pushHist();
+      const result = asSplit
+        ? splitCellsRect(list, rect, size.cols, size.rows)
+        : mergeCellsRect(list, rect);
+      closeCreateTableModal();
+      if (!result || !result.ok) {
+        discardLastHist();
+        announce(asSplit ? "Impossible de fractionner cette sélection." : "Sélectionnez au moins deux cellules.");
+        return;
+      }
+      dirty = true;
+      if (result.inserted) renderAll();
+      else renderPreview();
+      setZoneFromRect(list, result.box);
+      announce(asSplit ? "Cellules fractionnées." : "Cellules fusionnées.");
     }
 
     function createTpSheet(nCols, nRows) {
@@ -9653,6 +10215,7 @@
     }
 
     function confirmCreateTable() {
+      if (tableModalMode === "cells") return;
       const { cols, rows } = readCreateSize();
       const asTp = createAsTp;
       closeCreateTableModal();
@@ -10143,6 +10706,11 @@
     if (tpLoadBtn) tpLoadBtn.addEventListener("click", () => $("loadFile").click());
     $("createTableOk").addEventListener("click", confirmCreateTable);
     $("createTableCancel").addEventListener("click", closeCreateTableModal);
+    if ($("mergeCellsBtn")) $("mergeCellsBtn").addEventListener("click", () => applyMergeFromModal(false));
+    if ($("splitCellsBtn")) $("splitCellsBtn").addEventListener("click", () => applyMergeFromModal(true));
+    if ($("mergeCellsCancel")) $("mergeCellsCancel").addEventListener("click", closeCreateTableModal);
+    if ($("selMerge")) $("selMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
+    if ($("selMenuMerge")) $("selMenuMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
     $("createCols").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
     $("createRows").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
     $("createCols").addEventListener("change", () => {
@@ -10157,6 +10725,13 @@
       $(id).addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
+          if (tableModalMode === "cells") {
+            const list = zoneList();
+            const rect = zoneMergeRect(list);
+            const canMerge = Boolean(rect && (rect.r1 > rect.r0 || rect.c1 > rect.c0));
+            applyMergeFromModal(!canMerge);
+            return;
+          }
           confirmCreateTable();
         }
       });
@@ -10170,7 +10745,7 @@
       const cell = e.target.closest(".size-picker-cell");
       if (!cell) return;
       syncCreateSizeFields(cell.dataset.cols, cell.dataset.rows);
-      confirmCreateTable();
+      if (tableModalMode !== "cells") confirmCreateTable();
     });
     $("pasteOk").addEventListener("click", () => {
       ingestClipboard($("pasteArea").value, "")
@@ -11246,6 +11821,8 @@
         if ($("styleModal") && !$("styleModal").hidden) return;
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
+        if ($("createTableModal") && !$("createTableModal").hidden) return;
+        if ($("tpMatModal") && !$("tpMatModal").hidden) return;
         if ($("colDelModal") && !$("colDelModal").hidden) return;
         if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
         if ($("replaceModal") && !$("replaceModal").hidden) return;
@@ -11264,6 +11841,8 @@
         if ($("styleModal") && !$("styleModal").hidden) return;
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
+        if ($("createTableModal") && !$("createTableModal").hidden) return;
+        if ($("tpMatModal") && !$("tpMatModal").hidden) return;
         if ($("colDelModal") && !$("colDelModal").hidden) return;
         if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
         if ($("replaceModal") && !$("replaceModal").hidden) return;
@@ -11408,7 +11987,7 @@
     if (ytBell) {
       ytBell.addEventListener("click", () => {
         ytBell.classList.add("is-tip");
-        window.setTimeout(() => ytBell.classList.remove("is-tip"), 3200);
+        window.setTimeout(() => ytBell.classList.remove("is-tip"), 5200);
       });
     }
     const pageOrientToggle = $("pageOrientToggle");
