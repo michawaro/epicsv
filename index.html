@@ -674,6 +674,35 @@
     }
     .list-block.is-editing .page-sheet-del { display: grid; }
     .page-sheet-del:hover { background: var(--seal); }
+    .block-move {
+      display: none;
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 7;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 44px;
+      height: 22px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--teal-deep);
+      box-shadow: 0 6px 16px rgba(14, 143, 140, 0.28);
+      font-size: 15px;
+      line-height: 1;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+    .list-block.is-editing .block-move,
+    .list-block:hover .block-move { display: flex; }
+    .block-move:active,
+    .list-block.is-moving .block-move { cursor: grabbing; }
+    body.is-block-moving { user-select: none; cursor: grabbing; }
     .blank-hint {
       display: flex;
       flex-direction: column;
@@ -1851,7 +1880,15 @@
     .sheet-grid[data-n="3"] { grid-template-columns: 1fr 1fr 1fr; }
     .sheet-grid[data-n="4"] { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
-    .list-block { min-width: 0; overflow: visible; }
+    .list-block {
+      position: relative;
+      min-width: 0;
+      overflow: visible;
+      left: 0;
+      top: 0;
+    }
+    .list-block.is-moved { z-index: 2; }
+    .list-block.is-moving { z-index: 8; }
     .list-block.is-blank-page {
       min-height: calc(var(--page-h) - 2 * var(--page-margin));
       display: flex;
@@ -1859,77 +1896,90 @@
     }
     .list-block.is-blank-page .blank-hint { flex: 1; }
     .list-block.is-tp-page {
-      min-height: calc(var(--page-h) - 2 * var(--page-margin));
+      --row-y: 0.16em;
+      --row-x: 0.42em;
       display: flex;
       flex-direction: column;
     }
-    .list-block.is-tp-page .list-head { text-align: left; }
-    .list-block.is-tp-page .list-title,
+    .list-block.is-tp-page .list-head {
+      text-align: left;
+      margin-bottom: 1.5mm;
+    }
+    .list-block.is-tp-page .list-title {
+      text-align: left;
+      font-size: calc(var(--title-pt, 14pt) * 1.18);
+      margin: 0 0 0.18em;
+      line-height: 1.12;
+    }
     .list-block.is-tp-page .list-sub { text-align: left; }
-    .list-block.is-tp-page .liste-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
+    .list-block.is-tp-page .liste thead th {
+      padding: 0.18em 0.35em;
+      line-height: 1.15;
     }
-    .list-block.is-tp-page table.liste {
-      flex: 1;
-      height: 100%;
+    .list-block.is-tp-page .liste td {
+      padding: 0.14em 0.38em;
+      line-height: 1.15;
+      vertical-align: middle;
     }
-    .list-block.is-tp-page td.is-tp-poste {
+    .list-block.is-tp-page td.is-tp-item,
+    .list-block.is-tp-page th.is-tp-item {
+      text-align: left;
+    }
+    .list-block.is-tp-page td.is-tp-item .cell-edit {
+      display: block;
+      min-height: 1.05em;
+    }
+    .list-block.is-tp-page td.is-tp-qty,
+    .list-block.is-tp-page td.is-tp-classe,
+    .list-block.is-tp-page td.is-tp-total,
+    .list-block.is-tp-page th.is-tp-qty,
+    .list-block.is-tp-page th.is-tp-classe,
+    .list-block.is-tp-page th.is-tp-total {
       text-align: center;
-      font-weight: 800;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      width: 9%;
     }
-    .list-block.is-tp-page td.is-tp-binome {
-      text-align: left;
+    .list-block.is-tp-page td.is-tp-prof,
+    .list-block.is-tp-page th.is-tp-prof {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      width: 12%;
     }
-    .list-block.is-tp-page td.is-tp-binome .cell-edit {
-      display: block;
-      min-height: 2.4em;
-      white-space: pre-wrap;
-    }
-    .list-block.is-tp-page td.is-tp-prof {
-      text-align: left;
-      width: 16%;
-      font-size: 0.95em;
-    }
-    .list-block.is-tp-page td.is-tp-prof .cell-edit {
-      display: block;
-      min-height: 1.2em;
-    }
-    .list-block.is-tp-page tr.is-tp-order td {
+    .list-block.is-tp-page td.is-tp-classe,
+    .list-block.is-tp-page td.is-tp-total {
       font-weight: 800;
-      vertical-align: top;
-      border-top: 1.3pt solid var(--d-line, var(--teal-deep));
-      background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 9%, var(--paper));
-    }
-    .list-block.is-tp-page tr.is-tp-order td.is-tp-poste {
-      text-align: left;
-      white-space: normal;
-      font-size: 0.78em;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      width: 14%;
-    }
-    .list-block.is-tp-page tr.is-tp-order {
-      height: 22%;
-    }
-    .list-block.is-tp-page tr.is-tp-order td.is-tp-binome .cell-edit {
-      min-height: 4.5em;
+      color: var(--d-title, var(--teal-deep));
     }
     .tp-meta-bar {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 1.6mm 4mm;
-      margin: 0 0 2.8mm;
-      font-size: 10.5pt;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1mm 5mm;
+      margin: 0 0 1.2mm;
+      font-size: 11pt;
       font-weight: 700;
       color: var(--d-sub, var(--ink-soft));
     }
+    .tp-meta-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.8mm 4.2mm;
+      min-width: 0;
+    }
+    .tp-meta-groups {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.6mm 2.4mm;
+      font-size: 0.92em;
+    }
+    .tp-chip-niveau,
+    .tp-chip-partie {
+      font-size: 1.28em;
+    }
+    .tp-chip-matiere { font-size: 1.12em; }
     .tp-chip {
       appearance: none;
       border: 0;
@@ -1949,7 +1999,6 @@
       opacity: 0.7;
     }
     .tp-chip.is-placeholder { font-weight: 700; opacity: 0.72; }
-    .tp-chip-mat::after { content: none; }
     .tp-meta-n { color: var(--d-title, var(--teal-deep)); font-weight: 800; }
     .tp-ngroups {
       display: inline-block;
@@ -3109,15 +3158,10 @@
         print-color-adjust: exact;
       }
       .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
-      .list-block.is-tp-page tr.is-tp-order td {
-        background: color-mix(in srgb, var(--d-accent, var(--teal-deep)) 9%, #fff) !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
       .tp-chip::after { content: none !important; }
       .tp-chip, .tp-ngroups { border-bottom: 0 !important; }
-      .tp-chip-mat { display: none !important; }
       .tp-mat-open { cursor: default; }
+      .block-move { display: none !important; }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
       .liste td.is-fluo-vert,
       .liste tbody tr:nth-child(even) td.is-fluo-vert { background: #d4f5c8 !important; }
@@ -3151,7 +3195,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint { display: none !important; }
+      .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint, .block-move { display: none !important; }
       .list-block.is-editing,
       .list-block.is-editing .liste-wrap { outline: none !important; }
       .cell-edit:focus,
@@ -3444,7 +3488,7 @@
           <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
         </div>
         <div id="tpForm" hidden>
-          <p class="hint-note" style="margin:8px 0 10px">Cliquez le tableau : titre, niveau, matière, groupes, cellules. Le catalogue s’ouvre depuis <strong>Matériel</strong> ou la ligne « Matériel à commander ».</p>
+          <p class="hint-note" style="margin:8px 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel par poste</strong> pour le catalogue. Cliquez une quantité pour la modifier.</p>
           <button type="button" class="btn-mini" id="tpOpenCatalog">Catalogue matériel</button>
         </div>
       </section>
@@ -3650,7 +3694,7 @@
   <div class="modal-back no-print" id="tpMatModal" hidden>
     <div class="modal modal-tp-mat" role="dialog" aria-modal="true" aria-labelledby="tpMatTitle">
       <h3 id="tpMatTitle">Catalogue matériel</h3>
-      <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Les totaux vont dans la ligne « Matériel à commander ».</p>
+      <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Même jeu à chaque poste : les quantités se calculent pour la classe et le bureau professeur.</p>
       <input class="field" id="tpMatSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
       <div class="tp-picks" id="tpMatCats"></div>
       <div class="tp-picks tp-cat-items" id="tpMatItems"></div>
@@ -3794,6 +3838,7 @@
     let styleDlgRestore = null;
     const HIST_MAX = 80;
     let tpUi = { cat: "", q: "" };
+    let tpMatTarget = { lid: null, ri: null };
     const ORIENT_TOGGLE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
     const MATERIEL_CATALOG = [{"id":"1","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"50 mL"},{"id":"2","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"100 mL"},{"id":"3","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"250 mL"},{"id":"4","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"10 mL"},{"id":"5","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"25 mL"},{"id":"6","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"50 mL"},{"id":"7","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"10 mL"},{"id":"8","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"50 mL"},{"id":"9","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"100 mL"},{"id":"10","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"100 mL"},{"id":"11","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"250 mL"},{"id":"12","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"500 mL"},{"id":"13","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"50 mL"},{"id":"14","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"100 mL"},{"id":"15","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"250 mL"},{"id":"16","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"1 mL"},{"id":"17","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"5 mL"},{"id":"18","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"10 mL"},{"id":"19","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"5 mL"},{"id":"20","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"10 mL"},{"id":"21","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"20 mL"},{"id":"22","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"10 mL"},{"id":"23","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"15 mL"},{"id":"24","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"20 mL"},{"id":"25","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 60 mm"},{"id":"26","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 80 mm"},{"id":"27","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 100 mm"},{"id":"28","rubrique":"materielMesure","sous":"","nom":"Balance électronique","details":""},{"id":"29","rubrique":"materielMesure","sous":"","nom":"Chronomètre","details":""},{"id":"30","rubrique":"materielMesure","sous":"","nom":"Loupe","details":""},{"id":"31","rubrique":"materielMesure","sous":"","nom":"Microscope optique","details":""},{"id":"32","rubrique":"materielMesure","sous":"","nom":"Papier pH","details":""},{"id":"33","rubrique":"materielMesure","sous":"","nom":"pH-mètre","details":""},{"id":"34","rubrique":"materielMesure","sous":"","nom":"Règle graduée","details":""},{"id":"35","rubrique":"materielMesure","sous":"","nom":"Thermomètre","details":""},{"id":"36","rubrique":"chauffageSupport","sous":"","nom":"Agitateur magnétique","details":""},{"id":"37","rubrique":"chauffageSupport","sous":"","nom":"Barreau aimanté","details":""},{"id":"38","rubrique":"chauffageSupport","sous":"","nom":"Bec Bunsen","details":""},{"id":"39","rubrique":"chauffageSupport","sous":"","nom":"Plaque chauffante","details":""},{"id":"40","rubrique":"chauffageSupport","sous":"","nom":"Support universel","details":""},{"id":"41","rubrique":"chauffageSupport","sous":"","nom":"Trépied","details":""},{"id":"42","rubrique":"materielBiologique","sous":"","nom":"Boîte de Pétri","details":""},{"id":"43","rubrique":"materielBiologique","sous":"","nom":"Ciseaux","details":""},{"id":"44","rubrique":"materielBiologique","sous":"","nom":"Épingles de dissection","details":""},{"id":"45","rubrique":"materielBiologique","sous":"","nom":"Lame porte-objet","details":""},{"id":"46","rubrique":"materielBiologique","sous":"","nom":"Lamelle couvre-objet","details":""},{"id":"47","rubrique":"materielBiologique","sous":"","nom":"Pipette Pasteur","details":""},{"id":"48","rubrique":"materielBiologique","sous":"","nom":"Scalpel","details":""},{"id":"49","rubrique":"materielBiologique","sous":"","nom":"Spatule","details":""},{"id":"50","rubrique":"indicateurs","sous":"","nom":"Bleu de bromothymol (BBT) - Indicateur de CO₂ / pH physiologique (jaune ↔ vert ↔ bleu)","details":""},{"id":"51","rubrique":"indicateurs","sous":"","nom":"Eau iodée - Indicateur de l’amidon (jaune ↔ bleu-noir)","details":""},{"id":"52","rubrique":"indicateurs","sous":"","nom":"Lugol - Indicateur de l’amidon (version iodée plus concentrée)","details":""},{"id":"53","rubrique":"indicateurs","sous":"","nom":"Phénolphtaléine - Indicateur de pH (incolore ↔ rose, milieu basique)","details":""},{"id":"54","rubrique":"indicateurs","sous":"","nom":"Rouge de méthyle - Indicateur de pH (rouge ↔ jaune)","details":""},{"id":"55","rubrique":"indicateurs","sous":"","nom":"Vert de bromocrésol - Indicateur de pH (jaune ↔ bleu)","details":""},{"id":"56","rubrique":"indicateurs","sous":"","nom":"Papier pH universel - Indicateur multi-plages de pH","details":""},{"id":"57","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,1 mol·L⁻¹"},{"id":"58","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,5 mol·L⁻¹"},{"id":"59","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"1,0 mol·L⁻¹"},{"id":"60","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,1 mol·L⁻¹"},{"id":"61","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,5 mol·L⁻¹"},{"id":"62","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"1,0 mol·L⁻¹"},{"id":"63","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"rinçage"},{"id":"64","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"solvant de dilution"},{"id":"65","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"10 g·L⁻¹"},{"id":"66","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"20 g·L⁻¹"},{"id":"67","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"50 g·L⁻¹"},{"id":"68","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,1 mol·L⁻¹"},{"id":"69","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,5 mol·L⁻¹"},{"id":"70","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,01 mol·L⁻¹"},{"id":"71","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,05 mol·L⁻¹"},{"id":"72","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (respiration)","details":""},{"id":"73","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (réaction contrôlée)","details":""},{"id":"74","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"1 g·L⁻¹"},{"id":"75","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"5 g·L⁻¹"},{"id":"76","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"diluée"},{"id":"77","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"standard"},{"id":"78","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"dilué"},{"id":"79","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"standard"},{"id":"80","rubrique":"microscopieSV","sous":"","nom":"Cellules buccales humaines","details":""},{"id":"81","rubrique":"microscopieSV","sous":"","nom":"Coupe d’anthère (pollen)","details":""},{"id":"82","rubrique":"microscopieSV","sous":"","nom":"Coupe d’intestin grêle","details":""},{"id":"83","rubrique":"microscopieSV","sous":"","nom":"Coupe de feuille (dicotylédone)","details":""},{"id":"84","rubrique":"microscopieSV","sous":"","nom":"Coupe de racine","details":""},{"id":"85","rubrique":"microscopieSV","sous":"","nom":"Coupe de tige","details":""},{"id":"86","rubrique":"microscopieSV","sous":"","nom":"Épiderme d’oignon","details":""},{"id":"87","rubrique":"microscopieSV","sous":"","nom":"Foie (tissu hépatique)","details":""},{"id":"88","rubrique":"microscopieSV","sous":"","nom":"Levures","details":""},{"id":"89","rubrique":"microscopieSV","sous":"","nom":"Muscle lisse","details":""},{"id":"90","rubrique":"microscopieSV","sous":"","nom":"Muscle strié","details":""},{"id":"91","rubrique":"microscopieSV","sous":"","nom":"Ovaires (coupe histologique)","details":""},{"id":"92","rubrique":"microscopieSV","sous":"","nom":"Pancréas (îlots de Langerhans)","details":""},{"id":"93","rubrique":"microscopieSV","sous":"","nom":"Peau humaine","details":""},{"id":"94","rubrique":"microscopieSV","sous":"","nom":"Poumon (alvéoles)","details":""},{"id":"95","rubrique":"microscopieSV","sous":"","nom":"Rein (néphron)","details":""},{"id":"96","rubrique":"microscopieSV","sous":"","nom":"Sang humain (frottis)","details":""},{"id":"97","rubrique":"microscopieSV","sous":"","nom":"Spermatozoïdes","details":""},{"id":"98","rubrique":"microscopieSV","sous":"","nom":"Testicule (tubes séminifères)","details":""},{"id":"99","rubrique":"microscopieSV","sous":"","nom":"Tissu nerveux","details":""},{"id":"100","rubrique":"microscopieSV","sous":"","nom":"Xylème","details":""},{"id":"101","rubrique":"microscopieSV","sous":"","nom":"Phloème","details":""},{"id":"102","rubrique":"microscopieST","sous":"","nom":"Basalte (structure microlitique)","details":""},{"id":"103","rubrique":"microscopieST","sous":"","nom":"Calcaire à foraminifères","details":""},{"id":"104","rubrique":"microscopieST","sous":"","nom":"Foraminifères Crétacé (= Maastrichtien) il y a 66 Ma","details":""},{"id":"105","rubrique":"microscopieST","sous":"","nom":"Foraminifères Tertiaire (= Danien) il y a 64 Ma","details":""},{"id":"106","rubrique":"microscopieST","sous":"","nom":"Gabbro","details":""},{"id":"107","rubrique":"microscopieST","sous":"","nom":"Gneiss (métamorphisme régional)","details":""},{"id":"108","rubrique":"microscopieST","sous":"","nom":"Granite","details":""},{"id":"109","rubrique":"microscopieST","sous":"","nom":"Marbre (métamorphisme du calcaire)","details":""},{"id":"110","rubrique":"microscopieST","sous":"","nom":"Péridotite","details":""},{"id":"111","rubrique":"microscopieST","sous":"","nom":"Quartzite","details":""},{"id":"112","rubrique":"microscopieST","sous":"","nom":"Schiste (foliation métamorphique)","details":""},{"id":"113","rubrique":"microscopieST","sous":"","nom":"Amphibolite (métamorphisme)","details":""},{"id":"114","rubrique":"microscopieST","sous":"","nom":"Éclogite (métamorphisme haute pression)","details":""},{"id":"115","rubrique":"microscopieST","sous":"","nom":"Radiolarites (crises océaniques)","details":""},{"id":"116","rubrique":"microscopieST","sous":"","nom":"Grès (sédimentaire)","details":""},{"id":"117","rubrique":"microscopieST","sous":"","nom":"Calcite recristallisée (diagenèse)","details":""},{"id":"118","rubrique":"geologieMac","sous":"","nom":"Argile","details":""},{"id":"119","rubrique":"geologieMac","sous":"","nom":"Basalte","details":""},{"id":"120","rubrique":"geologieMac","sous":"","nom":"Calcaire","details":""},{"id":"121","rubrique":"geologieMac","sous":"","nom":"Gabbro","details":""},{"id":"122","rubrique":"geologieMac","sous":"","nom":"Gneiss","details":""},{"id":"123","rubrique":"geologieMac","sous":"","nom":"Granite","details":""},{"id":"124","rubrique":"geologieMac","sous":"","nom":"Grès","details":""},{"id":"125","rubrique":"geologieMac","sous":"","nom":"Marbre","details":""},{"id":"126","rubrique":"geologieMac","sous":"","nom":"Péridotite","details":""},{"id":"127","rubrique":"geologieMac","sous":"","nom":"Schiste","details":""},{"id":"128","rubrique":"securite","sous":"","nom":"Blouse","details":""},{"id":"129","rubrique":"securite","sous":"","nom":"Gants","details":""},{"id":"130","rubrique":"securite","sous":"","nom":"Lunettes de protection","details":""}];
     const MATERIEL_RUBRIQUES = [
@@ -3815,6 +3860,8 @@
       trinomes: "trinômes",
       ilots: "îlots",
     };
+    const TP_SHEET_ROWS = 8;
+    const TP_TITLE_DEFAULT = "Installation de TP";
     const TP_PARTIES = {
       SVT: {
         "6e": ["Le vivant et son environnement", "Peuplement d’un milieu", "Origine de la matière des êtres vivants", "Diversité, parentés et unité du vivant", "La Terre, une planète du système solaire"],
@@ -4406,6 +4453,8 @@
         widths: {},
         rowH: {},
         tableW: 100,
+        posX: 0,
+        posY: 0,
         sample: false,
         blank: false,
         keepEmptyRows: false,
@@ -4493,26 +4542,32 @@
       return bits.join(" · ");
     }
 
-    function tpOrderText(tp) {
-      const t = tp || defaultTp();
-      if (!t.items || !t.items.length) return "";
-      return t.items.map((it) => it.name + " × " + tpItemTotal(it, t.nGroupes)).join("  ·  ");
-    }
-
     function isTpOrderLabel(v) {
       const n = foldHeader(v);
       return n === "materiel a commander" || n === "materiel commander" || /materiel a? commander/.test(n);
     }
 
+    function tpDefaultHeaders() {
+      return ["Matériel par poste", "Par poste", "Pour la classe", "Bureau professeur", "Total salle"];
+    }
+
     function tpColRole(list, i) {
       const h = foldHeader((list && list.headers && list.headers[i]) || "");
+      if (/materiel par poste|^materiel$|installation/.test(h)) return "item";
+      if (/par poste/.test(h)) return "qty";
+      if (/total/.test(h)) return "total";
       if (/bureau|\bprof\b/.test(h)) return "prof";
+      if (/classe/.test(h)) return "classe";
       if (/^(poste|groupe|n)$/.test(h)) return "poste";
-      if (/commander/.test(h)) return "binome";
-      if (/materiel|binome|ilot/.test(h)) return "binome";
-      if (i === 0) return "poste";
+      if (/commander/.test(h)) return "item";
+      if (/materiel/.test(h)) return "item";
+      if (/binome|ilot/.test(h)) return "poste";
+      if (i === 0) return "item";
+      if (list && list.headers && list.headers.length >= 5) {
+        return ["item", "qty", "classe", "prof", "total"][i] || "item";
+      }
       if (list && list.headers && list.headers.length >= 3 && i === list.headers.length - 1) return "prof";
-      return "binome";
+      return "item";
     }
 
     function tpColIndex(list, role) {
@@ -4520,44 +4575,156 @@
       for (let i = 0; i < list.headers.length; i++) {
         if (tpColRole(list, i) === role) return i;
       }
-      if (role === "poste") return 0;
-      if (role === "prof") return Math.max(0, list.headers.length - 1);
+      if (role === "item" || role === "poste") return 0;
+      if (role === "qty") return Math.min(1, Math.max(0, list.headers.length - 1));
+      if (role === "classe") return Math.min(2, Math.max(0, list.headers.length - 1));
+      if (role === "prof") return Math.min(3, Math.max(0, list.headers.length - 1));
+      if (role === "total") return Math.max(0, list.headers.length - 1);
       return Math.min(1, Math.max(0, list.headers.length - 1));
     }
 
-    function isTpOrderRow(list, ri) {
-      const row = list && list.rows && list.rows[ri];
-      if (!row) return false;
-      const i = tpColIndex(list, "poste");
-      return isTpOrderLabel(row[i] || row[0] || "");
+    function tpLayoutStale(list) {
+      if (!list || !list.headers || !list.headers.length) return true;
+      const folded = list.headers.map((h) => foldHeader(h || ""));
+      if (folded.indexOf("poste") >= 0) return true;
+      if (folded.some((h) => h === "materiel binome" || /commander/.test(h))) return true;
+      if ((list.rows || []).some((row) => isTpOrderLabel((row && row[0]) || ""))) return true;
+      return false;
     }
 
-    function findTpOrderIndex(list) {
-      if (!list || !list.rows) return -1;
-      for (let i = list.rows.length - 1; i >= 0; i--) {
-        if (isTpOrderRow(list, i)) return i;
-      }
-      return -1;
-    }
-
-    function tpGroupIndices(list) {
-      const out = [];
-      (list.rows || []).forEach((_, ri) => {
-        if (!isTpOrderRow(list, ri)) out.push(ri);
-      });
-      return out;
-    }
-
-    function tpBlankRow(list, poste) {
+    function tpBlankRow(list) {
       const n = Math.max(1, (list.headers || []).length);
-      const row = Array.from({ length: n }, () => "");
-      if (poste != null) row[tpColIndex(list, "poste")] = String(poste);
+      return Array.from({ length: n }, () => "");
+    }
+
+    function applyItemToRow(list, row, item, nGroupes) {
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const classeI = tpColIndex(list, "classe");
+      const profI = tpColIndex(list, "prof");
+      const totalI = tpColIndex(list, "total");
+      while (row.length < list.headers.length) row.push("");
+      if (!item || !item.name) return row;
+      const qty = Number(item.qty) || 0;
+      const extra = Number(item.extra) || 0;
+      const n = Number(nGroupes) || 0;
+      row[itemI] = item.name;
+      row[qtyI] = String(qty);
+      row[classeI] = String(qty * n);
+      row[profI] = String(extra);
+      row[totalI] = String(qty * n + extra);
       return row;
     }
 
-    function looksAutoPoste(v, i) {
-      const s = String(v || "").trim();
-      return !s || s === String(i + 1) || s === String(i) || /^poste\s*\d+$/i.test(s);
+    function writeTpComputed(list) {
+      if (!list || !list.rows) return;
+      const tp = tpOf(list);
+      const n = Number(tp.nGroupes) || 0;
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const classeI = tpColIndex(list, "classe");
+      const profI = tpColIndex(list, "prof");
+      const totalI = tpColIndex(list, "total");
+      list.rows.forEach((row) => {
+        if (!Array.isArray(row)) return;
+        while (row.length < list.headers.length) row.push("");
+        const name = String(row[itemI] || "").trim();
+        if (!name) {
+          row[classeI] = "";
+          row[totalI] = "";
+          return;
+        }
+        const qty = clampTpQty(row[qtyI], 1) || 1;
+        const extra = clampTpQty(row[profI], 0);
+        if (qtyI !== itemI) row[qtyI] = String(qty);
+        if (profI !== itemI && profI !== qtyI) row[profI] = String(extra);
+        if (classeI !== itemI && classeI !== qtyI && classeI !== profI) row[classeI] = String(qty * n);
+        if (totalI !== itemI && totalI !== qtyI && totalI !== profI && totalI !== classeI) {
+          row[totalI] = String(qty * n + extra);
+        }
+      });
+    }
+
+    function pullTpItemsFromRows(list) {
+      if (!list) return;
+      const tp = tpOf(list);
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const profI = tpColIndex(list, "prof");
+      tp.items = (list.rows || []).map((row) => {
+        const name = String((row && row[itemI]) || "").trim();
+        if (!name) return null;
+        return {
+          name: name,
+          qty: clampTpQty(row[qtyI], 1) || 1,
+          extra: clampTpQty(row[profI], 0),
+        };
+      }).filter(Boolean);
+    }
+
+    function applyTpSheetFrame(list, opts) {
+      const tp = tpOf(list);
+      const fromItems = Boolean(opts && opts.rowsFromItems);
+      const minRows = opts && opts.minRows != null ? opts.minRows : TP_SHEET_ROWS;
+      list.headers = tpDefaultHeaders();
+      list.order = [0, 1, 2, 3, 4];
+      list.on = [true, true, true, true, true];
+      list.custom = {};
+      if (!list.hidden) list.hidden = {};
+      if (!list.marks) list.marks = {};
+      if (!list.notes) list.notes = {};
+      if (!list.hl) list.hl = {};
+      if (!list.hlText) list.hlText = {};
+      list.colAlignH = { 0: "left", 1: "center", 2: "center", 3: "center", 4: "center" };
+      list.colAlignV = { 0: "middle", 1: "middle", 2: "middle", 3: "middle", 4: "middle" };
+      list.widths = { 0: 50, 1: 10, 2: 13, 3: 14, 4: 13 };
+      list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
+      list.rowH = {};
+      if (fromItems && tp.items && tp.items.length) {
+        list.rows = tp.items.map((it) => applyItemToRow(list, tpBlankRow(list), it, tp.nGroupes));
+      } else {
+        list.rows = [];
+      }
+      while (list.rows.length < minRows) list.rows.push(tpBlankRow(list));
+    }
+
+    function ensureTpColMeta(list) {
+      if (!Array.isArray(list.on) || list.on.length !== list.headers.length) {
+        list.on = list.headers.map(() => true);
+      }
+      if (!Array.isArray(list.order) || !list.order.length) {
+        list.order = list.headers.map((_, i) => i);
+      }
+      if (!list.widths) list.widths = {};
+      list.headers.forEach((_, i) => {
+        if (Number(list.widths[i]) > 0) return;
+        const role = tpColRole(list, i);
+        list.widths[i] = role === "item" ? 50 : role === "prof" ? 14 : 12;
+      });
+    }
+
+    function placeTpItemOnRow(list, name, qty) {
+      const itemI = tpColIndex(list, "item");
+      const nGroupes = tpOf(list).nGroupes;
+      const extra = 1;
+      const targetRi = (tpMatTarget && tpMatTarget.lid === list.id && Number.isInteger(tpMatTarget.ri))
+        ? tpMatTarget.ri : -1;
+      const writeAt = (ri) => {
+        if (!list.rows[ri]) list.rows[ri] = tpBlankRow(list);
+        applyItemToRow(list, list.rows[ri], { name: name, qty: qty, extra: extra }, nGroupes);
+        tpMatTarget.ri = ri + 1;
+      };
+      if (targetRi >= 0 && list.rows[targetRi] && !String(list.rows[targetRi][itemI] || "").trim()) {
+        writeAt(targetRi);
+        return;
+      }
+      const empty = list.rows.findIndex((row) => !String((row && row[itemI]) || "").trim());
+      if (empty >= 0) {
+        writeAt(empty);
+        return;
+      }
+      list.rows.push(tpBlankRow(list));
+      writeAt(list.rows.length - 1);
     }
 
     function applyTpMetaTitle(list, force) {
@@ -4573,73 +4740,22 @@
 
     function applyTpMainTitle(list, force) {
       const tp = tpOf(list);
-      const titre = (tp.titre || "").trim() || "Demande de matériel";
+      const titre = (tp.titre || "").trim() || TP_TITLE_DEFAULT;
       if (!Array.isArray(list.titles) || !list.titles.length) list.titles = [""];
-      if (force || !String(list.titles[0] || "").trim()) list.titles[0] = titre;
-      if (!tp.titre) tp.titre = list.titles[0];
-    }
-
-    function syncTpGroupRows(list) {
-      const tp = tpOf(list);
-      const n = Math.max(1, Math.min(40, Number(tp.nGroupes) || 12));
-      tp.nGroupes = n;
-      const posteI = tpColIndex(list, "poste");
-      let groups = tpGroupIndices(list);
-      while (groups.length < n) {
-        const orderI = findTpOrderIndex(list);
-        const at = orderI >= 0 ? orderI : list.rows.length;
-        const ri = insertRowAt(list, at, tpBlankRow(list, String(groups.length + 1)));
-        if (!list.rowH) list.rowH = {};
-        list.rowH[ri] = 0.7;
-        groups = tpGroupIndices(list);
+      if (force || !String(list.titles[0] || "").trim() || list.titles[0] === "Demande de matériel") {
+        list.titles[0] = titre === "Demande de matériel" ? TP_TITLE_DEFAULT : titre;
       }
-      while (groups.length > n) {
-        removeRowsFromList(list, [groups[groups.length - 1]]);
-        groups = tpGroupIndices(list);
-      }
-      tpGroupIndices(list).forEach((ri, i) => {
-        const cur = (list.rows[ri] && list.rows[ri][posteI]) || "";
-        if (looksAutoPoste(cur, i)) list.rows[ri][posteI] = String(i + 1);
-      });
-    }
-
-    function syncTpOrderRow(list, force) {
-      const tp = tpOf(list);
-      const posteI = tpColIndex(list, "poste");
-      const binI = tpColIndex(list, "binome");
-      let ri = findTpOrderIndex(list);
-      if (ri < 0) {
-        ri = insertRowAt(list, list.rows.length, tpBlankRow(list, "Matériel à commander"));
-        if (!list.rowH) list.rowH = {};
-        list.rowH[ri] = 1.35;
-      } else if (!(list.rowH && Number(list.rowH[ri]) > 0)) {
-        if (!list.rowH) list.rowH = {};
-        list.rowH[ri] = 1.35;
-      }
-      const label = (list.rows[ri] && list.rows[ri][posteI]) || "";
-      if (!String(label).trim() || isTpOrderLabel(label)) {
-        list.rows[ri][posteI] = "Matériel à commander";
-      }
-      const text = tpOrderText(tp);
-      const cur = (list.rows[ri] && list.rows[ri][binI]) || "";
-      if (force || !String(cur).trim() || cur === (tp.orderStamp || "")) {
-        list.rows[ri][binI] = text;
-        tp.orderStamp = text;
-      }
-    }
-
-    function pullTpGroupCount(list) {
-      if (!isTpList(list)) return;
-      const n = tpGroupIndices(list).length;
-      if (n > 0) tpOf(list).nGroupes = Math.min(40, n);
+      if (!tp.titre || tp.titre === "Demande de matériel") tp.titre = list.titles[0];
     }
 
     function touchTpFromPanel(list, what) {
       if (!list) return;
       ensureTpTable(list, { fillGroups: false });
       if (what === "title" || what === "all") applyTpMainTitle(list, true);
-      if (what === "groups" || what === "all") syncTpGroupRows(list);
-      if (what === "order" || what === "groups" || what === "all") syncTpOrderRow(list, true);
+      if (what === "order" || what === "groups" || what === "all") {
+        pullTpItemsFromRows(list);
+        writeTpComputed(list);
+      }
     }
 
     function applyTpField(list, field, value) {
@@ -4675,7 +4791,7 @@
     function tpChipHtml(list, field, label, value, placeholder) {
       const empty = !String(value || "").trim();
       const shown = empty ? (placeholder || label) : value;
-      return '<button type="button" class="tp-chip' + (empty ? " is-placeholder" : "") + '" data-tp-field="' + field +
+      return '<button type="button" class="tp-chip tp-chip-' + field + (empty ? " is-placeholder" : "") + '" data-tp-field="' + field +
         '" data-lid="' + list.id + '" aria-haspopup="listbox" aria-label="' + escapeHtml(label) + '">' +
         escapeHtml(shown) + "</button>";
     }
@@ -4684,15 +4800,17 @@
       const tp = tpOf(list);
       const groupeLab = TP_GROUPES[tp.groupes] || tp.groupes;
       let html = '<div class="tp-meta-bar">';
+      html += '<div class="tp-meta-main">';
       html += tpChipHtml(list, "matiere", "Matière", tp.matiere);
       html += tpChipHtml(list, "niveau", "Niveau", tp.niveau);
       html += tpChipHtml(list, "partie", "Partie", tp.partie, "Partie");
-      html += tpChipHtml(list, "groupes", "Type de groupes", groupeLab);
-      html += '<span class="tp-meta-n">× <span class="cell-edit tp-ngroups" contenteditable="true" spellcheck="false" data-lid="' +
-        list.id + '" data-tp-ngroups="1">' + escapeHtml(String(tp.nGroupes)) + "</span> groupes</span>";
-      html += '<button type="button" class="tp-chip tp-chip-mat" data-tp-mat="1" data-lid="' + list.id +
-        '" aria-label="Catalogue matériel">Matériel</button>';
       html += "</div>";
+      html += '<div class="tp-meta-groups">';
+      html += tpChipHtml(list, "groupes", "Type de groupes", groupeLab);
+      html += '<span class="tp-meta-n"><span class="cell-edit tp-ngroups" contenteditable="true" spellcheck="false" data-lid="' +
+        list.id + '" data-tp-ngroups="1">' + escapeHtml(String(tp.nGroupes)) + "</span> " +
+        ((Number(tp.nGroupes) || 0) > 1 ? "groupes" : "groupe") + "</span>";
+      html += "</div></div>";
       return html;
     }
 
@@ -4705,49 +4823,20 @@
       list.keepEmptyRows = true;
       if (!list.orient || list.orient === "auto") list.orient = "paysage";
       ensureAlign(list);
-      if (!list.headers || list.headers.length < 1) {
-        list.headers = ["Poste", "Matériel binôme", "Bureau du prof"];
-        list.rows = [];
-        list.order = [0, 1, 2];
-        list.on = [true, true, true];
-        list.custom = {};
-        if (!list.hidden) list.hidden = {};
-        if (!list.marks) list.marks = {};
-        if (!list.notes) list.notes = {};
-        if (!list.hl) list.hl = {};
-        if (!list.hlText) list.hlText = {};
-        list.colAlignH = { 0: "center", 1: "left", 2: "left" };
-        list.colAlignV = { 1: "top", 2: "top" };
-        list.widths = { 0: 11, 1: 72, 2: 17 };
-        if (!list.rowH) list.rowH = {};
-        list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
+      if (tpLayoutStale(list)) {
+        applyTpSheetFrame(list, { rowsFromItems: true, minRows: TP_SHEET_ROWS });
       } else {
-        if (!Array.isArray(list.on) || list.on.length !== list.headers.length) {
-          list.on = list.headers.map(() => true);
-        }
-        if (!Array.isArray(list.order) || !list.order.length) {
-          list.order = list.headers.map((_, i) => i);
-        }
-        if (!list.widths) list.widths = {};
-        list.headers.forEach((_, i) => {
-          if (!(Number(list.widths[i]) > 0)) {
-            const role = tpColRole(list, i);
-            list.widths[i] = role === "poste" ? 11 : role === "prof" ? 17 : 72;
-          }
+        ensureTpColMeta(list);
+        (list.rows || []).forEach((r) => {
+          if (!Array.isArray(r)) return;
+          while (r.length < list.headers.length) r.push("");
         });
+        if (!list.rows.length) {
+          while (list.rows.length < TP_SHEET_ROWS) list.rows.push(tpBlankRow(list));
+        }
+        writeTpComputed(list);
       }
-      list.rows.forEach((r) => {
-        if (!Array.isArray(r)) return;
-        while (r.length < list.headers.length) r.push("");
-      });
       applyTpMainTitle(list, fill);
-      if (fill) syncTpGroupRows(list);
-      else {
-        const n = tpGroupIndices(list).length;
-        if (n > 0) tp.nGroupes = Math.min(40, n);
-        else syncTpGroupRows(list);
-      }
-      syncTpOrderRow(list, fill);
       return list;
     }
 
@@ -4763,13 +4852,15 @@
       list.blank = false;
       list.orient = "paysage";
       list.tp = hydrateTp(list.tp);
-      if (!list.name || /^Page \d+$/i.test(list.name)) list.name = "Demande de matériel";
+      if (!list.name || /^Page \d+$/i.test(list.name) || foldHeader(list.name) === "demande materiel") {
+        list.name = "Installation TP";
+      }
       ensureTpTable(list, { fillGroups: true });
       return list;
     }
 
     function makeTpList() {
-      return convertToTp(makeBlankList("Demande de matériel"));
+      return convertToTp(makeBlankList("Installation TP"));
     }
 
     function clearTpMode(list) {
@@ -5078,6 +5169,10 @@
       });
       const tw = Number(raw.tableW);
       list.tableW = tw > 0 ? tw : 100;
+      const px = Number(raw.posX);
+      const py = Number(raw.posY);
+      list.posX = Number.isFinite(px) ? Math.round(px * 100) / 100 : 0;
+      list.posY = Number.isFinite(py) ? Math.round(py * 100) / 100 : 0;
       return list;
     }
 
@@ -5814,8 +5909,8 @@
       return '<span class="row-resizer no-print" title="Hauteur des lignes"></span>';
     }
 
-    function cellEditHtml(text, lid, ri, ci, list) {
-      const lock = !canWriteCells();
+    function cellEditHtml(text, lid, ri, ci, list, freeze) {
+      const lock = !canWriteCells() || freeze;
       const extra = list ? fluoTextClass(list, ri, ci) : "";
       return '<span class="cell-edit' + (lock ? " is-locked" : "") + extra + '"' +
         (lock ? "" : ' contenteditable="true"') +
@@ -5877,7 +5972,7 @@
       cols.forEach((i) => {
         kinds[i] = classify(list.headers[i], list.rows.map((r) => r[i] || ""), list.custom[i]);
       });
-      const showNum = state.numbering !== "off";
+      const showNum = state.numbering !== "off" && !isTpList(list);
       const vis = visibleRowIndices(list);
       let html = '<div class="liste-wrap" style="width:' + tableW + '%">';
       html += '<table class="liste' + (state.vlines ? " has-vlines" : "") + (isTpList(list) ? " is-tp" : "") + '" style="font-size:' + clampFontPt(state.fontPt) + 'pt">';
@@ -5900,7 +5995,12 @@
           html += rqThHtml(list);
           return;
         }
-        html += '<th class="' + alignClass(list, "h", col.i).trim() + '" draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '" data-ck="' + col.i + '"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
+        const thCls = [alignClass(list, "h", col.i).trim()];
+        if (isTpList(list)) {
+          const role = tpColRole(list, col.i);
+          if (role) thCls.push("is-tp-" + role);
+        }
+        html += '<th class="' + thCls.filter(Boolean).join(" ") + '" draggable="true" data-lid="' + list.id + '" data-ci="' + col.i + '" data-ck="' + col.i + '"><span class="th-edit" contenteditable="' + (canWriteCells() ? "true" : "false") + '" spellcheck="false" data-lid="' + list.id + '" data-ci="' + col.i + '">' + escapeHtml(list.headers[col.i]) + "</span>";
         if (list.custom[col.i]) {
           html += '<button type="button" class="col-del no-print" data-del-col="' + list.id + ':' + col.i + '" title="Supprimer la colonne" aria-label="Supprimer la colonne">×</button>';
         }
@@ -5913,8 +6013,7 @@
         const stampCls = (state.activeStamp || state.activeFluo) ? " is-stamping" : "";
         const fluoCls = state.activeFluo ? " is-fluoing" : "";
         const rowY = list.rowH && Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 0;
-        const orderRow = isTpList(list) && isTpOrderRow(list, ri);
-        html += '<tr class="' + (stampCls + fluoCls + (orderRow ? " is-tp-order" : "")).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
+        html += '<tr class="' + (stampCls + fluoCls).trim() + '" data-lid="' + list.id + '" data-ri="' + ri + '"' +
           (rowY ? ' style="--row-y:' + rowY + 'em"' : "") + '>';
         let lead = true;
         const handle = () => {
@@ -5948,19 +6047,9 @@
             const role = tpColRole(list, i);
             if (role) cls.push("is-tp-" + role);
           }
-          const orderRow = isTpList(list) && isTpOrderRow(list, ri);
           const role = isTpList(list) ? tpColRole(list, i) : "";
-          let inner;
-          if (orderRow && role === "poste") {
-            inner = '<button type="button" class="tp-mat-open" data-tp-mat="1" data-lid="' + list.id + '" title="Ouvrir le catalogue">' +
-              escapeHtml(row[i] || "Matériel à commander") + "</button>";
-          } else {
-            inner = cellEditHtml(row[i] || "", list.id, ri, i, list);
-            if (orderRow && role === "binome") {
-              inner += '<button type="button" class="tp-mat-open no-print" data-tp-mat="1" data-lid="' + list.id +
-                '" title="Catalogue matériel" aria-label="Catalogue matériel">＋</button>';
-            }
-          }
+          const freeze = role === "classe" || role === "total";
+          const inner = cellEditHtml(row[i] || "", list.id, ri, i, list, freeze);
           html += '<td class="' + cls.join(" ") + fluoClass(list, ri, i) + alignClass(list, ri, i) + '" data-ci="' + i + '" data-ck="' + i + '">' + handle() + inner;
           if (last) html += rowDelHtml(list, ri);
           html += rowResizerHtml() + "</td>";
@@ -6018,8 +6107,7 @@
         tpOf(list).nGroupes = next;
         if (trim) {
           el.textContent = String(next);
-          syncTpGroupRows(list);
-          syncTpOrderRow(list, true);
+          writeTpComputed(list);
         }
         return "tp-n";
       }
@@ -6029,6 +6117,20 @@
         if (!list.rows[ri]) return null;
         list.rows[ri][ci] = v;
         if (trim && el.textContent !== v) el.textContent = v;
+        if (isTpList(list)) {
+          const role = tpColRole(list, ci);
+          if (role === "qty" || role === "prof") {
+            const n = clampTpQty(String(v).replace(",", "."), role === "prof" ? 0 : 1);
+            const shown = role === "qty" && !String(v).trim() ? "" : String(n);
+            list.rows[ri][ci] = shown;
+            if (trim) el.textContent = shown;
+          }
+          if (trim && (role === "item" || role === "qty" || role === "prof")) {
+            pullTpItemsFromRows(list);
+            writeTpComputed(list);
+            return "tp-item";
+          }
+        }
         return "cell";
       }
       return null;
@@ -6041,18 +6143,27 @@
       ).join("") + "</div>";
     }
 
+    function blockPosStyle(list) {
+      const x = Number(list && list.posX) || 0;
+      const y = Number(list && list.posY) || 0;
+      if (!x && !y) return "";
+      return ' style="left:' + (Math.round(x * 100) / 100).toFixed(2) + "mm;top:" + (Math.round(y * 100) / 100).toFixed(2) + 'mm"';
+    }
+
     function blockHtml(list, nOnPage) {
       const title = ((list.titles && list.titles[0]) || "").trim();
       const comments = (list.titles || []).slice(1).map((t) => String(t).trim()).filter(Boolean);
       const editing = list.id === state.activeId;
       const blank = isBlankList(list);
       const tp = isTpList(list);
-      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + (tp ? " is-tp-page" : "") + '" data-lid="' + list.id + '">';
+      const moved = (Number(list.posX) || 0) || (Number(list.posY) || 0);
+      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + (tp ? " is-tp-page" : "") + (moved ? " is-moved" : "") + '" data-lid="' + list.id + '"' + blockPosStyle(list) + '>';
       html += '<button type="button" class="page-sheet-del no-print" data-del-page="' + list.id + '" title="Supprimer cette page" aria-label="Supprimer cette page">×</button>';
+      html += '<button type="button" class="block-move no-print" data-move-block="1" title="Déplacer le tableau sur la feuille" aria-label="Déplacer le tableau sur la feuille"><span aria-hidden="true">⠿</span></button>';
       if (tp || title || comments.length) {
         html += '<div class="list-head">';
         if (title || tp) {
-          const shown = title || "Demande de matériel";
+          const shown = title || TP_TITLE_DEFAULT;
           html += '<h2 class="list-title" contenteditable="true" spellcheck="false" data-lid="' + list.id + '" data-ti="0">' + escapeHtml(shown) + "</h2>";
         }
         if (tp) html += tpMetaBarHtml(list);
@@ -7043,6 +7154,8 @@
           cols: list.headers.length,
           rows: (list.rows || []).length,
           tableW: Number(list.tableW) > 0 ? Number(list.tableW) : 100,
+          posX: Number(list.posX) || 0,
+          posY: Number(list.posY) || 0,
           rowH: rowH,
           alignH: copyAlignMap(list.alignH, ALIGN_H_OK),
           alignV: copyAlignMap(list.alignV, ALIGN_V_OK),
@@ -7170,6 +7283,8 @@
           });
         }
         if (Number(align.tableW) > 0) list.tableW = Number(align.tableW);
+        if (Number.isFinite(Number(align.posX))) list.posX = Number(align.posX);
+        if (Number.isFinite(Number(align.posY))) list.posY = Number(align.posY);
       }
     }
 
@@ -7364,6 +7479,10 @@
       printBtn.disabled = !printable;
       if (dockPrintBtn) dockPrintBtn.disabled = !printable;
       $("saveBtn").disabled = false;
+
+      state.lists.forEach((l) => {
+        if (isTpList(l) && tpLayoutStale(l)) ensureTpTable(l, { fillGroups: true });
+      });
 
       const groups = previewGroups();
       const filled = state.lists.filter((l) => !isBlankList(l) && !isTpList(l) && selectedCols(l).length);
@@ -7830,11 +7949,17 @@
       if (!isTpList(list)) return;
       const label = String(name || "").trim();
       if (!label) return;
-      const tp = tpOf(list);
-      const hit = tp.items.find((it) => it.name.toLowerCase() === label.toLowerCase());
-      if (hit) hit.qty = clampTpQty((Number(hit.qty) || 0) + (qty || 1), 1) || 1;
-      else tp.items.push({ name: label, qty: clampTpQty(qty, 1) || 1, extra: 1 });
-      syncTpOrderRow(list, true);
+      pullTpItemsFromRows(list);
+      const itemI = tpColIndex(list, "item");
+      const qtyI = tpColIndex(list, "qty");
+      const row = (list.rows || []).find((r) => String((r && r[itemI]) || "").toLowerCase() === label.toLowerCase());
+      if (row) {
+        row[qtyI] = String(clampTpQty((Number(row[qtyI]) || 0) + (qty || 1), 1) || 1);
+      } else {
+        placeTpItemOnRow(list, label, clampTpQty(qty, 1) || 1);
+      }
+      pullTpItemsFromRows(list);
+      writeTpComputed(list);
     }
 
     function renderTpMatPicked() {
@@ -7862,8 +7987,11 @@
         del.setAttribute("aria-label", "Retirer " + it.name);
         del.addEventListener("click", () => {
           pushHist();
-          tp.items.splice(idx, 1);
-          syncTpOrderRow(list, true);
+          const itemI = tpColIndex(list, "item");
+          const ri = (list.rows || []).findIndex((r) => String((r && r[itemI]) || "") === it.name);
+          if (ri >= 0) list.rows[ri] = tpBlankRow(list);
+          pullTpItemsFromRows(list);
+          writeTpComputed(list);
           renderTpMatPicked();
           renderPreview();
         });
@@ -8492,6 +8620,8 @@
           widths: l.widths || {},
           rowH: l.rowH || {},
           tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
+          posX: Number(l.posX) || 0,
+          posY: Number(l.posY) || 0,
           sample: Boolean(l.sample),
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
           keepEmptyRows: Boolean(l.keepEmptyRows),
@@ -9059,6 +9189,115 @@
         document.addEventListener("pointercancel", stop);
       });
     })();
+    (function bindBlockMovePointer() {
+      const sheets = $("sheets");
+      let drag = null;
+      const mmPerPx = (sheet) => {
+        const pageW = sheet.classList.contains("is-paysage") ? 297 : 210;
+        return pageW / (sheet.offsetWidth || 1);
+      };
+      const applyPos = (block, x, y) => {
+        const nx = Math.round(x * 100) / 100;
+        const ny = Math.round(y * 100) / 100;
+        block.style.left = nx.toFixed(2) + "mm";
+        block.style.top = ny.toFixed(2) + "mm";
+        block.classList.toggle("is-moved", Math.abs(nx) > 0.05 || Math.abs(ny) > 0.05);
+      };
+      const clampPos = (d, x, y) => {
+        applyPos(d.block, x, y);
+        const sheet = d.sheet;
+        const scale = stageScale() || 1;
+        const sheetRect = sheet.getBoundingClientRect();
+        const cs = getComputedStyle(sheet);
+        const inner = {
+          l: sheetRect.left + (parseFloat(cs.paddingLeft) || 0) * scale,
+          t: sheetRect.top + (parseFloat(cs.paddingTop) || 0) * scale,
+          r: sheetRect.right - (parseFloat(cs.paddingRight) || 0) * scale,
+          b: sheetRect.bottom - (parseFloat(cs.paddingBottom) || 0) * scale,
+        };
+        const br = d.block.getBoundingClientRect();
+        let dx = 0;
+        let dy = 0;
+        if (br.width > inner.r - inner.l) dx = inner.l - br.left;
+        else {
+          if (br.left < inner.l) dx = inner.l - br.left;
+          if (br.right > inner.r) dx = inner.r - br.right;
+        }
+        if (br.height > inner.b - inner.t) dy = inner.t - br.top;
+        else {
+          if (br.top < inner.t) dy = inner.t - br.top;
+          if (br.bottom > inner.b) dy = inner.b - br.bottom;
+        }
+        if (dx || dy) {
+          const k = mmPerPx(sheet);
+          x += dx / scale * k;
+          y += dy / scale * k;
+        }
+        return { x: x, y: y };
+      };
+      const onMove = (e) => {
+        if (!drag) return;
+        const scale = stageScale() || 1;
+        const k = mmPerPx(drag.sheet);
+        let x = drag.x0 + (e.clientX - drag.cx0) / scale * k;
+        let y = drag.y0 + (e.clientY - drag.cy0) / scale * k;
+        const next = clampPos(drag, x, y);
+        drag.x = next.x;
+        drag.y = next.y;
+        applyPos(drag.block, next.x, next.y);
+      };
+      const stop = () => {
+        if (!drag) return;
+        const d = drag;
+        drag = null;
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", stop);
+        document.removeEventListener("pointercancel", stop);
+        document.body.classList.remove("is-block-moving");
+        d.block.classList.remove("is-moving");
+        const x = Math.abs(d.x) < 0.4 ? 0 : Math.round(d.x * 100) / 100;
+        const y = Math.abs(d.y) < 0.4 ? 0 : Math.round(d.y * 100) / 100;
+        if (Math.abs(x - d.x0) < 0.15 && Math.abs(y - d.y0) < 0.15) {
+          applyPos(d.block, d.x0, d.y0);
+          discardLastHist();
+          return;
+        }
+        d.list.posX = x;
+        d.list.posY = y;
+        applyPos(d.block, x, y);
+        markSheetOverflow();
+      };
+      sheets.addEventListener("pointerdown", (e) => {
+        const handle = e.target.closest("[data-move-block], .block-move");
+        if (!handle) return;
+        const block = handle.closest(".list-block[data-lid]");
+        if (!block) return;
+        const sheet = block.closest(".sheet");
+        const list = state.lists.find((l) => String(l.id) === String(block.dataset.lid));
+        if (!sheet || !list) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (list.id !== state.activeId) setActiveList(list.id, { scroll: false });
+        pushHist();
+        drag = {
+          block: block,
+          sheet: sheet,
+          list: list,
+          x0: Number(list.posX) || 0,
+          y0: Number(list.posY) || 0,
+          x: Number(list.posX) || 0,
+          y: Number(list.posY) || 0,
+          cx0: e.clientX,
+          cy0: e.clientY,
+        };
+        block.classList.add("is-moving");
+        document.body.classList.add("is-block-moving");
+        try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", stop);
+        document.addEventListener("pointercancel", stop);
+      });
+    })();
     (function bindZonePointer() {
       const sheets = $("sheets");
       const rectEl = $("selRect");
@@ -9066,7 +9305,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption, .tp-meta-bar, .tp-chip, .tp-mat-open, .tp-choice-menu, [data-tp-mat], [data-tp-field]");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption, .block-move, .tp-meta-bar, .tp-chip, .tp-mat-open, .tp-choice-menu, [data-tp-mat], [data-tp-field], [data-move-block]");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -9293,7 +9532,7 @@
       const kind = applyPreviewEdit(e.target, true);
       if (kind === "header") renderCols();
       if (kind === "title") renderTitles();
-      if (kind === "tp-n") renderPreview();
+      if (kind === "tp-n" || kind === "tp-item") renderPreview();
     });
     $("sheets").addEventListener("keydown", (e) => {
       if (!e.target.isContentEditable) return;
@@ -9426,6 +9665,7 @@
         e.stopPropagation();
         return;
       }
+      if (e.target.closest(".block-move, [data-move-block]")) return;
       if (e.target.closest("[data-tp-mat], .tp-chip, .tp-meta-bar")) {
         const block = e.target.closest(".list-block[data-lid]");
         if (block) {
@@ -9523,22 +9763,37 @@
     });
 
     $("sheets").addEventListener("dblclick", (e) => {
-      if (!state.activeFluo) return;
-      if (e.target.closest(".row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del, th")) return;
-      const hit = fluoHit(e);
-      if (!hit) return;
+      if (state.activeFluo) {
+        if (e.target.closest(".row-handle, .row-resizer, .table-frame-h, .row-del, .col-resizer, .col-del, th, .block-move")) return;
+        const hit = fluoHit(e);
+        if (!hit) return;
+        e.preventDefault();
+        if (fluoClickTimer) {
+          clearTimeout(fluoClickTimer);
+          fluoClickTimer = null;
+        }
+        pushHist();
+        if (e.target.closest(".cell-edit, .rq-note")) {
+          applyFluoText(hit.list, hit.ri, hit.ci, state.activeFluo, true);
+        } else {
+          applyFluo(hit.list, hit.ri, hit.ci, state.activeFluo, false);
+        }
+        renderPreview();
+        return;
+      }
+      const block = e.target.closest(".list-block.is-tp-page");
+      if (!block) return;
+      if (e.target.closest(".tp-chip, .tp-meta-bar, .list-title, .row-handle, .row-resizer, .col-resizer, .table-frame-h, .row-del, .col-del, .page-sheet-del, .block-move")) return;
+      const list = state.lists.find((l) => String(l.id) === String(block.dataset.lid));
+      if (!list || !isTpList(list)) return;
+      const cell = e.target.closest("td[data-ci], th[data-ci]");
+      const ci = cell ? Number(cell.dataset.ci) : tpColIndex(list, "item");
+      if (!Number.isInteger(ci) || tpColRole(list, ci) !== "item") return;
       e.preventDefault();
-      if (fluoClickTimer) {
-        clearTimeout(fluoClickTimer);
-        fluoClickTimer = null;
-      }
-      pushHist();
-      if (e.target.closest(".cell-edit, .rq-note")) {
-        applyFluoText(hit.list, hit.ri, hit.ci, state.activeFluo, true);
-      } else {
-        applyFluo(hit.list, hit.ri, hit.ci, state.activeFluo, false);
-      }
-      renderPreview();
+      if (list.id !== state.activeId) setActiveList(list.id, { scroll: false });
+      const tr = e.target.closest("tr[data-ri]");
+      tpMatTarget = { lid: list.id, ri: tr ? Number(tr.dataset.ri) : -1 };
+      openTpMatModal();
     });
 
     $("allOn").addEventListener("click", () => {
@@ -9821,7 +10076,7 @@
           renderAll();
           if (isPhoneLayout()) showPreview();
           revealActivePage();
-          announce("Mode TP : demande de matériel");
+          announce("Mode TP : installation en salle");
           return;
         }
         activateListePages();
