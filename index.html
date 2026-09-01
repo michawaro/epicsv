@@ -2266,9 +2266,11 @@
       font-weight: 800;
       color: var(--d-title, var(--teal-deep));
     }
+    .list-block.is-tp-page td.is-tp-ngroups,
     .list-block.is-tp-page td.is-tp-salles {
       border-left: 0.45pt solid var(--d-rule, var(--rule));
     }
+    .list-block.is-tp-page td.is-tp-label.is-tp-ngroups,
     .list-block.is-tp-page td.is-tp-label.is-tp-salles,
     .list-block.is-tp-page .liste.has-vlines td.is-tp-label {
       border-left-color: var(--d-head-rule, rgba(255, 255, 255, 0.78));
@@ -2314,6 +2316,15 @@
     .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-dates,
     .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-dates,
     .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-dates {
+      border-left: var(--tp-inner);
+      border-left-color: #111;
+    }
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-ngroups,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-ngroups,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-ngroups,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-salles,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-salles,
+    .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-salles {
       border-left: var(--tp-inner);
       border-left-color: #111;
     }
@@ -2911,7 +2922,9 @@
     .list-block.is-tp-page .liste tbody tr.is-tp-band-order td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
       background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff));
     }
-    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]),
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
+      background: var(--d-cell-a, #fff);
+    }
     .list-block.is-tp-page .liste tbody tr.is-tp-band-order td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
       background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff));
     }
@@ -3647,7 +3660,9 @@
       .list-block.is-tp-page tr.is-tp-band-order td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
         background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff)) !important;
       }
-      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]),
+      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
+        background: var(--d-cell-a, #fff) !important;
+      }
       .list-block.is-tp-page tr.is-tp-band-order td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
         background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff)) !important;
       }
@@ -3706,6 +3721,14 @@
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-dates,
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-dates,
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-dates {
+        border-left: 1.65pt solid #111 !important;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-ngroups,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-ngroups,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-ngroups,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-share td.is-tp-salles,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-prof td.is-tp-salles,
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-band-order td.is-tp-salles {
         border-left: 1.65pt solid #111 !important;
       }
       .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
@@ -5664,12 +5687,35 @@
       Object.keys(next).forEach((k) => { bag[k] = next[k]; });
     }
 
+    const TP_LABEL_NBGROUPES = "Nb groupes";
+
     function tpDefaultHeaders() {
-      return ["Section", "Matériel", "Dates", "Salles"];
+      return ["Section", "Matériel", "Dates", TP_LABEL_NBGROUPES, "Salles"];
     }
 
     function isTpForm(list) {
-      return Boolean(isTpList(list) && list.headers && list.headers.length === 4);
+      return Boolean(isTpList(list) && list.headers && (list.headers.length === 4 || list.headers.length === 5));
+    }
+
+    function migrateTpFormNgroups(list) {
+      if (!list || !isTpList(list) || !list.headers || list.headers.length !== 4) return false;
+      insertColAt(list, 3);
+      list.headers[3] = TP_LABEL_NBGROUPES;
+      if (list.custom) delete list.custom[3];
+      const b = tpFormBands(list);
+      if (b.prof >= 0 && list.rows[b.prof]) list.rows[b.prof][3] = TP_LABEL_NBGROUPES;
+      (list.merges || []).forEach((m) => {
+        if (m.r < 3 && m.c === 2 && m.cs === 2) m.cs = 3;
+      });
+      if (list.widths && !(Number(list.widths[3]) > 0)) {
+        const wDates = Number(list.widths[2]) || 8;
+        const wSalles = Number(list.widths[4]) || 8;
+        const third = Math.max(6, Math.round((wDates + wSalles) / 3 * 100) / 100);
+        list.widths[2] = third;
+        list.widths[3] = third;
+        list.widths[4] = third;
+      }
+      return true;
     }
 
     function hasTpCustomSize(list) {
@@ -5893,7 +5939,9 @@
         if (i === 0) return "section";
         if (i === 1) return "item";
         if (i === 2) return "dates";
-        if (i === 3) return "salles";
+        if (i === 3 && list.headers.length >= 5) return "ngroups";
+        if (i === 3 && list.headers.length === 4) return "salles";
+        if (i === 4) return "salles";
         return "item";
       }
       const h = foldHeader((list && list.headers && list.headers[i]) || "");
@@ -5923,7 +5971,8 @@
         if (role === "section") return 0;
         if (role === "item" || role === "poste") return 1;
         if (role === "qty" || role === "total" || role === "dates") return 2;
-        if (role === "salles") return 3;
+        if (role === "ngroups") return list.headers.length >= 5 ? 3 : 2;
+        if (role === "salles") return list.headers.length >= 5 ? 4 : 3;
       }
       for (let i = 0; i < list.headers.length; i++) {
         if (tpColRole(list, i) === role) return i;
@@ -5964,7 +6013,8 @@
       if (b.share >= 0 && ri === b.share && ci === 2) return "times";
       if (b.prof >= 0 && ri === b.prof && ci === 0) return "prof";
       if (b.prof >= 0 && ri === b.prof && ci === 2) return "dates";
-      if (b.prof >= 0 && ri === b.prof && ci === 3) return "salles";
+      if (b.prof >= 0 && ri === b.prof && ci === 3 && list.headers.length >= 5) return "nbgroupes";
+      if (b.prof >= 0 && ri === b.prof && ci === (list.headers.length >= 5 ? 4 : 3)) return "salles";
       if (b.order >= 0 && ri === b.order && ci === 0) return "order";
       return "";
     }
@@ -6012,7 +6062,7 @@
         return cellEditHtml(text, list.id, ri, ci, list, freeze);
       }
       if (kind === "share" || kind === "prof" || kind === "dates" || kind === "salles"
-        || kind === "order" || kind === "materiel" || kind === "total" || kind === "times") {
+        || kind === "nbgroupes" || kind === "order" || kind === "materiel" || kind === "total" || kind === "times") {
         return '<span class="tp-struct"><span class="tp-struct-lab">' +
           cellEditHtml(text, list.id, ri, ci, list, freeze) + "</span></span>";
       }
@@ -6055,7 +6105,7 @@
     }
 
     function tpLayoutStale(list) {
-      if (!list || !list.headers || list.headers.length !== 4) return true;
+      if (!list || !list.headers || list.headers.length !== 5) return true;
       const rows = list.rows || [];
       if (rows.length < 3 + TP_SHARE_SLOTS + TP_PROF_SLOTS + TP_ORDER_SLOTS - 4) return true;
       if (!rows.some((row) => isTpShareSection((row && row[0]) || ""))) return true;
@@ -6150,15 +6200,15 @@
       const keepH = Boolean(opts && opts.keepHeights) || hasTpCustomSize(list);
       if (!keepW) {
         list.tableW = 100;
-        list.widths = { 0: 15, 1: 65, 2: 10, 3: 10 };
+        list.widths = { 0: 15, 1: 61, 2: 8, 3: 8, 4: 8 };
       } else {
         list.tableW = Number(list.tableW) > 0 ? Number(list.tableW) : 100;
       }
       if (!list.colAlignH || !Object.keys(list.colAlignH).length) {
-        list.colAlignH = { 0: "center", 1: "left", 2: "center", 3: "center" };
+        list.colAlignH = { 0: "center", 1: "left", 2: "center", 3: "center", 4: "center" };
       }
       if (!list.colAlignV || !Object.keys(list.colAlignV).length) {
-        list.colAlignV = { 0: "middle", 1: "middle", 2: "middle", 3: "middle" };
+        list.colAlignV = { 0: "middle", 1: "middle", 2: "middle", 3: "middle", 4: "middle" };
       }
       if (!keepH) {
         list.rowH = {};
@@ -6217,10 +6267,10 @@
       const o = p + profN;
       return [
         { r: 0, c: 1, rs: 2, cs: 1 },
-        { r: 0, c: 2, rs: 1, cs: 2 },
-        { r: 1, c: 2, rs: 1, cs: 2 },
+        { r: 0, c: 2, rs: 1, cs: 3 },
+        { r: 1, c: 2, rs: 1, cs: 3 },
         { r: 2, c: 0, rs: 1, cs: 2 },
-        { r: 2, c: 2, rs: 1, cs: 2 },
+        { r: 2, c: 2, rs: 1, cs: 3 },
         { r: s, c: 0, rs: shareN, cs: 1 },
         { r: p, c: 0, rs: profN, cs: 1 },
         { r: p, c: 1, rs: profN, cs: 1 },
@@ -6231,8 +6281,8 @@
 
     function seedTpFormAlign(list) {
       ensureAlign(list);
-      list.colAlignH = Object.assign({ 0: "center", 1: "left", 2: "center", 3: "center" }, list.colAlignH || {});
-      list.colAlignV = Object.assign({ 0: "middle", 1: "middle", 2: "middle", 3: "middle" }, list.colAlignV || {});
+      list.colAlignH = Object.assign({ 0: "center", 1: "left", 2: "center", 3: "center", 4: "center" }, list.colAlignH || {});
+      list.colAlignV = Object.assign({ 0: "middle", 1: "middle", 2: "middle", 3: "middle", 4: "middle" }, list.colAlignV || {});
       setCellAlign(list, 0, 1, "h", "center");
       setCellAlign(list, 0, 1, "v", "middle");
       setCellAlign(list, 2, 0, "h", "center");
@@ -6249,6 +6299,7 @@
         setCellAlign(list, b.prof, 0, "v", "middle");
         setCellAlign(list, b.prof, 2, "h", "center");
         setCellAlign(list, b.prof, 3, "h", "center");
+        setCellAlign(list, b.prof, 4, "h", "center");
       }
       if (b.order >= 0) {
         setCellAlign(list, b.order, 0, "h", "center");
@@ -6268,23 +6319,25 @@
       const groupeLab = tpGroupeLabel(tp);
       const titre = ((list.titles && list.titles[0]) || tp.titre || TP_TITLE_DEFAULT).trim() || TP_TITLE_DEFAULT;
       const rows = [];
-      const cell = (a, b, c, d) => {
+      const cell = (a, b, c, d, e) => {
         const row = tpBlankRow(list);
         row[0] = a == null ? "" : String(a);
         row[1] = b == null ? "" : String(b);
         row[2] = c == null ? "" : String(c);
         row[3] = d == null ? "" : String(d);
+        row[4] = e == null ? "" : String(e);
         return row;
       };
-      rows.push(cell("Groupes de " + groupeLab, titre, tp.niveau || "Niveau", ""));
-      rows.push(cell(String(n || ""), "", tp.partie || "Partie", ""));
-      rows.push(cell("Matériel", "", "Total", ""));
+      rows.push(cell("Groupes de " + groupeLab, titre, tp.niveau || "Niveau", "", ""));
+      rows.push(cell(String(n || ""), "", tp.partie || "Partie", "", ""));
+      rows.push(cell("Matériel", "", "Total", "", ""));
       for (let i = 0; i < shareN; i++) {
         const it = shareItems[i];
         rows.push(cell(
           i === 0 ? TP_LABEL_SHARE : "",
           it ? it.name : "-",
           i === 0 ? (n ? ("× " + n) : "× nb de groupe") : "",
+          "",
           ""
         ));
       }
@@ -6293,11 +6346,12 @@
           i === 0 ? TP_LABEL_PROF : "",
           i === 0 ? profItems.map((it) => it.name).join("\n") : "",
           i === 0 ? "Dates" : "",
+          i === 0 ? TP_LABEL_NBGROUPES : "",
           i === 0 ? "Salles" : ""
         ));
       }
       for (let i = 0; i < orderN; i++) {
-        rows.push(cell(i === 0 ? TP_LABEL_ORDER : "", "", "", ""));
+        rows.push(cell(i === 0 ? TP_LABEL_ORDER : "", "", "", "", ""));
       }
       list.rows = rows;
       list.merges = tpFormMerges(shareN, profN, orderN);
@@ -6307,7 +6361,7 @@
       const t = String(v || "").trim();
       if (!t) return false;
       if (t === TP_LABEL_PROF || t === TP_LABEL_SHARE || t === TP_LABEL_ORDER) return true;
-      if (t === "Dates" || t === "Salles" || t === "Matériel" || t === "Total") return true;
+      if (t === "Dates" || t === "Salles" || t === TP_LABEL_NBGROUPES || t === "Matériel" || t === "Total") return true;
       if (t === "× nb de groupe" || /^× /.test(t)) return true;
       return isTpProfSection(t) || isTpShareSection(t) || isTpOrderLabel(t);
     }
@@ -6328,9 +6382,14 @@
         const cs = Math.max(1, Number(m && m.cs) || 1);
         if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || c < 0) return false;
         if (r >= bodyStart && c >= 2 && cs > 1) return false;
-        if (r >= bodyStart && (c === 2 || c === 3) && rs > 1) return false;
+        if (r >= bodyStart && (c === 2 || c === 3 || c === 4) && rs > 1) return false;
         return rs > 1 || cs > 1;
       });
+      if (list.headers.length >= 5) {
+        list.merges.forEach((m) => {
+          if (m.r < bodyStart && m.c === 2 && m.cs === 2) m.cs = 3;
+        });
+      }
     }
 
     function writeTpFormMeta(list) {
@@ -6412,8 +6471,8 @@
     function applyTpSheetFrame(list, opts) {
       const fromItems = Boolean(opts && opts.rowsFromItems);
       list.headers = tpDefaultHeaders();
-      list.order = [0, 1, 2, 3];
-      list.on = [true, true, true, true];
+      list.order = [0, 1, 2, 3, 4];
+      list.on = [true, true, true, true, true];
       list.custom = {};
       if (!list.hidden) list.hidden = {};
       if (!list.marks) list.marks = {};
@@ -6448,7 +6507,7 @@
         list.order = list.headers.map((_, i) => i);
       }
       if (!list.widths) list.widths = {};
-      const fallback = isTpForm(list) ? [15, 65, 10, 10] : null;
+      const fallback = isTpForm(list) ? [15, 61, 8, 8, 8] : null;
       list.headers.forEach((_, i) => {
         if (Number(list.widths[i]) > 0) return;
         if (fallback) list.widths[i] = fallback[i] || 15;
@@ -6649,6 +6708,7 @@
       list.keepEmptyRows = true;
       if (!list.orient || list.orient === "auto") list.orient = "paysage";
       ensureAlign(list);
+      migrateTpFormNgroups(list);
       if (tpLayoutStale(list)) {
         if ((list.rows || []).length) pullTpItemsFromRows(list);
         applyTpSheetFrame(list, { rowsFromItems: true, keepPos: !fill });
@@ -10535,7 +10595,7 @@
       buildTablePicker();
       $("createTableModal").hidden = false;
       syncCreateTableModalMode();
-      if (createAsTp) syncCreateSizeFields(4, 22);
+      if (createAsTp) syncCreateSizeFields(5, 22);
       else syncCreateSizeFields(EMPTY_COLS_DEF, EMPTY_ROWS_DEF);
       tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
     }
