@@ -389,6 +389,23 @@
       grid-template-columns: minmax(0, 1fr);
       gap: 6px;
     }
+    .files-group-label {
+      margin: 0 0 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .files-export {
+      padding: 10px 10px 12px;
+      border-radius: 18px;
+      background: rgba(212, 236, 79, 0.2);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+    }
+    .files-export .files-group-label {
+      color: #f7ffc4;
+    }
 
     .block h2 {
       margin: 0 0 10px;
@@ -1291,16 +1308,28 @@
     }
     .import-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 0.78fr);
       gap: 6px;
+    }
+    .import-row .btn {
+      white-space: normal;
+      line-height: 1.15;
     }
     .btn-print {
       background: linear-gradient(180deg, #e6f66f, #d4ec4f);
       color: #2b3d12;
       box-shadow: 0 8px 20px rgba(43, 61, 18, 0.14);
     }
+    .files-export .btn-print {
+      background: linear-gradient(180deg, #f4fb7a, #c9e218);
+      color: #1a2808;
+      border: 1.5px solid rgba(43, 61, 18, 0.22);
+      box-shadow: 0 8px 22px rgba(32, 48, 6, 0.28);
+    }
     .btn-print:disabled,
-    .btn-ghost:disabled {
+    .btn-ghost:disabled,
+    .btn-save:disabled,
+    .btn-create:disabled {
       opacity: 0.4;
       cursor: not-allowed;
       box-shadow: none;
@@ -1310,6 +1339,21 @@
       color: #fff;
       border: 1.5px solid rgba(255, 255, 255, 0.5);
       box-shadow: 0 6px 18px rgba(0, 70, 66, 0.1);
+    }
+    .btn-create {
+      background: rgba(255, 255, 255, 0.24);
+      color: #fff;
+      border: 1.5px solid rgba(255, 255, 255, 0.72);
+      box-shadow: 0 6px 18px rgba(0, 70, 66, 0.12);
+    }
+    .btn-save {
+      background: #fff;
+      color: var(--teal-deep);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 8px 20px rgba(0, 40, 38, 0.2);
+    }
+    .btn-save:hover:not(:disabled) {
+      background: #f3fffc;
     }
     .err {
       display: none;
@@ -1374,6 +1418,58 @@
       margin-bottom: 16px;
     }
     .paste-area:focus {
+      outline: 2px solid var(--teal-deep);
+    }
+    .size-picker {
+      display: grid;
+      grid-template-columns: repeat(8, 24px);
+      grid-template-rows: repeat(10, 18px);
+      gap: 3px;
+      width: max-content;
+      margin: 4px auto 8px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .size-picker-cell {
+      border-radius: 3px;
+      background: #e7f6f4;
+      box-shadow: inset 0 0 0 1px rgba(12, 125, 120, 0.22);
+      cursor: pointer;
+    }
+    .size-picker-cell.is-on {
+      background: #12c5b8;
+      box-shadow: inset 0 0 0 1px #0c7d78;
+    }
+    .size-picker-label {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--teal-deep);
+      margin: 0 0 14px;
+      letter-spacing: 0.04em;
+    }
+    .create-size-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .create-size-fields label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal-deep);
+    }
+    .create-size-fields .field {
+      text-align: center;
+      border-radius: 12px;
+      background: #f3fbfa;
+      color: var(--ink);
+      border: 1px solid rgba(14, 143, 140, 0.22);
+    }
+    .create-size-fields .field:focus {
       outline: 2px solid var(--teal-deep);
     }
 
@@ -2775,27 +2871,39 @@
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="menu-fold" id="filesFold">
-      <div class="toolbar">
-        <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
-        <button class="btn btn-ghost" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
+      <div class="files-group">
+        <p class="files-group-label">Créer</p>
+        <div class="import-row">
+          <button class="btn btn-print btn-compact" id="pasteBtn" type="button">Coller le CSV</button>
+          <button class="btn btn-create btn-compact" id="createTableBtn" type="button">Créer un tableau</button>
+          <button class="btn btn-ghost btn-compact" id="sampleBtn" type="button">Exemple</button>
+        </div>
       </div>
-      <div class="toolbar">
-        <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
-        <button class="btn btn-ghost btn-style" id="styleBtn" type="button" title="Enregistrer ou charger un style de mise en page (sans les élèves)" aria-label="Style enregistrer/charger">Style enregistrer/charger</button>
+      <div class="files-group">
+        <p class="files-group-label">Déposer</p>
+        <div class="add-replace-row" id="addReplaceRow">
+        <label class="drop" id="drop" for="file">
+          <input type="file" id="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Fichier à importer" />
+          <div class="drop-title" id="dropTitle">Déposer un fichier</div>
+          <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
+        </label>
+        </div>
       </div>
-      <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
-      <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
-
-      <div class="add-replace-row" id="addReplaceRow">
-      <label class="drop" id="drop" for="file">
-        <input type="file" id="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Fichier à importer" />
-        <div class="drop-title" id="dropTitle">Déposer un fichier</div>
-        <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
-      </label>
+      <div class="files-group">
+        <p class="files-group-label">Ouvrir</p>
+        <div class="toolbar">
+          <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
+          <button class="btn btn-ghost btn-style" id="styleBtn" type="button" title="Enregistrer ou charger un style de mise en page (sans les élèves)" aria-label="Style enregistrer/charger">Style enregistrer/charger</button>
+        </div>
+        <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
+        <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
       </div>
-      <div class="import-row">
-        <button class="btn btn-print btn-compact" id="pasteBtn" type="button">Coller le CSV</button>
-        <button class="btn btn-ghost btn-compact" id="sampleBtn" type="button">Exemple</button>
+      <div class="files-group files-export">
+        <p class="files-group-label">Exporter</p>
+        <div class="toolbar">
+          <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
+          <button class="btn btn-save" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
+        </div>
       </div>
 
       <div class="err" id="err" role="alert" aria-live="assertive"></div>
@@ -3170,6 +3278,27 @@
     </div>
   </div>
 
+  <div class="modal-back no-print" id="createTableModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="createTableTitle">
+      <h3 id="createTableTitle">Créer un tableau</h3>
+      <p>Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.</p>
+      <div class="size-picker" id="tablePicker" role="grid" aria-label="Taille du tableau"></div>
+      <div class="size-picker-label" id="tablePickerLabel" aria-live="polite">4 × 8</div>
+      <div class="create-size-fields">
+        <label>Colonnes
+          <input class="field" id="createCols" type="number" min="1" max="40" value="4" inputmode="numeric" aria-label="Nombre de colonnes" />
+        </label>
+        <label>Lignes
+          <input class="field" id="createRows" type="number" min="1" max="80" value="8" inputmode="numeric" aria-label="Nombre de lignes" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-print" id="createTableOk" type="button">OK</button>
+        <button class="btn btn-ghost" id="createTableCancel" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const MARGES = { etroites: 8, moyennes: 14, larges: 22 };
     const MAX_PER_PAGE = 4;
@@ -3183,6 +3312,12 @@
       { id: "jaune", color: "#ffe9a3", label: "Fluo jaune" },
       { id: "rouge", color: "#f5c4c0", label: "Fluo rouge" },
     ];
+    const EMPTY_COLS_MAX = 40;
+    const EMPTY_ROWS_MAX = 80;
+    const EMPTY_PICK_COLS = 8;
+    const EMPTY_PICK_ROWS = 10;
+    const EMPTY_COLS_DEF = 4;
+    const EMPTY_ROWS_DEF = 8;
 
     const SAMPLES = [
       {
@@ -3279,6 +3414,7 @@
     let histBusy = false;
     let dirty = false;
     let pasteDialogRestore = null;
+    let tableDlgRestore = null;
     let sizeDrag = null;
     let dragRow = null;
     let fluoClickTimer = null;
@@ -3832,6 +3968,7 @@
         tableW: 100,
         sample: false,
         blank: false,
+        keepEmptyRows: false,
         orient: "auto",
       };
     }
@@ -3882,8 +4019,8 @@
       return { headers, rows };
     }
 
-    function fillListFromGrid(list, name, grid) {
-      const { headers, rows } = gridFromParsed(name, grid);
+    function applyTableToList(list, name, headers, rows, opts) {
+      const allOn = Boolean(opts && opts.allOn);
       const wasBlank = isBlankList(list);
       const keepName = wasBlank && list.name && !/^Page \d+$/i.test(list.name);
       const keepTitles = wasBlank && (list.titles || []).some((t) => String(t).trim());
@@ -3892,7 +4029,7 @@
       list.headers = headers;
       list.rows = rows;
       list.order = headers.map((_, i) => i);
-      list.on = headers.map((_, i) => !isEmptyColumn(rows.map((r) => r[i])));
+      list.on = headers.map((_, i) => allOn || !isEmptyColumn(rows.map((r) => r[i])));
       list.custom = {};
       list.hidden = {};
       list.marks = {};
@@ -3908,10 +4045,16 @@
       list.tableW = 100;
       list.blank = false;
       list.sample = false;
+      list.keepEmptyRows = Boolean(opts && opts.keepEmptyRows);
       applySharedCols(list);
       if (state.showNotes) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
       return list;
+    }
+
+    function fillListFromGrid(list, name, grid) {
+      const { headers, rows } = gridFromParsed(name, grid);
+      return applyTableToList(list, name, headers, rows);
     }
 
     function addListFromGrid(name, grid) {
@@ -3922,6 +4065,72 @@
       state.lists.push(list);
       state.activeId = list.id;
       return list;
+    }
+
+    function clampEmptyCols(n) {
+      const v = Math.round(Number(n));
+      if (!Number.isFinite(v) || v < 1) return EMPTY_COLS_DEF;
+      return Math.max(1, Math.min(EMPTY_COLS_MAX, v));
+    }
+
+    function clampEmptyRows(n) {
+      const v = Math.round(Number(n));
+      if (!Number.isFinite(v) || v < 1) return EMPTY_ROWS_DEF;
+      return Math.max(1, Math.min(EMPTY_ROWS_MAX, v));
+    }
+
+    function emptyTableSpec(nCols, nRows) {
+      const cols = clampEmptyCols(nCols);
+      const rowsN = clampEmptyRows(nRows);
+      const headers = Array.from({ length: cols }, () => "");
+      const rows = Array.from({ length: rowsN }, () => Array.from({ length: cols }, () => ""));
+      return { headers, rows };
+    }
+
+    function nextTableName() {
+      let n = 1;
+      const used = new Set(state.lists.map((l) => l.name));
+      while (used.has(n === 1 ? "Tableau" : "Tableau " + n)) n++;
+      return n === 1 ? "Tableau" : "Tableau " + n;
+    }
+
+    function addEmptyTable(nCols, nRows) {
+      const { headers, rows } = emptyTableSpec(nCols, nRows);
+      const list = makeList(nextTableName(), headers, rows);
+      list.on = headers.map(() => true);
+      list.keepEmptyRows = true;
+      list.orient = defaultListOrient();
+      applySharedCols(list);
+      if (state.showNotes) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
+      if (showPastilles()) ensureMarksOrder(list);
+      state.lists.push(list);
+      state.activeId = list.id;
+      return list;
+    }
+
+    function createEmptyTable(nCols, nRows) {
+      const cols = clampEmptyCols(nCols);
+      const rows = clampEmptyRows(nRows);
+      pushHist();
+      if (state.lists.length && state.lists.every((l) => l.sample)) {
+        state.lists = [];
+        state.activeId = null;
+        state.selectedIds = [];
+        state.combineAsked = false;
+      }
+      const active = activeList();
+      if (!active) addEmptyTable(cols, rows);
+      else if (isBlankList(active)) {
+        const spec = emptyTableSpec(cols, rows);
+        applyTableToList(active, nextTableName(), spec.headers, spec.rows, { allOn: true, keepEmptyRows: true });
+      } else addEmptyTable(cols, rows);
+      state.selectedIds = state.activeId != null ? [state.activeId] : [];
+      showError("");
+      dirty = true;
+      renderAll();
+      if (isPhoneLayout()) showPreview();
+      revealActivePage();
+      announce("Tableau " + cols + " × " + rows + " créé.");
     }
 
     function fillActiveFromGrid(name, grid) {
@@ -4047,6 +4256,7 @@
       });
       if (raw.sample) list.sample = true;
       list.blank = Boolean(raw.blank) || (!headers.length && !rows.length);
+      list.keepEmptyRows = Boolean(raw.keepEmptyRows);
       list.orient = normalizeOrient(raw.orient) || normalizeOrient(state.orient) || "auto";
       list.rowH = {};
       Object.keys(raw.rowH || {}).forEach((k) => {
@@ -4476,8 +4686,10 @@
       const out = [];
       list.rows.forEach((row, ri) => {
         if (list.hidden[ri]) return;
-        const dataCols = cols.filter((i) => !list.custom[i]);
-        if (dataCols.length && dataCols.every((i) => !row[i])) return;
+        if (!list.keepEmptyRows) {
+          const dataCols = cols.filter((i) => !list.custom[i]);
+          if (dataCols.length && dataCols.every((i) => !row[i])) return;
+        }
         out.push(ri);
       });
       return out;
@@ -6810,6 +7022,68 @@
       $("pasteArea").value = "";
     }
 
+    function paintTablePicker(cols, rows) {
+      const c = clampEmptyCols(cols);
+      const r = clampEmptyRows(rows);
+      $("tablePicker").querySelectorAll(".size-picker-cell").forEach((cell) => {
+        const cc = Number(cell.dataset.cols);
+        const rr = Number(cell.dataset.rows);
+        cell.classList.toggle("is-on", cc <= Math.min(c, EMPTY_PICK_COLS) && rr <= Math.min(r, EMPTY_PICK_ROWS));
+      });
+      $("tablePickerLabel").textContent = c + " × " + r;
+    }
+
+    function syncCreateSizeFields(cols, rows) {
+      const c = clampEmptyCols(cols);
+      const r = clampEmptyRows(rows);
+      $("createCols").value = String(c);
+      $("createRows").value = String(r);
+      paintTablePicker(c, r);
+    }
+
+    function readCreateSize() {
+      return {
+        cols: clampEmptyCols($("createCols").value),
+        rows: clampEmptyRows($("createRows").value),
+      };
+    }
+
+    function buildTablePicker() {
+      const host = $("tablePicker");
+      if (!host || host.childElementCount) return;
+      host.style.gridTemplateColumns = "repeat(" + EMPTY_PICK_COLS + ", 24px)";
+      host.style.gridTemplateRows = "repeat(" + EMPTY_PICK_ROWS + ", 18px)";
+      for (let r = 1; r <= EMPTY_PICK_ROWS; r++) {
+        for (let c = 1; c <= EMPTY_PICK_COLS; c++) {
+          const cell = document.createElement("span");
+          cell.className = "size-picker-cell";
+          cell.dataset.cols = String(c);
+          cell.dataset.rows = String(r);
+          host.appendChild(cell);
+        }
+      }
+    }
+
+    function openCreateTableModal() {
+      buildTablePicker();
+      $("createTableModal").hidden = false;
+      syncCreateSizeFields(EMPTY_COLS_DEF, EMPTY_ROWS_DEF);
+      tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
+    }
+
+    function closeCreateTableModal() {
+      const restore = tableDlgRestore;
+      tableDlgRestore = null;
+      if (restore) restore();
+      $("createTableModal").hidden = true;
+    }
+
+    function confirmCreateTable() {
+      const { cols, rows } = readCreateSize();
+      closeCreateTableModal();
+      createEmptyTable(cols, rows);
+    }
+
     async function pasteFromClipboard() {
       showError("");
       try {
@@ -7111,6 +7385,7 @@
           tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
           sample: Boolean(l.sample),
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
+          keepEmptyRows: Boolean(l.keepEmptyRows),
           orient: listOrient(l),
         })),
       };
@@ -7255,6 +7530,7 @@
 
     document.addEventListener("paste", (e) => {
       if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
+      if ($("createTableModal") && !$("createTableModal").hidden) return;
       if (e.target.closest("[contenteditable=true]")) return;
       const html = (e.clipboardData && e.clipboardData.getData("text/html")) || "";
       const text = (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
@@ -7270,6 +7546,38 @@
 
     $("pasteBtn").addEventListener("click", () => {
       pasteFromClipboard().catch((err) => showError(err.message || String(err)));
+    });
+    $("createTableBtn").addEventListener("click", openCreateTableModal);
+    $("createTableOk").addEventListener("click", confirmCreateTable);
+    $("createTableCancel").addEventListener("click", closeCreateTableModal);
+    $("createCols").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
+    $("createRows").addEventListener("input", () => paintTablePicker($("createCols").value, $("createRows").value));
+    $("createCols").addEventListener("change", () => {
+      const size = readCreateSize();
+      syncCreateSizeFields(size.cols, size.rows);
+    });
+    $("createRows").addEventListener("change", () => {
+      const size = readCreateSize();
+      syncCreateSizeFields(size.cols, size.rows);
+    });
+    ["createCols", "createRows"].forEach((id) => {
+      $(id).addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          confirmCreateTable();
+        }
+      });
+    });
+    $("tablePicker").addEventListener("pointerover", (e) => {
+      const cell = e.target.closest(".size-picker-cell");
+      if (!cell || !$("tablePicker").contains(cell)) return;
+      syncCreateSizeFields(cell.dataset.cols, cell.dataset.rows);
+    });
+    $("tablePicker").addEventListener("click", (e) => {
+      const cell = e.target.closest(".size-picker-cell");
+      if (!cell) return;
+      syncCreateSizeFields(cell.dataset.cols, cell.dataset.rows);
+      confirmCreateTable();
     });
     $("pasteOk").addEventListener("click", () => {
       ingestClipboard($("pasteArea").value, "")
