@@ -1934,11 +1934,14 @@
       --d-sub: #5d7378;
       --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
       --d-tint: color-mix(in srgb, var(--d-accent) 42%, #fff);
-      --d-cell-a: color-mix(in srgb, var(--d-accent) 7%, #fff);
-      --d-cell-b: color-mix(in srgb, var(--d-accent) 20%, #fff);
-      --d-band-share: color-mix(in srgb, var(--d-accent) 11%, #fff);
-      --d-band-prof: color-mix(in srgb, var(--d-accent) 16%, #fff);
-      --d-band-order: color-mix(in srgb, var(--d-accent) 8%, #fff);
+      --d-head: var(--d-accent);
+      --d-head-ink: #fff;
+      --d-head-rule: rgba(255, 255, 255, 0.78);
+      --d-cell-a: #fff;
+      --d-cell-b: color-mix(in srgb, var(--d-accent) 14%, #fff);
+      --d-band-share: var(--d-cell-b);
+      --d-band-prof: var(--d-cell-b);
+      --d-band-order: var(--d-cell-b);
       --d-rule: rgba(14, 143, 140, 0.2);
       --d-line: #0e8f8c;
       --d-th: #0e8f8c;
@@ -1949,6 +1952,8 @@
     html.palette-marine {
       --d-accent: #1b365d;
       --d-accent-ink: #fff;
+      --d-head: #1b365d;
+      --d-head-ink: #fff;
       --d-title: #1b365d;
       --d-sub: #4a6080;
       --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
@@ -1963,6 +1968,8 @@
     html.palette-carmin {
       --d-accent: #8c2f3a;
       --d-accent-ink: #fff;
+      --d-head: #8c2f3a;
+      --d-head-ink: #fff;
       --d-title: #8c2f3a;
       --d-sub: #a45c66;
       --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
@@ -1977,6 +1984,8 @@
     html.palette-safran {
       --d-accent: #e8a317;
       --d-accent-ink: #4a2e00;
+      --d-head: #8a5608;
+      --d-head-ink: #fff;
       --d-title: #6b3e08;
       --d-sub: #9a6410;
       --d-zebra: color-mix(in srgb, var(--d-accent) 36%, #fff);
@@ -1991,6 +2000,8 @@
     html.palette-foret {
       --d-accent: #a8d4b0;
       --d-accent-ink: #1e3d2a;
+      --d-head: #2f6a42;
+      --d-head-ink: #fff;
       --d-title: #3f7a52;
       --d-sub: #6e9578;
       --d-zebra: color-mix(in srgb, var(--d-accent) 48%, #fff);
@@ -2005,6 +2016,8 @@
     html.palette-prune {
       --d-accent: #6b2d6e;
       --d-accent-ink: #fff;
+      --d-head: #6b2d6e;
+      --d-head-ink: #fff;
       --d-title: #6b2d6e;
       --d-sub: #8a5a8c;
       --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
@@ -2018,6 +2031,8 @@
     html.palette-teal {
       --d-accent: #0e8f8c;
       --d-accent-ink: #fff;
+      --d-head: #0e8f8c;
+      --d-head-ink: #fff;
       --d-title: #0e8f8c;
       --d-sub: #5d7378;
       --d-zebra: color-mix(in srgb, var(--d-accent) 28%, #fff);
@@ -2089,7 +2104,8 @@
     .list-block.is-tp-page .liste-wrap > .liste {
       grid-area: 1 / 1;
       width: 100%;
-      height: 1px;
+      height: auto;
+      min-height: 0;
       table-layout: fixed;
     }
     .list-block.is-tp-page .liste-wrap > .table-frame {
@@ -2105,10 +2121,12 @@
     }
     .list-block.is-tp-page tbody td:not([rowspan]) {
       height: var(--row-h, auto);
+      min-height: var(--row-h, 0);
       box-sizing: border-box;
     }
     .list-block.is-tp-page tbody td[rowspan] {
       height: var(--span-h, auto);
+      min-height: var(--span-h, 0);
       box-sizing: border-box;
     }
     .list-block.is-tp-page thead.is-tp-ghost th {
@@ -2183,8 +2201,9 @@
     .list-block.is-tp-page td.is-tp-label {
       font-weight: 800;
       letter-spacing: 0.06em;
-      background: var(--d-tint, var(--d-zebra, color-mix(in srgb, var(--d-accent, var(--teal-deep)) 24%, #fff)));
-      color: var(--d-title, var(--d-th, var(--teal-deep)));
+      background: var(--d-head, var(--d-accent));
+      color: var(--d-head-ink, var(--d-accent-ink, #fff));
+      border-color: var(--d-head-rule, rgba(255, 255, 255, 0.78));
     }
     .list-block.is-tp-page tr.is-tp-section td.is-tp-item .cell-edit,
     .list-block.is-tp-page td.is-tp-label .cell-edit,
@@ -2196,7 +2215,16 @@
     }
     .list-block.is-tp-page td.is-tp-label .tp-chip {
       font-size: inherit;
-      border-bottom-color: currentColor;
+      color: inherit;
+      border-bottom-color: color-mix(in srgb, var(--d-head-ink, #fff) 62%, transparent);
+    }
+    .list-block.is-tp-page td.is-tp-label .tp-chip::after {
+      color: inherit;
+      opacity: 0.92;
+    }
+    .list-block.is-tp-page td.is-tp-label .tp-ngroups {
+      color: inherit;
+      border-bottom-color: color-mix(in srgb, var(--d-head-ink, #fff) 62%, transparent);
     }
     .list-block.is-tp-page td.is-tp-mat {
       cursor: pointer;
@@ -2220,8 +2248,8 @@
     }
     .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
     .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
-      background: var(--d-accent);
-      color: var(--d-accent-ink);
+      background: var(--d-head, var(--d-accent));
+      color: var(--d-head-ink, var(--d-accent-ink));
     }
     .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label .tp-chip {
       color: inherit;
@@ -2234,12 +2262,19 @@
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
-    .list-block.is-tp-page td.is-tp-total {
+    .list-block.is-tp-page td.is-tp-total:not(.is-tp-label) {
       font-weight: 800;
       color: var(--d-title, var(--teal-deep));
     }
     .list-block.is-tp-page td.is-tp-salles {
       border-left: 0.45pt solid var(--d-rule, var(--rule));
+    }
+    .list-block.is-tp-page td.is-tp-label.is-tp-salles,
+    .list-block.is-tp-page .liste.has-vlines td.is-tp-label {
+      border-left-color: var(--d-head-rule, rgba(255, 255, 255, 0.78));
+    }
+    .list-block.is-tp-page .liste td.is-tp-label {
+      border-bottom-color: var(--d-head-rule, rgba(255, 255, 255, 0.78));
     }
     .tp-meta-bar {
       display: flex;
@@ -2818,31 +2853,29 @@
     }
     .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)); }
     .list-block.is-tp-page .liste tbody td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: var(--d-cell-a, color-mix(in srgb, var(--d-accent) 7%, #fff));
+      background: var(--d-cell-a, #fff);
+      color: var(--ink);
     }
     .list-block.is-tp-page .liste tbody td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 20%, #fff));
+      background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff));
+      color: var(--ink);
     }
-    .list-block.is-tp-page .liste tbody tr.is-tp-band-share td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: var(--d-band-share, color-mix(in srgb, var(--d-accent) 11%, #fff));
-    }
-    .list-block.is-tp-page .liste tbody tr.is-tp-band-share td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: color-mix(in srgb, var(--d-accent) 24%, #fff);
-    }
-    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: var(--d-band-prof, color-mix(in srgb, var(--d-accent) 16%, #fff));
-    }
-    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: color-mix(in srgb, var(--d-accent) 28%, #fff);
-    }
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-share td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]),
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]),
     .list-block.is-tp-page .liste tbody tr.is-tp-band-order td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: var(--d-band-order, color-mix(in srgb, var(--d-accent) 8%, #fff));
+      background: var(--d-cell-a, #fff);
     }
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-share td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]),
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]),
     .list-block.is-tp-page .liste tbody tr.is-tp-band-order td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: color-mix(in srgb, var(--d-accent) 21%, #fff);
+      background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff));
+    }
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]),
+    .list-block.is-tp-page .liste tbody tr.is-tp-band-order td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
+      background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff));
     }
     .list-block.is-tp-page .liste tbody tr.is-tp-head td:not(.is-tp-label):not([class*="is-fluo-"]) {
-      background: color-mix(in srgb, var(--d-tint, var(--d-accent)) 35%, #fff);
+      background: var(--d-cell-a, #fff);
     }
     .liste tbody tr:last-child td { border-bottom: 1.2pt solid var(--d-line, var(--teal-deep)); }
     .liste td.is-nom,
@@ -3556,28 +3589,26 @@
       }
       .liste tbody tr:nth-child(even) td { background: var(--d-zebra, var(--zebra)) !important; }
       .list-block.is-tp-page .liste tbody td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: var(--d-cell-a, color-mix(in srgb, var(--d-accent) 7%, #fff)) !important;
+        background: var(--d-cell-a, #fff) !important;
+        color: var(--ink) !important;
       }
       .list-block.is-tp-page .liste tbody td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 20%, #fff)) !important;
+        background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff)) !important;
+        color: var(--ink) !important;
       }
-      .list-block.is-tp-page tr.is-tp-band-share td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: var(--d-band-share, color-mix(in srgb, var(--d-accent) 11%, #fff)) !important;
-      }
-      .list-block.is-tp-page tr.is-tp-band-share td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: color-mix(in srgb, var(--d-accent) 24%, #fff) !important;
-      }
-      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: var(--d-band-prof, color-mix(in srgb, var(--d-accent) 16%, #fff)) !important;
-      }
-      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: color-mix(in srgb, var(--d-accent) 28%, #fff) !important;
-      }
+      .list-block.is-tp-page tr.is-tp-band-share td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]),
+      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]),
       .list-block.is-tp-page tr.is-tp-band-order td.is-tp-even:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: var(--d-band-order, color-mix(in srgb, var(--d-accent) 8%, #fff)) !important;
+        background: var(--d-cell-a, #fff) !important;
       }
+      .list-block.is-tp-page tr.is-tp-band-share td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]),
+      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]),
       .list-block.is-tp-page tr.is-tp-band-order td.is-tp-odd:not(.is-tp-label):not([class*="is-fluo-"]) {
-        background: color-mix(in srgb, var(--d-accent) 21%, #fff) !important;
+        background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff)) !important;
+      }
+      .list-block.is-tp-page tr.is-tp-band-prof td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]),
+      .list-block.is-tp-page tr.is-tp-band-order td.is-tp-item:not(.is-tp-label):not([class*="is-fluo-"]) {
+        background: var(--d-cell-b, color-mix(in srgb, var(--d-accent) 14%, #fff)) !important;
       }
       .tp-chip::after { content: none !important; }
       .tp-chip, .tp-ngroups { border-bottom: 0 !important; }
@@ -3593,26 +3624,29 @@
       }
       .list-block.is-tp-page tbody td:not([rowspan]) {
         height: var(--row-h, auto);
+        min-height: var(--row-h, 0);
       }
       .list-block.is-tp-page tbody td[rowspan] {
         height: var(--span-h, auto);
+        min-height: var(--span-h, 0);
       }
       .list-block.is-tp-page .liste-wrap > .liste {
-        height: 1px;
+        height: auto;
       }
       .list-block.is-tp-page .liste-wrap { width: var(--tp-print-w, 100%) !important; }
       .list-block.is-tp-page tr.is-tp-section td,
       .list-block.is-tp-page tbody tr.is-tp-section:nth-child(even) td,
       .list-block.is-tp-page td.is-tp-label {
-        background: var(--d-tint, var(--d-zebra)) !important;
-        color: var(--d-title, var(--d-th, var(--teal-deep))) !important;
+        background: var(--d-head, var(--d-accent)) !important;
+        color: var(--d-head-ink, var(--d-accent-ink, #fff)) !important;
         font-weight: 800 !important;
         letter-spacing: 0.06em !important;
+        border-color: var(--d-head-rule, rgba(255, 255, 255, 0.78)) !important;
       }
       .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
       .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
-        background: var(--d-accent) !important;
-        color: var(--d-accent-ink) !important;
+        background: var(--d-head, var(--d-accent)) !important;
+        color: var(--d-head-ink, var(--d-accent-ink)) !important;
       }
       .block-move { display: none !important; }
       .sheet.design-classique.palette-teal .liste tbody tr:nth-child(even) td { background: transparent !important; }
@@ -5064,7 +5098,7 @@
 
     function isTpProfSection(v) {
       const n = foldHeader(v);
-      return n === "pour l enseignant" || n === "bureau prof" || n === "bureau professeur" || n === "poste prof";
+      return n === "pour enseignant" || n === "pour l enseignant" || n === "bureau prof" || n === "bureau professeur" || n === "poste prof";
     }
 
     function isTpShareSection(v) {
@@ -5572,11 +5606,7 @@
     function tpHeightsNeedFit(list) {
       if (!list || !isTpForm(list)) return false;
       if (list.tpSized) return false;
-      const key = tpFitSignature(list);
-      if (list.tpFitKey !== key) return true;
-      if (list.tpFitPending) return true;
-      if (!Object.keys(list.rowH || {}).length || tpRowHLooksLikeEm(list)) return true;
-      return !list.tpFitted;
+      return true;
     }
 
     function tpFitSignature(list) {
@@ -5609,6 +5639,59 @@
       };
     }
 
+    function tpPrintableGuide(sheet) {
+      if (!sheet) return null;
+      const frame = sheet.closest(".sheet-frame");
+      const guide = frame && frame.querySelector(".sheet-guide");
+      if (guide) {
+        const r = guide.getBoundingClientRect();
+        if (r.height > 8) return r;
+      }
+      const r = sheet.getBoundingClientRect();
+      const cs = getComputedStyle(sheet);
+      const scaleY = r.height / (sheet.offsetHeight || 1);
+      const pt = (parseFloat(cs.paddingTop) || 0) * scaleY;
+      const pb = (parseFloat(cs.paddingBottom) || 0) * scaleY;
+      return {
+        top: r.top + pt,
+        bottom: r.bottom - pb,
+        height: Math.max(0, r.height - pt - pb),
+      };
+    }
+
+    function tpGapToGuideMm(list, sheet, table, block) {
+      const metrics = tpPageMetrics(list, sheet, block);
+      const guide = tpPrintableGuide(sheet);
+      if (!guide || !table || !(guide.height > 1)) return 0;
+      return (guide.bottom - table.getBoundingClientRect().bottom) / guide.height * metrics.innerMm;
+    }
+
+    function syncTpRowHeightsDom(list, table) {
+      if (!list || !table) return;
+      table.querySelectorAll("tbody tr[data-ri]").forEach((tr) => {
+        const ri = Number(tr.dataset.ri);
+        const h = Number(list.rowH && list.rowH[ri]);
+        if (!(h > 0)) return;
+        tr.style.height = h + "mm";
+        tr.style.setProperty("--row-h", h + "mm");
+        [...tr.children].forEach((td) => {
+          if (Number(td.getAttribute("rowspan") || 1) > 1) return;
+          td.style.height = h + "mm";
+          td.style.minHeight = h + "mm";
+        });
+      });
+      table.querySelectorAll("td[rowspan]").forEach((td) => {
+        const tr = td.closest("tr");
+        const ri = Number(tr && tr.dataset.ri);
+        const rs = Math.max(1, Number(td.getAttribute("rowspan")) || 1);
+        if (!Number.isInteger(ri)) return;
+        const sum = tpSpanHeightMm(list, ri, rs);
+        td.style.setProperty("--span-h", sum + "mm");
+        td.style.height = sum + "mm";
+        td.style.minHeight = sum + "mm";
+      });
+    }
+
     function sheetCssPxToMm(sheet, cssPx) {
       if (!sheet) return cssPx * 25.4 / 96;
       const pageH = sheet.classList.contains("is-paysage") ? 210 : 297;
@@ -5618,11 +5701,12 @@
     function tpBandRowIndices(list) {
       const vis = visibleRowIndices(list);
       const b = tpFormBands(list);
-      const shareStart = b.share >= 0 ? b.share : vis.length;
+      const shareEnd = b.prof >= 0 ? b.prof : (b.order >= 0 ? b.order : vis.length + 1);
+      const profEnd = b.order >= 0 ? b.order : vis.length + 1;
       return {
-        header: vis.filter((ri) => ri < shareStart),
-        share: vis.filter((ri) => b.share >= 0 && ri >= b.share && (b.prof < 0 || ri < b.prof)),
-        prof: vis.filter((ri) => b.prof >= 0 && ri >= b.prof && (b.order < 0 || ri < b.order)),
+        header: vis.filter((ri) => b.share < 0 || ri < b.share),
+        share: vis.filter((ri) => b.share >= 0 && ri >= b.share && ri < shareEnd),
+        prof: vis.filter((ri) => b.prof >= 0 && ri >= b.prof && ri < profEnd),
         order: vis.filter((ri) => b.order >= 0 && ri >= b.order),
       };
     }
@@ -5654,8 +5738,7 @@
     function distributeTpRowHeights(list, targetMm) {
       if (!list || !tpUsesRowMm(list) || !(targetMm > 20)) return false;
       const bands = tpBandRowIndices(list);
-      const n = Math.max(1, (list.rows || []).length);
-      const chrome = 1.5 + n * 0.08;
+      const chrome = 0.8;
       let avail = targetMm - chrome;
       if (!(avail > 24)) avail = 24;
       const next = {};
@@ -6253,6 +6336,7 @@
       rebuildTpRows(list, opts && opts.size);
       list.tpFitKey = "";
       list.tpFitPending = false;
+      list.tpFitTries = 0;
       if (!hasTpCustomSize(list) && !(opts && opts.keepHeights)) {
         list.tpFitted = false;
         distributeTpRowHeights(list, tpPrintableInnerMm(list, null));
@@ -7809,7 +7893,7 @@
           const fieldAt = tpForm ? tpFormFieldAt(list, contentRi, contentCi) : "";
           if (labelKind || (tpForm && isTpHeadingText(contentRow[contentCi]))) cls.push("is-tp-label");
           if (tpForm && !labelKind && !(tpForm && isTpHeadingText(contentRow[contentCi]))) {
-            cls.push(((contentRi + contentCi) % 2) ? "is-tp-odd" : "is-tp-even");
+            cls.push((contentRi % 2) ? "is-tp-odd" : "is-tp-even");
           }
           if (matCell) cls.push("is-tp-mat");
           const freeze = !tpForm && (role === "classe" || role === "total" || role === "poste"
@@ -9430,6 +9514,8 @@
       $("orientBlock").hidden = combining();
       syncOrientHint();
       requestAnimationFrame(() => {
+        syncAllListeFrames();
+        fitStage();
         let again = false;
         state.lists.forEach((l) => {
           if (tpHeightsNeedFit(l) && fillTpToPage(l)) again = true;
@@ -9438,8 +9524,6 @@
           renderPreview();
           return;
         }
-        syncAllListeFrames();
-        fitStage();
         paintZone();
       });
     }
@@ -9465,11 +9549,17 @@
       const block = $("sheets").querySelector('.list-block[data-lid="' + list.id + '"]');
       const table = block && block.querySelector("table.liste");
       const sheet = block && block.closest(".sheet");
+      const wrap = block && block.querySelector(".liste-wrap");
       const metrics = tpPageMetrics(list, sheet, block);
       const key = tpFitSignature(list);
       const keyChanged = list.tpFitKey !== key;
+      if (keyChanged) {
+        list.tpFitTries = 0;
+        list.tpFitLastGap = null;
+      }
+      const targetMm = metrics.targetMm;
       if (!table || !sheet) {
-        const ok = distributeTpRowHeights(list, metrics.targetMm);
+        const ok = distributeTpRowHeights(list, targetMm);
         list.tpFitKey = key;
         list.tpFitPending = true;
         list.tpFitted = false;
@@ -9481,23 +9571,56 @@
       }
       const hasMm = Object.keys(list.rowH || {}).length && !tpRowHLooksLikeEm(list);
       if (keyChanged || !hasMm) {
-        const ok = distributeTpRowHeights(list, metrics.targetMm);
+        const ok = distributeTpRowHeights(list, targetMm);
         list.tpFitKey = key;
         list.tpFitPending = true;
         list.tpFitted = false;
         return ok;
       }
-      const tableMm = table.offsetHeight * metrics.mmPerPx;
-      const delta = metrics.targetMm - tableMm;
-      if (Math.abs(delta) < 0.55) {
+      const closeMm = 1.6;
+      let gap = tpGapToGuideMm(list, sheet, table, block);
+      if (Math.abs(gap) < closeMm) {
+        list.tpFitted = true;
+        list.tpFitPending = false;
+        list.tpFitTries = 0;
+        return false;
+      }
+      let tries = Number(list.tpFitTries) || 0;
+      let changed = false;
+      while (tries < 8 && Math.abs(gap) >= closeMm) {
+        if (!adjustTpAbsorbHeights(list, gap)) break;
+        syncTpRowHeightsDom(list, table);
+        if (wrap) syncListeFrameSize(wrap);
+        const next = tpGapToGuideMm(list, sheet, table, block);
+        changed = true;
+        tries += 1;
+        if (Math.abs(next) < closeMm) {
+          gap = next;
+          break;
+        }
+        if (list.tpFitLastGap != null && Math.abs(list.tpFitLastGap) - Math.abs(next) < 0.12) {
+          gap = next;
+          list.tpFitLastGap = next;
+          list.tpFitTries = tries;
+          list.tpFitKey = key;
+          list.tpFitted = false;
+          list.tpFitPending = true;
+          return true;
+        }
+        list.tpFitLastGap = next;
+        gap = next;
+      }
+      list.tpFitTries = tries;
+      list.tpFitKey = key;
+      list.tpFitLastGap = gap;
+      if (Math.abs(gap) < closeMm || tries >= 8 || !changed) {
         list.tpFitted = true;
         list.tpFitPending = false;
         return false;
       }
-      const ok = adjustTpAbsorbHeights(list, delta);
-      list.tpFitted = true;
-      list.tpFitPending = false;
-      return ok;
+      list.tpFitted = false;
+      list.tpFitPending = true;
+      return true;
     }
 
     function makePreviewInsert(index) {
