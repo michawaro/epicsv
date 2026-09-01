@@ -411,6 +411,14 @@
     .files-export .files-group-label {
       color: #f7ffc4;
     }
+    .autosave-hint {
+      margin: 8px 2px 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #f7ffc4;
+      opacity: 0.92;
+    }
+    .autosave-hint[hidden] { display: none !important; }
     .yt-dock {
       position: fixed;
       top: max(10px, env(safe-area-inset-top, 0px));
@@ -642,9 +650,36 @@
       flex-direction: column;
       gap: 6px;
     }
+    .page-all-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .page-all-check[hidden] { display: none !important; }
+    .page-all-check input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--seal);
+      cursor: pointer;
+    }
+    .page-apply-hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.78);
+    }
     .page-row {
       display: grid;
-      grid-template-columns: 22px minmax(0, 1fr) 22px;
+      grid-template-columns: 22px 28px minmax(0, 1fr) 22px;
       gap: 4px 8px;
       align-items: center;
       padding: 8px 8px 8px 10px;
@@ -673,38 +708,57 @@
       grid-column: 1;
       grid-row: 1 / span 2;
       justify-self: center;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       margin: 0;
       accent-color: var(--seal);
       cursor: pointer;
+    }
+    .page-num {
+      grid-column: 2;
+      justify-self: center;
+      min-width: 22px;
+      padding: 1px 0;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.22);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
     }
     .page-name {
       display: flex;
       align-items: center;
       min-width: 0;
-      grid-column: 2;
+      grid-column: 3;
       font-size: 12px;
       font-weight: 800;
     }
     .page-sel-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 14px;
-      margin-top: 8px;
+      gap: 8px;
+      margin-top: 10px;
     }
     .page-sel-bar button {
-      background: none;
+      appearance: none;
       border: 0;
-      padding: 0;
-      color: var(--seal);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
       font: inherit;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+      text-decoration: none;
     }
+    .page-sel-bar button:hover { background: rgba(255, 255, 255, 0.26); }
+    .page-sel-bar button.is-main {
+      background: var(--seal);
+      color: #24383c;
+    }
+    .page-sel-bar button.is-main:hover { background: #e3f36a; }
     .page-gap-add {
       display: flex;
       justify-content: center;
@@ -748,18 +802,22 @@
     }
     .page-name-field::placeholder { color: inherit; opacity: 0.45; }
     .page-status {
-      grid-column: 2;
+      grid-column: 3;
       font-style: normal;
       font-size: 11px;
       font-weight: 700;
       opacity: 0.8;
     }
     .page-row .x {
-      grid-column: 3;
+      grid-column: 4;
       grid-row: 1 / span 2;
       align-self: center;
     }
 
+    .list-block.is-picked .liste-wrap,
+    .list-block.is-picked.is-blank-page {
+      box-shadow: 0 0 0 3px rgba(212, 236, 79, 0.62);
+    }
     .list-block.is-editing {
       position: relative;
     }
@@ -928,10 +986,49 @@
       font-size: 13px;
       white-space: nowrap;
     }
-    .tp-mat-qty-line #tpMatQty {
+    .tp-qty-step {
+      display: flex;
+      align-items: center;
       flex: none;
-      width: 4.8em;
+      border: 1px solid rgba(14, 143, 140, 0.28);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .tp-qty-step button {
+      appearance: none;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      background: #e7f6f4;
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tp-qty-step button:hover { background: #d5f0ec; }
+    .tp-qty-step #tpMatQty {
+      flex: none;
+      width: 3.4em;
+      height: 40px;
+      border: 0;
+      border-left: 1px solid rgba(14, 143, 140, 0.18);
+      border-right: 1px solid rgba(14, 143, 140, 0.18);
+      border-radius: 0;
+      background: #fff;
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 800;
       text-align: center;
+      padding: 0 4px;
+      -moz-appearance: textfield;
+    }
+    .tp-qty-step #tpMatQty::-webkit-outer-spin-button,
+    .tp-qty-step #tpMatQty::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     .add-line .btn-mini {
       flex: none;
@@ -1627,6 +1724,12 @@
       line-height: 1.5;
       color: var(--ink-soft);
     }
+    .modal .field {
+      background: #f3fbfa;
+      color: var(--ink);
+      border: 1px solid rgba(14, 143, 140, 0.22);
+    }
+    .modal .field::placeholder { color: rgba(14, 80, 78, 0.45); }
     .modal-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1755,6 +1858,98 @@
       height: 16px;
       display: block;
     }
+
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: min(100%, 920px);
+      margin: 0 0 12px;
+      flex-shrink: 0;
+      z-index: 4;
+    }
+    .tab-bar[hidden] { display: none !important; }
+    .tab-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .tab-item {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      max-width: 180px;
+      padding: 5px 6px 5px 12px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(14, 143, 140, 0.12);
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .tab-item.is-on {
+      background: var(--teal-deep);
+      color: #fff;
+    }
+    .tab-item .tab-name {
+      min-width: 1.2em;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tab-item .tab-name-field {
+      width: 88px;
+      min-width: 0;
+      margin: 0;
+      padding: 0 2px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 800;
+    }
+    .tab-item .tab-name-field:focus {
+      outline: none;
+      box-shadow: 0 1px 0 currentColor;
+    }
+    .tab-item .tab-x {
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    .tab-item .tab-x:hover { opacity: 1; background: rgba(0, 0, 0, 0.12); }
+    .tab-add {
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      flex: none;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(14, 143, 140, 0.14);
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tab-add:hover { background: rgba(14, 143, 140, 0.24); }
 
     .workspace {
       padding: 36px 28px 56px;
@@ -3939,18 +4134,19 @@
           <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
           <button class="btn btn-save" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
         </div>
+        <p class="autosave-hint" id="autosaveHint" hidden></p>
       </div>
 
       <div class="err" id="err" role="alert" aria-live="assertive"></div>
 
       <section class="block" id="filesBlock" hidden>
         <h2>Pages</h2>
-        <p class="hint-note" id="pagesHint" hidden style="margin:0 0 8px">Titre, commentaires, orientation et colonnes s’appliquent aux pages cochées.</p>
+        <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages auxquelles s’appliquent couleur, titre, orientation et colonnes.</p>
+        <label class="page-all-check" id="pageAllWrap">
+          <input type="checkbox" id="selAllLists" />
+          <span>Toutes les pages de cet onglet</span>
+        </label>
         <div class="page-list" id="chips"></div>
-        <div class="page-sel-bar" id="pageSelBar" hidden>
-          <button type="button" id="selAllLists">Tout sélectionner</button>
-          <button type="button" id="selNoneLists">Tout désélectionner</button>
-        </div>
       </section>
 
       <section class="block">
@@ -3969,6 +4165,7 @@
           <label><input type="radio" name="orient" value="portrait" /><span>Portrait</span></label>
           <label><input type="radio" name="orient" value="paysage" /><span>Paysage</span></label>
         </div>
+        <p class="hint-note page-apply-hint" id="orientApplyHint" hidden></p>
         <p class="hint-note" id="orientHint" hidden style="margin:8px 0 0"></p>
       </section>
 
@@ -3985,6 +4182,7 @@
 
       <section class="block" id="titlesBlock" hidden>
         <h2>Titre</h2>
+        <p class="hint-note page-apply-hint" id="titlesApplyHint" hidden></p>
         <div id="titleList"></div>
         <h2 class="follow">Commentaire</h2>
         <div id="commentList"></div>
@@ -3996,6 +4194,7 @@
 
       <section class="block" id="colsBlock" hidden>
         <h2>Colonnes à conserver</h2>
+        <p class="hint-note page-apply-hint" id="colsApplyHint" hidden></p>
         <div class="hint-callout">
           <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
           <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
@@ -4050,6 +4249,7 @@
           <input type="range" id="fontPt" min="6.5" max="14" step="0.5" value="9.5" aria-label="Taille du texte du tableau" />
           <strong id="fontPtVal">9,5 pt</strong>
         </div>
+        <p class="hint-note page-apply-hint" id="displayApplyHint" hidden></p>
         <div class="opt-label">Couleur</div>
         <div class="seg tall">
           <label><input type="radio" name="palette" value="teal" checked /><span>Lagon</span></label>
@@ -4184,6 +4384,10 @@
       <div class="mobile-bar no-print" id="mobileBar" hidden>
         <button type="button" class="btn" id="backOptions">Options</button>
         <strong>Aperçu du tableau</strong>
+      </div>
+      <div class="tab-bar no-print" id="tabBar" hidden>
+        <div class="tab-list" id="tabList" role="tablist" aria-label="Onglets"></div>
+        <button type="button" class="tab-add" id="tabAddBtn" title="Nouvel onglet" aria-label="Nouvel onglet">+</button>
       </div>
       <div class="empty no-print" id="empty">
         <p class="empty-name"><span class="brand-epi">Epi</span><span class="brand-csv">cSV</span></p>
@@ -4375,6 +4579,31 @@
     </div>
   </div>
 
+  <div class="modal-back no-print" id="dirtyModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dirtyTitle" aria-describedby="dirtyLead">
+      <h3 id="dirtyTitle">Vous risquez de tout perdre</h3>
+      <p id="dirtyLead">Enregistrer le travail en cours avant de continuer ?</p>
+      <div class="modal-actions">
+        <button class="btn btn-print span-all" id="dirtySave" type="button">Enregistrer</button>
+        <button class="btn btn-ghost" id="dirtySkip" type="button">Ne pas enregistrer</button>
+        <button class="btn btn-ghost" id="dirtyCancel" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-back no-print" id="placeModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placeTitle">
+      <h3 id="placeTitle">Où placer ce contenu ?</h3>
+      <p id="placeLead">La page en cours ne sera pas remplacée. Ajoutez les nouvelles feuilles à la suite, ou dans un autre onglet.</p>
+      <div class="modal-actions">
+        <button class="btn btn-print" id="placeAfter" type="button">Ajouter à la suite</button>
+        <button class="btn btn-ghost" id="placeTab" type="button">Dans un autre onglet</button>
+        <button class="btn btn-ghost span-all" id="placeReplace" type="button" hidden>Remplacer le projet</button>
+        <button class="btn btn-ghost span-all" id="placeCancel" type="button">Annuler</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-back no-print" id="pasteModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pasteTitle">
       <h3 id="pasteTitle">Coller le CSV</h3>
@@ -4433,7 +4662,11 @@
       <p>Recherchez, cliquez un nom, ou saisissez un matériel libre. Indiquez d’abord la quantité par poste : elle est multipliée par chaque coefficient de la colonne Nb groupes.</p>
       <div class="add-line tp-mat-qty-line">
         <label for="tpMatQty">Quantité</label>
-        <input class="field" id="tpMatQty" type="number" min="1" max="999" value="1" inputmode="numeric" aria-label="Quantité de matériel" />
+        <div class="tp-qty-step" role="group" aria-label="Quantité par poste">
+          <button type="button" id="tpMatQtyMinus" aria-label="Diminuer la quantité">−</button>
+          <input class="field" id="tpMatQty" type="text" inputmode="numeric" pattern="[0-9]*" value="1" maxlength="3" aria-label="Quantité de matériel" />
+          <button type="button" id="tpMatQtyPlus" aria-label="Augmenter la quantité">+</button>
+        </div>
       </div>
       <input class="field" id="tpMatSearch" type="search" placeholder="Rechercher un matériel" aria-label="Rechercher un matériel" autocomplete="off" />
       <div class="tp-picks" id="tpMatCats"></div>
@@ -4560,15 +4793,29 @@
       sharedCols: [],
       editFrame: "tirets",
       tpInner: true,
+      tabs: [{ id: 1, name: "1" }],
+      activeTabId: 1,
     };
 
     let nextId = 1;
+    let nextTabId = 2;
     let hist = [];
     let future = [];
     let histBusy = false;
     let dirty = false;
     let pasteDialogRestore = null;
     let tableDlgRestore = null;
+    let placeDlgRestore = null;
+    let dirtyDlgRestore = null;
+    let projectHandle = null;
+    let projectHandleName = "";
+    let autosaveTimer = null;
+    let autosaveBusy = false;
+    let lastAutosaveAt = 0;
+    const AUTOSAVE_MS = 45000;
+    const AUTOSAVE_MIN_GAP = 8000;
+    const AUTOSAVE_KEY = "epicsv-autosave";
+    const AUTOSAVE_DB = "epicsv-handles";
     let createAsTp = false;
     let createAsKind = "";
     let tableModalMode = "create";
@@ -4581,7 +4828,7 @@
     let heldStyle = null;
     let styleDlgRestore = null;
     const HIST_MAX = 80;
-    let tpUi = { cat: "", q: "" };
+    let tpUi = { cat: "", q: "", qty: 1 };
     let tpMatTarget = { lid: null, ri: null };
     const ORIENT_TOGGLE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
     const MATERIEL_CATALOG = [{"id":"1","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"50 mL"},{"id":"2","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"100 mL"},{"id":"3","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"250 mL"},{"id":"4","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"10 mL"},{"id":"5","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"25 mL"},{"id":"6","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"50 mL"},{"id":"7","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"10 mL"},{"id":"8","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"50 mL"},{"id":"9","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"100 mL"},{"id":"10","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"100 mL"},{"id":"11","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"250 mL"},{"id":"12","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"500 mL"},{"id":"13","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"50 mL"},{"id":"14","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"100 mL"},{"id":"15","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"250 mL"},{"id":"16","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"1 mL"},{"id":"17","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"5 mL"},{"id":"18","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"10 mL"},{"id":"19","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"5 mL"},{"id":"20","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"10 mL"},{"id":"21","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"20 mL"},{"id":"22","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"10 mL"},{"id":"23","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"15 mL"},{"id":"24","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"20 mL"},{"id":"25","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 60 mm"},{"id":"26","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 80 mm"},{"id":"27","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 100 mm"},{"id":"28","rubrique":"materielMesure","sous":"","nom":"Balance électronique","details":""},{"id":"29","rubrique":"materielMesure","sous":"","nom":"Chronomètre","details":""},{"id":"30","rubrique":"materielMesure","sous":"","nom":"Loupe","details":""},{"id":"31","rubrique":"materielMesure","sous":"","nom":"Microscope optique","details":""},{"id":"32","rubrique":"materielMesure","sous":"","nom":"Papier pH","details":""},{"id":"33","rubrique":"materielMesure","sous":"","nom":"pH-mètre","details":""},{"id":"34","rubrique":"materielMesure","sous":"","nom":"Règle graduée","details":""},{"id":"35","rubrique":"materielMesure","sous":"","nom":"Thermomètre","details":""},{"id":"36","rubrique":"chauffageSupport","sous":"","nom":"Agitateur magnétique","details":""},{"id":"37","rubrique":"chauffageSupport","sous":"","nom":"Barreau aimanté","details":""},{"id":"38","rubrique":"chauffageSupport","sous":"","nom":"Bec Bunsen","details":""},{"id":"39","rubrique":"chauffageSupport","sous":"","nom":"Plaque chauffante","details":""},{"id":"40","rubrique":"chauffageSupport","sous":"","nom":"Support universel","details":""},{"id":"41","rubrique":"chauffageSupport","sous":"","nom":"Trépied","details":""},{"id":"42","rubrique":"materielBiologique","sous":"","nom":"Boîte de Pétri","details":""},{"id":"43","rubrique":"materielBiologique","sous":"","nom":"Ciseaux","details":""},{"id":"44","rubrique":"materielBiologique","sous":"","nom":"Épingles de dissection","details":""},{"id":"45","rubrique":"materielBiologique","sous":"","nom":"Lame porte-objet","details":""},{"id":"46","rubrique":"materielBiologique","sous":"","nom":"Lamelle couvre-objet","details":""},{"id":"47","rubrique":"materielBiologique","sous":"","nom":"Pipette Pasteur","details":""},{"id":"48","rubrique":"materielBiologique","sous":"","nom":"Scalpel","details":""},{"id":"49","rubrique":"materielBiologique","sous":"","nom":"Spatule","details":""},{"id":"50","rubrique":"indicateurs","sous":"","nom":"Bleu de bromothymol (BBT) - Indicateur de CO₂ / pH physiologique (jaune ↔ vert ↔ bleu)","details":""},{"id":"51","rubrique":"indicateurs","sous":"","nom":"Eau iodée - Indicateur de l’amidon (jaune ↔ bleu-noir)","details":""},{"id":"52","rubrique":"indicateurs","sous":"","nom":"Lugol - Indicateur de l’amidon (version iodée plus concentrée)","details":""},{"id":"53","rubrique":"indicateurs","sous":"","nom":"Phénolphtaléine - Indicateur de pH (incolore ↔ rose, milieu basique)","details":""},{"id":"54","rubrique":"indicateurs","sous":"","nom":"Rouge de méthyle - Indicateur de pH (rouge ↔ jaune)","details":""},{"id":"55","rubrique":"indicateurs","sous":"","nom":"Vert de bromocrésol - Indicateur de pH (jaune ↔ bleu)","details":""},{"id":"56","rubrique":"indicateurs","sous":"","nom":"Papier pH universel - Indicateur multi-plages de pH","details":""},{"id":"57","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,1 mol·L⁻¹"},{"id":"58","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,5 mol·L⁻¹"},{"id":"59","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"1,0 mol·L⁻¹"},{"id":"60","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,1 mol·L⁻¹"},{"id":"61","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,5 mol·L⁻¹"},{"id":"62","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"1,0 mol·L⁻¹"},{"id":"63","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"rinçage"},{"id":"64","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"solvant de dilution"},{"id":"65","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"10 g·L⁻¹"},{"id":"66","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"20 g·L⁻¹"},{"id":"67","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"50 g·L⁻¹"},{"id":"68","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,1 mol·L⁻¹"},{"id":"69","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,5 mol·L⁻¹"},{"id":"70","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,01 mol·L⁻¹"},{"id":"71","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,05 mol·L⁻¹"},{"id":"72","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (respiration)","details":""},{"id":"73","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (réaction contrôlée)","details":""},{"id":"74","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"1 g·L⁻¹"},{"id":"75","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"5 g·L⁻¹"},{"id":"76","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"diluée"},{"id":"77","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"standard"},{"id":"78","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"dilué"},{"id":"79","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"standard"},{"id":"80","rubrique":"microscopieSV","sous":"","nom":"Cellules buccales humaines","details":""},{"id":"81","rubrique":"microscopieSV","sous":"","nom":"Coupe d’anthère (pollen)","details":""},{"id":"82","rubrique":"microscopieSV","sous":"","nom":"Coupe d’intestin grêle","details":""},{"id":"83","rubrique":"microscopieSV","sous":"","nom":"Coupe de feuille (dicotylédone)","details":""},{"id":"84","rubrique":"microscopieSV","sous":"","nom":"Coupe de racine","details":""},{"id":"85","rubrique":"microscopieSV","sous":"","nom":"Coupe de tige","details":""},{"id":"86","rubrique":"microscopieSV","sous":"","nom":"Épiderme d’oignon","details":""},{"id":"87","rubrique":"microscopieSV","sous":"","nom":"Foie (tissu hépatique)","details":""},{"id":"88","rubrique":"microscopieSV","sous":"","nom":"Levures","details":""},{"id":"89","rubrique":"microscopieSV","sous":"","nom":"Muscle lisse","details":""},{"id":"90","rubrique":"microscopieSV","sous":"","nom":"Muscle strié","details":""},{"id":"91","rubrique":"microscopieSV","sous":"","nom":"Ovaires (coupe histologique)","details":""},{"id":"92","rubrique":"microscopieSV","sous":"","nom":"Pancréas (îlots de Langerhans)","details":""},{"id":"93","rubrique":"microscopieSV","sous":"","nom":"Peau humaine","details":""},{"id":"94","rubrique":"microscopieSV","sous":"","nom":"Poumon (alvéoles)","details":""},{"id":"95","rubrique":"microscopieSV","sous":"","nom":"Rein (néphron)","details":""},{"id":"96","rubrique":"microscopieSV","sous":"","nom":"Sang humain (frottis)","details":""},{"id":"97","rubrique":"microscopieSV","sous":"","nom":"Spermatozoïdes","details":""},{"id":"98","rubrique":"microscopieSV","sous":"","nom":"Testicule (tubes séminifères)","details":""},{"id":"99","rubrique":"microscopieSV","sous":"","nom":"Tissu nerveux","details":""},{"id":"100","rubrique":"microscopieSV","sous":"","nom":"Xylème","details":""},{"id":"101","rubrique":"microscopieSV","sous":"","nom":"Phloème","details":""},{"id":"102","rubrique":"microscopieST","sous":"","nom":"Basalte (structure microlitique)","details":""},{"id":"103","rubrique":"microscopieST","sous":"","nom":"Calcaire à foraminifères","details":""},{"id":"104","rubrique":"microscopieST","sous":"","nom":"Foraminifères Crétacé (= Maastrichtien) il y a 66 Ma","details":""},{"id":"105","rubrique":"microscopieST","sous":"","nom":"Foraminifères Tertiaire (= Danien) il y a 64 Ma","details":""},{"id":"106","rubrique":"microscopieST","sous":"","nom":"Gabbro","details":""},{"id":"107","rubrique":"microscopieST","sous":"","nom":"Gneiss (métamorphisme régional)","details":""},{"id":"108","rubrique":"microscopieST","sous":"","nom":"Granite","details":""},{"id":"109","rubrique":"microscopieST","sous":"","nom":"Marbre (métamorphisme du calcaire)","details":""},{"id":"110","rubrique":"microscopieST","sous":"","nom":"Péridotite","details":""},{"id":"111","rubrique":"microscopieST","sous":"","nom":"Quartzite","details":""},{"id":"112","rubrique":"microscopieST","sous":"","nom":"Schiste (foliation métamorphique)","details":""},{"id":"113","rubrique":"microscopieST","sous":"","nom":"Amphibolite (métamorphisme)","details":""},{"id":"114","rubrique":"microscopieST","sous":"","nom":"Éclogite (métamorphisme haute pression)","details":""},{"id":"115","rubrique":"microscopieST","sous":"","nom":"Radiolarites (crises océaniques)","details":""},{"id":"116","rubrique":"microscopieST","sous":"","nom":"Grès (sédimentaire)","details":""},{"id":"117","rubrique":"microscopieST","sous":"","nom":"Calcite recristallisée (diagenèse)","details":""},{"id":"118","rubrique":"geologieMac","sous":"","nom":"Argile","details":""},{"id":"119","rubrique":"geologieMac","sous":"","nom":"Basalte","details":""},{"id":"120","rubrique":"geologieMac","sous":"","nom":"Calcaire","details":""},{"id":"121","rubrique":"geologieMac","sous":"","nom":"Gabbro","details":""},{"id":"122","rubrique":"geologieMac","sous":"","nom":"Gneiss","details":""},{"id":"123","rubrique":"geologieMac","sous":"","nom":"Granite","details":""},{"id":"124","rubrique":"geologieMac","sous":"","nom":"Grès","details":""},{"id":"125","rubrique":"geologieMac","sous":"","nom":"Marbre","details":""},{"id":"126","rubrique":"geologieMac","sous":"","nom":"Péridotite","details":""},{"id":"127","rubrique":"geologieMac","sous":"","nom":"Schiste","details":""},{"id":"128","rubrique":"securite","sous":"","nom":"Blouse","details":""},{"id":"129","rubrique":"securite","sous":"","nom":"Gants","details":""},{"id":"130","rubrique":"securite","sous":"","nom":"Lunettes de protection","details":""}];
@@ -4788,6 +5035,10 @@
     }
 
     function selectedLists() {
+      return checkedLists();
+    }
+
+    function selectedListsOrActive() {
       const checked = checkedLists();
       if (checked.length) return checked;
       const active = activeList();
@@ -4810,6 +5061,277 @@
       const has = state.selectedIds.indexOf(id) >= 0;
       if (on && !has) state.selectedIds.push(id);
       if (!on && has) state.selectedIds = state.selectedIds.filter((x) => x !== id);
+    }
+
+    function ensureTabs() {
+      if (!Array.isArray(state.tabs) || !state.tabs.length) {
+        state.tabs = [{ id: 1, name: "1" }];
+        state.activeTabId = 1;
+      }
+      if (!state.tabs.some((t) => t.id === state.activeTabId)) state.activeTabId = state.tabs[0].id;
+    }
+
+    function nextTabName() {
+      const used = new Set((state.tabs || []).map((t) => String(t.name || "")));
+      let n = 1;
+      while (used.has(String(n))) n++;
+      return String(n);
+    }
+
+    function tabPackFromState() {
+      return {
+        lists: state.lists,
+        activeId: state.activeId,
+        selectedIds: (state.selectedIds || []).slice(),
+        marge: state.marge,
+        orient: state.orient,
+        combine: state.combine,
+        combineAsked: state.combineAsked,
+        vlines: state.vlines,
+        numbering: state.numbering,
+        numberFrom: state.numberFrom,
+        legend: state.legend,
+        showBadges: state.showBadges,
+        showNotes: state.showNotes,
+        notesPos: state.notesPos,
+        design: state.design,
+        palette: state.palette,
+        forme: state.forme,
+        titre: state.titre,
+        fontPt: state.fontPt,
+        titlePt: state.titlePt,
+        thPt: state.thPt,
+        rowY: state.rowY,
+        badges: state.badges,
+        badgeShape: state.badgeShape,
+        sharedCols: state.sharedCols,
+        editFrame: state.editFrame,
+        tpInner: state.tpInner,
+      };
+    }
+
+    function applyTabPack(pack, opts) {
+      if (!pack) return;
+      state.lists = Array.isArray(pack.lists) ? pack.lists : [];
+      state.activeId = pack.activeId != null ? pack.activeId : (state.lists[0] && state.lists[0].id);
+      state.selectedIds = Array.isArray(pack.selectedIds) ? pack.selectedIds.slice() : (state.activeId != null ? [state.activeId] : []);
+      if (pack.marge) state.marge = pack.marge;
+      if (pack.orient) state.orient = pack.orient;
+      if (pack.combine != null) state.combine = Boolean(pack.combine);
+      if (pack.combineAsked != null) state.combineAsked = Boolean(pack.combineAsked);
+      if (pack.vlines != null) state.vlines = pack.vlines !== false;
+      if (pack.numbering) state.numbering = pack.numbering;
+      if (pack.numberFrom) state.numberFrom = pack.numberFrom;
+      if (pack.legend != null) state.legend = pack.legend !== false;
+      if (pack.showBadges != null) state.showBadges = Boolean(pack.showBadges);
+      if (pack.showNotes != null) state.showNotes = Boolean(pack.showNotes);
+      if (pack.notesPos) state.notesPos = pack.notesPos;
+      if (pack.badges) state.badges = pack.badges;
+      if (pack.badgeShape) state.badgeShape = pack.badgeShape;
+      if (Array.isArray(pack.sharedCols)) state.sharedCols = pack.sharedCols;
+      if (pack.editFrame) state.editFrame = normalizeEditFrame(pack.editFrame);
+      if (pack.tpInner != null) {
+        state.tpInner = normalizeTpInner(pack.tpInner);
+        persistTpInner();
+      }
+      if (pack.fontPt != null) state.fontPt = clampFontPt(pack.fontPt);
+      if (pack.titlePt != null) state.titlePt = clampTitlePt(pack.titlePt);
+      if (pack.thPt != null) state.thPt = clampThPt(pack.thPt);
+      if (pack.rowY != null) state.rowY = pack.rowY;
+      applyTheme(pack.design || state.design, pack.palette || state.palette, pack.forme || state.forme, pack.titre || state.titre);
+      applyRootTheme();
+      reviveLists(state.lists);
+      prunePageSelection();
+      if (!opts || opts.render !== false) {
+        renderAll();
+        if (isPhoneLayout() && state.lists.length) showPreview();
+      }
+    }
+
+    function stashActiveTab() {
+      ensureTabs();
+      const tab = state.tabs.find((t) => t.id === state.activeTabId);
+      if (!tab) return;
+      Object.assign(tab, tabPackFromState());
+    }
+
+    function tabListsOf(tab) {
+      if (!tab) return [];
+      if (tab.id === state.activeTabId) return state.lists || [];
+      return Array.isArray(tab.lists) ? tab.lists : [];
+    }
+
+    function tabHasRealContent(lists) {
+      return (lists || []).some((l) => l && !l.sample && !isBlankList(l));
+    }
+
+    function hasRealContent() {
+      ensureTabs();
+      if (tabHasRealContent(state.lists)) return true;
+      return state.tabs.some((t) => t.id !== state.activeTabId && tabHasRealContent(tabListsOf(t)));
+    }
+
+    function activateFreshTab() {
+      ensureTabs();
+      stashActiveTab();
+      const tab = { id: nextTabId++, name: nextTabName() };
+      state.tabs.push(tab);
+      state.activeTabId = tab.id;
+      state.lists = [];
+      state.activeId = null;
+      state.selectedIds = [];
+      state.combine = false;
+      state.combineAsked = false;
+    }
+
+    function switchToTab(id, opts) {
+      ensureTabs();
+      if (id === state.activeTabId) return;
+      const tab = state.tabs.find((t) => t.id === id);
+      if (!tab) return;
+      if (!opts || opts.hist !== false) pushHist();
+      stashActiveTab();
+      state.activeTabId = id;
+      applyTabPack(tab, { render: opts && opts.render === false ? false : true });
+      clearZone();
+    }
+
+    function addEmptyTab() {
+      pushHist();
+      activateFreshTab();
+      renderAll();
+      announce("Onglet " + (state.tabs.find((t) => t.id === state.activeTabId) || {}).name + " créé.");
+    }
+
+    function tabIsEmpty(tab) {
+      const lists = tabListsOf(tab);
+      return !lists.length || lists.every((l) => !l || isBlankList(l) || l.sample);
+    }
+
+    function closeTab(id) {
+      ensureTabs();
+      if (state.tabs.length < 2) {
+        announce("Gardez au moins un onglet.");
+        return;
+      }
+      const tab = state.tabs.find((t) => t.id === id);
+      if (!tab) return;
+      if (!tabIsEmpty(tab) && !window.confirm("Fermer l’onglet « " + tab.name + " » et ses pages ?")) return;
+      pushHist();
+      const idx = state.tabs.findIndex((t) => t.id === id);
+      if (id === state.activeTabId) {
+        const next = state.tabs[idx + 1] || state.tabs[idx - 1];
+        state.tabs = state.tabs.filter((t) => t.id !== id);
+        state.activeTabId = next.id;
+        applyTabPack(next, { render: false });
+        clearZone();
+      } else {
+        state.tabs = state.tabs.filter((t) => t.id !== id);
+      }
+      renderAll();
+      announce("Onglet fermé.");
+    }
+
+    function renameTab(id, name) {
+      const tab = (state.tabs || []).find((t) => t.id === id);
+      if (!tab) return;
+      const v = String(name || "").trim() || nextTabName();
+      tab.name = v;
+    }
+
+    function renderTabs() {
+      const bar = $("tabBar");
+      const host = $("tabList");
+      if (!bar || !host) return;
+      ensureTabs();
+      const show = state.lists.length > 0 || state.tabs.length > 1;
+      bar.hidden = !show;
+      host.innerHTML = "";
+      state.tabs.forEach((tab) => {
+        const on = tab.id === state.activeTabId;
+        const el = document.createElement("div");
+        el.className = "tab-item" + (on ? " is-on" : "");
+        el.setAttribute("role", "tab");
+        el.setAttribute("aria-selected", on ? "true" : "false");
+        el.dataset.tabId = String(tab.id);
+        const name = document.createElement("span");
+        name.className = "tab-name";
+        name.textContent = tab.name || "1";
+        name.title = "Double-clic pour renommer";
+        el.appendChild(name);
+        el.addEventListener("click", (e) => {
+          if (e.target.closest(".tab-x, .tab-name-field")) return;
+          switchToTab(tab.id);
+        });
+        el.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const input = document.createElement("input");
+          input.className = "tab-name-field";
+          input.type = "text";
+          input.value = tab.name || "";
+          input.setAttribute("aria-label", "Nom de l’onglet");
+          name.replaceWith(input);
+          input.focus();
+          input.select();
+          const done = () => {
+            renameTab(tab.id, input.value);
+            renderTabs();
+          };
+          input.addEventListener("blur", done);
+          input.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") { ev.preventDefault(); input.blur(); }
+            if (ev.key === "Escape") { ev.preventDefault(); renderTabs(); }
+          });
+        });
+        if (state.tabs.length > 1) {
+          const x = document.createElement("button");
+          x.className = "tab-x";
+          x.type = "button";
+          x.title = "Fermer l’onglet";
+          x.setAttribute("aria-label", "Fermer l’onglet " + tab.name);
+          x.textContent = "×";
+          x.addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeTab(tab.id);
+          });
+          el.appendChild(x);
+        }
+        host.appendChild(el);
+      });
+    }
+
+    function showPlaceModal(lead, opts) {
+      return new Promise((resolve) => {
+        const back = $("placeModal");
+        if (!back) {
+          resolve("after");
+          return;
+        }
+        if (lead && $("placeLead")) $("placeLead").textContent = lead;
+        const replaceBtn = $("placeReplace");
+        if (replaceBtn) replaceBtn.hidden = !(opts && opts.replace);
+        back.hidden = false;
+        const finish = (val) => {
+          if (placeDlgRestore) {
+            placeDlgRestore();
+            placeDlgRestore = null;
+          }
+          if (replaceBtn) replaceBtn.hidden = true;
+          back.hidden = true;
+          resolve(val);
+        };
+        placeDlgRestore = attachDialog(back, () => finish(""));
+        $("placeAfter").onclick = () => finish("after");
+        $("placeTab").onclick = () => finish("tab");
+        if (replaceBtn) replaceBtn.onclick = () => finish("replace");
+        $("placeCancel").onclick = () => finish("");
+      });
+    }
+
+    async function askPlaceNew(lead) {
+      if (!tabHasRealContent(state.lists)) return "after";
+      return showPlaceModal(lead || "La page en cours ne sera pas remplacée. Ajoutez les nouvelles feuilles à la suite, ou dans un autre onglet.");
     }
 
     function pageSizeOf(orient) {
@@ -4896,10 +5418,15 @@
     }
 
     function snapshot() {
+      stashActiveTab();
       return JSON.parse(JSON.stringify({
         nextId: nextId,
+        nextTabId: nextTabId,
         lists: state.lists,
         activeId: state.activeId,
+        selectedIds: state.selectedIds,
+        tabs: state.tabs,
+        activeTabId: state.activeTabId,
         marge: state.marge,
         orient: state.orient,
         combine: state.combine,
@@ -4949,11 +5476,13 @@
       const dock = $("histDock");
       if (undoBtn) undoBtn.disabled = !hist.length;
       if (redoBtn) redoBtn.disabled = !future.length;
-      if (dock) dock.hidden = !state.lists.length && !hist.length && !future.length;
+      if (dock) dock.hidden = !state.lists.length && !(state.tabs && state.tabs.length > 1) && !hist.length && !future.length;
     }
 
     function needsSave() {
-      return dirty && state.lists.some((l) => !l.sample);
+      if (!dirty) return false;
+      if (state.lists.some((l) => l && !l.sample && !isBlankList(l))) return true;
+      return (state.tabs || []).some((t) => t.id !== state.activeTabId && tabHasRealContent(tabListsOf(t)));
     }
 
     function pageLabel(list) {
@@ -4970,18 +5499,43 @@
       $("dropTitle").textContent = "Déposer un fichier";
       $("dropSub").hidden = false;
       if (!has) $("dropSub").textContent = "CSV · TXT · Excel · tableau · modèle";
-      else if (isBlankList(active)) $("dropSub").textContent = "Remplit la page en cours";
-      else $("dropSub").textContent = "Remplace la page en cours";
+      else if (isBlankList(active)) $("dropSub").textContent = "Remplit la page blanche, ou demande un onglet";
+      else $("dropSub").textContent = "Ajoute une page (sans écraser) ou un onglet";
       drop.classList.remove("is-btn");
       const fileInput = drop.querySelector("input");
       if (fileInput) fileInput.setAttribute("aria-label", "Fichier à importer");
     }
 
+    function reviveLists(lists) {
+      (lists || []).forEach((l) => {
+        if (!l) return;
+        l.marks = hydrateMarks(l.marks);
+        if (!normalizeOrient(l.orient)) l.orient = normalizeOrient(state.orient) || "auto";
+        if (l.mode === "tp") {
+          l.tp = hydrateTp(l.tp);
+          l.blank = false;
+          ensureTpTable(l, { fillGroups: !l.headers.length || !l.rows.length });
+        } else if (l.mode === "prog") {
+          l.tp = hydrateTp(l.tp);
+          l.blank = false;
+          ensureProgTable(l, { fill: !l.headers.length || !l.rows.length });
+        } else {
+          l.mode = "";
+        }
+        ensureAlign(l);
+      });
+      return lists;
+    }
+
     function restoreSnap(s) {
       histBusy = true;
       nextId = s.nextId;
+      if (s.nextTabId) nextTabId = s.nextTabId;
       state.lists = s.lists || [];
       state.activeId = s.activeId;
+      state.selectedIds = Array.isArray(s.selectedIds) ? s.selectedIds.slice() : state.selectedIds;
+      state.tabs = Array.isArray(s.tabs) && s.tabs.length ? s.tabs : [{ id: 1, name: "1" }];
+      state.activeTabId = s.activeTabId != null ? s.activeTabId : (state.tabs[0] && state.tabs[0].id);
       state.marge = s.marge;
       state.orient = s.orient;
       state.combine = s.combine;
@@ -5010,22 +5564,11 @@
       state.editFrame = normalizeEditFrame(s.editFrame);
       state.tpInner = s.tpInner != null ? normalizeTpInner(s.tpInner) : true;
       persistTpInner();
-      state.lists.forEach((l) => {
-        if (!l) return;
-        l.marks = hydrateMarks(l.marks);
-        if (!normalizeOrient(l.orient)) l.orient = normalizeOrient(state.orient) || "auto";
-        if (l.mode === "tp") {
-          l.tp = hydrateTp(l.tp);
-          l.blank = false;
-          ensureTpTable(l, { fillGroups: !l.headers.length || !l.rows.length });
-        } else if (l.mode === "prog") {
-          l.tp = hydrateTp(l.tp);
-          l.blank = false;
-          ensureProgTable(l, { fill: !l.headers.length || !l.rows.length });
-        } else {
-          l.mode = "";
-        }
-        ensureAlign(l);
+      applyTheme(state.design, state.palette, state.forme, state.titre);
+      applyRootTheme();
+      reviveLists(state.lists);
+      (state.tabs || []).forEach((t) => {
+        if (t && t.id !== state.activeTabId) reviveLists(t.lists);
       });
       prunePageSelection();
       histBusy = false;
@@ -5269,6 +5812,9 @@
         blank: false,
         keepEmptyRows: false,
         orient: "auto",
+        design: state.design || "registre",
+        palette: state.palette || "teal",
+        forme: state.forme || "rectiligne",
         mode: "",
         tp: null,
       };
@@ -7344,8 +7890,16 @@
     }
 
     async function addBlankPage(index) {
-      if (!state.lists.length) return;
-      pushHist();
+      const intercalate = Number.isInteger(index);
+      if (!intercalate) {
+        const place = await askPlaceNew("Ajouter une page blanche à la suite, ou dans un autre onglet ?");
+        if (!place) return;
+        pushHist();
+        if (place === "tab") activateFreshTab();
+      } else {
+        if (!state.lists.length) return;
+        pushHist();
+      }
       const list = makeBlankList(nextBlankName());
       list.orient = defaultListOrient();
       const at = Number.isInteger(index) ? Math.max(0, Math.min(state.lists.length, index)) : state.lists.length;
@@ -7462,10 +8016,10 @@
       return list;
     }
 
-    function createEmptyTable(nCols, nRows) {
+    function createEmptyTable(nCols, nRows, opts) {
       const cols = clampEmptyCols(nCols);
       const rows = clampEmptyRows(nRows);
-      pushHist();
+      if (!opts || opts.hist !== false) pushHist();
       if (state.lists.length && state.lists.every((l) => l.sample)) {
         state.lists = [];
         state.activeId = null;
@@ -7612,6 +8166,9 @@
       list.blank = Boolean(raw.blank) || (!headers.length && !rows.length);
       list.keepEmptyRows = Boolean(raw.keepEmptyRows);
       list.orient = normalizeOrient(raw.orient) || normalizeOrient(state.orient) || "auto";
+      if (DESIGNS.includes(raw.design)) list.design = raw.design;
+      if (PALETTES.includes(raw.palette)) list.palette = raw.palette;
+      if (FORMES.includes(raw.forme)) list.forme = raw.forme;
       list.tpSized = Boolean(raw.tpSized);
       list.tpFitted = Boolean(raw.tpFitted);
       list.tpAlignReady = Boolean(raw.tpAlignReady) || Object.keys(raw.alignH || {}).length > 0 || Object.keys(raw.colAlignH || {}).length > 0;
@@ -7848,6 +8405,79 @@
       };
     }
 
+    function isFullAxisSelection(list, box, kind) {
+      if (!list || !box) return false;
+      if (kind === "row") {
+        const nC = (list.headers || []).length;
+        return nC > 0 && box.c0 <= 0 && box.c1 >= nC - 1;
+      }
+      const nR = (list.rows || []).length;
+      return nR > 0 && box.r0 <= 0 && box.r1 >= nR - 1;
+    }
+
+    function zoneInsertGrowTargets(list, box, kind, side) {
+      if (!list || !box || !Array.isArray(list.merges)) return [];
+      if (isFullAxisSelection(list, box, kind)) return [];
+      if (kind === "row") {
+        const edge = side === "before" ? box.r0 : box.r1;
+        return list.merges.filter((m) => {
+          if (!(m.rs > 1)) return false;
+          if (m.r > edge || m.r + m.rs - 1 < edge) return false;
+          const rootInSel = m.c >= box.c0 && m.c <= box.c1 && m.r >= box.r0 && m.r <= box.r1;
+          return !rootInSel;
+        });
+      }
+      const edge = side === "before" ? box.c0 : box.c1;
+      return list.merges.filter((m) => {
+        if (!(m.cs > 1)) return false;
+        if (m.c > edge || m.c + m.cs - 1 < edge) return false;
+        const rootInSel = m.r >= box.r0 && m.r <= box.r1 && m.c >= box.c0 && m.c <= box.c1;
+        return !rootInSel;
+      });
+    }
+
+    function findMergeAfterInsert(list, before, at, kind) {
+      if (!before || !list || !Array.isArray(list.merges)) return null;
+      if (kind === "row") {
+        const nr = before.r >= at ? before.r + 1 : before.r;
+        const nrs = (before.r < at && before.r + before.rs > at) ? before.rs + 1 : before.rs;
+        return list.merges.find((m) => m.r === nr && m.c === before.c && m.rs === nrs && m.cs === before.cs) || null;
+      }
+      const nc = before.c >= at ? before.c + 1 : before.c;
+      const ncs = (before.c < at && before.c + before.cs > at) ? before.cs + 1 : before.cs;
+      return list.merges.find((m) => m.c === nc && m.r === before.r && m.cs === ncs && m.rs === before.rs) || null;
+    }
+
+    function growMergeAfterInsert(list, before, at, kind, side) {
+      const m = findMergeAfterInsert(list, before, at, kind);
+      if (!m) return;
+      if (kind === "row") {
+        if (side === "after" && before.r + before.rs === at) m.rs += 1;
+        else if (side === "before" && before.r === at) {
+          m.r -= 1;
+          m.rs += 1;
+        }
+        return;
+      }
+      if (side === "after" && before.c + before.cs === at) m.cs += 1;
+      else if (side === "before" && before.c === at) {
+        m.c -= 1;
+        m.cs += 1;
+      }
+    }
+
+    function renumberProgSeances(list) {
+      if (!isProgList(list) || !list.rows) return;
+      let num = 1;
+      for (let ri = 1; ri < list.rows.length; ri++) {
+        const row = list.rows[ri];
+        if (!row) continue;
+        while (row.length < (list.headers || []).length) row.push("");
+        row[1] = String(num);
+        num += 1;
+      }
+    }
+
     function syncMergeInsertBtns() {
       const list = zoneList();
       const box = zoneInsertAnchor(list);
@@ -7891,6 +8521,9 @@
       const at = kind === "row"
         ? (side === "before" ? box.r0 : box.r1 + 1)
         : (side === "before" ? box.c0 : box.c1 + 1);
+      const growBefore = zoneInsertGrowTargets(list, box, kind, side).map((g) => ({
+        r: g.r, c: g.c, rs: g.rs, cs: g.cs,
+      }));
       pushHist();
       const ok = kind === "row"
         ? insertRowAt(list, at, blankDataRow(list)) >= 0
@@ -7899,6 +8532,8 @@
         discardLastHist();
         return false;
       }
+      growBefore.forEach((g) => growMergeAfterInsert(list, g, at, kind, side));
+      if (kind === "row" && isProgList(list)) renumberProgSeances(list);
       if (zoneSel) {
         if (kind === "row") {
           zoneSel.ris = (zoneSel.ris || []).map((ri) => (ri >= at ? ri + 1 : ri));
@@ -8925,7 +9560,8 @@
       const prog = isProgList(list);
       const fillPage = tp || prog;
       const moved = (Number(list.posX) || 0) || (Number(list.posY) || 0);
-      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + (fillPage ? " is-tp-page" : "") + (prog ? " is-prog-page" : "") + (moved ? " is-moved" : "") + '" data-lid="' + list.id + '"' + blockPosStyle(list) + '>';
+      const picked = isListChecked(list.id);
+      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (picked ? " is-picked" : "") + (blank ? " is-blank-page" : "") + (fillPage ? " is-tp-page" : "") + (prog ? " is-prog-page" : "") + (moved ? " is-moved" : "") + '" data-lid="' + list.id + '"' + blockPosStyle(list) + '>';
       html += '<button type="button" class="page-sheet-del no-print" data-del-page="' + list.id + '" title="Supprimer cette page" aria-label="Supprimer cette page">×</button>';
       html += '<button type="button" class="block-move no-print" data-move-block="1" title="Déplacer le tableau sur la feuille" aria-label="Déplacer le tableau sur la feuille"><span aria-hidden="true">⠿</span></button>';
       if (tp || prog || title || comments.length) {
@@ -8984,10 +9620,19 @@
       state.titre = t;
     }
 
-    function sheetThemeClass() {
-      return " design-" + (state.design || "registre") +
-        " palette-" + (state.palette || "teal") +
-        " forme-" + (state.forme || "rectiligne") +
+    function themeOf(list) {
+      return {
+        design: DESIGNS.includes(list && list.design) ? list.design : (state.design || "registre"),
+        palette: PALETTES.includes(list && list.palette) ? list.palette : (state.palette || "teal"),
+        forme: FORMES.includes(list && list.forme) ? list.forme : (state.forme || "rectiligne"),
+      };
+    }
+
+    function sheetThemeClass(list) {
+      const t = themeOf(list);
+      return " design-" + t.design +
+        " palette-" + t.palette +
+        " forme-" + t.forme +
         " titre-" + (state.titre || "moyen");
     }
 
@@ -10179,7 +10824,14 @@
       const parts = data.parts || { design: true, sizes: true, page: true, info: true, columns: true };
       const s = data.settings || {};
       if (opts.hist !== false) pushHist();
-      if (parts.design) applyTheme(s.design, s.palette, s.forme, s.titre);
+      if (parts.design) {
+        applyTheme(s.design, s.palette, s.forme, s.titre);
+        selectedLists().forEach((l) => {
+          l.design = state.design;
+          l.palette = state.palette;
+          l.forme = state.forme;
+        });
+      }
       if (parts.sizes) {
         if (s.fontPt != null) state.fontPt = clampFontPt(s.fontPt);
         const preset = titrePreset(state.titre);
@@ -10193,7 +10845,7 @@
         if (s.marge) state.marge = s.marge;
         if (s.orient) {
           state.orient = s.orient;
-          state.lists.forEach((l) => { l.orient = s.orient; });
+          selectedLists().forEach((l) => { l.orient = s.orient; });
         }
         if (s.vlines != null) state.vlines = s.vlines !== false;
         if (s.numbering) state.numbering = s.numbering;
@@ -10224,7 +10876,7 @@
       if (parts.columns) {
         if (Array.isArray(s.sharedCols)) state.sharedCols = s.sharedCols.slice();
         if ($("colAll") && s.colAll != null) $("colAll").checked = Boolean(s.colAll);
-        state.lists.forEach((lst) => {
+        selectedLists().forEach((lst) => {
           if (!isSheetForm(lst)) applyStyleColumns(lst, data);
         });
       }
@@ -10358,7 +11010,7 @@
           hold.appendChild(makeSheetOrientToggle(group[0], lay.orient));
         }
         const sheet = document.createElement("div");
-        sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass() +
+        sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass(group[0]) +
           (lay.orient === "paysage" ? " is-paysage" : " is-portrait");
         const grid = document.createElement("div");
         grid.className = "sheet-grid";
@@ -10522,22 +11174,50 @@
       return wrap;
     }
 
+    function pageApplyLabel() {
+      const n = checkedLists().length;
+      const total = state.lists.length;
+      if (!total) return "";
+      if (!n) return "Aucune page cochée — ces réglages ne s’appliquent à rien.";
+      if (n === total) return total === 1 ? "S’applique à la page de cet onglet." : "S’applique à toutes les pages de cet onglet.";
+      if (n === 1) return "S’applique à la page cochée.";
+      return "S’applique aux " + n + " pages cochées.";
+    }
+
+    function syncPageApplyHints() {
+      const text = pageApplyLabel();
+      ["orientApplyHint", "titlesApplyHint", "colsApplyHint", "displayApplyHint"].forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.hidden = !state.lists.length;
+        el.textContent = text;
+      });
+    }
+
+    function syncAllPagesCheck() {
+      const box = $("selAllLists");
+      const wrap = $("pageAllWrap");
+      if (wrap) wrap.hidden = !state.lists.length;
+      if (!box) return;
+      const total = state.lists.length;
+      const n = checkedLists().length;
+      box.checked = total > 0 && n === total;
+      box.indeterminate = n > 0 && n < total;
+    }
+
     function syncPagesHint() {
       const hint = $("pagesHint");
-      const bar = $("pageSelBar");
-      const many = state.lists.length > 1;
       const n = checkedLists().length;
-      if (bar) bar.hidden = !many;
+      const total = state.lists.length;
+      syncAllPagesCheck();
+      syncPageApplyHints();
       if (!hint) return;
-      hint.hidden = !many;
-      if (!many) return;
-      if (n <= 0) {
-        hint.textContent = "Aucune page cochée — titre, commentaires, orientation et colonnes s’appliquent à la page active.";
-      } else if (n === 1) {
-        hint.textContent = "1 page sélectionnée — titre, commentaires, orientation et colonnes s’y appliquent.";
-      } else {
-        hint.textContent = n + " pages sélectionnées — titre, commentaires, orientation et colonnes s’y appliquent.";
-      }
+      hint.hidden = !total;
+      if (!total) return;
+      if (n <= 0) hint.textContent = "Cochez les pages à modifier (couleur, titre, orientation, colonnes).";
+      else if (n === total) hint.textContent = "Toutes les pages de cet onglet sont cochées.";
+      else if (n === 1) hint.textContent = "1 page cochée — les réglages s’y appliquent.";
+      else hint.textContent = n + " pages cochées — les réglages s’y appliquent.";
     }
 
     function syncOrientHint() {
@@ -10569,8 +11249,12 @@
       renderTitles();
       renderCols();
       renderMode();
+      renderDisplay();
       syncOrientRadios();
       syncOrientHint();
+      document.querySelectorAll(".list-block[data-lid]").forEach((el) => {
+        el.classList.toggle("is-picked", isListChecked(Number(el.dataset.lid)));
+      });
     }
 
     function renderChips() {
@@ -10594,7 +11278,8 @@
         box.type = "checkbox";
         box.className = "page-check";
         box.checked = picked;
-        box.setAttribute("aria-label", "Sélectionner la page " + ((list.titles && list.titles[0]) || list.name || (i + 1)));
+        const pageTitle = ((list.titles && list.titles[0]) || list.name || ("Page " + (i + 1))).replace(/\.[^.]+$/, "");
+        box.setAttribute("aria-label", "Page " + (i + 1) + " : " + pageTitle);
         box.addEventListener("click", (e) => e.stopPropagation());
         box.addEventListener("change", (e) => {
           e.stopPropagation();
@@ -10602,6 +11287,10 @@
           onPageSelectionChange();
         });
         row.appendChild(box);
+        const num = document.createElement("span");
+        num.className = "page-num";
+        num.textContent = String(i + 1);
+        row.appendChild(num);
         const nameWrap = document.createElement("span");
         nameWrap.className = "page-name";
         const name = document.createElement("input");
@@ -10638,7 +11327,14 @@
         }
         row.addEventListener("click", (e) => {
           if (e.target.closest(".x") || e.target.closest(".page-check") || e.target.closest(".page-name-field")) return;
-          setActiveList(list.id);
+          if (e.ctrlKey || e.metaKey) {
+            setListChecked(list.id, !isListChecked(list.id));
+            setActiveList(list.id);
+          } else {
+            state.selectedIds = [list.id];
+            setActiveList(list.id);
+          }
+          onPageSelectionChange();
         });
         if (on) {
           const x = document.createElement("button");
@@ -10854,7 +11550,7 @@
     }
 
     function ensureTpPages() {
-      const selected = selectedLists();
+      const selected = selectedListsOrActive();
       const selectedTp = selected.filter(isTpList);
       if (selectedTp.length) {
         selectedTp.forEach((l) => {
@@ -10887,7 +11583,7 @@
 
     function activateListePages() {
       if (activeList() && !isSheetForm(activeList())) return;
-      const selected = selectedLists().filter((l) => !isSheetForm(l));
+      const selected = selectedListsOrActive().filter((l) => !isSheetForm(l));
       if (selected.length) {
         setActiveList(selected[0].id, { scroll: false });
         return;
@@ -10897,7 +11593,7 @@
     }
 
     function ensureProgPages() {
-      const selected = selectedLists();
+      const selected = selectedListsOrActive();
       const selectedProg = selected.filter(isProgList);
       if (selectedProg.length) {
         selectedProg.forEach((l) => {
@@ -10930,8 +11626,23 @@
 
     function readTpMatQty() {
       const el = $("tpMatQty");
-      const n = Math.round(Number(el && el.value));
-      return Number.isFinite(n) && n > 0 ? Math.min(999, n) : 1;
+      const raw = el ? String(el.value || "").replace(",", ".").trim() : "";
+      const n = Math.round(Number(raw));
+      const q = Number.isFinite(n) && n > 0 ? Math.min(999, n) : 1;
+      tpUi.qty = q;
+      return q;
+    }
+
+    function setTpMatQty(n) {
+      const q = clampTpQty(n, 1) || 1;
+      tpUi.qty = q;
+      const el = $("tpMatQty");
+      if (el) el.value = String(q);
+      return q;
+    }
+
+    function bumpTpMatQty(delta) {
+      setTpMatQty(readTpMatQty() + delta);
     }
 
     function addTpItem(name, qty) {
@@ -11122,6 +11833,7 @@
       if (!back) return;
       closeTpChoiceMenu();
       back.hidden = false;
+      setTpMatQty(tpUi.qty > 0 ? tpUi.qty : 1);
       const search = $("tpMatSearch");
       if (search && document.activeElement !== search) search.value = tpUi.q || "";
       renderTpCatalog();
@@ -11159,14 +11871,16 @@
       $("optLegend").checked = state.legend;
       $("badgeWrap").hidden = !state.showBadges;
       syncEditFrame();
+      const themeSrc = primaryList() || activeList();
+      const theme = themeOf(themeSrc);
       document.querySelectorAll('input[name="design"]').forEach((el) => {
-        el.checked = el.value === state.design;
+        el.checked = el.value === theme.design;
       });
       document.querySelectorAll('input[name="palette"]').forEach((el) => {
-        el.checked = el.value === state.palette;
+        el.checked = el.value === theme.palette;
       });
       document.querySelectorAll('input[name="forme"]').forEach((el) => {
-        el.checked = el.value === state.forme;
+        el.checked = el.value === theme.forme;
       });
       applyFontNow(state.fontPt);
       applyTitleNow(state.titlePt);
@@ -11206,6 +11920,7 @@
     function renderAll() {
       renderPanel();
       renderPreview();
+      renderTabs();
       syncAppLayout();
       syncHistBtns();
     }
@@ -11459,8 +12174,8 @@
       announce(asSplit ? "Cellules fractionnées." : "Cellules fusionnées.");
     }
 
-    function createTpSheet(nCols, nRows) {
-      pushHist();
+    function createTpSheet(nCols, nRows, opts) {
+      if (!opts || opts.hist !== false) pushHist();
       if (state.lists.length && state.lists.every((l) => l.sample)) {
         state.lists = [];
         state.activeId = null;
@@ -11470,7 +12185,7 @@
       const shareRows = Math.max(TP_SHARE_SLOTS, Math.min(40, (clampEmptyRows(nRows) || 22) - 16));
       const active = activeList();
       let list;
-      if (active && (isBlankList(active) || isTpList(active))) {
+      if (active && isBlankList(active)) {
         list = convertToTp(active);
         list.tpAlignReady = false;
         list.tpSized = false;
@@ -11492,8 +12207,8 @@
       announce("Fiche TP créée.");
     }
 
-    function createProgSheet(nCols, nRows) {
-      pushHist();
+    function createProgSheet(nCols, nRows, opts) {
+      if (!opts || opts.hist !== false) pushHist();
       if (state.lists.length && state.lists.every((l) => l.sample)) {
         state.lists = [];
         state.activeId = null;
@@ -11503,7 +12218,7 @@
       const nSeances = Math.max(progSeanceCount(), Math.min(40, (clampEmptyRows(nRows) || 17) - 1));
       const active = activeList();
       let list;
-      if (active && (isBlankList(active) || isProgList(active))) {
+      if (active && isBlankList(active)) {
         list = convertToProg(active);
         list.tpAlignReady = false;
         list.tpSized = false;
@@ -11525,14 +12240,21 @@
       announce("Fiche progression créée.");
     }
 
-    function confirmCreateTable() {
+    async function confirmCreateTable() {
       if (tableModalMode === "cells") return;
       const { cols, rows } = readCreateSize();
       const kind = createAsKind;
       closeCreateTableModal();
-      if (kind === "prog") createProgSheet(cols, rows);
-      else if (kind === "tp") createTpSheet(cols, rows);
-      else createEmptyTable(cols, rows);
+      const place = await askPlaceNew();
+      if (!place) return;
+      const skipHist = place === "tab";
+      if (place === "tab") {
+        pushHist();
+        activateFreshTab();
+      }
+      if (kind === "prog") createProgSheet(cols, rows, { hist: !skipHist });
+      else if (kind === "tp") createTpSheet(cols, rows, { hist: !skipHist });
+      else createEmptyTable(cols, rows, { hist: !skipHist });
     }
 
     async function pasteFromClipboard() {
@@ -11712,21 +12434,29 @@
 
     async function ingestParsed(items) {
       if (!items.length) return;
-      pushHist();
       const addingReal = items.some((item) => !item.sample);
+      if (addingReal && tabHasRealContent(state.lists)) {
+        const place = await askPlaceNew();
+        if (!place) return;
+        pushHist();
+        if (place === "tab") activateFreshTab();
+      } else {
+        pushHist();
+      }
       if (addingReal && state.lists.length && state.lists.every((l) => l.sample)) {
         state.lists = [];
         state.activeId = null;
         state.selectedIds = [];
         state.combineAsked = false;
       }
-      const afterCount = state.lists.length + items.length - (activeList() ? 1 : 0);
+      const afterCount = state.lists.length + items.length - ((activeList() && isBlankList(activeList())) ? 1 : 0);
       if (afterCount >= 2 && !state.combineAsked) {
         state.combine = await askCombine();
         state.combineAsked = true;
       }
-      items.forEach((item, i) => {
-        const list = (i === 0 && activeList())
+      items.forEach((item) => {
+        const active = activeList();
+        const list = (active && isBlankList(active))
           ? fillActiveFromGrid(item.name, item.grid)
           : addListFromGrid(item.name, item.grid);
         if (item.sample) list.sample = true;
@@ -11742,46 +12472,148 @@
       revealActivePage();
     }
 
-    function loadProject(data) {
-      pushHist();
+    function serializeList(l) {
+      return {
+        name: l.name,
+        titles: l.titles,
+        headers: l.headers,
+        rows: l.rows,
+        order: l.order,
+        on: l.on,
+        custom: l.custom,
+        hidden: l.hidden,
+        marks: l.marks,
+        notes: l.notes || {},
+        hl: l.hl || {},
+        hlText: l.hlText || {},
+        alignH: l.alignH || {},
+        alignV: l.alignV || {},
+        colAlignH: l.colAlignH || {},
+        colAlignV: l.colAlignV || {},
+        widths: l.widths || {},
+        rowH: l.rowH || {},
+        merges: normalizeMerges(l.merges),
+        tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
+        posX: Number(l.posX) || 0,
+        posY: Number(l.posY) || 0,
+        sample: Boolean(l.sample),
+        blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
+        keepEmptyRows: Boolean(l.keepEmptyRows),
+        orient: listOrient(l),
+        design: themeOf(l).design,
+        palette: themeOf(l).palette,
+        forme: themeOf(l).forme,
+        mode: (l.mode === "tp" || l.mode === "prog") ? l.mode : "",
+        tp: (l.mode === "tp" || l.mode === "prog") ? hydrateTp(l.tp) : null,
+        tpSized: Boolean(l.tpSized),
+        tpFitted: Boolean(l.tpFitted),
+        tpAlignReady: Boolean(l.tpAlignReady),
+      };
+    }
+
+    function serializeTabSettings(src) {
+      src = src || state;
+      return {
+        marge: src.marge,
+        orient: src.orient,
+        combine: src.combine,
+        combineAsked: src.combineAsked,
+        vlines: src.vlines,
+        numbering: src.numbering,
+        numberFrom: src.numberFrom,
+        legend: src.legend,
+        showBadges: src.showBadges,
+        showNotes: src.showNotes,
+        notesPos: src.notesPos,
+        design: src.design,
+        palette: src.palette,
+        forme: src.forme,
+        titre: src.titre,
+        editFrame: src.editFrame,
+        tpInner: src.tpInner !== false,
+        fontPt: src.fontPt,
+        titlePt: src.titlePt,
+        thPt: src.thPt,
+        rowY: src.rowY,
+        badges: src.badges,
+        badgeShape: src.badgeShape,
+        sharedCols: src.sharedCols,
+        activeId: src.activeId,
+        selectedIds: src.selectedIds,
+      };
+    }
+
+    function hydrateIncomingTab(raw, fallbackSettings) {
+      const s = raw && raw.settings ? raw.settings : (fallbackSettings || {});
+      const lists = ((raw && raw.lists) || []).map((item) => hydrateList(item));
+      const tab = Object.assign({
+        name: (raw && raw.name) || nextTabName(),
+      }, s);
+      const srcId = raw && Number(raw.id);
+      tab._srcId = Number.isInteger(srcId) ? srcId : null;
+      tab.id = nextTabId++;
+      tab.lists = lists;
+      tab.activeId = lists[0] && lists[0].id;
+      tab.selectedIds = lists[0] ? [lists[0].id] : [];
+      if (!tab.name) tab.name = nextTabName();
+      return tab;
+    }
+
+    async function loadProject(data) {
       const s = data.settings || {};
-      state.marge = s.marge || "moyennes";
-      state.orient = s.orient || "auto";
-      state.combine = Boolean(s.combine);
-      state.combineAsked = true;
-      state.vlines = s.vlines !== false;
-      state.numbering = s.numbering || "off";
-      state.numberFrom = s.numberFrom || 1;
-      state.legend = s.legend !== false;
-      applyTheme(s.design, s.palette, s.forme, s.titre);
-      state.fontPt = clampFontPt(s.fontPt != null ? s.fontPt : 9.5);
-      const preset = titrePreset(state.titre);
-      state.titlePt = s.titlePt != null ? clampTitlePt(s.titlePt) : preset.title;
-      state.thPt = s.thPt != null ? clampThPt(s.thPt) : preset.th;
-      state.rowY = s.rowY > 0 ? Number(s.rowY) : null;
-      state.activeStamp = null;
-      state.activeFluo = null;
-      state.badges = Array.isArray(s.badges) ? s.badges : [];
-      state.showBadges = s.showBadges != null ? Boolean(s.showBadges) : state.badges.length > 0;
-      if (state.showBadges) ensureDefaultBadges();
-      const listsRaw = data.lists || [];
-      state.showNotes = s.showNotes != null ? Boolean(s.showNotes) : listsRaw.some((l) => l.notes && Object.keys(l.notes).length);
-      state.notesPos = s.notesPos === "left" || s.notesPos === "custom" ? s.notesPos : "right";
-      state.editFrame = normalizeEditFrame(s.editFrame);
-      state.tpInner = s.tpInner != null ? normalizeTpInner(s.tpInner) : true;
-      persistTpInner();
-      state.lists = listsRaw.map((raw) => hydrateList(raw));
+      const incoming = (Array.isArray(data.tabs) && data.tabs.length)
+        ? data.tabs.map((t) => hydrateIncomingTab(t, s))
+        : [hydrateIncomingTab({ name: "1", lists: data.lists || [], settings: s }, s)];
+      if (hasRealContent()) {
+        const place = await showPlaceModal("Charger ce fichier à la suite des pages actuelles, ou dans un autre onglet ?", { replace: true });
+        if (!place) return;
+        if (place === "replace") {
+          if (!(await guardLeave())) return;
+          incoming.forEach((t) => { delete t._srcId; });
+          pushHist();
+          const first = incoming[0];
+          const wanted = first;
+          state.tabs = incoming;
+          state.activeTabId = wanted.id;
+          applyTabPack(wanted, { render: false });
+          projectHandle = null;
+          projectHandleName = "";
+          dirty = false;
+          showError("");
+          renderAll();
+          syncAutosaveHint();
+          return;
+        }
+        incoming.forEach((t) => { delete t._srcId; });
+        pushHist();
+        if (place === "tab") {
+          incoming.forEach((t) => state.tabs.push(t));
+          switchToTab(incoming[0].id, { hist: false });
+        } else {
+          incoming[0].lists.forEach((l) => state.lists.push(l));
+          incoming.slice(1).forEach((t) => state.tabs.push(t));
+          if (!state.activeId && state.lists[0]) state.activeId = state.lists[0].id;
+          renderAll();
+        }
+        dirty = true;
+        return;
+      }
+      pushHist();
+      const first = incoming[0];
+      const wantedSrc = Number(data.activeTabId);
+      const wanted = incoming.find((t) => t._srcId === wantedSrc) || first;
+      incoming.forEach((t) => { delete t._srcId; });
+      state.tabs = incoming;
+      state.activeTabId = wanted.id;
+      applyTabPack(wanted, { render: false });
       if (state.showNotes) {
         const pos = state.notesPos === "left" ? "left" : "right";
         state.lists.forEach((l) => ensureRqOrder(l, pos));
       }
-      state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols.slice() : inferSharedCols(state.lists);
       if ($("colAll")) $("colAll").checked = s.colAll != null ? Boolean(s.colAll) : state.sharedCols.length > 0;
-      state.activeId = state.lists.length ? state.lists[0].id : null;
-      state.selectedIds = state.activeId != null ? [state.activeId] : [];
       const margeEl = document.querySelector('input[name="marge"][value="' + state.marge + '"]');
       if (margeEl) margeEl.checked = true;
-      const orientEl = document.querySelector('input[name="orient"][value="' + state.orient + '"]');
+      const orientEl = document.querySelector('input[name="orient"][value="' + (listOrient(state.lists[0]) || state.orient) + '"]');
       if (orientEl) orientEl.checked = true;
       dirty = false;
       showError("");
@@ -11790,9 +12622,10 @@
     }
 
     function projectPayload() {
+      stashActiveTab();
       return {
         app: "listes-pronote",
-        version: 2,
+        version: 3,
         savedAt: new Date().toISOString(),
         settings: {
           marge: state.marge,
@@ -11819,44 +12652,20 @@
           sharedCols: state.sharedCols,
           colAll: Boolean($("colAll") && $("colAll").checked),
         },
-        lists: state.lists.map((l) => ({
-          name: l.name,
-          titles: l.titles,
-          headers: l.headers,
-          rows: l.rows,
-          order: l.order,
-          on: l.on,
-          custom: l.custom,
-          hidden: l.hidden,
-          marks: l.marks,
-          notes: l.notes || {},
-          hl: l.hl || {},
-          hlText: l.hlText || {},
-          alignH: l.alignH || {},
-          alignV: l.alignV || {},
-          colAlignH: l.colAlignH || {},
-          colAlignV: l.colAlignV || {},
-          widths: l.widths || {},
-          rowH: l.rowH || {},
-          merges: normalizeMerges(l.merges),
-          tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
-          posX: Number(l.posX) || 0,
-          posY: Number(l.posY) || 0,
-          sample: Boolean(l.sample),
-          blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
-          keepEmptyRows: Boolean(l.keepEmptyRows),
-          orient: listOrient(l),
-          mode: (l.mode === "tp" || l.mode === "prog") ? l.mode : "",
-          tp: (l.mode === "tp" || l.mode === "prog") ? hydrateTp(l.tp) : null,
-          tpSized: Boolean(l.tpSized),
-          tpFitted: Boolean(l.tpFitted),
-          tpAlignReady: Boolean(l.tpAlignReady),
+        lists: state.lists.map(serializeList),
+        activeTabId: state.activeTabId,
+        tabs: (state.tabs || []).map((t) => ({
+          id: t.id,
+          name: t.name,
+          lists: (t.id === state.activeTabId ? state.lists : (t.lists || [])).map(serializeList),
+          settings: serializeTabSettings(t.id === state.activeTabId ? state : t),
         })),
       };
     }
 
     function projectFileName() {
-      const raw = (state.lists[0].titles[0] || state.lists[0].name || "listes").replace(/\.[^.]+$/, "");
+      const list = state.lists[0] || (state.tabs || []).reduce((found, t) => found || (t.lists && t.lists[0]), null);
+      const raw = ((list && list.titles && list.titles[0]) || (list && list.name) || "listes").replace(/\.[^.]+$/, "");
       const base = raw.replace(/[^\w\-àâäéèêëïîôùûüç ]+/gi, "").trim() || "listes";
       return base + ".listes.json";
     }
@@ -11870,27 +12679,163 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
 
+    function syncAutosaveHint() {
+      const el = $("autosaveHint");
+      if (!el) return;
+      if (projectHandle) {
+        el.hidden = false;
+        el.textContent = projectHandleName ? ("Autosave · " + projectHandleName) : "Autosave fichier";
+      } else {
+        let local = false;
+        try { local = Boolean(localStorage.getItem(AUTOSAVE_KEY)); } catch (_) {}
+        el.hidden = !local;
+        el.textContent = local ? "Autosave local" : "";
+      }
+    }
+
+    function writeLocalAutosave(json) {
+      try {
+        localStorage.setItem(AUTOSAVE_KEY, json);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function clearLocalAutosave() {
+      try { localStorage.removeItem(AUTOSAVE_KEY); } catch (_) {}
+    }
+
+    async function ensureHandleWritable(handle, interactive) {
+      if (!handle) return false;
+      try {
+        if (handle.queryPermission) {
+          let perm = await handle.queryPermission({ mode: "readwrite" });
+          if (perm === "granted") return true;
+          if (interactive && handle.requestPermission) {
+            perm = await handle.requestPermission({ mode: "readwrite" });
+            return perm === "granted";
+          }
+          return false;
+        }
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    async function writeProjectHandle(handle, json) {
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+    }
+
+    function rememberProjectHandle(handle, name) {
+      projectHandle = handle || null;
+      projectHandleName = name || (handle && handle.name) || "";
+      startAutosave();
+      syncAutosaveHint();
+    }
+
+    function startAutosave() {
+      if (autosaveTimer) return;
+      autosaveTimer = setInterval(() => { flushAutosave("interval"); }, AUTOSAVE_MS);
+    }
+
+    async function flushAutosave(reason) {
+      if (autosaveBusy || !needsSave()) return;
+      if (reason !== "hide" && Date.now() - lastAutosaveAt < AUTOSAVE_MIN_GAP) return;
+      autosaveBusy = true;
+      try {
+        const json = JSON.stringify(projectPayload(), null, 2);
+        writeLocalAutosave(json);
+        if (projectHandle && await ensureHandleWritable(projectHandle, false)) {
+          await writeProjectHandle(projectHandle, json);
+          dirty = false;
+          clearLocalAutosave();
+        }
+        lastAutosaveAt = Date.now();
+        syncAutosaveHint();
+      } catch (_) {
+      } finally {
+        autosaveBusy = false;
+      }
+    }
+
+    function showDirtyModal() {
+      return new Promise((resolve) => {
+        const back = $("dirtyModal");
+        if (!back) {
+          resolve(window.confirm("Vous risquez de tout perdre. Enregistrer ?") ? "save" : "skip");
+          return;
+        }
+        back.hidden = false;
+        const finish = (val) => {
+          if (dirtyDlgRestore) {
+            dirtyDlgRestore();
+            dirtyDlgRestore = null;
+          }
+          back.hidden = true;
+          resolve(val);
+        };
+        dirtyDlgRestore = attachDialog(back, () => finish("cancel"));
+        $("dirtySave").onclick = async () => {
+          const ok = await saveProject();
+          if (ok) finish("saved");
+        };
+        $("dirtySkip").onclick = () => finish("skip");
+        $("dirtyCancel").onclick = () => finish("cancel");
+      });
+    }
+
+    async function guardLeave() {
+      if (!needsSave()) return true;
+      const choice = await showDirtyModal();
+      return choice === "saved" || choice === "skip";
+    }
+
     async function saveProject() {
-      if (!state.lists.length) return false;
+      stashActiveTab();
+      if (!state.lists.length && !(state.tabs || []).some((t) => t.lists && t.lists.length)) return false;
       const json = JSON.stringify(projectPayload(), null, 2);
       const filename = projectFileName();
+      if (projectHandle && await ensureHandleWritable(projectHandle, true)) {
+        try {
+          await writeProjectHandle(projectHandle, json);
+          dirty = false;
+          clearLocalAutosave();
+          lastAutosaveAt = Date.now();
+          startAutosave();
+          syncAutosaveHint();
+          announce("Enregistré.");
+          return true;
+        } catch (err) {
+          if (err && err.name === "AbortError") return false;
+          projectHandle = null;
+        }
+      }
       if (window.showSaveFilePicker) {
         try {
           const handle = await window.showSaveFilePicker({
             suggestedName: filename,
             types: [{ description: "Tableau listes", accept: { "application/json": [".json"] } }],
           });
-          const writable = await handle.createWritable();
-          await writable.write(json);
-          await writable.close();
+          await writeProjectHandle(handle, json);
+          rememberProjectHandle(handle, handle.name || filename);
           dirty = false;
+          clearLocalAutosave();
+          lastAutosaveAt = Date.now();
+          announce("Enregistré.");
           return true;
         } catch (err) {
           if (err && err.name === "AbortError") return false;
         }
       }
       downloadProject(json, filename);
+      writeLocalAutosave(json);
       dirty = false;
+      startAutosave();
+      syncAutosaveHint();
       return true;
     }
 
@@ -11903,7 +12848,7 @@
       for (const f of files) {
         const parsed = await parseFile(f);
         if (parsed.project) {
-          loadProject(parsed.project);
+          await loadProject(parsed.project);
           return;
         }
         if (parsed.style) {
@@ -11926,9 +12871,13 @@
       const name = $("colInput").value.trim();
       const list = primaryList();
       if (!list) return;
-      pushHist();
       const all = $("colAll").checked;
       const targets = all ? state.lists : selectedLists();
+      if (!targets.length) {
+        announce("Cochez les pages à modifier.");
+        return;
+      }
+      pushHist();
       targets.forEach((lst) => insertCustomCol(lst, name));
       if (all && name && state.sharedCols.indexOf(name) < 0) state.sharedCols.push(name);
       $("colInput").value = "";
@@ -11970,18 +12919,13 @@
     }
     const selAllListsBtn = $("selAllLists");
     if (selAllListsBtn) {
-      selAllListsBtn.addEventListener("click", () => {
-        state.selectedIds = state.lists.map((l) => l.id);
+      selAllListsBtn.addEventListener("change", () => {
+        state.selectedIds = selAllListsBtn.checked ? state.lists.map((l) => l.id) : [];
         onPageSelectionChange();
       });
     }
-    const selNoneListsBtn = $("selNoneLists");
-    if (selNoneListsBtn) {
-      selNoneListsBtn.addEventListener("click", () => {
-        state.selectedIds = [];
-        onPageSelectionChange();
-      });
-    }
+    const tabAddBtn = $("tabAddBtn");
+    if (tabAddBtn) tabAddBtn.addEventListener("click", () => addEmptyTab());
     workspace.addEventListener("dragover", (e) => {
       if (![...e.dataTransfer.types].includes("Files")) return;
       e.preventDefault();
@@ -12113,24 +13057,46 @@
     document.querySelectorAll('input[name="design"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
+        const targets = selectedLists();
+        if (!targets.length) {
+          announce("Cochez les pages à modifier.");
+          renderDisplay();
+          return;
+        }
         pushHist();
         state.design = el.value;
+        targets.forEach((l) => { l.design = el.value; });
         renderPreview();
       });
     });
     document.querySelectorAll('input[name="palette"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
+        const targets = selectedLists();
+        if (!targets.length) {
+          announce("Cochez les pages à modifier.");
+          renderDisplay();
+          return;
+        }
         pushHist();
         state.palette = el.value;
+        targets.forEach((l) => { l.palette = el.value; });
+        applyRootTheme();
         renderPreview();
       });
     });
     document.querySelectorAll('input[name="forme"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
+        const targets = selectedLists();
+        if (!targets.length) {
+          announce("Cochez les pages à modifier.");
+          renderDisplay();
+          return;
+        }
         pushHist();
         state.forme = el.value;
+        targets.forEach((l) => { l.forme = el.value; });
         renderPreview();
       });
     });
@@ -13057,7 +14023,16 @@
       const block = e.target.closest(".list-block[data-lid]");
       if (block) {
         const lid = Number(block.dataset.lid);
-        if (lid) setActiveList(lid, { scroll: false });
+        if (lid) {
+          if (e.ctrlKey || e.metaKey) {
+            setListChecked(lid, !isListChecked(lid));
+            setActiveList(lid, { scroll: false });
+            onPageSelectionChange();
+            block.classList.toggle("is-picked", isListChecked(lid));
+          } else {
+            setActiveList(lid, { scroll: false });
+          }
+        }
       }
       const delCol = e.target.closest("[data-del-col]");
       if (delCol) {
@@ -13204,9 +14179,15 @@
     document.querySelectorAll('input[name="orient"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
+        const targets = selectedLists();
+        if (!targets.length) {
+          announce("Cochez les pages à modifier.");
+          syncOrientRadios();
+          return;
+        }
         pushHist();
         state.orient = el.value;
-        selectedLists().forEach((l) => {
+        targets.forEach((l) => {
           l.orient = el.value;
           if (isTpForm(l)) {
             l.tpFitted = false;
@@ -13228,6 +14209,8 @@
         if ($("colDelModal") && !$("colDelModal").hidden) return;
         if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
         if ($("replaceModal") && !$("replaceModal").hidden) return;
+        if ($("placeModal") && !$("placeModal").hidden) return;
+        if ($("dirtyModal") && !$("dirtyModal").hidden) return;
         hideSelMenu();
         if (zoneSel) {
           e.preventDefault();
@@ -13592,6 +14575,19 @@
         renderTpCatalog();
       });
     }
+    const tpMatQty = $("tpMatQty");
+    if (tpMatQty) {
+      tpMatQty.addEventListener("input", () => {
+        const raw = String(tpMatQty.value || "").replace(/[^\d]/g, "");
+        if (raw !== tpMatQty.value) tpMatQty.value = raw;
+      });
+      tpMatQty.addEventListener("change", () => setTpMatQty(readTpMatQty()));
+      tpMatQty.addEventListener("blur", () => setTpMatQty(readTpMatQty()));
+    }
+    const tpMatQtyMinus = $("tpMatQtyMinus");
+    if (tpMatQtyMinus) tpMatQtyMinus.addEventListener("click", () => bumpTpMatQty(-1));
+    const tpMatQtyPlus = $("tpMatQtyPlus");
+    if (tpMatQtyPlus) tpMatQtyPlus.addEventListener("click", () => bumpTpMatQty(1));
     function addCustomMateriel() {
       const input = $("tpMatCustom");
       const list = activeList();
@@ -13723,6 +14719,17 @@
         ingestParsed(items).catch((err) => showError(err.message || String(err)));
       }
     })();
+    window.addEventListener("beforeunload", (e) => {
+      if (!needsSave()) return;
+      e.preventDefault();
+      e.returnValue = "";
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") flushAutosave("hide");
+    });
+    window.addEventListener("pagehide", () => { flushAutosave("hide"); });
+    startAutosave();
+    syncAutosaveHint();
     syncHistBtns();
   </script>
 </body>
