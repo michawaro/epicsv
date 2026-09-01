@@ -389,14 +389,6 @@
       grid-template-columns: minmax(0, 1fr);
       gap: 6px;
     }
-    .add-replace-row.has-page {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-    .add-replace-row.has-page .drop,
-    .add-replace-row.has-page .btn {
-      min-width: 0;
-      white-space: nowrap;
-    }
 
     .block h2 {
       margin: 0 0 10px;
@@ -539,6 +531,62 @@
       outline: 2px dashed var(--seal);
       outline-offset: 6px;
       border-radius: 8px;
+      position: relative;
+    }
+    .page-sheet-del {
+      display: none;
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--teal-deep);
+      box-shadow: 0 6px 16px rgba(14, 143, 140, 0.28);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 4;
+      place-items: center;
+    }
+    .list-block.is-editing .page-sheet-del { display: grid; }
+    .page-sheet-del:hover { background: var(--seal); }
+    .blank-hint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 42mm;
+      padding: 28px 20px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .blank-hint p { margin: 0; max-width: 16em; line-height: 1.45; }
+    .page-plus {
+      flex: none;
+      display: none;
+      margin: 18px auto 72px;
+      width: 48px;
+      height: 48px;
+      border: 2px dashed rgba(14, 143, 140, 0.45);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.86);
+      color: var(--teal-deep);
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 8px 20px rgba(14, 143, 140, 0.16);
+    }
+    .app.has-lists .page-plus { display: grid; place-items: center; }
+    .page-plus:hover {
+      border-color: var(--teal-deep);
+      background: #fff;
     }
 
     .field {
@@ -894,9 +942,28 @@
     }
     .sel-dim button {
       background: transparent;
+      color: var(--teal-deep);
     }
-    .sel-dim button[aria-pressed="true"] {
-      background: rgba(14, 143, 140, 0.22);
+    .sel-bar .sel-dim button[aria-pressed="false"]:not(:disabled) {
+      background: transparent;
+      color: var(--teal-deep);
+      opacity: 0.72;
+    }
+    .sel-bar .sel-dim button[aria-pressed="true"],
+    .sel-bar .sel-dim button.is-on {
+      background: var(--teal-deep);
+      color: #fff;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    }
+    .sel-bar .sel-dim button[aria-pressed="true"]:hover,
+    .sel-bar .sel-dim button.is-on:hover {
+      background: #0a6b67;
+      color: #fff;
+    }
+    .sel-bar .sel-dim button[aria-pressed="false"]:hover:not(:disabled) {
+      background: rgba(14, 143, 140, 0.16);
+      color: var(--teal-deep);
+      opacity: 1;
     }
     .sel-dim button:disabled {
       opacity: 0.4;
@@ -1278,20 +1345,106 @@
     .sheets {
       display: flex;
       flex-direction: column;
-      gap: 22px;
+      gap: 28px;
       align-items: center;
       position: relative;
       z-index: 1;
     }
 
-    .sheet {
+    .page-format-hud {
+      flex: none;
+      align-self: center;
+      position: sticky;
+      top: 8px;
+      z-index: 3;
+      margin: 0 0 12px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--teal-deep);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 8px 20px rgba(14, 143, 140, 0.14);
+    }
+    .page-format-hud.is-overflow {
+      color: #9a3328;
+      background: #fff4f1;
+    }
+    .page-format-hud[hidden] { display: none !important; }
+
+    .sheet-frame {
+      width: var(--page-w);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .sheet-stage {
+      position: relative;
       width: var(--page-w);
       min-height: var(--page-h);
+    }
+    .sheet-paper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--page-w);
+      height: var(--page-h);
+      background: #e7f3f1;
+      border-radius: 2px;
+      box-shadow:
+        0 0 0 1px rgba(14, 143, 140, 0.16),
+        0 22px 50px rgba(14, 143, 140, 0.16);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .sheet-guide {
+      position: absolute;
+      inset: var(--page-margin);
       background: var(--paper);
+      box-shadow: inset 0 0 0 1px rgba(14, 143, 140, 0.16);
+      pointer-events: none;
+    }
+    .sheet-limit {
+      display: none;
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      top: var(--page-h);
+      z-index: 6;
+      pointer-events: none;
+      border-top: 2px dashed #c45c4a;
+    }
+    .sheet-limit span {
+      position: absolute;
+      right: 8px;
+      top: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #c45c4a;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .sheet-frame.is-overflow .sheet-limit { display: block; }
+    .sheet-frame.is-overflow .sheet-paper {
+      box-shadow:
+        0 0 0 1px rgba(196, 92, 74, 0.35),
+        0 22px 50px rgba(14, 143, 140, 0.16);
+    }
+
+    .sheet {
+      position: relative;
+      z-index: 1;
+      width: var(--page-w);
+      min-height: var(--page-h);
+      background: transparent;
       color: var(--ink);
       padding: var(--page-margin);
-      border-radius: 28px;
-      box-shadow: 0 22px 50px rgba(14, 143, 140, 0.16);
+      border-radius: 0;
+      box-shadow: none;
       --d-accent: #0e8f8c;
       --d-accent-ink: #fff;
       --d-title: #0e8f8c;
@@ -1375,6 +1528,12 @@
     .sheet-grid[data-n="4"] { grid-template-columns: 1fr 1fr 1fr 1fr; }
 
     .list-block { min-width: 0; }
+    .list-block.is-blank-page {
+      min-height: calc(var(--page-h) - 2 * var(--page-margin));
+      display: flex;
+      flex-direction: column;
+    }
+    .list-block.is-blank-page .blank-hint { flex: 1; }
     .list-block + .list-block {
       padding-left: 3.5mm;
       border-left: 0.4pt solid var(--d-rule, var(--rule));
@@ -2231,10 +2390,13 @@
       }
 
       .sheets { gap: 0; align-items: stretch; }
+      .sheet-meta, .sheet-paper, .sheet-guide, .sheet-limit, .page-format-hud { display: none !important; }
+      .sheet-frame, .sheet-stage { display: contents; }
 
       .sheet {
         width: 100% !important;
         min-height: 0 !important;
+        height: auto !important;
         padding: 0 !important;
         margin: 0 !important;
         box-shadow: none !important;
@@ -2246,6 +2408,10 @@
       .sheet:last-child {
         break-after: auto;
         page-break-after: auto;
+      }
+      .list-block.is-blank-page { display: none !important; }
+      .sheet:has(.list-block.is-blank-page):not(:has(.list-block:not(.is-blank-page))) {
+        display: none !important;
       }
 
       .liste thead { display: table-header-group; }
@@ -2287,7 +2453,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu { display: none !important; }
+      .row-handle, .row-resizer, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-sheet-del, .blank-hint { display: none !important; }
       .list-block.is-editing { outline: none !important; }
       .cell-edit:focus,
       .th-edit:focus,
@@ -2340,9 +2506,7 @@
         <div class="drop-title" id="dropTitle">Déposer un fichier</div>
         <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
       </label>
-      <button class="btn btn-ghost btn-compact" id="replaceBtn" type="button" hidden title="Efface la page en cours et la remplace par un nouveau CSV">Remplacer la page</button>
       </div>
-      <input type="file" id="replaceFile" accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
       <div class="import-row">
         <button class="btn btn-print btn-compact" id="pasteBtn" type="button">Coller le CSV</button>
         <button class="btn btn-ghost btn-compact" id="sampleBtn" type="button">Exemple</button>
@@ -2553,9 +2717,11 @@
         </p>
         <p>Déposez un export Pronote, chargez un tableau enregistré, collez un CSV (Ctrl+V), ou utilisez l’exemple.</p>
       </div>
+      <div class="page-format-hud no-print" id="pageFormatHud" hidden></div>
       <div class="stage" id="stage">
         <div class="sheets" id="sheets"></div>
       </div>
+      <button type="button" class="page-plus no-print" id="pageAddBtn" title="Ajouter une page blanche" aria-label="Ajouter une page blanche">+</button>
     </main>
   </div>
 
@@ -2937,14 +3103,15 @@
     function syncImportUi() {
       const has = state.lists.length > 0;
       const drop = $("drop");
-      $("dropTitle").textContent = has ? "Ajouter une page" : "Déposer un fichier";
-      $("dropSub").hidden = has;
+      const active = activeList();
+      $("dropTitle").textContent = "Déposer un fichier";
+      $("dropSub").hidden = false;
       if (!has) $("dropSub").textContent = "CSV · TXT · Excel · tableau · modèle";
-      $("replaceBtn").hidden = !has;
-      $("addReplaceRow").classList.toggle("has-page", has);
-      drop.classList.toggle("is-btn", has);
+      else if (isBlankList(active)) $("dropSub").textContent = "Remplit la page en cours";
+      else $("dropSub").textContent = "Remplace la page en cours";
+      drop.classList.remove("is-btn");
       const fileInput = drop.querySelector("input");
-      if (fileInput) fileInput.setAttribute("aria-label", has ? "Ajouter une page" : "Fichier à importer");
+      if (fileInput) fileInput.setAttribute("aria-label", "Fichier à importer");
     }
 
     function restoreSnap(s) {
@@ -2977,6 +3144,7 @@
       state.badges = s.badges || [];
       state.badgeShape = normalizeBadgeShape(s.badgeShape);
       state.sharedCols = Array.isArray(s.sharedCols) ? s.sharedCols : [];
+      state.lists.forEach((l) => { if (l) l.marks = hydrateMarks(l.marks); });
       histBusy = false;
     }
 
@@ -3207,19 +3375,91 @@
         widths: {},
         rowH: {},
         sample: false,
+        blank: false,
       };
     }
 
-    function addListFromGrid(name, grid) {
+    function isBlankList(list) {
+      if (!list) return false;
+      if (list.blank) return true;
+      return !list.headers.length && !list.rows.length;
+    }
+
+    function nextBlankName() {
+      let n = state.lists.length + 1;
+      const used = new Set(state.lists.map((l) => l.name));
+      while (used.has("Page " + n)) n++;
+      return "Page " + n;
+    }
+
+    function makeBlankList(name) {
+      const list = makeList(name || nextBlankName(), [], []);
+      list.blank = true;
+      list.order = [];
+      list.on = [];
+      return list;
+    }
+
+    async function addBlankPage() {
+      if (!state.lists.length) return;
+      pushHist();
+      const list = makeBlankList(nextBlankName());
+      state.lists.push(list);
+      state.activeId = list.id;
+      renderAll();
+      if (isPhoneLayout()) showPreview();
+      revealActivePage();
+      announce("Page blanche ajoutée. Déposez un fichier ou collez un tableau.");
+    }
+
+    function gridFromParsed(name, grid) {
       const { headers, rows } = normalizeGrid(grid);
       if (headers.length < 1 || rows.length < 1) {
         throw new Error("Aucune donnée tabulaire n’a été trouvée dans « " + name + " ».");
       }
+      return { headers, rows };
+    }
+
+    function fillListFromGrid(list, name, grid) {
+      const { headers, rows } = gridFromParsed(name, grid);
+      const wasBlank = isBlankList(list);
+      const keepName = wasBlank && list.name && !/^Page \d+$/i.test(list.name);
+      const keepTitles = wasBlank && (list.titles || []).some((t) => String(t).trim());
+      list.name = keepName ? list.name : name;
+      if (!keepTitles) list.titles = [""];
+      list.headers = headers;
+      list.rows = rows;
+      list.order = headers.map((_, i) => i);
+      list.on = headers.map((_, i) => !isEmptyColumn(rows.map((r) => r[i])));
+      list.custom = {};
+      list.hidden = {};
+      list.marks = {};
+      list.notes = {};
+      list.hl = {};
+      list.hlText = {};
+      list.widths = {};
+      list.rowH = {};
+      list.blank = false;
+      list.sample = false;
+      applySharedCols(list);
+      if (state.showNotes) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
+      if (showPastilles()) ensureMarksOrder(list);
+      return list;
+    }
+
+    function addListFromGrid(name, grid) {
+      const { headers, rows } = gridFromParsed(name, grid);
       const list = makeList(name, headers, rows);
       applySharedCols(list);
       state.lists.push(list);
       state.activeId = list.id;
       return list;
+    }
+
+    function fillActiveFromGrid(name, grid) {
+      const old = activeList();
+      if (!old) return addListFromGrid(name, grid);
+      return fillListFromGrid(old, name, grid);
     }
 
     function copyBag(src) {
@@ -3266,7 +3506,7 @@
       list.on = list.headers.map((_, i) => (Array.isArray(raw.on) && raw.on[i] != null ? Boolean(raw.on[i]) : Boolean(list.on[i])));
       list.custom = copyBag(raw.custom);
       list.hidden = copyBag(raw.hidden);
-      list.marks = copyBag(raw.marks);
+      list.marks = hydrateMarks(raw.marks);
       list.notes = copyBag(raw.notes);
       list.hl = copyHl(raw.hl);
       list.hlText = copyHl(raw.hlText);
@@ -3276,6 +3516,7 @@
         if (n > 0) list.widths[k] = n;
       });
       if (raw.sample) list.sample = true;
+      list.blank = Boolean(raw.blank) || (!headers.length && !rows.length);
       list.rowH = {};
       Object.keys(raw.rowH || {}).forEach((k) => {
         const n = Number(raw.rowH[k]);
@@ -3343,9 +3584,10 @@
     }
 
     function inferSharedCols(lists) {
-      if (!lists.length) return [];
-      const names = lists[0].headers.filter((h, i) => lists[0].custom[i]);
-      return names.filter((name) => lists.every((l) => listHasCustom(l, name)));
+      const filled = (lists || []).filter((l) => !isBlankList(l));
+      if (!filled.length) return [];
+      const names = filled[0].headers.filter((h, i) => filled[0].custom[i]);
+      return names.filter((name) => filled.every((l) => listHasCustom(l, name)));
     }
 
     function selectedCols(list) {
@@ -3379,13 +3621,13 @@
     }
 
     function ensureRqOrder(list, pos) {
-      if (!list || list.order.indexOf("rq") >= 0) return;
+      if (!list || isBlankList(list) || list.order.indexOf("rq") >= 0) return;
       if (pos === "left") list.order.unshift("rq");
       else list.order.push("rq");
     }
 
     function ensureMarksOrder(list) {
-      if (!list || list.order.indexOf("marks") >= 0) return;
+      if (!list || isBlankList(list) || list.order.indexOf("marks") >= 0) return;
       list.order.unshift("marks");
     }
 
@@ -3427,6 +3669,7 @@
     }
 
     function columnLayout(list) {
+      if (isBlankList(list)) return [];
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
       const items = [];
@@ -3633,9 +3876,36 @@
       return normalizeBadgeShape(on ? on.value : state.badgeShape);
     }
 
+    function markIdOf(entry) {
+      return entry && typeof entry === "object" ? entry.id : entry;
+    }
+
+    function markShapeOf(entry, badge) {
+      if (entry && typeof entry === "object" && entry.shape) return normalizeBadgeShape(entry.shape);
+      return badgeShapeOf(badge);
+    }
+
+    function normalizeMarkEntry(entry) {
+      const id = markIdOf(entry);
+      if (id == null || id === "") return null;
+      const badge = badgeById(id);
+      const shape = (entry && typeof entry === "object" && entry.shape)
+        ? normalizeBadgeShape(entry.shape)
+        : normalizeBadgeShape((badge && badge.shape) || state.badgeShape);
+      return { id, shape };
+    }
+
+    function hydrateMarks(raw) {
+      const out = {};
+      Object.keys(raw || {}).forEach((k) => {
+        const arr = Array.isArray(raw[k]) ? raw[k] : [];
+        out[k] = arr.map(normalizeMarkEntry).filter(Boolean);
+      });
+      return out;
+    }
+
     function syncBadgeShapeRadios() {
-      const active = badgeById(state.activeStamp);
-      const shape = active ? badgeShapeOf(active) : normalizeBadgeShape(state.badgeShape);
+      const shape = normalizeBadgeShape(state.badgeShape);
       document.querySelectorAll('input[name="badgeShape"]').forEach((el) => {
         el.checked = el.value === shape;
       });
@@ -3816,10 +4086,11 @@
       extras = extras || {};
       const ids = list.marks[ri] || [];
       let dots = '<span class="dots">';
-      ids.forEach((id) => {
+      ids.forEach((entry) => {
+        const id = markIdOf(entry);
         const b = badgeById(id);
         if (!b) return;
-        dots += dotHtml(b, true);
+        dots += dotHtml({ id: b.id, label: b.label, color: b.color, shape: markShapeOf(entry, b) }, true);
       });
       dots += "</span>";
       return '<td class="col-marks" data-ck="marks">' + (extras.handle || "") + dots +
@@ -3978,7 +4249,10 @@
     function blockHtml(list, nOnPage) {
       const title = ((list.titles && list.titles[0]) || "").trim();
       const comments = (list.titles || []).slice(1).map((t) => String(t).trim()).filter(Boolean);
-      let html = '<section class="list-block' + (list.id === state.activeId ? " is-editing" : "") + '" data-lid="' + list.id + '">';
+      const editing = list.id === state.activeId;
+      const blank = isBlankList(list);
+      let html = '<section class="list-block' + (editing ? " is-editing" : "") + (blank ? " is-blank-page" : "") + '" data-lid="' + list.id + '">';
+      html += '<button type="button" class="page-sheet-del no-print" data-del-page="' + list.id + '" title="Supprimer cette page" aria-label="Supprimer cette page">×</button>';
       if (title || comments.length) {
         html += '<div class="list-head">';
         if (title) {
@@ -3992,8 +4266,12 @@
         });
         html += "</div>";
       }
-      html += tableHtml(list, nOnPage);
-      html += legendHtml(list);
+      if (blank) {
+        html += '<div class="blank-hint"><p>Déposez un fichier ou collez un tableau pour remplir cette page.</p></div>';
+      } else {
+        html += tableHtml(list, nOnPage);
+        html += legendHtml(list);
+      }
       html += "</section>";
       return html;
     }
@@ -4052,6 +4330,47 @@
       document.documentElement.style.setProperty("--row-x", rowX);
       pageStyle.textContent =
         "@media print { @page { size: " + size + "; margin: " + marge + "mm; } }";
+    }
+
+    function sheetCaption(orient, margeMm) {
+      const format = orient === "paysage" ? "A4 paysage · 297 × 210 mm" : "A4 portrait · 210 × 297 mm";
+      return format + " · marges " + margeMm + " mm";
+    }
+
+    function previewFrames() {
+      const frames = [...$("sheets").querySelectorAll(".sheet-frame")];
+      if (frames.length) return frames;
+      return [...$("sheets").querySelectorAll(".sheet")];
+    }
+
+    function markSheetOverflow() {
+      let over = 0;
+      $("sheets").querySelectorAll(".sheet-frame").forEach((frame) => {
+        const paper = frame.querySelector(".sheet-paper");
+        const sheet = frame.querySelector(".sheet");
+        if (!paper || !sheet) return;
+        const isOver = sheet.offsetHeight > paper.offsetHeight + 2;
+        frame.classList.toggle("is-overflow", isOver);
+        if (isOver) over++;
+      });
+      const hud = $("pageFormatHud");
+      if (!hud) return;
+      if (!state.lists.length) {
+        hud.hidden = true;
+        hud.textContent = "";
+        hud.classList.remove("is-overflow");
+        return;
+      }
+      const groups = previewGroups();
+      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
+      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
+      const lay = layoutFor(maxCols, nFirst);
+      hud.hidden = false;
+      hud.classList.toggle("is-overflow", over > 0);
+      hud.textContent = over
+        ? sheetCaption(lay.orient, lay.marge) + " · dépasse la feuille"
+        : sheetCaption(lay.orient, lay.marge);
     }
 
     function defaultRowEm() {
@@ -4268,10 +4587,12 @@
       if (wBtn) {
         wBtn.disabled = !hasW;
         wBtn.setAttribute("aria-pressed", isW ? "true" : "false");
+        wBtn.classList.toggle("is-on", isW);
       }
       if (hBtn) {
         hBtn.disabled = !hasH;
         hBtn.setAttribute("aria-pressed", isW ? "false" : "true");
+        hBtn.classList.toggle("is-on", !isW);
       }
       if (pctOpt) pctOpt.hidden = !isW;
       if (!isW && unitEl && unitEl.value === "pct") unitEl.value = "cm";
@@ -4629,6 +4950,7 @@
     }
 
     function applyStyleColumns(list, data) {
+      if (isBlankList(list)) return;
       const cols = Array.isArray(data.columns) ? data.columns : [];
       cols.forEach((c) => {
         if (c && c.custom && c.name) insertCustomCol(list, c.name);
@@ -4743,6 +5065,29 @@
       closeStyleModal();
     }
 
+    function previewGroups() {
+      if (!combining()) return state.lists.map((l) => [l]);
+      const groups = [];
+      let buf = [];
+      const flush = () => {
+        if (buf.length) {
+          groups.push(buf);
+          buf = [];
+        }
+      };
+      state.lists.forEach((l) => {
+        if (isBlankList(l) || !selectedCols(l).length) {
+          flush();
+          groups.push([l]);
+          return;
+        }
+        buf.push(l);
+        if (buf.length >= MAX_PER_PAGE) flush();
+      });
+      flush();
+      return groups;
+    }
+
     function renderPreview() {
       const sheetsEl = $("sheets");
       sheetsEl.innerHTML = "";
@@ -4754,32 +5099,36 @@
         $("saveBtn").disabled = true;
         clearZone();
         fitStage();
-        return;
-      }
-
-      const usable = state.lists.filter((l) => selectedCols(l).length);
-      if (!usable.length) {
-        empty.style.display = "";
-        printBtn.disabled = true;
-        if (dockPrintBtn) dockPrintBtn.disabled = true;
-        $("saveBtn").disabled = true;
-        clearZone();
-        fitStage();
+        markSheetOverflow();
         return;
       }
 
       empty.style.display = "none";
-      printBtn.disabled = false;
-      if (dockPrintBtn) dockPrintBtn.disabled = false;
+      const printable = state.lists.some((l) => !isBlankList(l) && selectedCols(l).length);
+      printBtn.disabled = !printable;
+      if (dockPrintBtn) dockPrintBtn.disabled = !printable;
       $("saveBtn").disabled = false;
 
-      const groups = combining() ? chunk(usable, MAX_PER_PAGE) : usable.map((l) => [l]);
-      const maxCols = Math.max(...usable.map((l) => selectedCols(l).length));
-      const nFirst = groups[0].length;
+      const groups = previewGroups();
+      const filled = state.lists.filter((l) => !isBlankList(l) && selectedCols(l).length);
+      const maxCols = filled.length ? Math.max(...filled.map((l) => selectedCols(l).length)) : 0;
+      const nFirst = (groups[0] || []).filter((l) => !isBlankList(l)).length || 1;
       const lay = layoutFor(maxCols, nFirst);
       applyPageStyle(lay.orient, lay.marge);
 
       groups.forEach((group) => {
+        const frame = document.createElement("div");
+        frame.className = "sheet-frame";
+        const hold = document.createElement("div");
+        hold.className = "sheet-stage";
+        const paper = document.createElement("div");
+        paper.className = "sheet-paper";
+        paper.setAttribute("aria-hidden", "true");
+        paper.innerHTML = '<span class="sheet-guide"></span>';
+        const limit = document.createElement("div");
+        limit.className = "sheet-limit no-print";
+        limit.setAttribute("aria-hidden", "true");
+        limit.innerHTML = "<span>Limite A4</span>";
         const sheet = document.createElement("div");
         sheet.className = "sheet" + (group.length > 1 ? " is-combo" : "") + sheetThemeClass();
         const grid = document.createElement("div");
@@ -4787,7 +5136,11 @@
         grid.dataset.n = String(group.length);
         grid.innerHTML = group.map((l) => blockHtml(l, group.length)).join("");
         sheet.appendChild(grid);
-        sheetsEl.appendChild(sheet);
+        hold.appendChild(paper);
+        hold.appendChild(limit);
+        hold.appendChild(sheet);
+        frame.appendChild(hold);
+        sheetsEl.appendChild(frame);
       });
 
       $("orientBlock").hidden = combining();
@@ -4863,16 +5216,18 @@
           if (e.target.closest(".x") || e.target.closest(".page-activate") || e.target.closest(".page-name-field")) return;
           setActiveList(list.id);
         });
-        const x = document.createElement("button");
-        x.className = "x";
-        x.type = "button";
-        x.setAttribute("aria-label", "Retirer la page " + ((list.titles && list.titles[0]) || list.name || ""));
-        x.textContent = "×";
-        x.addEventListener("click", (e) => {
-          e.stopPropagation();
-          removeList(list.id);
-        });
-        row.appendChild(x);
+        if (on) {
+          const x = document.createElement("button");
+          x.className = "x";
+          x.type = "button";
+          x.setAttribute("aria-label", "Retirer la page " + ((list.titles && list.titles[0]) || list.name || ""));
+          x.textContent = "×";
+          x.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeList(list.id);
+          });
+          row.appendChild(x);
+        }
         wrap.appendChild(row);
       });
     }
@@ -4931,8 +5286,8 @@
     function renderCols() {
       const list = activeList();
       colsEl.innerHTML = "";
-      $("colsBlock").hidden = !list;
-      if (!list) return;
+      $("colsBlock").hidden = !list || isBlankList(list);
+      if (!list || isBlankList(list)) return;
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
       list.order.forEach((key) => {
@@ -5034,7 +5389,7 @@
           if (state.activeStamp === b.id) state.activeStamp = null;
           state.lists.forEach((l) => {
             Object.keys(l.marks).forEach((k) => {
-              l.marks[k] = (l.marks[k] || []).filter((id) => id !== b.id);
+              l.marks[k] = (l.marks[k] || []).filter((m) => markIdOf(m) !== b.id);
             });
           });
           renderAll();
@@ -5133,7 +5488,7 @@
     }
 
     function fitStage() {
-      const sheets = [...$("sheets").querySelectorAll(".sheet")];
+      const sheets = previewFrames();
       if (!sheets.length) {
         stage.style.transform = "none";
         stage.style.height = "";
@@ -5143,14 +5498,15 @@
       const pad = isPhoneLayout() ? 12 : 16;
       const scale = Math.min(1, Math.max(0.12, (workspace.clientWidth - pad) / maxW));
       stage.style.transform = "scale(" + scale + ")";
+      markSheetOverflow();
       syncStageHeight();
     }
 
     function syncStageHeight() {
-      const sheets = [...$("sheets").querySelectorAll(".sheet")];
+      const sheets = previewFrames();
       if (!sheets.length) return;
       const scale = stageScale();
-      const gap = 22;
+      const gap = 28;
       const total = sheets.reduce((a, s) => a + s.offsetHeight, 0) + gap * (Math.max(0, sheets.length - 1));
       stage.style.height = (total * scale) + "px";
     }
@@ -5335,40 +5691,6 @@
       });
     }
 
-    function askReplace() {
-      return new Promise((resolve) => {
-        const list = activeList();
-        const label = pageLabel(list);
-        const offerSave = needsSave();
-        const several = state.lists.length > 1;
-        $("replaceTitle").textContent = "Remplacer cette page ?";
-        $("replaceText").textContent = several
-          ? "Seule la page « " + label + " » sera remplacée par le nouveau fichier. Les autres restent."
-          : "La page « " + label + " » sera remplacée par le nouveau fichier.";
-        if (offerSave) {
-          $("replaceText").textContent += " Le travail n’est pas enregistré.";
-        }
-        $("replaceSave").hidden = !offerSave;
-        $("replaceGo").textContent = offerSave ? "Remplacer sans enregistrer" : "Remplacer";
-        $("replaceGo").classList.toggle("span-all", offerSave);
-        const back = $("replaceModal");
-        back.hidden = false;
-        let restore;
-        const finish = (val) => {
-          if (restore) restore();
-          back.hidden = true;
-          $("replaceSave").onclick = null;
-          $("replaceGo").onclick = null;
-          $("replaceCancel").onclick = null;
-          resolve(val);
-        };
-        restore = attachDialog(back, () => finish(null));
-        $("replaceSave").onclick = () => finish("save");
-        $("replaceGo").onclick = () => finish("replace");
-        $("replaceCancel").onclick = () => finish(null);
-      });
-    }
-
     function askCombine() {
       return new Promise((resolve) => {
         const back = $("modal");
@@ -5396,14 +5718,15 @@
         state.activeId = null;
         state.combineAsked = false;
       }
-      const realNow = state.lists.filter((l) => !l.sample).length;
-      const realNew = items.filter((item) => !item.sample).length;
-      if (realNow + realNew >= 2 && !state.combineAsked) {
+      const afterCount = state.lists.length + items.length - (activeList() ? 1 : 0);
+      if (afterCount >= 2 && !state.combineAsked) {
         state.combine = await askCombine();
         state.combineAsked = true;
       }
-      items.forEach((item) => {
-        const list = addListFromGrid(item.name, item.grid);
+      items.forEach((item, i) => {
+        const list = (i === 0 && activeList())
+          ? fillActiveFromGrid(item.name, item.grid)
+          : addListFromGrid(item.name, item.grid);
         if (item.sample) list.sample = true;
       });
       if (heldStyle && state.lists.length) {
@@ -5503,6 +5826,7 @@
           widths: l.widths || {},
           rowH: l.rowH || {},
           sample: Boolean(l.sample),
+          blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
         })),
       };
     }
@@ -5544,64 +5868,6 @@
       downloadProject(json, filename);
       dirty = false;
       return true;
-    }
-
-    function replaceActiveFromGrid(name, grid) {
-      const { headers, rows } = normalizeGrid(grid);
-      if (headers.length < 1 || rows.length < 1) {
-        throw new Error("Aucune donnée tabulaire n’a été trouvée dans « " + name + " ».");
-      }
-      const old = activeList();
-      const list = makeList(name, headers, rows);
-      applySharedCols(list);
-      if (state.showNotes) {
-        const pos = state.notesPos === "left" ? "left" : "right";
-        ensureRqOrder(list, pos);
-      }
-      const idx = old ? state.lists.indexOf(old) : -1;
-      if (idx >= 0) state.lists.splice(idx, 1, list);
-      else state.lists.push(list);
-      state.activeId = list.id;
-      if (state.lists.length < 2) state.combine = false;
-      return list;
-    }
-
-    async function ingestReplace(fileList) {
-      showError("");
-      const files = [...fileList].filter(Boolean);
-      if (!files.length) return;
-      if (!activeList()) {
-        await ingestFiles(files);
-        return;
-      }
-      const parsed = await parseFile(files[0]);
-      if (parsed.project) {
-        showError("Pour un tableau enregistré, utilisez « Charger un tableau ».");
-        return;
-      }
-      if (parsed.style) {
-        applyStyle(parsed.style);
-        return;
-      }
-      pushHist();
-      replaceActiveFromGrid(parsed.name, parsed.grid);
-      dirty = true;
-      showError("");
-      renderAll();
-    }
-
-    async function startReplace() {
-      if (!activeList()) {
-        $("replaceFile").click();
-        return;
-      }
-      const choice = await askReplace();
-      if (!choice) return;
-      if (choice === "save") {
-        const ok = await saveProject();
-        if (!ok) return;
-      }
-      $("replaceFile").click();
     }
 
     async function ingestFiles(fileList) {
@@ -5670,12 +5936,20 @@
       ingestFiles(fileInput.files).catch((err) => showError(err.message || String(err)));
       fileInput.value = "";
     });
-    $("replaceBtn").addEventListener("click", () => {
-      startReplace().catch((err) => showError(err.message || String(err)));
+    const pageAddBtn = $("pageAddBtn");
+    if (pageAddBtn) {
+      pageAddBtn.addEventListener("click", () => {
+        addBlankPage().catch((err) => showError(err.message || String(err)));
+      });
+    }
+    workspace.addEventListener("dragover", (e) => {
+      if (![...e.dataTransfer.types].includes("Files")) return;
+      e.preventDefault();
     });
-    $("replaceFile").addEventListener("change", () => {
-      ingestReplace($("replaceFile").files).catch((err) => showError(err.message || String(err)));
-      $("replaceFile").value = "";
+    workspace.addEventListener("drop", (e) => {
+      if (!e.dataTransfer.files || !e.dataTransfer.files.length) return;
+      e.preventDefault();
+      ingestFiles(e.dataTransfer.files).catch((err) => showError(err.message || String(err)));
     });
 
     document.addEventListener("paste", (e) => {
@@ -5752,12 +6026,8 @@
         const shape = normalizeBadgeShape(el.value);
         state.badgeShape = shape;
         const badge = badgeById(state.activeStamp);
-        if (badge && badgeShapeOf(badge) !== shape) {
-          pushHist();
-          badge.shape = shape;
-          renderBadgeTypes();
-          renderPreview();
-        }
+        if (badge) badge.shape = shape;
+        renderBadgeTypes();
       });
     });
     $("optBadges").addEventListener("change", () => {
@@ -5961,7 +6231,7 @@
       let drag = null;
       let holdT = null;
       let liveRaf = 0;
-      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield");
+      const skip = (e) => e.target.closest(".col-resizer, .row-resizer, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus");
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
         const block = el && el.closest && el.closest(".list-block[data-lid]");
@@ -5986,6 +6256,7 @@
       };
       const canStart = (e) => {
         if (skip(e)) return false;
+        if (state.activeFluo || state.activeStamp) return false;
         if (e.button != null && e.button !== 0) return false;
         if (editing(e.target)) return false;
         if (!e.target.closest(".sheet")) return false;
@@ -6319,6 +6590,14 @@
         e.stopPropagation();
         return;
       }
+      const delPage = e.target.closest("[data-del-page]");
+      if (delPage) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number(delPage.getAttribute("data-del-page"));
+        if (id) removeList(id);
+        return;
+      }
       const block = e.target.closest(".list-block[data-lid]");
       if (block) {
         const lid = Number(block.dataset.lid);
@@ -6382,10 +6661,10 @@
       if (!list) return;
       pushHist();
       const ri = Number(tr.dataset.ri);
-      const cur = (list.marks[ri] || []).slice();
-      const i = cur.indexOf(state.activeStamp);
+      const cur = (list.marks[ri] || []).map(normalizeMarkEntry).filter(Boolean);
+      const i = cur.findIndex((m) => m.id === state.activeStamp);
       if (i >= 0) cur.splice(i, 1);
-      else cur.push(state.activeStamp);
+      else cur.push({ id: state.activeStamp, shape: currentBadgeShape() });
       list.marks[ri] = cur;
       renderPreview();
     });
