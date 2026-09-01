@@ -2238,6 +2238,9 @@
       font-weight: 800;
       color: var(--d-title, var(--teal-deep));
     }
+    .list-block.is-tp-page td.is-tp-salles {
+      border-left: 0.45pt solid var(--d-rule, var(--rule));
+    }
     .tp-meta-bar {
       display: flex;
       flex-wrap: wrap;
@@ -6043,11 +6046,8 @@
         { r: 2, c: 0, rs: 1, cs: 2 },
         { r: 2, c: 2, rs: 1, cs: 2 },
         { r: s, c: 0, rs: shareN, cs: 1 },
-        { r: s, c: 2, rs: shareN, cs: 2 },
         { r: p, c: 0, rs: profN, cs: 1 },
         { r: p, c: 1, rs: profN, cs: 1 },
-        { r: p, c: 2, rs: profN, cs: 1 },
-        { r: p, c: 3, rs: profN, cs: 1 },
         { r: o, c: 0, rs: orderN, cs: 1 },
         { r: o, c: 1, rs: orderN, cs: 1 },
       ];
@@ -6144,30 +6144,17 @@
 
     function ensureTpHeadingMerges(list) {
       if (!isTpForm(list) || !list.rows) return;
-      const b = tpFormBands(list);
-      if (b.prof < 0) return;
-      const end = b.order >= 0 ? b.order : list.rows.length;
-      const rs = end - b.prof;
-      if (rs < 2) return;
-      const emptyBelow = (ci) => {
-        for (let ri = b.prof + 1; ri < end; ri++) {
-          if (String((list.rows[ri] || [])[ci] || "").trim()) return false;
-        }
-        return true;
-      };
-      const add = (ci) => {
-        if (!emptyBelow(ci)) return;
-        const existing = (list.merges || []).find((m) => m.r === b.prof && m.c === ci);
-        if (existing) {
-          if (existing.cs === 1 && existing.rs < rs) existing.rs = rs;
-          return;
-        }
-        if (mergeCoversCell(list, b.prof, ci)) return;
-        if (!list.merges) list.merges = [];
-        list.merges.push({ r: b.prof, c: ci, rs: rs, cs: 1 });
-      };
-      add(2);
-      add(3);
+      const bodyStart = 3;
+      list.merges = (list.merges || []).filter((m) => {
+        const r = Number(m && m.r);
+        const c = Number(m && m.c);
+        const rs = Math.max(1, Number(m && m.rs) || 1);
+        const cs = Math.max(1, Number(m && m.cs) || 1);
+        if (!Number.isInteger(r) || !Number.isInteger(c) || r < 0 || c < 0) return false;
+        if (r >= bodyStart && c >= 2 && cs > 1) return false;
+        if (r >= bodyStart && (c === 2 || c === 3) && rs > 1) return false;
+        return rs > 1 || cs > 1;
+      });
     }
 
     function writeTpFormMeta(list) {
