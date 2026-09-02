@@ -4490,7 +4490,7 @@
         </div>
         <div id="tpForm" hidden>
           <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP">Créer</button>
+            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP">Créer un TP</button>
             <button class="btn btn-ghost btn-compact" id="tpLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
           </div>
           <p class="hint-note" style="margin:0 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel</strong> pour le catalogue.</p>
@@ -4498,7 +4498,7 @@
         </div>
         <div id="progForm" hidden>
           <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression">Créer</button>
+            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression">Créer une progression</button>
             <button class="btn btn-ghost btn-compact" id="progLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
           </div>
           <p class="hint-note" style="margin:0 0 10px">Paysage A4 pleine page. Menus matière / niveau / partie / supports. Double-clic <strong>Matériel</strong> pour le catalogue.</p>
@@ -4658,12 +4658,6 @@
       </button>
     </div>
   </div>
-  <div class="sel-menu no-print" id="selMenu" hidden role="menu">
-    <span class="sel-label">Uniformiser</span>
-    <button type="button" id="selMenuW" role="menuitem">Égaliser les largeurs</button>
-    <button type="button" id="selMenuH" role="menuitem">Égaliser les hauteurs</button>
-    <button type="button" id="selMenuMerge" role="menuitem">Fusionner / fractionner</button>
-  </div>
   <div class="page-send-menu no-print" id="pageSendMenu" hidden role="menu" aria-label="Envoyer vers un onglet"></div>
 
   <div class="modal-back no-print" id="modal" hidden>
@@ -4750,10 +4744,10 @@
   <div class="modal-back no-print" id="placeModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placeTitle">
       <h3 id="placeTitle">Où placer ce contenu ?</h3>
-      <p id="placeLead">La page en cours ne sera pas remplacée. Ajoutez les nouvelles feuilles à la suite, ou dans un autre onglet.</p>
+      <p id="placeLead">Le contenu actuel n’est pas remplacé. Ajoutez la page à la suite dans cet onglet, ou dans un onglet suivant.</p>
       <div class="modal-actions">
-        <button class="btn btn-print" id="placeAfter" type="button">Ajouter à la suite</button>
-        <button class="btn btn-ghost" id="placeTab" type="button">Dans un autre onglet</button>
+        <button class="btn btn-print" id="placeAfter" type="button">Même onglet</button>
+        <button class="btn btn-ghost" id="placeTab" type="button">Onglet suivant</button>
         <button class="btn btn-ghost span-all" id="placeReplace" type="button" hidden>Remplacer le projet</button>
         <button class="btn btn-ghost span-all" id="placeCancel" type="button">Annuler</button>
       </div>
@@ -5300,6 +5294,10 @@
       applyRootTheme();
       reviveLists(state.lists);
       prunePageSelection();
+      const modeList = state.lists.find((l) => String(l.id) === String(state.activeId)) || state.lists[0];
+      if (isTpList(modeList)) state.panelMode = "tp";
+      else if (isProgList(modeList)) state.panelMode = "prog";
+      else state.panelMode = "liste";
       if (!opts || opts.render !== false) {
         renderAll();
         if (isPhoneLayout() && state.lists.length) showPreview();
@@ -5489,7 +5487,7 @@
 
     async function askPlaceNew(lead) {
       if (!tabHasRealContent(state.lists)) return "after";
-      return showPlaceModal(lead || "La page en cours ne sera pas remplacée. Ajoutez les nouvelles feuilles à la suite, ou dans un autre onglet.");
+      return showPlaceModal(lead || "Le contenu actuel n’est pas remplacé. Ajoutez la page à la suite dans cet onglet, ou dans un onglet suivant.");
     }
 
     function pageSizeOf(orient) {
@@ -5550,11 +5548,14 @@
     }
 
     function setActiveList(id, opts) {
-      const list = state.lists.find((l) => l.id === id);
+      const list = state.lists.find((l) => String(l.id) === String(id));
       if (!list) return;
-      const changed = state.activeId !== id;
+      const changed = String(state.activeId) !== String(list.id);
       if (!changed) return;
-      state.activeId = id;
+      state.activeId = list.id;
+      if (isTpList(list)) state.panelMode = "tp";
+      else if (isProgList(list)) state.panelMode = "prog";
+      else state.panelMode = "liste";
       renderPanel();
       markEditingPreview();
       if (!opts || opts.scroll !== false) revealActivePage();
@@ -8178,19 +8179,9 @@
       const cols = clampEmptyCols(nCols);
       const rows = clampEmptyRows(nRows);
       if (!opts || opts.hist !== false) pushHist();
-      if (state.lists.length && state.lists.every((l) => l.sample)) {
-        state.lists = [];
-        state.activeId = null;
-        state.selectedIds = [];
-        state.combineAsked = false;
-      }
-      const active = activeList();
-      if (!active) addEmptyTable(cols, rows);
-      else if (isBlankList(active)) {
-        const spec = emptyTableSpec(cols, rows);
-        applyTableToList(active, nextTableName(), spec.headers, spec.rows, { allOn: true, keepEmptyRows: true });
-      } else addEmptyTable(cols, rows);
+      addEmptyTable(cols, rows);
       state.selectedIds = state.activeId != null ? [state.activeId] : [];
+      state.panelMode = "liste";
       showError("");
       dirty = true;
       renderAll();
@@ -10373,7 +10364,6 @@
       if ($("selEq")) $("selEq").disabled = isW ? zoneDataCols(list).length < 2 : !hasH;
       const mergeRect = zoneMergeRect(list);
       if ($("selMerge")) $("selMerge").disabled = !mergeRect;
-      if ($("selMenuMerge")) $("selMenuMerge").disabled = !mergeRect;
       syncMergeInsertBtns();
       syncSelSizeInput();
       syncSelAlign();
@@ -10839,18 +10829,6 @@
       clearZone();
       renderAll();
       announce(kind === "rows" ? "Lignes supprimées" : "Colonnes supprimées");
-    }
-
-    function showSelMenu(x, y) {
-      const menu = $("selMenu");
-      if (!menu || !zoneSel) return;
-      const wBtn = $("selMenuW");
-      const hBtn = $("selMenuH");
-      if (wBtn) wBtn.hidden = zoneDim === "h";
-      if (hBtn) hBtn.hidden = zoneDim !== "h";
-      menu.hidden = false;
-      menu.style.left = Math.min(window.innerWidth - 200, Math.max(8, x)) + "px";
-      menu.style.top = Math.min(window.innerHeight - 90, Math.max(8, y)) + "px";
     }
 
     function stylePartsFromUi() {
@@ -12152,10 +12130,7 @@
     function renderMode() {
       const form = $("tpForm");
       const progForm = $("progForm");
-      const list = activeList();
-      let mode = state.panelMode || "liste";
-      if (isTpList(list)) mode = "tp";
-      else if (isProgList(list)) mode = "prog";
+      const mode = state.panelMode === "tp" || state.panelMode === "prog" ? state.panelMode : "liste";
       state.panelMode = mode;
       document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
         el.checked = el.value === mode;
@@ -12487,29 +12462,16 @@
 
     function createTpSheet(nCols, nRows, opts) {
       if (!opts || opts.hist !== false) pushHist();
-      if (state.lists.length && state.lists.every((l) => l.sample)) {
-        state.lists = [];
-        state.activeId = null;
-        state.selectedIds = [];
-        state.combineAsked = false;
-      }
       const shareRows = Math.max(TP_SHARE_SLOTS, Math.min(40, (clampEmptyRows(nRows) || 22) - 16));
-      const active = activeList();
-      let list;
-      if (active && isBlankList(active)) {
-        list = convertToTp(active);
-        list.tpAlignReady = false;
-        list.tpSized = false;
-        list.tpFitted = false;
-        applyTpSheetFrame(list, { size: { shareRows: shareRows } });
-      } else {
-        list = makeTpList();
-        list.tpAlignReady = false;
-        applyTpSheetFrame(list, { size: { shareRows: shareRows } });
-        state.lists.push(list);
-        state.activeId = list.id;
-      }
+      const list = makeTpList();
+      list.tpAlignReady = false;
+      list.tpSized = false;
+      list.tpFitted = false;
+      applyTpSheetFrame(list, { size: { shareRows: shareRows } });
+      state.lists.push(list);
+      state.activeId = list.id;
       state.selectedIds = [list.id];
+      state.panelMode = "tp";
       showError("");
       dirty = true;
       renderAll();
@@ -12520,29 +12482,16 @@
 
     function createProgSheet(nCols, nRows, opts) {
       if (!opts || opts.hist !== false) pushHist();
-      if (state.lists.length && state.lists.every((l) => l.sample)) {
-        state.lists = [];
-        state.activeId = null;
-        state.selectedIds = [];
-        state.combineAsked = false;
-      }
       const nSeances = Math.max(progSeanceCount(), Math.min(40, (clampEmptyRows(nRows) || 17) - 1));
-      const active = activeList();
-      let list;
-      if (active && isBlankList(active)) {
-        list = convertToProg(active);
-        list.tpAlignReady = false;
-        list.tpSized = false;
-        list.tpFitted = false;
-        applyProgSheetFrame(list, { nSeances: nSeances });
-      } else {
-        list = makeProgList();
-        list.tpAlignReady = false;
-        applyProgSheetFrame(list, { nSeances: nSeances });
-        state.lists.push(list);
-        state.activeId = list.id;
-      }
+      const list = makeProgList();
+      list.tpAlignReady = false;
+      list.tpSized = false;
+      list.tpFitted = false;
+      applyProgSheetFrame(list, { nSeances: nSeances });
+      state.lists.push(list);
+      state.activeId = list.id;
       state.selectedIds = [list.id];
+      state.panelMode = "prog";
       showError("");
       dirty = true;
       renderAll();
@@ -12556,7 +12505,12 @@
       const { cols, rows } = readCreateSize();
       const kind = createAsKind;
       closeCreateTableModal();
-      const place = await askPlaceNew();
+      const placeLead = kind === "prog"
+        ? "Créer la progression dans cet onglet (à la suite) ou dans un onglet suivant ?"
+        : kind === "tp"
+          ? "Créer le TP dans cet onglet (à la suite) ou dans un onglet suivant ?"
+          : "Créer le tableau dans cet onglet (à la suite) ou dans un onglet suivant ?";
+      const place = await askPlaceNew(placeLead);
       if (!place) return;
       const skipHist = place === "tab";
       if (place === "tab") {
@@ -13281,7 +13235,6 @@
     if ($("splitCellsBtn")) $("splitCellsBtn").addEventListener("click", () => applyMergeFromModal(true));
     if ($("mergeCellsCancel")) $("mergeCellsCancel").addEventListener("click", closeCreateTableModal);
     if ($("selMerge")) $("selMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
-    if ($("selMenuMerge")) $("selMenuMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
     [
       ["mergeInsertRowAbove", "row", "before"],
       ["mergeInsertRowBelow", "row", "after"],
@@ -14128,9 +14081,10 @@
         const el = e.target && e.target.nodeType === 1 ? e.target : (e.target && e.target.parentElement);
         if (!el || !el.closest) return;
         if (el.closest("button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-send-menu, .block-move, .tp-choice-menu")) return;
-        if (!el.closest(".sheet")) return;
+        if (!el.closest(".sheet, table.liste")) return;
+        e.preventDefault();
         openSelBarFromEvent(e);
-      });
+      }, true);
     })();
     (function bindTpMatDbl() {
       const sheets = $("sheets");
@@ -14948,8 +14902,6 @@
       if (btn.dataset.alignH) applyZoneAlign("h", btn.dataset.alignH);
       else applyZoneAlign("v", btn.dataset.alignV);
     });
-    $("selMenuW").addEventListener("click", () => { hideSelMenu(); setZoneDim("w"); equalizeZoneWidths(); });
-    $("selMenuH").addEventListener("click", () => { hideSelMenu(); setZoneDim("h"); equalizeZoneHeights(); });
     if ($("selDel")) $("selDel").addEventListener("click", () => { requestZoneDelete(); });
     $("selClear").addEventListener("click", clearZone);
     (function bindSelSize() {
@@ -14975,7 +14927,8 @@
       });
     })();
     document.addEventListener("pointerdown", (e) => {
-      if ($("selMenu").hidden) return;
+      const menu = $("selMenu");
+      if (!menu || menu.hidden) return;
       if (e.target.closest("#selMenu, #selBar")) return;
       hideSelMenu();
     });
