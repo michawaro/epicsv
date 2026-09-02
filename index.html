@@ -4342,7 +4342,7 @@
         </div>
         <div id="tpForm" hidden>
           <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP">Créer un TP</button>
+            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP à partir du modèle par défaut">Modèle</button>
             <button class="btn btn-ghost btn-compact" id="tpLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
           </div>
           <p class="hint-note" style="margin:0 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel</strong> pour le catalogue.</p>
@@ -4350,7 +4350,7 @@
         </div>
         <div id="progForm" hidden>
           <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression">Créer une progression</button>
+            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression à partir du modèle par défaut">Modèle</button>
             <button class="btn btn-ghost btn-compact" id="progLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
           </div>
           <p class="hint-note" style="margin:0 0 10px">Paysage A4 pleine page. Menus matière / niveau / partie / supports. Double-clic <strong>Matériel</strong> pour le catalogue.</p>
@@ -5123,7 +5123,11 @@
     const TP_LABEL_SHARE = "Pour chaque poste";
     const TP_LABEL_ORDER = "Matériel à commander pour le TP";
     const TP_TITLE_DEFAULT = "Installation de TP";
+    const TP_MODEL_COLS = 5;
+    const TP_MODEL_ROWS = 22;
     const PROG_TITLE_DEFAULT = "Progression annuelle";
+    const PROG_MODEL_COLS = 10;
+    const PROG_MODEL_ROWS = 17;
     const PROG_HEADERS = ["Période", "Séance", "Dates", "Thème", "Compétences", "Supports", "Activités", "Matériel", "Éval", "Obs."];
     const PROG_WIDTHS = { 0: 7, 1: 5.5, 2: 8, 3: 14, 4: 14, 5: 9, 6: 16, 7: 12.5, 8: 7, 9: 7 };
     const PROG_PERIODS = [
@@ -12665,8 +12669,8 @@
       buildTablePicker();
       $("createTableModal").hidden = false;
       syncCreateTableModalMode();
-      if (createAsKind === "prog") syncCreateSizeFields(10, 17);
-      else if (createAsTp) syncCreateSizeFields(5, 22);
+      if (createAsKind === "prog") syncCreateSizeFields(PROG_MODEL_COLS, PROG_MODEL_ROWS);
+      else if (createAsTp) syncCreateSizeFields(TP_MODEL_COLS, TP_MODEL_ROWS);
       else syncCreateSizeFields(EMPTY_COLS_DEF, EMPTY_ROWS_DEF);
       tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
     }
@@ -12812,6 +12816,21 @@
       if (isPhoneLayout()) showPreview();
       revealActivePage();
       announce("Fiche progression créée.");
+    }
+
+    async function createModelSheet(kind) {
+      const placeLead = kind === "prog"
+        ? "Créer la progression dans cet onglet (à la suite) ou dans un onglet suivant ?"
+        : "Créer le TP dans cet onglet (à la suite) ou dans un onglet suivant ?";
+      const place = await askPlaceNew(placeLead);
+      if (!place) return;
+      const skipHist = place === "tab";
+      if (place === "tab") {
+        pushHist();
+        activateFreshTab();
+      }
+      if (kind === "prog") createProgSheet(PROG_MODEL_COLS, PROG_MODEL_ROWS, { hist: !skipHist });
+      else createTpSheet(TP_MODEL_COLS, TP_MODEL_ROWS, { hist: !skipHist });
     }
 
     async function confirmCreateTable() {
@@ -13548,11 +13567,11 @@
     });
     $("createTableBtn").addEventListener("click", () => openCreateTableModal(false));
     const tpCreateBtn = $("tpCreateBtn");
-    if (tpCreateBtn) tpCreateBtn.addEventListener("click", () => openCreateTableModal(true));
+    if (tpCreateBtn) tpCreateBtn.addEventListener("click", () => createModelSheet("tp"));
     const tpLoadBtn = $("tpLoadBtn");
     if (tpLoadBtn) tpLoadBtn.addEventListener("click", () => $("loadFile").click());
     const progCreateBtn = $("progCreateBtn");
-    if (progCreateBtn) progCreateBtn.addEventListener("click", () => openCreateTableModal("prog"));
+    if (progCreateBtn) progCreateBtn.addEventListener("click", () => createModelSheet("prog"));
     const progLoadBtn = $("progLoadBtn");
     if (progLoadBtn) progLoadBtn.addEventListener("click", () => $("loadFile").click());
     $("createTableOk").addEventListener("click", confirmCreateTable);
