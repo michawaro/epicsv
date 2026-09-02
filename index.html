@@ -5379,14 +5379,19 @@
           </button>
           <div class="fold-panel" id="customizeFold">
             <section class="block" id="filesBlock" hidden>
-              <div class="seg" id="pageScopeSeg" role="radiogroup" aria-label="Pages concernées">
+              <div
+                class="seg duo mode-seg"
+                id="pageScopeSeg"
+                role="radiogroup"
+                aria-label="Pages concernées"
+              >
                 <label
                   ><input
                     type="radio"
                     name="pageScope"
                     value="selection"
                     checked
-                  /><span>Sélection</span></label
+                  /><span>Sélectionner page</span></label
                 >
                 <label
                   ><input type="radio" name="pageScope" value="all" /><span
@@ -16497,16 +16502,15 @@
           box.checked = allOn;
           box.indeterminate = n > 0 && n < total;
         }
-        document.querySelectorAll('input[name="pageScope"]').forEach((el) => {
-          el.checked = el.value === (allOn ? "all" : "selection");
-        });
+        // Ne pas réécrire les radios pageScope depuis allOn : cela
+        // écrasait le choix utilisateur (clic Sélection / Toutes les pages).
         const scope = document.querySelector(
           'input[name="pageScope"]:checked',
         );
         const isAll = scope && scope.value === "all";
         if (scopeSeg) scopeSeg.hidden = total <= 1;
         if (chips) chips.hidden = isAll || total <= 1;
-        if (hint) hint.hidden = total <= 1 || isAll;
+        if (hint) hint.hidden = !total || total <= 1 || isAll;
       }
 
       function syncAllPagesCheck() {
@@ -16522,8 +16526,7 @@
         syncAllPagesCheck();
         syncPageApplyHints();
         if (!hint) return;
-        hint.hidden = !total;
-        if (!total) return;
+        if (!total || hint.hidden) return;
         if (n <= 0)
           hint.textContent =
             "Cochez les pages à modifier (couleur, titre, orientation, colonnes).";
@@ -18676,6 +18679,7 @@
             state.selectedIds = state.lists.map((l) => l.id);
             onPageSelectionChange();
           } else {
+            // Mode sélection : afficher les chips sans toucher aux coches.
             syncPageScopeUI();
           }
         });
