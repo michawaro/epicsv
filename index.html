@@ -597,6 +597,23 @@
     .block h2.follow {
       margin-top: 18px;
     }
+    .mode-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .mode-opts[hidden] { display: none !important; }
+    .mode-opts-lead {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+    }
+    #filesFold .menu-fold-end {
+      margin-top: 4px;
+    }
 
     .chips {
       display: flex;
@@ -4246,7 +4263,7 @@
       <button class="btn btn-print view-switch" id="viewSwitch" type="button" hidden>Voir l’aperçu</button>
       </div>
       <button class="fold-head" id="filesFoldBtn" type="button" aria-expanded="true" aria-controls="filesFold">
-        Fichiers et dispositions
+        Fichier
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="menu-fold" id="filesFold">
@@ -4277,7 +4294,7 @@
         <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
         <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
       </div>
-      <div class="files-group files-export">
+      <div class="files-group files-export menu-fold-end">
         <p class="files-group-label">Exporter</p>
         <div class="toolbar">
           <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
@@ -4285,30 +4302,40 @@
         </div>
         <p class="autosave-hint" id="autosaveHint" hidden></p>
       </div>
-
       <div class="err" id="err" role="alert" aria-live="assertive"></div>
-
-      <section class="block" id="filesBlock" hidden>
-        <h2>Pages</h2>
-        <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages auxquelles s’appliquent couleur, titre, orientation et colonnes.</p>
-        <label class="page-all-check" id="pageAllWrap">
-          <input type="checkbox" id="selAllLists" />
-          <span>Toutes les pages de cet onglet</span>
-        </label>
-        <div class="page-list" id="chips"></div>
-      </section>
-
-      <section class="block">
-        <h2>Marges</h2>
-        <div class="seg" id="margins">
-          <label><input type="radio" name="marge" value="etroites" /><span>Étroites</span></label>
-          <label><input type="radio" name="marge" value="moyennes" checked /><span>Moyennes</span></label>
-          <label><input type="radio" name="marge" value="larges" /><span>Larges</span></label>
+      </div>
+      <div id="modeFoldWrap" hidden>
+      <button class="fold-head" id="modeFoldBtn" type="button" aria-expanded="true" aria-controls="modeFold">
+        Mode
+        <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
+      </button>
+      <div class="fold-panel" id="modeFold">
+      <section class="block" id="modeBlock">
+        <div class="seg" id="pageModeSeg">
+          <label><input type="radio" name="pageMode" value="liste" checked /><span>Liste</span></label>
+          <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
+          <label><input type="radio" name="pageMode" value="prog" /><span>Progression</span></label>
+        </div>
+        <div id="tpForm" hidden>
+          <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
+            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP">Créer un TP</button>
+            <button class="btn btn-ghost btn-compact" id="tpLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
+          </div>
+          <p class="hint-note" style="margin:0 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel</strong> pour le catalogue.</p>
+          <button type="button" class="btn-mini" id="tpOpenCatalog">Catalogue matériel</button>
+        </div>
+        <div id="progForm" hidden>
+          <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
+            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression">Créer une progression</button>
+            <button class="btn btn-ghost btn-compact" id="progLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
+          </div>
+          <p class="hint-note" style="margin:0 0 10px">Paysage A4 pleine page. Menus matière / niveau / partie / supports. Double-clic <strong>Matériel</strong> pour le catalogue.</p>
+          <button type="button" class="btn-mini" id="progOpenCatalog">Catalogue matériel</button>
         </div>
       </section>
 
       <section class="block" id="orientBlock">
-        <h2>Orientation</h2>
+        <h2>Orientation feuille</h2>
         <div class="seg" id="orients">
           <label><input type="radio" name="orient" value="auto" checked /><span>Auto</span></label>
           <label><input type="radio" name="orient" value="portrait" /><span>Portrait</span></label>
@@ -4318,51 +4345,90 @@
         <p class="hint-note" id="orientHint" hidden style="margin:8px 0 0"></p>
       </section>
 
-      <section class="block" id="combineBlock" hidden>
-        <h2>Mise en page</h2>
-        <div class="seg duo">
-          <label><input type="radio" name="combine" value="same" /><span>Même page</span></label>
-          <label><input type="radio" name="combine" value="sep" checked /><span>Pages séparées</span></label>
-        </div>
-        <p class="hint-note" style="margin:8px 0 0">
-          Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
-        </p>
-      </section>
+      <div id="listeModeOpts" class="mode-opts">
+        <p class="mode-opts-lead">Mise en page liste</p>
+        <section class="block" id="filesBlock" hidden>
+          <h2>Pages concernées</h2>
+          <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages auxquelles s’appliquent titre, orientation et colonnes.</p>
+          <label class="page-all-check" id="pageAllWrap">
+            <input type="checkbox" id="selAllLists" />
+            <span>Toutes les pages de cet onglet</span>
+          </label>
+          <div class="page-list" id="chips"></div>
+        </section>
 
-      <section class="block" id="titlesBlock" hidden>
-        <h2>Titre</h2>
-        <p class="hint-note page-apply-hint" id="titlesApplyHint" hidden></p>
-        <div id="titleList"></div>
-        <h2 class="follow">Commentaire</h2>
-        <div id="commentList"></div>
-        <div class="add-line">
-          <input class="field" id="titleInput" type="text" placeholder="Ex. salle 12, à rendre mardi" aria-label="Ajouter un commentaire" />
-          <button class="btn-mini" id="addTitleBtn" type="button">Ajouter</button>
-        </div>
-      </section>
+        <section class="block" id="marginsBlock">
+          <h2>Marges</h2>
+          <div class="seg" id="margins">
+            <label><input type="radio" name="marge" value="etroites" /><span>Étroites</span></label>
+            <label><input type="radio" name="marge" value="moyennes" checked /><span>Moyennes</span></label>
+            <label><input type="radio" name="marge" value="larges" /><span>Larges</span></label>
+          </div>
+        </section>
 
-      <section class="block" id="colsBlock" hidden>
-        <h2>Colonnes à conserver</h2>
-        <p class="hint-note page-apply-hint" id="colsApplyHint" hidden></p>
-        <div class="hint-callout">
-          <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
-          <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
-        </div>
-        <div class="col-toolbar">
-          <button type="button" id="allOn">Tout cocher</button>
-          <button type="button" id="allOff">Tout décocher</button>
-          <button type="button" id="resetWidths">Largeurs auto</button>
-        </div>
-        <div class="cols" id="cols"></div>
-        <div class="add-line">
-          <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
-          <button class="btn-mini" id="addColBtn" type="button">Ajouter</button>
-        </div>
-        <label class="check-row">
-          <input type="checkbox" id="colAll" />
-          Ajouter cette colonne à toutes les listes
-        </label>
-      </section>
+        <section class="block" id="combineBlock" hidden>
+          <h2>Combiner les listes</h2>
+          <div class="seg duo">
+            <label><input type="radio" name="combine" value="same" /><span>Même page</span></label>
+            <label><input type="radio" name="combine" value="sep" checked /><span>Pages séparées</span></label>
+          </div>
+          <p class="hint-note" style="margin:8px 0 0">
+            Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
+          </p>
+        </section>
+
+        <section class="block" id="titlesBlock" hidden>
+          <h2>Titre</h2>
+          <p class="hint-note page-apply-hint" id="titlesApplyHint" hidden></p>
+          <div id="titleList"></div>
+          <h2 class="follow">Commentaire</h2>
+          <div id="commentList"></div>
+          <div class="add-line">
+            <input class="field" id="titleInput" type="text" placeholder="Ex. salle 12, à rendre mardi" aria-label="Ajouter un commentaire" />
+            <button class="btn-mini" id="addTitleBtn" type="button">Ajouter</button>
+          </div>
+        </section>
+
+        <section class="block" id="colsBlock" hidden>
+          <h2>Colonnes à conserver</h2>
+          <p class="hint-note page-apply-hint" id="colsApplyHint" hidden></p>
+          <div class="hint-callout">
+            <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
+            <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
+          </div>
+          <div class="col-toolbar">
+            <button type="button" id="allOn">Tout cocher</button>
+            <button type="button" id="allOff">Tout décocher</button>
+            <button type="button" id="resetWidths">Largeurs auto</button>
+          </div>
+          <div class="cols" id="cols"></div>
+          <div class="add-line">
+            <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
+            <button class="btn-mini" id="addColBtn" type="button">Ajouter</button>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" id="colAll" />
+            Ajouter cette colonne à toutes les listes
+          </label>
+        </section>
+
+        <section class="block" id="numBlock">
+          <h2>Numérotation</h2>
+          <div class="num-row">
+          <div class="seg">
+            <label><input type="radio" name="num" value="off" checked /><span>Aucune</span></label>
+            <label><input type="radio" name="num" value="digits" /><span>1 2 3</span></label>
+            <label><input type="radio" name="num" value="letters" /><span>A B C</span></label>
+          </div>
+          <div class="opt-from" id="numFromWrap" hidden>
+            <label for="numFrom">À partir de la ligne</label>
+            <input class="field field-num" id="numFrom" type="number" min="1" value="1" aria-label="Numéroter à partir de la ligne" />
+          </div>
+          </div>
+          <button type="button" class="linkish" id="restoreRows" hidden style="margin-top:8px"></button>
+        </section>
+      </div>
+      </div>
       </div>
       <div id="displayFoldWrap" hidden>
       <button class="fold-head" id="displayFoldBtn" type="button" aria-expanded="true" aria-controls="displayFold">
@@ -4424,20 +4490,6 @@
           Contour interne des fiches TP
         </label>
 
-        <div class="opt-label">Numérotation</div>
-        <div class="num-row">
-        <div class="seg">
-          <label><input type="radio" name="num" value="off" checked /><span>Aucune</span></label>
-          <label><input type="radio" name="num" value="digits" /><span>1 2 3</span></label>
-          <label><input type="radio" name="num" value="letters" /><span>A B C</span></label>
-        </div>
-        <div class="opt-from" id="numFromWrap" hidden>
-          <label for="numFrom">À partir de la ligne</label>
-          <input class="field field-num" id="numFrom" type="number" min="1" value="1" aria-label="Numéroter à partir de la ligne" />
-        </div>
-        </div>
-        <button type="button" class="linkish" id="restoreRows" hidden style="margin-top:8px"></button>
-
         <div class="opt-label">Cadre d’édition</div>
         <div class="seg" id="editFrameSeg">
           <label><input type="radio" name="editFrame" value="off" /><span>Aucun</span></label>
@@ -4491,37 +4543,6 @@
           <input type="range" id="notesPos" min="0" max="1" step="1" value="1" aria-label="Position de la colonne Rq. : gauche ou droite" />
           <span>Droite</span>
         </div>
-        </div>
-      </section>
-      </div>
-      </div>
-      <div id="modeFoldWrap">
-      <button class="fold-head" id="modeFoldBtn" type="button" aria-expanded="true" aria-controls="modeFold">
-        Mode
-        <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
-      </button>
-      <div class="fold-panel" id="modeFold">
-      <section class="block" id="modeBlock">
-        <div class="seg" id="pageModeSeg">
-          <label><input type="radio" name="pageMode" value="liste" checked /><span>Liste</span></label>
-          <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
-          <label><input type="radio" name="pageMode" value="prog" /><span>Progression</span></label>
-        </div>
-        <div id="tpForm" hidden>
-          <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="tpCreateBtn" type="button" title="Créer une fiche TP">Créer un TP</button>
-            <button class="btn btn-ghost btn-compact" id="tpLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
-          </div>
-          <p class="hint-note" style="margin:0 0 10px">En-tête : matière, niveau, partie, titre. Double-cliquez la colonne <strong>Matériel</strong> pour le catalogue.</p>
-          <button type="button" class="btn-mini" id="tpOpenCatalog">Catalogue matériel</button>
-        </div>
-        <div id="progForm" hidden>
-          <div class="import-row" style="grid-template-columns:1fr 1fr;margin:8px 0 10px">
-            <button class="btn btn-create btn-compact" id="progCreateBtn" type="button" title="Créer une fiche progression">Créer une progression</button>
-            <button class="btn btn-ghost btn-compact" id="progLoadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger</button>
-          </div>
-          <p class="hint-note" style="margin:0 0 10px">Paysage A4 pleine page. Menus matière / niveau / partie / supports. Double-clic <strong>Matériel</strong> pour le catalogue.</p>
-          <button type="button" class="btn-mini" id="progOpenCatalog">Catalogue matériel</button>
         </div>
       </section>
       </div>
@@ -5254,6 +5275,46 @@
       return String(n);
     }
 
+    function pageTypeOf(list) {
+      if (!list || isBlankList(list)) return null;
+      if (isTpList(list)) return "tp";
+      if (isProgList(list)) return "prog";
+      return "liste";
+    }
+
+    function firstSheetTitle(lists) {
+      for (const l of lists) {
+        const t = ((l.titles && l.titles[0]) || "").trim();
+        if (t && t !== "Demande de matériel" && t !== TP_TITLE_DEFAULT && t !== PROG_TITLE_DEFAULT) return t;
+        const n = (l.name || "").trim().replace(/\.[^.]+$/, "");
+        if (n && !/^Page \d+$/i.test(n) && n !== "Installation TP" && n !== "Progression") return n;
+      }
+      return "";
+    }
+
+    function autoTabNameFor(tab) {
+      const lists = tabListsOf(tab).filter((l) => l && !isBlankList(l));
+      if (!lists.length) return nextTabName();
+      const types = [...new Set(lists.map(pageTypeOf).filter(Boolean))];
+      if (types.length !== 1) return nextTabName();
+      const type = types[0];
+      if (type === "liste" || type === "prog") {
+        const title = firstSheetTitle(lists);
+        if (title) return title;
+      }
+      if (type === "tp") return "TP";
+      if (type === "prog") return "Progression";
+      return "Liste";
+    }
+
+    function syncTabAutoNames() {
+      ensureTabs();
+      state.tabs.forEach((tab) => {
+        if (tab.manualName) return;
+        tab.name = autoTabNameFor(tab);
+      });
+    }
+
     function tabPackFromState() {
       return {
         lists: state.lists,
@@ -5417,6 +5478,7 @@
       if (!tab) return;
       const v = String(name || "").trim() || nextTabName();
       tab.name = v;
+      tab.manualName = true;
     }
 
     function renderTabs() {
@@ -5424,6 +5486,7 @@
       const host = $("tabList");
       if (!bar || !host) return;
       ensureTabs();
+      syncTabAutoNames();
       const show = state.lists.length > 0 || state.tabs.length > 1;
       bar.hidden = !show;
       host.innerHTML = "";
@@ -11337,7 +11400,8 @@
       });
 
       applyPageStyle(firstLay.orient, firstLay.marge, sheetOrients);
-      $("orientBlock").hidden = combining();
+      const panelMode = state.panelMode === "tp" || state.panelMode === "prog" ? state.panelMode : "liste";
+      $("orientBlock").hidden = !state.lists.length || (panelMode === "liste" && combining());
       syncOrientHint();
       requestAnimationFrame(() => {
         syncAllListeFrames();
@@ -12159,6 +12223,7 @@
     function renderMode() {
       const form = $("tpForm");
       const progForm = $("progForm");
+      const listeOpts = $("listeModeOpts");
       const mode = state.panelMode === "tp" || state.panelMode === "prog" ? state.panelMode : "liste";
       state.panelMode = mode;
       document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
@@ -12166,10 +12231,25 @@
       });
       if (form) form.hidden = mode !== "tp";
       if (progForm) progForm.hidden = mode !== "prog";
+      if (listeOpts) listeOpts.hidden = mode !== "liste";
+    }
+
+    function renderListeNum() {
+      document.querySelectorAll('input[name="num"]').forEach((el) => {
+        el.checked = el.value === state.numbering;
+      });
+      $("numFrom").value = String(state.numberFrom);
+      $("numFromWrap").hidden = state.numbering === "off";
+      const n = hiddenCount();
+      const btn = $("restoreRows");
+      if (!btn) return;
+      btn.hidden = n === 0;
+      btn.textContent = n ? ("Réafficher " + n + " ligne" + (n > 1 ? "s" : "") + " masquée" + (n > 1 ? "s" : "")) : "";
     }
 
     function renderDisplay() {
       const on = state.lists.length > 0;
+      $("modeFoldWrap").hidden = !on;
       $("displayFoldWrap").hidden = !on;
       $("infoBlock").hidden = !on;
       if (!on) return;
@@ -12199,17 +12279,8 @@
       applyFontNow(state.fontPt);
       applyTitleNow(state.titlePt);
       applyThNow(state.thPt);
-      document.querySelectorAll('input[name="num"]').forEach((el) => {
-        el.checked = el.value === state.numbering;
-      });
-      $("numFrom").value = String(state.numberFrom);
-      $("numFromWrap").hidden = state.numbering === "off";
       renderBadgeTypes();
       renderFluos();
-      const n = hiddenCount();
-      const btn = $("restoreRows");
-      btn.hidden = n === 0;
-      btn.textContent = n ? ("Réafficher " + n + " ligne" + (n > 1 ? "s" : "") + " masquée" + (n > 1 ? "s" : "")) : "";
     }
 
     function renderPanel() {
@@ -12223,6 +12294,7 @@
       }
       renderTitles();
       renderCols();
+      renderListeNum();
       renderDisplay();
       renderMode();
       const margeEl = document.querySelector('input[name="marge"][value="' + state.marge + '"]');
@@ -12937,6 +13009,8 @@
       tab.activeId = lists[0] && lists[0].id;
       tab.selectedIds = lists[0] ? [lists[0].id] : [];
       if (!tab.name) tab.name = nextTabName();
+      if (raw && raw.manualName) tab.manualName = true;
+      else if (tab.name && tab.name !== autoTabNameFor(tab)) tab.manualName = true;
       return tab;
     }
 
@@ -13038,6 +13112,7 @@
         tabs: (state.tabs || []).map((t) => ({
           id: t.id,
           name: t.name,
+          manualName: Boolean(t.manualName),
           lists: (t.id === state.activeTabId ? state.lists : (t.lists || [])).map(serializeList),
           settings: serializeTabSettings(t.id === state.activeTabId ? state : t),
         })),
@@ -14600,6 +14675,7 @@
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
         if ($("createTableModal") && !$("createTableModal").hidden) return;
+        if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
         if ($("tpMatModal") && !$("tpMatModal").hidden) return;
         if ($("colDelModal") && !$("colDelModal").hidden) return;
         if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
@@ -14622,6 +14698,7 @@
         if ($("modal") && !$("modal").hidden) return;
         if ($("pasteModal") && !$("pasteModal").hidden) return;
         if ($("createTableModal") && !$("createTableModal").hidden) return;
+        if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
         if ($("tpMatModal") && !$("tpMatModal").hidden) return;
         if ($("colDelModal") && !$("colDelModal").hidden) return;
         if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
@@ -14677,8 +14754,8 @@
         btn.addEventListener("click", () => apply(btn.getAttribute("aria-expanded") === "true"));
       };
       bind("filesFoldBtn", "filesFold", "epicsv-fold-files", {
-        open: "Afficher fichiers et dispositions",
-        close: "Réduire fichiers et dispositions"
+        open: "Afficher le panneau Fichier",
+        close: "Réduire le panneau Fichier"
       }, liftMenuTo);
       bind("displayFoldBtn", "displayFold", "epicsv-fold-display", {
         open: "Afficher les options d’affichage",
