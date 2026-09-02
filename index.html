@@ -1853,6 +1853,10 @@
       background: #12c5b8;
       box-shadow: inset 0 0 0 1px #0c7d78;
     }
+    .size-picker-cell.is-disabled {
+      opacity: 0.22;
+      pointer-events: none;
+    }
     .size-picker-label {
       text-align: center;
       font-size: 15px;
@@ -1860,6 +1864,21 @@
       color: var(--teal-deep);
       margin: 0 0 14px;
       letter-spacing: 0.04em;
+    }
+    .split-preview {
+      display: grid;
+      gap: 3px;
+      width: max-content;
+      margin: 8px auto 6px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .split-preview .size-picker-cell.is-on {
+      box-shadow: inset 0 0 0 2px #0c7d78;
+    }
+    .sel-bar .sel-fusion button {
+      padding: 6px 9px;
+      font-size: 11px;
     }
     .create-size-fields {
       display: grid;
@@ -4607,7 +4626,8 @@
     </div>
     <div class="sel-group" role="group" aria-label="Fusionner ou fractionner">
       <span class="sel-group-lab">Fusion</span>
-      <button type="button" id="selMerge" title="Fusionner ou fractionner les cellules">Fusionner</button>
+      <button type="button" id="selMerge" title="Fusionner les cellules sélectionnées">Fusionner</button>
+      <button type="button" id="selSplit" title="Fractionner la sélection en colonnes × lignes">Fractionner</button>
     </div>
     <div class="sel-group sel-group-insert" role="group" aria-label="Insérer une ligne ou une colonne">
       <span class="sel-group-lab">Insérer</span>
@@ -4784,24 +4804,26 @@
         <button class="btn btn-print" id="createTableOk" type="button">OK</button>
         <button class="btn btn-ghost" id="createTableCancel" type="button">Annuler</button>
       </div>
-      <div class="modal-actions" id="createTableMergeActions" hidden>
-        <div class="merge-insert span-all" id="mergeInsertBar" role="group" aria-label="Insérer une ligne ou une colonne">
-          <button type="button" id="mergeInsertRowAbove" title="Insérer une ligne au-dessus" aria-label="Insérer une ligne au-dessus">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.1l4.5 5.1h-9z"/><rect x="11.05" y="7.8" width="1.9" height="6.4" fill="currentColor"/><rect x="4.6" y="16.6" width="14.8" height="2.3" rx="1.15" fill="currentColor"/></svg>
-          </button>
-          <button type="button" id="mergeInsertRowBelow" title="Insérer une ligne en dessous" aria-label="Insérer une ligne en dessous">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.6" y="5.1" width="14.8" height="2.3" rx="1.15" fill="currentColor"/><rect x="11.05" y="9.8" width="1.9" height="6.4" fill="currentColor"/><path fill="currentColor" d="M12 20.9l-4.5-5.1h9z"/></svg>
-          </button>
-          <button type="button" id="mergeInsertColLeft" title="Insérer une colonne à gauche" aria-label="Insérer une colonne à gauche">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 12l5.1-4.5v9z"/><rect x="7.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><rect x="16.6" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/></svg>
-          </button>
-          <button type="button" id="mergeInsertColRight" title="Insérer une colonne à droite" aria-label="Insérer une colonne à droite">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.1" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/><rect x="9.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><path fill="currentColor" d="M20.9 12l-5.1 4.5v-9z"/></svg>
-          </button>
-        </div>
-        <button class="btn btn-print" id="mergeCellsBtn" type="button">Fusionner</button>
-        <button class="btn btn-print" id="splitCellsBtn" type="button">Fractionner</button>
-        <button class="btn btn-ghost span-all" id="mergeCellsCancel" type="button">Annuler</button>
+    </div>
+  </div>
+
+  <div class="modal-back no-print" id="splitCellsModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="splitCellsTitle">
+      <h3 id="splitCellsTitle">Fractionner en 2 × 2</h3>
+      <p id="splitCellsLead">Indiquez le nombre de colonnes et de lignes pour fractionner la sélection.</p>
+      <div class="split-preview size-picker" id="splitPreview" role="grid" aria-label="Aperçu de la grille"></div>
+      <div class="size-picker-label" id="splitPreviewLabel" aria-live="polite">2 × 2</div>
+      <div class="create-size-fields">
+        <label>Colonnes
+          <input class="field" id="splitCols" type="number" min="1" max="40" value="2" inputmode="numeric" aria-label="Nombre de colonnes" />
+        </label>
+        <label>Lignes
+          <input class="field" id="splitRows" type="number" min="1" max="80" value="2" inputmode="numeric" aria-label="Nombre de lignes" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-print" id="splitCellsOk" type="button">Fractionner</button>
+        <button class="btn btn-ghost" id="splitCellsCancel" type="button">Annuler</button>
       </div>
     </div>
   </div>
@@ -4956,6 +4978,9 @@
     let dirty = false;
     let pasteDialogRestore = null;
     let tableDlgRestore = null;
+    let splitDlgRestore = null;
+    let splitMaxCols = EMPTY_PICK_COLS;
+    let splitMaxRows = EMPTY_PICK_ROWS;
     let placeDlgRestore = null;
     let dirtyDlgRestore = null;
     let projectHandle = null;
@@ -4969,7 +4994,6 @@
     const AUTOSAVE_DB = "epicsv-handles";
     let createAsTp = false;
     let createAsKind = "";
-    let tableModalMode = "create";
     let sizeDrag = null;
     let dragRow = null;
     let fluoClickTimer = null;
@@ -8633,12 +8657,8 @@
       const rowOk = Boolean(box) && (list.rows || []).length < EMPTY_ROWS_MAX;
       const colOk = Boolean(box) && !sheetHasFixedCols(list) && (list.headers || []).length < EMPTY_COLS_MAX;
       const ids = {
-        mergeInsertRowAbove: rowOk,
-        mergeInsertRowBelow: rowOk,
         selInsertRowAbove: rowOk,
         selInsertRowBelow: rowOk,
-        mergeInsertColLeft: colOk,
-        mergeInsertColRight: colOk,
         selInsertColLeft: colOk,
         selInsertColRight: colOk,
       };
@@ -8698,13 +8718,21 @@
           lid: zoneSel.lid,
           keys: (zoneSel.keys || []).slice(),
           ris: (zoneSel.ris || []).slice(),
-        }, { bar: tableModalMode !== "cells" || !$("createTableModal") || $("createTableModal").hidden });
+        }, { bar: true });
       }
-      if (tableModalMode === "cells" && $("createTableModal") && !$("createTableModal").hidden) {
-        const rect = zoneMergeRect(zoneList());
+      if ($("splitCellsModal") && !$("splitCellsModal").hidden) {
+        const list = zoneList();
+        const rect = zoneMergeRect(list);
         if (rect) {
-          syncCreateSizeFields(rect.c1 - rect.c0 + 1, rect.r1 - rect.r0 + 1);
-          if ($("mergeCellsBtn")) $("mergeCellsBtn").disabled = !(rect.r1 > rect.r0 || rect.c1 > rect.c0);
+          const baseC = rect.c1 - rect.c0 + 1;
+          const baseR = rect.r1 - rect.r0 + 1;
+          const grow = canGrowMergeGrid(list);
+          splitMaxCols = grow ? EMPTY_PICK_COLS : baseC;
+          splitMaxRows = grow ? EMPTY_PICK_ROWS : baseR;
+          buildSplitPreview(splitMaxCols, splitMaxRows);
+          $("splitCols").max = String(splitMaxCols);
+          $("splitRows").max = String(splitMaxRows);
+          syncSplitSizeFields($("splitCols").value, $("splitRows").value);
         }
       }
       syncMergeInsertBtns();
@@ -10364,6 +10392,7 @@
       if ($("selEq")) $("selEq").disabled = isW ? zoneDataCols(list).length < 2 : !hasH;
       const mergeRect = zoneMergeRect(list);
       if ($("selMerge")) $("selMerge").disabled = !mergeRect;
+      if ($("selSplit")) $("selSplit").disabled = !mergeRect;
       syncMergeInsertBtns();
       syncSelSizeInput();
       syncSelAlign();
@@ -12358,29 +12387,82 @@
     }
 
     function syncCreateTableModalMode() {
-      const merge = tableModalMode === "cells";
-      const createActions = $("createTableCreateActions");
-      const mergeActions = $("createTableMergeActions");
-      const lead = $("createTableLead");
       const title = $("createTableTitle");
+      const lead = $("createTableLead");
       const picker = $("tablePicker");
-      if (createActions) createActions.hidden = merge;
-      if (mergeActions) mergeActions.hidden = !merge;
-      if (picker) picker.setAttribute("aria-label", merge ? "Taille de fusion ou de fractionnement" : "Taille du tableau");
+      if (picker) picker.setAttribute("aria-label", "Taille du tableau");
       if (title) {
-        title.textContent = merge
-          ? "Fusionner ou fractionner"
-          : (createAsKind === "prog" ? "Créer une fiche progression" : (createAsTp ? "Créer une fiche TP" : "Créer un tableau"));
+        title.textContent = createAsKind === "prog"
+          ? "Créer une fiche progression"
+          : (createAsTp ? "Créer une fiche TP" : "Créer un tableau");
       }
       if (lead) {
-        lead.textContent = merge
-          ? "Le damier indique la grille (colonnes × lignes) dans la sélection. Fusionner assemble les cellules choisies. Fractionner redistribue une fusion selon le damier, sans perdre contenu, fluo, pastilles, alignements ni menus."
-          : "Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.";
+        lead.textContent = "Survolez le damier pour choisir la taille, ou indiquez le nombre de colonnes et de lignes.";
       }
     }
 
+    function updateSplitTitle(cols, rows) {
+      const c = clampEmptyCols(cols);
+      const r = clampEmptyRows(rows);
+      const title = $("splitCellsTitle");
+      const label = $("splitPreviewLabel");
+      const text = c + " × " + r;
+      if (title) title.textContent = "Fractionner en " + text;
+      if (label) label.textContent = text;
+    }
+
+    function buildSplitPreview(maxC, maxR) {
+      const host = $("splitPreview");
+      if (!host) return;
+      const mc = Math.max(1, maxC);
+      const mr = Math.max(1, maxR);
+      host.innerHTML = "";
+      host.style.gridTemplateColumns = "repeat(" + mc + ", 24px)";
+      host.style.gridTemplateRows = "repeat(" + mr + ", 18px)";
+      for (let r = 1; r <= mr; r++) {
+        for (let c = 1; c <= mc; c++) {
+          const cell = document.createElement("span");
+          cell.className = "size-picker-cell";
+          cell.dataset.cols = String(c);
+          cell.dataset.rows = String(r);
+          cell.setAttribute("role", "gridcell");
+          cell.tabIndex = 0;
+          host.appendChild(cell);
+        }
+      }
+    }
+
+    function paintSplitPreview(cols, rows) {
+      const c = clampEmptyCols(cols);
+      const r = clampEmptyRows(rows);
+      const host = $("splitPreview");
+      if (!host) return;
+      host.querySelectorAll(".size-picker-cell").forEach((cell) => {
+        const cc = Number(cell.dataset.cols);
+        const rr = Number(cell.dataset.rows);
+        const on = cc <= c && rr <= r;
+        cell.classList.toggle("is-on", on);
+        cell.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      updateSplitTitle(c, r);
+    }
+
+    function syncSplitSizeFields(cols, rows) {
+      const c = clampEmptyCols(Math.min(cols, splitMaxCols));
+      const r = clampEmptyRows(Math.min(rows, splitMaxRows));
+      $("splitCols").value = String(c);
+      $("splitRows").value = String(r);
+      paintSplitPreview(c, r);
+    }
+
+    function readSplitSize() {
+      return {
+        cols: clampEmptyCols(Math.min($("splitCols").value, splitMaxCols)),
+        rows: clampEmptyRows(Math.min($("splitRows").value, splitMaxRows)),
+      };
+    }
+
     function openCreateTableModal(asTp) {
-      tableModalMode = "create";
       createAsKind = asTp === "prog" ? "prog" : (asTp ? "tp" : "");
       createAsTp = createAsKind === "tp";
       buildTablePicker();
@@ -12392,29 +12474,6 @@
       tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
     }
 
-    function openMergeCellsModal() {
-      const list = zoneList();
-      const rect = zoneMergeRect(list);
-      if (!list || !rect) {
-        announce("Sélectionnez un rectangle de cellules à fusionner ou fractionner.");
-        return;
-      }
-      tableModalMode = "cells";
-      createAsTp = false;
-      createAsKind = "";
-      buildTablePicker();
-      $("createTableModal").hidden = false;
-      syncCreateTableModalMode();
-      const cols = rect.c1 - rect.c0 + 1;
-      const rows = rect.r1 - rect.r0 + 1;
-      syncCreateSizeFields(cols, rows);
-      const canMerge = (rows > 1 || cols > 1);
-      if ($("mergeCellsBtn")) $("mergeCellsBtn").disabled = !canMerge;
-      if ($("splitCellsBtn")) $("splitCellsBtn").disabled = false;
-      syncMergeInsertBtns();
-      tableDlgRestore = attachDialog($("createTableModal"), closeCreateTableModal);
-    }
-
     function closeCreateTableModal() {
       const restore = tableDlgRestore;
       tableDlgRestore = null;
@@ -12422,8 +12481,42 @@
       $("createTableModal").hidden = true;
       createAsTp = false;
       createAsKind = "";
-      tableModalMode = "create";
-      syncCreateTableModalMode();
+    }
+
+    function openSplitCellsModal() {
+      const list = zoneList();
+      const rect = zoneMergeRect(list);
+      if (!list || !rect) {
+        announce("Sélectionnez un rectangle de cellules à fusionner ou fractionner.");
+        return;
+      }
+      hideSelMenu();
+      const baseC = rect.c1 - rect.c0 + 1;
+      const baseR = rect.r1 - rect.r0 + 1;
+      const grow = canGrowMergeGrid(list);
+      splitMaxCols = grow ? EMPTY_PICK_COLS : baseC;
+      splitMaxRows = grow ? EMPTY_PICK_ROWS : baseR;
+      buildSplitPreview(splitMaxCols, splitMaxRows);
+      $("splitCols").max = String(splitMaxCols);
+      $("splitRows").max = String(splitMaxRows);
+      $("splitCellsLead").textContent = grow
+        ? "Indiquez le nombre de colonnes et de lignes. La grille peut dépasser la sélection actuelle (" + baseC + " × " + baseR + ")."
+        : "Indiquez le nombre de colonnes et de lignes (max. " + baseC + " × " + baseR + ").";
+      const box = expandRectToMerges(list, rect);
+      const startC = rectHasMerge(list, box) ? baseC : Math.min(baseC, Math.max(2, baseC));
+      const startR = rectHasMerge(list, box) ? baseR : Math.min(baseR, Math.max(2, baseR));
+      syncSplitSizeFields(startC, startR);
+      $("splitCellsModal").hidden = false;
+      paintZone({ bar: true });
+      splitDlgRestore = attachDialog($("splitCellsModal"), closeSplitCellsModal);
+    }
+
+    function closeSplitCellsModal() {
+      const restore = splitDlgRestore;
+      splitDlgRestore = null;
+      if (restore) restore();
+      $("splitCellsModal").hidden = true;
+      paintZone({ bar: true });
     }
 
     function setZoneFromRect(list, box) {
@@ -12435,29 +12528,53 @@
       setZone({ lid: String(list.id), keys: keys, ris: ris });
     }
 
-    function applyMergeFromModal(asSplit) {
+    function applyMergeDirect() {
+      hideSelMenu();
       const list = zoneList();
       const rect = zoneMergeRect(list);
       if (!list || !rect) {
-        closeCreateTableModal();
+        announce("Sélectionnez un rectangle de cellules à fusionner ou fractionner.");
         return;
       }
-      const size = readCreateSize();
+      if (rect.r1 <= rect.r0 && rect.c1 <= rect.c0) {
+        announce("Sélectionnez au moins deux cellules.");
+        return;
+      }
       pushHist();
-      const result = asSplit
-        ? splitCellsRect(list, rect, size.cols, size.rows)
-        : mergeCellsRect(list, rect);
-      closeCreateTableModal();
+      const result = mergeCellsRect(list, rect);
       if (!result || !result.ok) {
         discardLastHist();
-        announce(asSplit ? "Impossible de fractionner cette sélection." : "Sélectionnez au moins deux cellules.");
+        announce("Sélectionnez au moins deux cellules.");
         return;
       }
       dirty = true;
       if (result.inserted) renderAll();
       else renderPreview();
       setZoneFromRect(list, result.box);
-      announce(asSplit ? "Cellules fractionnées." : "Cellules fusionnées.");
+      announce("Cellules fusionnées.");
+    }
+
+    function applySplitFromModal() {
+      const list = zoneList();
+      const rect = zoneMergeRect(list);
+      if (!list || !rect) {
+        closeSplitCellsModal();
+        return;
+      }
+      const size = readSplitSize();
+      pushHist();
+      const result = splitCellsRect(list, rect, size.cols, size.rows);
+      closeSplitCellsModal();
+      if (!result || !result.ok) {
+        discardLastHist();
+        announce("Impossible de fractionner cette sélection.");
+        return;
+      }
+      dirty = true;
+      if (result.inserted) renderAll();
+      else renderPreview();
+      setZoneFromRect(list, result.box);
+      announce("Cellules fractionnées.");
     }
 
     function createTpSheet(nCols, nRows, opts) {
@@ -12501,7 +12618,6 @@
     }
 
     async function confirmCreateTable() {
-      if (tableModalMode === "cells") return;
       const { cols, rows } = readCreateSize();
       const kind = createAsKind;
       closeCreateTableModal();
@@ -13204,6 +13320,7 @@
     document.addEventListener("paste", (e) => {
       if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
       if ($("createTableModal") && !$("createTableModal").hidden) return;
+      if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
       if (e.target.closest("[contenteditable=true]")) return;
       const html = (e.clipboardData && e.clipboardData.getData("text/html")) || "";
       const text = (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
@@ -13231,15 +13348,11 @@
     if (progLoadBtn) progLoadBtn.addEventListener("click", () => $("loadFile").click());
     $("createTableOk").addEventListener("click", confirmCreateTable);
     $("createTableCancel").addEventListener("click", closeCreateTableModal);
-    if ($("mergeCellsBtn")) $("mergeCellsBtn").addEventListener("click", () => applyMergeFromModal(false));
-    if ($("splitCellsBtn")) $("splitCellsBtn").addEventListener("click", () => applyMergeFromModal(true));
-    if ($("mergeCellsCancel")) $("mergeCellsCancel").addEventListener("click", closeCreateTableModal);
-    if ($("selMerge")) $("selMerge").addEventListener("click", () => { hideSelMenu(); openMergeCellsModal(); });
+    if ($("splitCellsOk")) $("splitCellsOk").addEventListener("click", applySplitFromModal);
+    if ($("splitCellsCancel")) $("splitCellsCancel").addEventListener("click", closeSplitCellsModal);
+    if ($("selMerge")) $("selMerge").addEventListener("click", applyMergeDirect);
+    if ($("selSplit")) $("selSplit").addEventListener("click", openSplitCellsModal);
     [
-      ["mergeInsertRowAbove", "row", "before"],
-      ["mergeInsertRowBelow", "row", "after"],
-      ["mergeInsertColLeft", "col", "before"],
-      ["mergeInsertColRight", "col", "after"],
       ["selInsertRowAbove", "row", "before"],
       ["selInsertRowBelow", "row", "after"],
       ["selInsertColLeft", "col", "before"],
@@ -13266,17 +13379,30 @@
       $(id).addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
-          if (tableModalMode === "cells") {
-            const list = zoneList();
-            const rect = zoneMergeRect(list);
-            const canMerge = Boolean(rect && (rect.r1 > rect.r0 || rect.c1 > rect.c0));
-            applyMergeFromModal(!canMerge);
-            return;
-          }
           confirmCreateTable();
         }
       });
     });
+    ["splitCols", "splitRows"].forEach((id) => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("input", () => paintSplitPreview(el.id === "splitCols" ? el.value : $("splitCols").value, el.id === "splitRows" ? el.value : $("splitRows").value));
+      el.addEventListener("change", () => syncSplitSizeFields($("splitCols").value, $("splitRows").value));
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          applySplitFromModal();
+        }
+      });
+    });
+    const splitPreview = $("splitPreview");
+    if (splitPreview) {
+      splitPreview.addEventListener("click", (e) => {
+        const cell = e.target.closest(".size-picker-cell");
+        if (!cell) return;
+        syncSplitSizeFields(cell.dataset.cols, cell.dataset.rows);
+      });
+    }
     $("tablePicker").addEventListener("pointerover", (e) => {
       const cell = e.target.closest(".size-picker-cell");
       if (!cell || !$("tablePicker").contains(cell)) return;
@@ -13286,7 +13412,7 @@
       const cell = e.target.closest(".size-picker-cell");
       if (!cell) return;
       syncCreateSizeFields(cell.dataset.cols, cell.dataset.rows);
-      if (tableModalMode !== "cells") confirmCreateTable();
+      confirmCreateTable();
     });
     $("pasteOk").addEventListener("click", () => {
       ingestClipboard($("pasteArea").value, "")
