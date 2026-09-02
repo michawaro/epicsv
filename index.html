@@ -2026,6 +2026,15 @@
         color: #2b3d12;
         box-shadow: 0 8px 20px rgba(43, 61, 18, 0.14);
       }
+      .btn-mode {
+        background: linear-gradient(
+          180deg,
+          var(--mode-accent-light) 0%,
+          var(--mode-accent) 100%
+        );
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(107, 45, 110, 0.35);
+      }
       .files-export .btn-print {
         background: linear-gradient(180deg, #f4fb7a, #c9e218);
         color: #1a2808;
@@ -5836,7 +5845,7 @@
                     type="button"
                     title="Créer une fiche TP"
                   >
-                    Créer un TP
+                    Modèle
                   </button>
                   <button
                     class="btn btn-ghost btn-compact"
@@ -5866,7 +5875,7 @@
                     type="button"
                     title="Créer une fiche progression"
                   >
-                    Créer une progression
+                    Modèle
                   </button>
                   <button
                     class="btn btn-ghost btn-compact"
@@ -5893,14 +5902,14 @@
                 <p class="files-group-label">Créer</p>
                 <div class="import-row">
                   <button
-                    class="btn btn-print btn-compact"
+                    class="btn btn-mode btn-compact"
                     id="pasteBtn"
                     type="button"
                   >
                     Coller le CSV
                   </button>
                   <button
-                    class="btn btn-create btn-compact"
+                    class="btn btn-print btn-compact"
                     id="createTableBtn"
                     type="button"
                   >
