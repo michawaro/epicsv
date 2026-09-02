@@ -263,7 +263,9 @@
     .fold-panel[hidden],
     #displayFoldWrap[hidden],
     #modeFoldWrap[hidden],
-    #infoBlock[hidden] { display: none !important; }
+    #infoBlock[hidden],
+    .display-tab-panel[hidden],
+    .page-scope-pick[hidden] { display: none !important; }
 
     .brand {
       display: flex;
@@ -687,6 +689,30 @@
       margin: 0;
       accent-color: var(--seal);
       cursor: pointer;
+    }
+    .display-tabs {
+      margin-bottom: 12px;
+    }
+    .display-tab-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .page-scope-block h2 {
+      margin-bottom: 8px;
+    }
+    .page-scope-pick {
+      margin-top: 10px;
+    }
+    .page-scope-summary {
+      margin: 10px 0 0;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.16);
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
     }
     .page-apply-hint {
       margin: 8px 0 0;
@@ -4332,17 +4358,6 @@
         </div>
       </section>
 
-      <section class="block" id="orientBlock">
-        <h2>Orientation feuille</h2>
-        <div class="seg" id="orients">
-          <label><input type="radio" name="orient" value="auto" checked /><span>Auto</span></label>
-          <label><input type="radio" name="orient" value="portrait" /><span>Portrait</span></label>
-          <label><input type="radio" name="orient" value="paysage" /><span>Paysage</span></label>
-        </div>
-        <p class="hint-note page-apply-hint" id="orientApplyHint" hidden></p>
-        <p class="hint-note" id="orientHint" hidden style="margin:8px 0 0"></p>
-      </section>
-
       <div id="listeModeOpts" class="mode-opts">
         <div class="files-group mode-liste-import">
           <p class="files-group-label">Créer</p>
@@ -4362,87 +4377,6 @@
             </label>
           </div>
         </div>
-        <p class="mode-opts-lead">Mise en page liste</p>
-        <section class="block" id="filesBlock" hidden>
-          <h2>Pages concernées</h2>
-          <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages auxquelles s’appliquent titre, orientation et colonnes.</p>
-          <label class="page-all-check" id="pageAllWrap">
-            <input type="checkbox" id="selAllLists" />
-            <span>Toutes les pages de cet onglet</span>
-          </label>
-          <div class="page-list" id="chips"></div>
-        </section>
-
-        <section class="block" id="marginsBlock">
-          <h2>Marges</h2>
-          <div class="seg" id="margins">
-            <label><input type="radio" name="marge" value="etroites" /><span>Étroites</span></label>
-            <label><input type="radio" name="marge" value="moyennes" checked /><span>Moyennes</span></label>
-            <label><input type="radio" name="marge" value="larges" /><span>Larges</span></label>
-          </div>
-        </section>
-
-        <section class="block" id="combineBlock" hidden>
-          <h2>Combiner les listes</h2>
-          <div class="seg duo">
-            <label><input type="radio" name="combine" value="same" /><span>Même page</span></label>
-            <label><input type="radio" name="combine" value="sep" checked /><span>Pages séparées</span></label>
-          </div>
-          <p class="hint-note" style="margin:8px 0 0">
-            Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
-          </p>
-        </section>
-
-        <section class="block" id="titlesBlock" hidden>
-          <h2>Titre</h2>
-          <p class="hint-note page-apply-hint" id="titlesApplyHint" hidden></p>
-          <div id="titleList"></div>
-          <h2 class="follow">Commentaire</h2>
-          <div id="commentList"></div>
-          <div class="add-line">
-            <input class="field" id="titleInput" type="text" placeholder="Ex. salle 12, à rendre mardi" aria-label="Ajouter un commentaire" />
-            <button class="btn-mini" id="addTitleBtn" type="button">Ajouter</button>
-          </div>
-        </section>
-
-        <section class="block" id="colsBlock" hidden>
-          <h2>Colonnes à conserver</h2>
-          <p class="hint-note page-apply-hint" id="colsApplyHint" hidden></p>
-          <div class="hint-callout">
-            <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
-            <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
-          </div>
-          <div class="col-toolbar">
-            <button type="button" id="allOn">Tout cocher</button>
-            <button type="button" id="allOff">Tout décocher</button>
-            <button type="button" id="resetWidths">Largeurs auto</button>
-          </div>
-          <div class="cols" id="cols"></div>
-          <div class="add-line">
-            <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
-            <button class="btn-mini" id="addColBtn" type="button">Ajouter</button>
-          </div>
-          <label class="check-row">
-            <input type="checkbox" id="colAll" />
-            Ajouter cette colonne à toutes les listes
-          </label>
-        </section>
-
-        <section class="block" id="numBlock">
-          <h2>Numérotation</h2>
-          <div class="num-row">
-          <div class="seg">
-            <label><input type="radio" name="num" value="off" checked /><span>Aucune</span></label>
-            <label><input type="radio" name="num" value="digits" /><span>1 2 3</span></label>
-            <label><input type="radio" name="num" value="letters" /><span>A B C</span></label>
-          </div>
-          <div class="opt-from" id="numFromWrap" hidden>
-            <label for="numFrom">À partir de la ligne</label>
-            <input class="field field-num" id="numFrom" type="number" min="1" value="1" aria-label="Numéroter à partir de la ligne" />
-          </div>
-          </div>
-          <button type="button" class="linkish" id="restoreRows" hidden style="margin-top:8px"></button>
-        </section>
       </div>
       </div>
       </div>
@@ -4452,7 +4386,122 @@
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="fold-panel" id="displayFold">
-      <section class="block" id="displayBlock">
+        <div class="seg display-tabs" id="displayTabSeg">
+          <label><input type="radio" name="displayTab" value="layout" checked /><span>Mise en page</span></label>
+          <label><input type="radio" name="displayTab" value="custom" /><span>Personnaliser</span></label>
+        </div>
+
+        <div class="display-tab-panel" id="displayTabLayout">
+          <section class="block page-scope-block" id="layoutScopeBlock">
+            <h2>Appliquer à</h2>
+            <div class="seg duo" id="layoutScopeSeg">
+              <label><input type="radio" name="pageScopeLayout" value="selection" checked /><span>Sélection</span></label>
+              <label><input type="radio" name="pageScopeLayout" value="all" /><span>Toutes les pages</span></label>
+            </div>
+            <p class="page-scope-summary" id="layoutScopeSummary" hidden></p>
+            <div class="page-scope-pick" id="layoutPagesSlot">
+              <section class="block" id="filesBlock" hidden>
+                <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages concernées par ces réglages.</p>
+                <div class="page-list" id="chips"></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="block" id="orientBlock">
+            <h2>Orientation feuille</h2>
+            <div class="seg" id="orients">
+              <label><input type="radio" name="orient" value="auto" checked /><span>Auto</span></label>
+              <label><input type="radio" name="orient" value="portrait" /><span>Portrait</span></label>
+              <label><input type="radio" name="orient" value="paysage" /><span>Paysage</span></label>
+            </div>
+            <p class="hint-note page-apply-hint" id="orientApplyHint" hidden></p>
+            <p class="hint-note" id="orientHint" hidden style="margin:8px 0 0"></p>
+          </section>
+
+          <section class="block" id="marginsBlock">
+            <h2>Marges</h2>
+            <div class="seg" id="margins">
+              <label><input type="radio" name="marge" value="etroites" /><span>Étroites</span></label>
+              <label><input type="radio" name="marge" value="moyennes" checked /><span>Moyennes</span></label>
+              <label><input type="radio" name="marge" value="larges" /><span>Larges</span></label>
+            </div>
+          </section>
+
+          <section class="block" id="combineBlock" hidden>
+            <h2>Combiner les listes</h2>
+            <div class="seg duo">
+              <label><input type="radio" name="combine" value="same" /><span>Même page</span></label>
+              <label><input type="radio" name="combine" value="sep" checked /><span>Pages séparées</span></label>
+            </div>
+            <p class="hint-note" style="margin:8px 0 0">
+              Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
+            </p>
+          </section>
+
+          <section class="block" id="colsBlock" hidden>
+            <h2>Colonnes à conserver</h2>
+            <p class="hint-note page-apply-hint" id="colsApplyHint" hidden></p>
+            <div class="hint-callout">
+              <p>Glissez un en-tête pour réordonner, le bord d’une colonne pour sa largeur, les bords ou coins du tableau pour tout redimensionner.</p>
+              <p>Dessinez une zone dans l’aperçu pour uniformiser les largeurs ou les hauteurs, ou supprimer des lignes et colonnes.</p>
+            </div>
+            <div class="col-toolbar">
+              <button type="button" id="allOn">Tout cocher</button>
+              <button type="button" id="allOff">Tout décocher</button>
+              <button type="button" id="resetWidths">Largeurs auto</button>
+            </div>
+            <div class="cols" id="cols"></div>
+            <div class="add-line">
+              <input class="field" id="colInput" type="text" placeholder="Nouvelle colonne (ex. Visa)" aria-label="Nom de la nouvelle colonne" />
+              <button class="btn-mini" id="addColBtn" type="button">Ajouter</button>
+            </div>
+            <label class="check-row">
+              <input type="checkbox" id="colAll" />
+              Ajouter cette colonne à toutes les listes
+            </label>
+          </section>
+
+          <section class="block" id="numBlock">
+            <h2>Numérotation</h2>
+            <div class="num-row">
+            <div class="seg">
+              <label><input type="radio" name="num" value="off" checked /><span>Aucune</span></label>
+              <label><input type="radio" name="num" value="digits" /><span>1 2 3</span></label>
+              <label><input type="radio" name="num" value="letters" /><span>A B C</span></label>
+            </div>
+            <div class="opt-from" id="numFromWrap" hidden>
+              <label for="numFrom">À partir de la ligne</label>
+              <input class="field field-num" id="numFrom" type="number" min="1" value="1" aria-label="Numéroter à partir de la ligne" />
+            </div>
+            </div>
+            <button type="button" class="linkish" id="restoreRows" hidden style="margin-top:8px"></button>
+          </section>
+        </div>
+
+        <div class="display-tab-panel" id="displayTabCustom" hidden>
+          <section class="block page-scope-block" id="customScopeBlock">
+            <h2>Appliquer à</h2>
+            <div class="seg duo" id="customScopeSeg">
+              <label><input type="radio" name="pageScopeCustom" value="selection" checked /><span>Sélection</span></label>
+              <label><input type="radio" name="pageScopeCustom" value="all" /><span>Toutes les pages</span></label>
+            </div>
+            <p class="page-scope-summary" id="customScopeSummary" hidden></p>
+            <div class="page-scope-pick" id="customPagesSlot"></div>
+          </section>
+
+          <section class="block" id="titlesBlock" hidden>
+            <h2>Titre</h2>
+            <p class="hint-note page-apply-hint" id="titlesApplyHint" hidden></p>
+            <div id="titleList"></div>
+            <h2 class="follow">Commentaire</h2>
+            <div id="commentList"></div>
+            <div class="add-line">
+              <input class="field" id="titleInput" type="text" placeholder="Ex. salle 12, à rendre mardi" aria-label="Ajouter un commentaire" />
+              <button class="btn-mini" id="addTitleBtn" type="button">Ajouter</button>
+            </div>
+          </section>
+
+          <section class="block" id="displayBlock">
         <div class="opt-label" style="margin-top:0">Design</div>
         <div class="seg">
           <label><input type="radio" name="design" value="registre" checked /><span>Registre</span></label>
@@ -4561,6 +4610,7 @@
         </div>
         </div>
       </section>
+        </div>
       </div>
       </div>
     </aside>
@@ -11582,30 +11632,88 @@
       });
     }
 
-    function syncAllPagesCheck() {
-      const box = $("selAllLists");
-      const wrap = $("pageAllWrap");
-      if (wrap) wrap.hidden = !state.lists.length;
-      if (!box) return;
+    function syncPageScopeUi() {
       const total = state.lists.length;
       const n = checkedLists().length;
-      box.checked = total > 0 && n === total;
-      box.indeterminate = n > 0 && n < total;
+      const scopeMode = total > 1 && n === total ? "all" : "selection";
+      document.querySelectorAll('input[name="pageScopeLayout"], input[name="pageScopeCustom"]').forEach((el) => {
+        el.checked = el.value === scopeMode;
+      });
+      const many = total > 1;
+      ["layoutScopeBlock", "customScopeBlock"].forEach((id) => {
+        const el = $(id);
+        if (el) el.hidden = !many;
+      });
+      const pickVisible = many && scopeMode === "selection";
+      const layoutPick = $("layoutPagesSlot");
+      const customPick = $("customPagesSlot");
+      if (layoutPick) layoutPick.hidden = !pickVisible;
+      if (customPick) customPick.hidden = !pickVisible;
+      const filesBlock = $("filesBlock");
+      if (filesBlock && total) filesBlock.hidden = !pickVisible;
+      const summaryText = many && scopeMode === "all"
+        ? "Les réglages s’appliquent aux " + total + " pages de cet onglet."
+        : "";
+      ["layoutScopeSummary", "customScopeSummary"].forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.hidden = !(many && scopeMode === "all");
+        el.textContent = summaryText;
+      });
+      syncPagesSlot();
+    }
+
+    function syncPagesSlot() {
+      const tab = document.querySelector('input[name="displayTab"]:checked');
+      const tabVal = tab ? tab.value : "layout";
+      const filesBlock = $("filesBlock");
+      const target = tabVal === "custom" ? $("customPagesSlot") : $("layoutPagesSlot");
+      if (filesBlock && target && filesBlock.parentElement !== target) {
+        target.appendChild(filesBlock);
+      }
+    }
+
+    function syncDisplayTabs() {
+      const tab = document.querySelector('input[name="displayTab"]:checked');
+      const tabVal = tab ? tab.value : "layout";
+      const layoutPanel = $("displayTabLayout");
+      const customPanel = $("displayTabCustom");
+      if (layoutPanel) layoutPanel.hidden = tabVal !== "layout";
+      if (customPanel) customPanel.hidden = tabVal !== "custom";
+      syncPagesSlot();
+      syncLayoutTabVisibility();
+    }
+
+    function syncLayoutTabVisibility() {
+      const mode = state.panelMode === "tp" || state.panelMode === "prog" ? state.panelMode : "liste";
+      const listeOnly = mode === "liste";
+      const combineEl = $("combineBlock");
+      if (combineEl) combineEl.hidden = !listeOnly || state.lists.length < 2;
+      const numEl = $("numBlock");
+      if (numEl) numEl.hidden = !listeOnly || !state.lists.length;
     }
 
     function syncPagesHint() {
       const hint = $("pagesHint");
       const n = checkedLists().length;
       const total = state.lists.length;
-      syncAllPagesCheck();
+      syncPageScopeUi();
       syncPageApplyHints();
       if (!hint) return;
-      hint.hidden = !total;
-      if (!total) return;
-      if (n <= 0) hint.textContent = "Cochez les pages à modifier (couleur, titre, orientation, colonnes).";
-      else if (n === total) hint.textContent = "Toutes les pages de cet onglet sont cochées.";
-      else if (n === 1) hint.textContent = "1 page cochée — les réglages s’y appliquent.";
-      else hint.textContent = n + " pages cochées — les réglages s’y appliquent.";
+      hint.hidden = !total || total <= 1 || pageScopeMode() === "all";
+      if (!hint.hidden) {
+        if (n <= 0) hint.textContent = "Cochez au moins une page.";
+        else if (n === 1) hint.textContent = "1 page sélectionnée — les réglages s’y appliquent.";
+        else hint.textContent = n + " pages sélectionnées — les réglages s’y appliquent.";
+      }
+    }
+
+    function pageScopeMode() {
+      const tab = document.querySelector('input[name="displayTab"]:checked');
+      const tabVal = tab ? tab.value : "layout";
+      const name = tabVal === "custom" ? "pageScopeCustom" : "pageScopeLayout";
+      const el = document.querySelector('input[name="' + name + '"]:checked');
+      return el ? el.value : "selection";
     }
 
     function syncOrientHint() {
@@ -11654,7 +11762,6 @@
         syncPagesHint();
         return;
       }
-      block.hidden = false;
       prunePageSelection();
       const many = state.lists.length > 1;
       state.lists.forEach((list, i) => {
@@ -11810,7 +11917,8 @@
     function renderCols() {
       const list = primaryList();
       colsEl.innerHTML = "";
-      $("colsBlock").hidden = !list || isBlankList(list);
+      const mode = state.panelMode === "tp" || state.panelMode === "prog" ? state.panelMode : "liste";
+      $("colsBlock").hidden = mode !== "liste" || !list || isBlankList(list);
       if (!list || isBlankList(list)) return;
       if (showRemarks()) ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
       if (showPastilles()) ensureMarksOrder(list);
@@ -12268,6 +12376,8 @@
       $("displayFoldWrap").hidden = !on;
       $("infoBlock").hidden = !on;
       if (!on) return;
+      syncDisplayTabs();
+      syncPageScopeUi();
       $("optVlines").checked = state.vlines;
       const tpInnerWrap = $("optTpInnerWrap");
       const tpInnerEl = $("optTpInner");
@@ -12300,7 +12410,7 @@
 
     function renderPanel() {
       renderChips();
-      $("combineBlock").hidden = state.lists.length < 2;
+      syncLayoutTabVisibility();
       const same = document.querySelector('input[name="combine"][value="same"]');
       const sep = document.querySelector('input[name="combine"][value="sep"]');
       if (same && sep) {
@@ -13388,13 +13498,22 @@
         addBlankPage().catch((err) => showError(err.message || String(err)));
       });
     }
-    const selAllListsBtn = $("selAllLists");
-    if (selAllListsBtn) {
-      selAllListsBtn.addEventListener("change", () => {
-        state.selectedIds = selAllListsBtn.checked ? state.lists.map((l) => l.id) : [];
+    document.querySelectorAll('input[name="pageScopeLayout"], input[name="pageScopeCustom"]').forEach((el) => {
+      el.addEventListener("change", () => {
+        document.querySelectorAll('input[name="pageScopeLayout"], input[name="pageScopeCustom"]').forEach((peer) => {
+          if (peer.value === el.value) peer.checked = true;
+        });
+        if (el.value === "all") {
+          state.selectedIds = state.lists.map((l) => l.id);
+        } else if (state.selectedIds.length === state.lists.length) {
+          state.selectedIds = state.activeId ? [state.activeId] : (state.lists[0] ? [state.lists[0].id] : []);
+        }
         onPageSelectionChange();
       });
-    }
+    });
+    document.querySelectorAll('input[name="displayTab"]').forEach((el) => {
+      el.addEventListener("change", () => syncDisplayTabs());
+    });
     const tabAddBtn = $("tabAddBtn");
     if (tabAddBtn) tabAddBtn.addEventListener("click", () => addEmptyTab());
     workspace.addEventListener("dragover", (e) => {
