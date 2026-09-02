@@ -28,6 +28,8 @@
       --teal-deep: #0c7d78;
       --fold-bar: #0e6e68;
       --fold-bar-2: #0a4d52;
+      --mode-accent: #6b2d6e;
+      --mode-accent-light: #8a3d8e;
       --page-margin: 14mm;
       --page-w: 210mm;
       --page-h: 297mm;
@@ -1370,6 +1372,30 @@
       color: var(--teal-deep);
     }
     .seg label span { pointer-events: none; }
+
+    /* Sélecteur Liste / TP / Progression — accent prune, distinct du teal/citron */
+    .seg.mode-seg {
+      background: rgba(255, 255, 255, 0.24);
+      border: 1.5px solid rgba(255, 255, 255, 0.38);
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+      padding: 5px;
+      gap: 4px;
+    }
+    .seg.mode-seg label {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 9px 4px;
+    }
+    .seg.mode-seg label:has(input:checked) {
+      background: linear-gradient(180deg, var(--mode-accent-light) 0%, var(--mode-accent) 100%);
+      color: #fff;
+      box-shadow:
+        0 2px 8px rgba(107, 45, 110, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+    .seg.mode-seg label:focus-within {
+      outline-color: #d4a8d6;
+    }
 
     .hint-note {
       font-size: 11.5px;
@@ -4414,12 +4440,12 @@
       </div>
       <div id="modeFoldWrap">
       <button class="fold-head" id="modeFoldBtn" type="button" aria-expanded="true" aria-controls="modeFold">
-        Modes
+        Choisir un mode
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="fold-panel" id="modeFold">
       <section class="block" id="modeBlock">
-        <div class="seg" id="pageModeSeg">
+        <div class="seg mode-seg" id="pageModeSeg" role="radiogroup" aria-label="Choisir un mode">
           <label><input type="radio" name="pageMode" value="liste" checked /><span>Liste</span></label>
           <label><input type="radio" name="pageMode" value="tp" /><span>TP</span></label>
           <label><input type="radio" name="pageMode" value="prog" /><span>Progression</span></label>
@@ -14964,8 +14990,8 @@
       });
       syncDisplayTabs();
       bind("modeFoldBtn", "modeFold", "epicsv-fold-mode", {
-        open: "Afficher les modes",
-        close: "Réduire les modes"
+        open: "Afficher le panneau Choisir un mode",
+        close: "Réduire le panneau Choisir un mode"
       });
     })();
 
