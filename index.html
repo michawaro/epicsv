@@ -5410,6 +5410,36 @@
               <div class="page-list" id="chips"></div>
             </section>
 
+            <section class="block" id="orientBlock" hidden>
+              <h2>Orientation feuilles</h2>
+              <div class="seg" id="orients">
+                <label
+                  ><input
+                    type="radio"
+                    name="orient"
+                    value="auto"
+                    checked
+                  /><span>Auto</span></label
+                >
+                <label
+                  ><input type="radio" name="orient" value="portrait" /><span
+                    >Portrait</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="orient" value="paysage" /><span
+                    >Paysage</span
+                  ></label
+                >
+              </div>
+              <p
+                class="hint-note"
+                id="orientHint"
+                hidden
+                style="margin: 8px 0 0"
+              ></p>
+            </section>
+
             <section class="block" id="titlesBlock" hidden>
               <h2>Titre</h2>
               <p
@@ -5853,41 +5883,6 @@
                   Catalogue matériel
                 </button>
               </div>
-            </section>
-
-            <section class="block" id="orientBlock">
-              <h2>Orientation feuille</h2>
-              <div class="seg" id="orients">
-                <label
-                  ><input
-                    type="radio"
-                    name="orient"
-                    value="auto"
-                    checked
-                  /><span>Auto</span></label
-                >
-                <label
-                  ><input type="radio" name="orient" value="portrait" /><span
-                    >Portrait</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="orient" value="paysage" /><span
-                    >Paysage</span
-                  ></label
-                >
-              </div>
-              <p
-                class="hint-note page-apply-hint"
-                id="orientApplyHint"
-                hidden
-              ></p>
-              <p
-                class="hint-note"
-                id="orientHint"
-                hidden
-                style="margin: 8px 0 0"
-              ></p>
             </section>
 
             <div id="listeModeOpts" class="mode-opts">
@@ -16477,17 +16472,14 @@
 
       function syncPageApplyHints() {
         const text = pageApplyLabel();
-        [
-          "orientApplyHint",
-          "titlesApplyHint",
-          "colsApplyHint",
-          "displayApplyHint",
-        ].forEach((id) => {
-          const el = $(id);
-          if (!el) return;
-          el.hidden = !state.lists.length;
-          el.textContent = text;
-        });
+        ["titlesApplyHint", "colsApplyHint", "displayApplyHint"].forEach(
+          (id) => {
+            const el = $(id);
+            if (!el) return;
+            el.hidden = !state.lists.length;
+            el.textContent = text;
+          },
+        );
       }
 
       function syncPageScopeUI() {
