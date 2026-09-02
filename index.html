@@ -679,7 +679,7 @@
     }
     .page-row {
       display: grid;
-      grid-template-columns: 22px 28px minmax(0, 1fr) 22px;
+      grid-template-columns: 22px 28px minmax(0, 1fr) 28px 22px;
       gap: 4px 8px;
       align-items: center;
       padding: 8px 8px 8px 10px;
@@ -808,8 +808,20 @@
       font-weight: 700;
       opacity: 0.8;
     }
-    .page-row .x {
+    .page-row .page-send-toggle {
       grid-column: 4;
+      grid-row: 1 / span 2;
+      align-self: center;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      box-shadow: none;
+    }
+    .page-row .page-send-toggle:hover { background: rgba(255, 255, 255, 0.32); }
+    .page-row .page-send-toggle svg { width: 16px; height: 16px; }
+    .page-row .x {
+      grid-column: 5;
       grid-row: 1 / span 2;
       align-self: center;
     }
@@ -1338,27 +1350,88 @@
     .sel-bar {
       position: fixed;
       z-index: 13;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 5px 6px 5px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 10px 28px rgba(14, 143, 140, 0.22);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+      gap: 4px;
+      width: max-content;
+      min-width: min(232px, calc(100vw - 24px));
+      max-width: min(300px, calc(100vw - 24px));
+      padding: 6px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 10px 28px rgba(14, 143, 140, 0.2);
       backdrop-filter: blur(10px);
       color: var(--teal-deep);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
-      max-width: calc(100vw - 24px);
     }
     .sel-bar[hidden] { display: none !important; }
+    .sel-bar-head {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 0 1px 1px 4px;
+    }
+    .sel-bar-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      opacity: 0.72;
+    }
     .sel-bar .sel-label {
       padding: 0 4px 0 2px;
       white-space: nowrap;
       font-size: 11px;
       font-weight: 800;
       letter-spacing: -0.02em;
+    }
+    .sel-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3px;
+      min-width: 0;
+      padding: 4px 5px;
+      border-radius: 10px;
+      background: rgba(14, 143, 140, 0.07);
+      box-shadow: inset 0 0 0 1px rgba(14, 143, 140, 0.1);
+    }
+    .sel-group-lab {
+      width: 100%;
+      padding: 0 2px 1px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      opacity: 0.68;
+    }
+    .sel-group-dim,
+    .sel-group-insert,
+    .sel-group-align,
+    .sel-group-foot {
+      grid-column: 1 / -1;
+    }
+    .sel-dim-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+    .sel-size-lab {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      opacity: 0.68;
+      white-space: nowrap;
     }
     .sel-dim {
       display: flex;
@@ -1396,19 +1469,15 @@
       opacity: 0.4;
       cursor: default;
     }
-    .sel-bar > button:disabled {
+    .sel-bar button:disabled {
       opacity: 0.4;
       cursor: default;
     }
     .sel-bar .sel-align {
-      padding-left: 6px;
-      margin-left: 2px;
-      border-left: 1px solid rgba(14, 143, 140, 0.22);
+      padding: 2px;
     }
     .sel-bar .sel-align + .sel-align {
-      padding-left: 0;
-      margin-left: 0;
-      border-left: 0;
+      margin-left: 2px;
     }
     .sel-bar .sel-align button {
       display: grid;
@@ -1438,8 +1507,9 @@
     .sel-bar .sel-del {
       display: grid;
       place-items: center;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
+      margin-left: auto;
       padding: 0;
       background: rgba(196, 92, 74, 0.12);
       color: #9a3328;
@@ -1451,12 +1521,16 @@
       cursor: default;
     }
     .sel-bar .sel-x {
+      flex: none;
+      width: 28px;
+      height: 28px;
+      padding: 0;
       background: transparent;
-      padding: 4px 8px;
-      font-size: 16px;
+      font-size: 18px;
       line-height: 1;
       font-weight: 500;
     }
+    .sel-bar .sel-x:hover { background: rgba(14, 143, 140, 0.12); }
     .sel-bar label {
       display: flex;
       align-items: center;
@@ -1472,8 +1546,7 @@
       align-items: center;
       gap: 4px;
       margin: 0;
-      padding: 0 2px 0 8px;
-      border-left: 1px solid rgba(14, 143, 140, 0.22);
+      padding: 0;
       font-size: 11px;
       font-weight: 800;
       white-space: nowrap;
@@ -1499,6 +1572,10 @@
       font-weight: 800;
       cursor: pointer;
     }
+    .sel-group-foot {
+      justify-content: space-between;
+    }
+    .sel-group-foot #selAllWrap[hidden] + .sel-del { margin-left: auto; }
     .sel-rect {
       position: fixed;
       z-index: 120;
@@ -1842,15 +1919,13 @@
       display: block;
     }
     .sel-bar .sel-insert {
-      padding-left: 6px;
-      margin-left: 2px;
-      border-left: 1px solid rgba(14, 143, 140, 0.22);
+      padding: 2px;
     }
     .sel-bar .sel-insert button {
       display: grid;
       place-items: center;
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       padding: 0;
     }
     .sel-bar .sel-insert svg {
@@ -2071,7 +2146,8 @@
       background: #fff4f1;
     }
     .page-format-hud[hidden] { display: none !important; }
-    .page-orient-toggle {
+    .page-orient-toggle,
+    .page-send-toggle {
       flex: none;
       width: 36px;
       height: 36px;
@@ -2085,13 +2161,17 @@
       display: grid;
       place-items: center;
     }
-    .page-orient-toggle:hover { background: #0a6561; }
-    .page-orient-toggle:focus-visible {
+    .page-orient-toggle:hover,
+    .page-send-toggle:hover { background: #0a6561; }
+    .page-orient-toggle:focus-visible,
+    .page-send-toggle:focus-visible {
       outline: 3px solid var(--seal);
       outline-offset: 2px;
     }
-    .page-orient-toggle[hidden] { display: none !important; }
-    .page-orient-toggle svg {
+    .page-orient-toggle[hidden],
+    .page-send-toggle[hidden] { display: none !important; }
+    .page-orient-toggle svg,
+    .page-send-toggle svg {
       width: 22px;
       height: 22px;
       display: block;
@@ -2109,12 +2189,51 @@
       right: 6px;
       z-index: 7;
       pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .sheet-caption .page-orient-toggle {
+    .sheet-caption .page-orient-toggle,
+    .sheet-caption .page-send-toggle {
       width: 34px;
       height: 34px;
       box-shadow: 0 6px 16px rgba(14, 143, 140, 0.28);
     }
+    .page-send-menu {
+      position: fixed;
+      z-index: 56;
+      min-width: 168px;
+      max-width: min(280px, 92vw);
+      padding: 6px;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--teal-deep);
+      box-shadow: 0 16px 40px rgba(14, 143, 140, 0.24);
+    }
+    .page-send-menu[hidden] { display: none !important; }
+    .page-send-menu .sel-label {
+      display: block;
+      padding: 6px 10px 4px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--teal-deep);
+    }
+    .page-send-menu button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--teal-deep);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .page-send-menu button:hover { background: rgba(14, 143, 140, 0.1); }
 
     .sheet-frame {
       width: var(--page-w);
@@ -3821,6 +3940,17 @@
         font-size: 11px;
         padding: 8px 2px;
       }
+      .sel-bar {
+        grid-template-columns: 1fr;
+        min-width: min(240px, calc(100vw - 16px));
+        max-width: calc(100vw - 16px);
+      }
+      .sel-bar .sel-insert button,
+      .sel-bar .sel-align button {
+        width: 36px;
+        height: 36px;
+      }
+      .sel-bar .sel-del { width: 40px; height: 40px; }
       input, select, textarea, .field, .paste-area, .field-num {
         font-size: 16px;
       }
@@ -4064,7 +4194,7 @@
         print-color-adjust: exact !important;
       }
       .dot path { fill: currentColor !important; }
-      .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint, .block-move { display: none !important; }
+      .row-handle, .row-resizer, .table-frame, .sel-bar, .sel-rect, .sel-shield, .sel-menu, .page-send-menu, .page-plus, .page-insert, .page-sheet-del, .blank-hint, .block-move { display: none !important; }
       .list-block.is-editing,
       .list-block.is-editing .liste-wrap { outline: none !important; }
       .cell-edit:focus,
@@ -4407,6 +4537,12 @@
             <path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/>
           </svg>
         </button>
+        <button type="button" class="page-send-toggle" id="pageSendToggle" hidden title="Envoyer vers un autre onglet" aria-label="Envoyer vers un autre onglet" aria-haspopup="menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3.2" y="4.8" width="10.2" height="14.4" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/>
+            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"/>
+          </svg>
+        </button>
       </div>
       <div class="stage" id="stage">
         <div class="sheets" id="sheets"></div>
@@ -4447,61 +4583,80 @@
   <div class="sel-shield no-print" id="selShield" hidden></div>
   <div class="sel-rect no-print" id="selRect" hidden></div>
   <div class="sel-bar no-print" id="selBar" hidden>
-    <div class="sel-dim" role="group" aria-label="Dimension à régler">
-      <button type="button" id="selDimW" aria-pressed="true">Largeurs</button>
-      <button type="button" id="selDimH" aria-pressed="false">Hauteurs</button>
+    <div class="sel-bar-head">
+      <span class="sel-bar-title">Sélection</span>
+      <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection" title="Fermer">×</button>
     </div>
-    <button type="button" id="selEq">Uniformiser</button>
-    <button type="button" id="selMerge" title="Fusionner ou fractionner les cellules">Fusionner</button>
-    <div class="sel-dim sel-insert" role="group" aria-label="Insérer une ligne ou une colonne">
-      <button type="button" id="selInsertRowAbove" title="Insérer une ligne au-dessus" aria-label="Insérer une ligne au-dessus">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.1l4.5 5.1h-9z"/><rect x="11.05" y="7.8" width="1.9" height="6.4" fill="currentColor"/><rect x="4.6" y="16.6" width="14.8" height="2.3" rx="1.15" fill="currentColor"/></svg>
-      </button>
-      <button type="button" id="selInsertRowBelow" title="Insérer une ligne en dessous" aria-label="Insérer une ligne en dessous">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.6" y="5.1" width="14.8" height="2.3" rx="1.15" fill="currentColor"/><rect x="11.05" y="9.8" width="1.9" height="6.4" fill="currentColor"/><path fill="currentColor" d="M12 20.9l-4.5-5.1h9z"/></svg>
-      </button>
-      <button type="button" id="selInsertColLeft" title="Insérer une colonne à gauche" aria-label="Insérer une colonne à gauche">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 12l5.1-4.5v9z"/><rect x="7.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><rect x="16.6" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/></svg>
-      </button>
-      <button type="button" id="selInsertColRight" title="Insérer une colonne à droite" aria-label="Insérer une colonne à droite">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.1" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/><rect x="9.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><path fill="currentColor" d="M20.9 12l-5.1 4.5v-9z"/></svg>
+    <div class="sel-group sel-group-dim" role="group" aria-label="Dimensions">
+      <span class="sel-group-lab">Dimensions</span>
+      <div class="sel-dim-row">
+        <div class="sel-dim" role="group" aria-label="Dimension à régler">
+          <button type="button" id="selDimW" aria-pressed="true" title="Régler les largeurs">Largeurs</button>
+          <button type="button" id="selDimH" aria-pressed="false" title="Régler les hauteurs">Hauteurs</button>
+        </div>
+        <button type="button" id="selEq" title="Uniformiser les largeurs ou hauteurs de la sélection">Uniformiser</button>
+        <label class="sel-size">
+          <span class="sel-size-lab" id="selSizeLab">Fixer largeur</span>
+          <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Fixer largeur" title="Fixer largeur" />
+          <select id="selSizeUnit" aria-label="Unité de dimension" title="Unité">
+            <option value="pct">%</option>
+            <option value="cm">cm</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="sel-group" role="group" aria-label="Fusionner ou fractionner">
+      <span class="sel-group-lab">Fusion</span>
+      <button type="button" id="selMerge" title="Fusionner ou fractionner les cellules">Fusionner</button>
+    </div>
+    <div class="sel-group sel-group-insert" role="group" aria-label="Insérer une ligne ou une colonne">
+      <span class="sel-group-lab">Insérer</span>
+      <div class="sel-dim sel-insert" role="group" aria-label="Insérer une ligne ou une colonne">
+        <button type="button" id="selInsertRowAbove" title="Insérer une ligne au-dessus" aria-label="Insérer une ligne au-dessus">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.1l4.5 5.1h-9z"/><rect x="11.05" y="7.8" width="1.9" height="6.4" fill="currentColor"/><rect x="4.6" y="16.6" width="14.8" height="2.3" rx="1.15" fill="currentColor"/></svg>
+        </button>
+        <button type="button" id="selInsertRowBelow" title="Insérer une ligne en dessous" aria-label="Insérer une ligne en dessous">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.6" y="5.1" width="14.8" height="2.3" rx="1.15" fill="currentColor"/><rect x="11.05" y="9.8" width="1.9" height="6.4" fill="currentColor"/><path fill="currentColor" d="M12 20.9l-4.5-5.1h9z"/></svg>
+        </button>
+        <button type="button" id="selInsertColLeft" title="Insérer une colonne à gauche" aria-label="Insérer une colonne à gauche">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3.1 12l5.1-4.5v9z"/><rect x="7.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><rect x="16.6" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/></svg>
+        </button>
+        <button type="button" id="selInsertColRight" title="Insérer une colonne à droite" aria-label="Insérer une colonne à droite">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.1" y="4.6" width="2.3" height="14.8" rx="1.15" fill="currentColor"/><rect x="9.8" y="11.05" width="6.4" height="1.9" fill="currentColor"/><path fill="currentColor" d="M20.9 12l-5.1 4.5v-9z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="sel-group sel-group-align" role="group" aria-label="Alignements">
+      <span class="sel-group-lab">Aligner</span>
+      <div class="sel-dim sel-align" role="group" aria-label="Alignement horizontal">
+        <button type="button" id="selAlignLeft" data-align-h="left" aria-pressed="false" title="Aligner à gauche" aria-label="Aligner à gauche">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm0 5h11v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+        </button>
+        <button type="button" id="selAlignCenter" data-align-h="center" aria-pressed="false" title="Centrer horizontalement" aria-label="Centrer horizontalement">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm3 5h10v2H7v-2zm-3 5h16v2H4v-2z"/></svg>
+        </button>
+        <button type="button" id="selAlignRight" data-align-h="right" aria-pressed="false" title="Aligner à droite" aria-label="Aligner à droite">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm5 5h11v2H9v-2zm-5 5h16v2H4v-2z"/></svg>
+        </button>
+      </div>
+      <div class="sel-dim sel-align" role="group" aria-label="Alignement vertical">
+        <button type="button" id="selAlignTop" data-align-v="top" aria-pressed="false" title="Aligner en haut" aria-label="Aligner en haut">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 6.5h7.6v3.1H8.2z"/></svg>
+        </button>
+        <button type="button" id="selAlignMid" data-align-v="middle" aria-pressed="false" title="Centrer verticalement" aria-label="Centrer verticalement">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 10.45h7.6v3.1H8.2z"/></svg>
+        </button>
+        <button type="button" id="selAlignBottom" data-align-v="bottom" aria-pressed="false" title="Aligner en bas" aria-label="Aligner en bas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 14.4h7.6v3.1H8.2z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="sel-group sel-group-foot" role="group" aria-label="Pages et suppression">
+      <label id="selAllWrap" hidden title="Appliquer aussi aux autres pages"><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
+      <button type="button" class="sel-del" id="selDel" title="Supprimer la sélection (Suppr)" aria-label="Supprimer les lignes ou colonnes sélectionnées">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 8h12l-1 13H7L6 8z"/></svg>
       </button>
     </div>
-    <label class="sel-size">
-      Taille
-      <input id="selSizeVal" type="number" min="0.1" max="100" step="0.1" inputmode="decimal" aria-label="Taille" />
-      <select id="selSizeUnit" aria-label="Unité de taille">
-        <option value="pct">%</option>
-        <option value="cm">cm</option>
-      </select>
-    </label>
-    <div class="sel-dim sel-align" role="group" aria-label="Alignement horizontal">
-      <button type="button" id="selAlignLeft" data-align-h="left" aria-pressed="false" title="Aligner à gauche" aria-label="Aligner à gauche">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm0 5h11v2H4v-2zm0 5h16v2H4v-2z"/></svg>
-      </button>
-      <button type="button" id="selAlignCenter" data-align-h="center" aria-pressed="false" title="Centrer horizontalement" aria-label="Centrer horizontalement">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm3 5h10v2H7v-2zm-3 5h16v2H4v-2z"/></svg>
-      </button>
-      <button type="button" id="selAlignRight" data-align-h="right" aria-pressed="false" title="Aligner à droite" aria-label="Aligner à droite">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4V6zm5 5h11v2H9v-2zm-5 5h16v2H4v-2z"/></svg>
-      </button>
-    </div>
-    <div class="sel-dim sel-align" role="group" aria-label="Alignement vertical">
-      <button type="button" id="selAlignTop" data-align-v="top" aria-pressed="false" title="Aligner en haut" aria-label="Aligner en haut">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 6.5h7.6v3.1H8.2z"/></svg>
-      </button>
-      <button type="button" id="selAlignMid" data-align-v="middle" aria-pressed="false" title="Centrer verticalement" aria-label="Centrer verticalement">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 10.45h7.6v3.1H8.2z"/></svg>
-      </button>
-      <button type="button" id="selAlignBottom" data-align-v="bottom" aria-pressed="false" title="Aligner en bas" aria-label="Aligner en bas">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M6.2 4.6h11.6v14.8H6.2z"/><path fill="currentColor" d="M8.2 14.4h7.6v3.1H8.2z"/></svg>
-      </button>
-    </div>
-    <label id="selAllWrap" hidden><input type="checkbox" id="selAllPages" /> Toutes les pages</label>
-    <button type="button" class="sel-del" id="selDel" title="Supprimer la sélection (Suppr)" aria-label="Supprimer les lignes ou colonnes sélectionnées">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 8h12l-1 13H7L6 8z"/></svg>
-    </button>
-    <button type="button" class="sel-x" id="selClear" aria-label="Annuler la sélection">×</button>
   </div>
   <div class="sel-menu no-print" id="selMenu" hidden role="menu">
     <span class="sel-label">Uniformiser</span>
@@ -4509,6 +4664,7 @@
     <button type="button" id="selMenuH" role="menuitem">Égaliser les hauteurs</button>
     <button type="button" id="selMenuMerge" role="menuitem">Fusionner / fractionner</button>
   </div>
+  <div class="page-send-menu no-print" id="pageSendMenu" hidden role="menu" aria-label="Envoyer vers un onglet"></div>
 
   <div class="modal-back no-print" id="modal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -4795,6 +4951,7 @@
       tpInner: true,
       tabs: [{ id: 1, name: "1" }],
       activeTabId: 1,
+      panelMode: "liste",
     };
 
     let nextId = 1;
@@ -4831,6 +4988,7 @@
     let tpUi = { cat: "", q: "", qty: 1 };
     let tpMatTarget = { lid: null, ri: null };
     const ORIENT_TOGGLE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
+    const PAGE_SEND_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.8" width="10.2" height="14.4" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"/></svg>';
     const MATERIEL_CATALOG = [{"id":"1","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"50 mL"},{"id":"2","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"100 mL"},{"id":"3","rubrique":"verrerie","sous":"Becher","nom":"Bécher","details":"250 mL"},{"id":"4","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"10 mL"},{"id":"5","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"25 mL"},{"id":"6","rubrique":"verrerie","sous":"Burette graduée","nom":"Burette graduée","details":"50 mL"},{"id":"7","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"10 mL"},{"id":"8","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"50 mL"},{"id":"9","rubrique":"verrerie","sous":"Éprouvette graduée","nom":"Éprouvette graduée","details":"100 mL"},{"id":"10","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"100 mL"},{"id":"11","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"250 mL"},{"id":"12","rubrique":"verrerie","sous":"Erlenmeyer","nom":"Erlenmeyer","details":"500 mL"},{"id":"13","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"50 mL"},{"id":"14","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"100 mL"},{"id":"15","rubrique":"verrerie","sous":"Fiole jaugée","nom":"Fiole jaugée","details":"250 mL"},{"id":"16","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"1 mL"},{"id":"17","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"5 mL"},{"id":"18","rubrique":"verrerie","sous":"Pipette graduée","nom":"Pipette graduée","details":"10 mL"},{"id":"19","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"5 mL"},{"id":"20","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"10 mL"},{"id":"21","rubrique":"verrerie","sous":"Pipette jaugée","nom":"Pipette jaugée","details":"20 mL"},{"id":"22","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"10 mL"},{"id":"23","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"15 mL"},{"id":"24","rubrique":"verrerie","sous":"Tube à essai","nom":"Tube à essai","details":"20 mL"},{"id":"25","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 60 mm"},{"id":"26","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 80 mm"},{"id":"27","rubrique":"verrerie","sous":"Verre de montre","nom":"Verre de montre","details":"Ø 100 mm"},{"id":"28","rubrique":"materielMesure","sous":"","nom":"Balance électronique","details":""},{"id":"29","rubrique":"materielMesure","sous":"","nom":"Chronomètre","details":""},{"id":"30","rubrique":"materielMesure","sous":"","nom":"Loupe","details":""},{"id":"31","rubrique":"materielMesure","sous":"","nom":"Microscope optique","details":""},{"id":"32","rubrique":"materielMesure","sous":"","nom":"Papier pH","details":""},{"id":"33","rubrique":"materielMesure","sous":"","nom":"pH-mètre","details":""},{"id":"34","rubrique":"materielMesure","sous":"","nom":"Règle graduée","details":""},{"id":"35","rubrique":"materielMesure","sous":"","nom":"Thermomètre","details":""},{"id":"36","rubrique":"chauffageSupport","sous":"","nom":"Agitateur magnétique","details":""},{"id":"37","rubrique":"chauffageSupport","sous":"","nom":"Barreau aimanté","details":""},{"id":"38","rubrique":"chauffageSupport","sous":"","nom":"Bec Bunsen","details":""},{"id":"39","rubrique":"chauffageSupport","sous":"","nom":"Plaque chauffante","details":""},{"id":"40","rubrique":"chauffageSupport","sous":"","nom":"Support universel","details":""},{"id":"41","rubrique":"chauffageSupport","sous":"","nom":"Trépied","details":""},{"id":"42","rubrique":"materielBiologique","sous":"","nom":"Boîte de Pétri","details":""},{"id":"43","rubrique":"materielBiologique","sous":"","nom":"Ciseaux","details":""},{"id":"44","rubrique":"materielBiologique","sous":"","nom":"Épingles de dissection","details":""},{"id":"45","rubrique":"materielBiologique","sous":"","nom":"Lame porte-objet","details":""},{"id":"46","rubrique":"materielBiologique","sous":"","nom":"Lamelle couvre-objet","details":""},{"id":"47","rubrique":"materielBiologique","sous":"","nom":"Pipette Pasteur","details":""},{"id":"48","rubrique":"materielBiologique","sous":"","nom":"Scalpel","details":""},{"id":"49","rubrique":"materielBiologique","sous":"","nom":"Spatule","details":""},{"id":"50","rubrique":"indicateurs","sous":"","nom":"Bleu de bromothymol (BBT) - Indicateur de CO₂ / pH physiologique (jaune ↔ vert ↔ bleu)","details":""},{"id":"51","rubrique":"indicateurs","sous":"","nom":"Eau iodée - Indicateur de l’amidon (jaune ↔ bleu-noir)","details":""},{"id":"52","rubrique":"indicateurs","sous":"","nom":"Lugol - Indicateur de l’amidon (version iodée plus concentrée)","details":""},{"id":"53","rubrique":"indicateurs","sous":"","nom":"Phénolphtaléine - Indicateur de pH (incolore ↔ rose, milieu basique)","details":""},{"id":"54","rubrique":"indicateurs","sous":"","nom":"Rouge de méthyle - Indicateur de pH (rouge ↔ jaune)","details":""},{"id":"55","rubrique":"indicateurs","sous":"","nom":"Vert de bromocrésol - Indicateur de pH (jaune ↔ bleu)","details":""},{"id":"56","rubrique":"indicateurs","sous":"","nom":"Papier pH universel - Indicateur multi-plages de pH","details":""},{"id":"57","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,1 mol·L⁻¹"},{"id":"58","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"0,5 mol·L⁻¹"},{"id":"59","rubrique":"solutions","sous":"Acide chlorhydrique","nom":"Acide chlorhydrique","details":"1,0 mol·L⁻¹"},{"id":"60","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,1 mol·L⁻¹"},{"id":"61","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"0,5 mol·L⁻¹"},{"id":"62","rubrique":"solutions","sous":"Hydroxyde de sodium","nom":"Hydroxyde de sodium","details":"1,0 mol·L⁻¹"},{"id":"63","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"rinçage"},{"id":"64","rubrique":"solutions","sous":"Eau distillée","nom":"Eau distillée","details":"solvant de dilution"},{"id":"65","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"10 g·L⁻¹"},{"id":"66","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"20 g·L⁻¹"},{"id":"67","rubrique":"solutions","sous":"Glucose","nom":"Solution de glucose","details":"50 g·L⁻¹"},{"id":"68","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,1 mol·L⁻¹"},{"id":"69","rubrique":"solutions","sous":"Sulfate de cuivre","nom":"Sulfate de cuivre","details":"0,5 mol·L⁻¹"},{"id":"70","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,01 mol·L⁻¹"},{"id":"71","rubrique":"solutions","sous":"Nitrate d’argent","nom":"Nitrate d’argent","details":"0,05 mol·L⁻¹"},{"id":"72","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (respiration)","details":""},{"id":"73","rubrique":"solutions","sous":"Dioxyde de carbone","nom":"Eau + CO₂ (réaction contrôlée)","details":""},{"id":"74","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"1 g·L⁻¹"},{"id":"75","rubrique":"solutions","sous":"Vanilline","nom":"Vanilline","details":"5 g·L⁻¹"},{"id":"76","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"diluée"},{"id":"77","rubrique":"solutions","sous":"Eau iodée","nom":"Eau iodée","details":"standard"},{"id":"78","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"dilué"},{"id":"79","rubrique":"solutions","sous":"Lugol","nom":"Lugol","details":"standard"},{"id":"80","rubrique":"microscopieSV","sous":"","nom":"Cellules buccales humaines","details":""},{"id":"81","rubrique":"microscopieSV","sous":"","nom":"Coupe d’anthère (pollen)","details":""},{"id":"82","rubrique":"microscopieSV","sous":"","nom":"Coupe d’intestin grêle","details":""},{"id":"83","rubrique":"microscopieSV","sous":"","nom":"Coupe de feuille (dicotylédone)","details":""},{"id":"84","rubrique":"microscopieSV","sous":"","nom":"Coupe de racine","details":""},{"id":"85","rubrique":"microscopieSV","sous":"","nom":"Coupe de tige","details":""},{"id":"86","rubrique":"microscopieSV","sous":"","nom":"Épiderme d’oignon","details":""},{"id":"87","rubrique":"microscopieSV","sous":"","nom":"Foie (tissu hépatique)","details":""},{"id":"88","rubrique":"microscopieSV","sous":"","nom":"Levures","details":""},{"id":"89","rubrique":"microscopieSV","sous":"","nom":"Muscle lisse","details":""},{"id":"90","rubrique":"microscopieSV","sous":"","nom":"Muscle strié","details":""},{"id":"91","rubrique":"microscopieSV","sous":"","nom":"Ovaires (coupe histologique)","details":""},{"id":"92","rubrique":"microscopieSV","sous":"","nom":"Pancréas (îlots de Langerhans)","details":""},{"id":"93","rubrique":"microscopieSV","sous":"","nom":"Peau humaine","details":""},{"id":"94","rubrique":"microscopieSV","sous":"","nom":"Poumon (alvéoles)","details":""},{"id":"95","rubrique":"microscopieSV","sous":"","nom":"Rein (néphron)","details":""},{"id":"96","rubrique":"microscopieSV","sous":"","nom":"Sang humain (frottis)","details":""},{"id":"97","rubrique":"microscopieSV","sous":"","nom":"Spermatozoïdes","details":""},{"id":"98","rubrique":"microscopieSV","sous":"","nom":"Testicule (tubes séminifères)","details":""},{"id":"99","rubrique":"microscopieSV","sous":"","nom":"Tissu nerveux","details":""},{"id":"100","rubrique":"microscopieSV","sous":"","nom":"Xylème","details":""},{"id":"101","rubrique":"microscopieSV","sous":"","nom":"Phloème","details":""},{"id":"102","rubrique":"microscopieST","sous":"","nom":"Basalte (structure microlitique)","details":""},{"id":"103","rubrique":"microscopieST","sous":"","nom":"Calcaire à foraminifères","details":""},{"id":"104","rubrique":"microscopieST","sous":"","nom":"Foraminifères Crétacé (= Maastrichtien) il y a 66 Ma","details":""},{"id":"105","rubrique":"microscopieST","sous":"","nom":"Foraminifères Tertiaire (= Danien) il y a 64 Ma","details":""},{"id":"106","rubrique":"microscopieST","sous":"","nom":"Gabbro","details":""},{"id":"107","rubrique":"microscopieST","sous":"","nom":"Gneiss (métamorphisme régional)","details":""},{"id":"108","rubrique":"microscopieST","sous":"","nom":"Granite","details":""},{"id":"109","rubrique":"microscopieST","sous":"","nom":"Marbre (métamorphisme du calcaire)","details":""},{"id":"110","rubrique":"microscopieST","sous":"","nom":"Péridotite","details":""},{"id":"111","rubrique":"microscopieST","sous":"","nom":"Quartzite","details":""},{"id":"112","rubrique":"microscopieST","sous":"","nom":"Schiste (foliation métamorphique)","details":""},{"id":"113","rubrique":"microscopieST","sous":"","nom":"Amphibolite (métamorphisme)","details":""},{"id":"114","rubrique":"microscopieST","sous":"","nom":"Éclogite (métamorphisme haute pression)","details":""},{"id":"115","rubrique":"microscopieST","sous":"","nom":"Radiolarites (crises océaniques)","details":""},{"id":"116","rubrique":"microscopieST","sous":"","nom":"Grès (sédimentaire)","details":""},{"id":"117","rubrique":"microscopieST","sous":"","nom":"Calcite recristallisée (diagenèse)","details":""},{"id":"118","rubrique":"geologieMac","sous":"","nom":"Argile","details":""},{"id":"119","rubrique":"geologieMac","sous":"","nom":"Basalte","details":""},{"id":"120","rubrique":"geologieMac","sous":"","nom":"Calcaire","details":""},{"id":"121","rubrique":"geologieMac","sous":"","nom":"Gabbro","details":""},{"id":"122","rubrique":"geologieMac","sous":"","nom":"Gneiss","details":""},{"id":"123","rubrique":"geologieMac","sous":"","nom":"Granite","details":""},{"id":"124","rubrique":"geologieMac","sous":"","nom":"Grès","details":""},{"id":"125","rubrique":"geologieMac","sous":"","nom":"Marbre","details":""},{"id":"126","rubrique":"geologieMac","sous":"","nom":"Péridotite","details":""},{"id":"127","rubrique":"geologieMac","sous":"","nom":"Schiste","details":""},{"id":"128","rubrique":"securite","sous":"","nom":"Blouse","details":""},{"id":"129","rubrique":"securite","sous":"","nom":"Gants","details":""},{"id":"130","rubrique":"securite","sous":"","nom":"Lunettes de protection","details":""}];
     const MATERIEL_RUBRIQUES = [
       ["verrerie", "Verrerie"],
@@ -9702,6 +9860,7 @@
         if (label) label.textContent = "";
         hud.classList.remove("is-overflow");
         syncPageOrientToggle();
+        syncPageSendToggle();
         return;
       }
       const groups = previewGroups();
@@ -9720,6 +9879,7 @@
       if (label) label.textContent = over ? cap + " · dépasse la feuille" : cap;
       else hud.textContent = over ? cap + " · dépasse la feuille" : cap;
       syncPageOrientToggle(lay.orient);
+      syncPageSendToggle();
     }
 
     function hudPreviewOrient() {
@@ -9743,6 +9903,125 @@
       const lab = toPaysage ? "Passer en paysage" : "Passer en portrait";
       btn.title = lab;
       btn.setAttribute("aria-label", lab);
+    }
+
+    function syncPageSendToggle() {
+      const btn = $("pageSendToggle");
+      if (!btn) return;
+      btn.hidden = !state.lists.length;
+    }
+
+    function closePageSendMenu() {
+      const menu = $("pageSendMenu");
+      if (!menu) return;
+      menu.hidden = true;
+      menu.innerHTML = "";
+    }
+
+    function makePageSendBtn(list) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "page-send-toggle";
+      btn.setAttribute("data-send-lid", String(list.id));
+      btn.setAttribute("aria-haspopup", "menu");
+      btn.innerHTML = PAGE_SEND_SVG;
+      const lab = "Envoyer vers un autre onglet";
+      btn.title = lab;
+      btn.setAttribute("aria-label", lab);
+      return btn;
+    }
+
+    function movePageToTab(listId, targetTabId, opts) {
+      ensureTabs();
+      const idx = state.lists.findIndex((l) => l.id === listId);
+      if (idx < 0) return;
+      const page = state.lists[idx];
+      const create = Boolean(opts && opts.create) || targetTabId == null;
+      let target = create ? null : state.tabs.find((t) => t.id === targetTabId);
+      if (!create && (!target || target.id === state.activeTabId)) return;
+      pushHist();
+      state.lists.splice(idx, 1);
+      state.selectedIds = (state.selectedIds || []).filter((x) => x !== listId);
+      if (state.activeId === listId) {
+        const next = state.lists[idx] || state.lists[idx - 1] || state.lists[0];
+        state.activeId = next ? next.id : null;
+      }
+      if (state.lists.length < 2) state.combine = false;
+      if (!state.lists.length) {
+        state.combineAsked = false;
+        state.selectedIds = [];
+      }
+      prunePageSelection();
+      stashActiveTab();
+      if (!target) {
+        const pack = tabPackFromState();
+        pack.lists = [page];
+        pack.activeId = page.id;
+        pack.selectedIds = [page.id];
+        pack.combine = false;
+        pack.combineAsked = false;
+        target = Object.assign({ id: nextTabId++, name: nextTabName() }, pack);
+        state.tabs.push(target);
+      } else {
+        if (!Array.isArray(target.lists)) target.lists = [];
+        target.lists.push(page);
+        if (target.activeId == null) target.activeId = page.id;
+        if (!Array.isArray(target.selectedIds) || !target.selectedIds.length) {
+          target.selectedIds = [page.id];
+        }
+      }
+      const destName = target.name || "1";
+      if (!state.lists.length) switchToTab(target.id, { hist: false });
+      else renderAll();
+      announce("Page envoyée vers l’onglet " + destName + ".");
+    }
+
+    function openPageSendMenu(anchor, list) {
+      if (!anchor || !list) return;
+      ensureTabs();
+      const menu = $("pageSendMenu");
+      if (!menu) return;
+      hideSelMenu();
+      closeTpChoiceMenu();
+      const others = state.tabs.filter((t) => t.id !== state.activeTabId);
+      menu.innerHTML = "";
+      const cap = document.createElement("span");
+      cap.className = "sel-label";
+      cap.textContent = others.length ? "Envoyer vers" : "Aucun autre onglet";
+      menu.appendChild(cap);
+      const addItem = (label, onPick) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.setAttribute("role", "menuitem");
+        btn.textContent = label;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closePageSendMenu();
+          onPick();
+        });
+        menu.appendChild(btn);
+      };
+      if (!others.length) {
+        addItem("Créer un onglet", () => movePageToTab(list.id, null, { create: true }));
+      } else {
+        others.forEach((tab) => {
+          addItem("Onglet « " + (tab.name || "1") + " »", () => movePageToTab(list.id, tab.id));
+        });
+      }
+      menu.hidden = false;
+      const r = anchor.getBoundingClientRect();
+      let left = r.left;
+      let top = r.bottom + 6;
+      menu.style.left = left + "px";
+      menu.style.top = top + "px";
+      requestAnimationFrame(() => {
+        const box = menu.getBoundingClientRect();
+        if (left + box.width > window.innerWidth - 8) left = Math.max(8, window.innerWidth - box.width - 8);
+        if (top + box.height > window.innerHeight - 8) top = Math.max(8, r.top - box.height - 6);
+        menu.style.left = left + "px";
+        menu.style.top = top + "px";
+      });
     }
 
     function toggleHudOrient() {
@@ -9920,6 +10199,18 @@
       if (m) m.hidden = true;
     }
 
+    function openSelBarFromEvent(e) {
+      const hit = cellHit(e.target);
+      if (!hit) return false;
+      e.preventDefault();
+      if (String(hit.lid) !== String(state.activeId)) setActiveList(hit.lid, { scroll: false });
+      const zone = zoneFromHits([hit]);
+      if (!zone) return false;
+      hideSelMenu();
+      setZone(zone);
+      return true;
+    }
+
     function placeSelBar() {
       const bar = $("selBar");
       if (!bar) return;
@@ -9938,11 +10229,14 @@
       $("selAllWrap").hidden = state.lists.length < 2;
       syncSelBarDim();
       syncSelAlign();
-      bar.style.left = "12px";
-      bar.style.top = Math.min(window.innerHeight - 88, Math.max(8, last.bottom + 8)) + "px";
+      const h = bar.offsetHeight || 160;
       const w = bar.offsetWidth;
+      let top = last.bottom + 8;
+      if (top + h > window.innerHeight - 8) top = Math.max(8, first.top - h - 8);
+      top = Math.min(window.innerHeight - h - 8, Math.max(8, top));
       const left = Math.min(window.innerWidth - w - 12, Math.max(12, first.left));
       bar.style.left = left + "px";
+      bar.style.top = top + "px";
     }
 
     function paintZone(opts) {
@@ -10069,7 +10363,13 @@
       if (pctOpt) pctOpt.hidden = !isW;
       if (!isW && unitEl && unitEl.value === "pct") unitEl.value = "cm";
       const input = $("selSizeVal");
-      if (input) input.setAttribute("aria-label", isW ? "Taille de colonne" : "Hauteur de ligne");
+      const sizeLab = $("selSizeLab");
+      const lab = isW ? "Fixer largeur" : "Fixer hauteur";
+      if (input) {
+        input.setAttribute("aria-label", lab);
+        input.title = lab;
+      }
+      if (sizeLab) sizeLab.textContent = lab;
       if ($("selEq")) $("selEq").disabled = isW ? zoneDataCols(list).length < 2 : !hasH;
       const mergeRect = zoneMergeRect(list);
       if ($("selMerge")) $("selMerge").disabled = !mergeRect;
@@ -10930,6 +11230,7 @@
       btn.title = lab;
       btn.setAttribute("aria-label", lab);
       wrap.appendChild(btn);
+      wrap.appendChild(makePageSendBtn(list));
       return wrap;
     }
 
@@ -11319,6 +11620,12 @@
         });
         nameWrap.appendChild(name);
         row.appendChild(nameWrap);
+        const send = makePageSendBtn(list);
+        send.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openPageSendMenu(send, list);
+        });
+        row.appendChild(send);
         if (on && many) {
           const tag = document.createElement("em");
           tag.className = "page-status";
@@ -11326,7 +11633,7 @@
           row.appendChild(tag);
         }
         row.addEventListener("click", (e) => {
-          if (e.target.closest(".x") || e.target.closest(".page-check") || e.target.closest(".page-name-field")) return;
+          if (e.target.closest(".x") || e.target.closest(".page-check") || e.target.closest(".page-name-field") || e.target.closest(".page-send-toggle")) return;
           if (e.ctrlKey || e.metaKey) {
             setListChecked(list.id, !isListChecked(list.id));
             setActiveList(list.id);
@@ -11846,7 +12153,10 @@
       const form = $("tpForm");
       const progForm = $("progForm");
       const list = activeList();
-      const mode = isTpList(list) ? "tp" : (isProgList(list) ? "prog" : "liste");
+      let mode = state.panelMode || "liste";
+      if (isTpList(list)) mode = "tp";
+      else if (isProgList(list)) mode = "prog";
+      state.panelMode = mode;
       document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
         el.checked = el.value === mode;
       });
@@ -11918,6 +12228,7 @@
     }
 
     function renderAll() {
+      closePageSendMenu();
       renderPanel();
       renderPreview();
       renderTabs();
@@ -12957,17 +13268,11 @@
     });
     $("createTableBtn").addEventListener("click", () => openCreateTableModal(false));
     const tpCreateBtn = $("tpCreateBtn");
-    if (tpCreateBtn) tpCreateBtn.addEventListener("click", () => {
-      if (!isTpList(activeList())) ensureTpPages();
-      openCreateTableModal(true);
-    });
+    if (tpCreateBtn) tpCreateBtn.addEventListener("click", () => openCreateTableModal(true));
     const tpLoadBtn = $("tpLoadBtn");
     if (tpLoadBtn) tpLoadBtn.addEventListener("click", () => $("loadFile").click());
     const progCreateBtn = $("progCreateBtn");
-    if (progCreateBtn) progCreateBtn.addEventListener("click", () => {
-      if (!isProgList(activeList())) ensureProgPages();
-      openCreateTableModal("prog");
-    });
+    if (progCreateBtn) progCreateBtn.addEventListener("click", () => openCreateTableModal("prog"));
     const progLoadBtn = $("progLoadBtn");
     if (progLoadBtn) progLoadBtn.addEventListener("click", () => $("loadFile").click());
     $("createTableOk").addEventListener("click", confirmCreateTable);
@@ -13609,7 +13914,7 @@
       const skip = (e) => {
         const el = e.target && e.target.nodeType === 1 ? e.target : (e.target && e.target.parentElement);
         if (!el || !el.closest) return false;
-        return el.closest("button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .sheet-caption, .block-move, .tp-meta-bar, .tp-chip, .tp-struct, .tp-struct-lab, .tp-mat-open, .tp-choice-menu, .tp-ngroups, .is-tp-mat, [data-tp-mat], [data-tp-field], [data-move-block]");
+        return el.closest("button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-send-menu, .sheet-caption, .block-move, .tp-meta-bar, .tp-chip, .tp-struct, .tp-struct-lab, .tp-mat-open, .tp-choice-menu, .tp-ngroups, .is-tp-mat, [data-tp-mat], [data-tp-field], [data-move-block]");
       };
       const editing = (el) => el && el.isContentEditable && document.activeElement === el;
       const lidFromTarget = (el, x, y) => {
@@ -13724,7 +14029,6 @@
         if (zoneSel && e.target.closest(".is-zone")) {
           holdT = setTimeout(() => {
             holdT = null;
-            showSelMenu(e.clientX, e.clientY);
             stopDrag();
           }, 520);
         }
@@ -13820,10 +14124,12 @@
         clearZone();
       });
       sheets.addEventListener("contextmenu", (e) => {
-        if (!zoneSel) return;
-        if (!e.target.closest(".is-zone")) return;
-        e.preventDefault();
-        showSelMenu(e.clientX, e.clientY);
+        if (state.activeFluo || state.activeStamp) return;
+        const el = e.target && e.target.nodeType === 1 ? e.target : (e.target && e.target.parentElement);
+        if (!el || !el.closest) return;
+        if (el.closest("button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-send-menu, .block-move, .tp-choice-menu")) return;
+        if (!el.closest(".sheet")) return;
+        openSelBarFromEvent(e);
       });
     })();
     (function bindTpMatDbl() {
@@ -14018,6 +14324,15 @@
         const id = Number(orientBtn.getAttribute("data-orient-lid"));
         const list = state.lists.find((l) => l.id === id);
         if (list) toggleListOrient(list);
+        return;
+      }
+      const sendBtn = e.target.closest("[data-send-lid]");
+      if (sendBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number(sendBtn.getAttribute("data-send-lid"));
+        const list = state.lists.find((l) => l.id === id);
+        if (list) openPageSendMenu(sendBtn, list);
         return;
       }
       const block = e.target.closest(".list-block[data-lid]");
@@ -14377,6 +14692,15 @@
     }
     const pageOrientToggle = $("pageOrientToggle");
     if (pageOrientToggle) pageOrientToggle.addEventListener("click", toggleHudOrient);
+    const pageSendToggle = $("pageSendToggle");
+    if (pageSendToggle) {
+      pageSendToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const list = activeList() || state.lists[0];
+        if (list) openPageSendMenu(pageSendToggle, list);
+      });
+    }
 
     function closeTpChoiceMenu() {
       const menu = $("tpChoiceMenu");
@@ -14481,31 +14805,21 @@
     }
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeTpChoiceMenu();
+      if (e.key === "Escape") {
+        closeTpChoiceMenu();
+        closePageSendMenu();
+      }
     });
 
     document.querySelectorAll('input[name="pageMode"]').forEach((el) => {
       el.addEventListener("change", () => {
         if (!el.checked) return;
-        if (el.value === "tp") {
-          ensureTpPages();
-          renderAll();
-          if (isPhoneLayout()) showPreview();
-          revealActivePage();
-          announce("Mode TP : installation en salle");
-          return;
-        }
-        if (el.value === "prog") {
-          ensureProgPages();
-          renderAll();
-          if (isPhoneLayout()) showPreview();
-          revealActivePage();
-          announce("Mode progression annuelle");
-          return;
-        }
-        activateListePages();
-        renderAll();
-        announce("Mode liste");
+        state.panelMode = el.value;
+        renderMode();
+        if (isPhoneLayout()) showPreview();
+        if (el.value === "tp") announce("Mode TP : cliquez sur Créer pour une fiche");
+        else if (el.value === "prog") announce("Mode progression : cliquez sur Créer pour une fiche");
+        else announce("Mode liste");
       });
     });
 
@@ -14552,12 +14866,18 @@
     });
     const tpOpenCatalog = $("tpOpenCatalog");
     if (tpOpenCatalog) tpOpenCatalog.addEventListener("click", () => {
-      if (!isTpList(activeList())) ensureTpPages();
+      if (!isSheetForm(activeList())) {
+        announce("Créez d’abord une fiche TP.");
+        return;
+      }
       openTpMatModal();
     });
     const progOpenCatalog = $("progOpenCatalog");
     if (progOpenCatalog) progOpenCatalog.addEventListener("click", () => {
-      if (!isProgList(activeList())) ensureProgPages();
+      if (!isSheetForm(activeList())) {
+        announce("Créez d’abord une fiche progression.");
+        return;
+      }
       openTpMatModal();
     });
     const tpMatDone = $("tpMatDone");
@@ -14658,6 +14978,12 @@
       if ($("selMenu").hidden) return;
       if (e.target.closest("#selMenu, #selBar")) return;
       hideSelMenu();
+    });
+    document.addEventListener("pointerdown", (e) => {
+      const menu = $("pageSendMenu");
+      if (!menu || menu.hidden) return;
+      if (e.target.closest("#pageSendMenu, .page-send-toggle")) return;
+      closePageSendMenu();
     });
 
     function printLists() {
