@@ -261,6 +261,7 @@
     .fold-head[hidden],
     .menu-fold[hidden],
     .fold-panel[hidden],
+    #displayFoldInner[hidden],
     #displayFoldWrap[hidden],
     #modeFoldWrap[hidden],
     #infoBlock[hidden],
@@ -412,6 +413,28 @@
     }
     .files-export .files-group-label {
       color: #f7ffc4;
+    }
+    .files-scope {
+      padding: 10px 10px 12px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+    }
+    .files-scope .files-group-label {
+      color: rgba(255, 255, 255, 0.88);
+    }
+    .files-scope .seg {
+      margin-top: 2px;
+    }
+    .files-scope .page-scope-summary {
+      margin-top: 8px;
+    }
+    .files-scope .page-scope-pick {
+      margin-top: 8px;
+    }
+    .files-scope .hint-note {
+      margin: 0 0 6px;
+      font-size: 11px;
     }
     .autosave-hint {
       margin: 8px 2px 0;
@@ -669,6 +692,55 @@
       flex-direction: column;
       gap: 6px;
     }
+    .page-scope-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 12px;
+    }
+    .page-scope-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      padding: 5px 2px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.92);
+      cursor: pointer;
+    }
+    .page-scope-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .page-scope-item.is-on {
+      color: #fff;
+    }
+    .page-scope-item.is-on .page-scope-name {
+      font-weight: 800;
+    }
+    .page-scope-item.is-picked {
+      color: #fff;
+    }
+    .page-scope-item.is-sample .page-scope-name::after {
+      content: " · ex.";
+      font-weight: 600;
+      opacity: 0.72;
+    }
+    .page-scope-check {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex: none;
+      accent-color: var(--seal);
+      cursor: pointer;
+    }
+    .page-scope-name {
+      min-width: 0;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .page-all-check {
       display: flex;
       align-items: center;
@@ -691,12 +763,24 @@
       cursor: pointer;
     }
     .display-tabs {
-      margin-bottom: 12px;
+      margin: 0 18px 12px;
+    }
+    .display-tabs label {
+      font-size: 12px;
+      padding: 9px 6px;
     }
     .display-tab-panel {
       display: flex;
       flex-direction: column;
       gap: 14px;
+    }
+    #displayFoldInner > .display-tabs {
+      flex: none;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
     }
     .page-scope-block h2 {
       margin-bottom: 8px;
@@ -4381,29 +4465,31 @@
       </div>
       </div>
       <div id="displayFoldWrap" hidden>
-      <button class="fold-head" id="displayFoldBtn" type="button" aria-expanded="true" aria-controls="displayFold">
+      <button class="fold-head" id="displayFoldBtn" type="button" aria-expanded="true" aria-controls="displayFoldInner">
         Options d’affichage
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
-      <div class="fold-panel" id="displayFold">
-        <div class="seg display-tabs" id="displayTabSeg">
-          <label><input type="radio" name="displayTab" value="layout" checked /><span>Mise en page</span></label>
-          <label><input type="radio" name="displayTab" value="custom" /><span>Personnaliser</span></label>
+      <div class="fold-panel" id="displayFoldInner">
+        <div class="seg duo display-tabs" id="displayTabSeg" role="tablist" aria-label="Options d’affichage">
+          <label role="tab" aria-selected="true"><input type="radio" name="displayTab" value="layout" checked /><span>Mise en page</span></label>
+          <label role="tab" aria-selected="false"><input type="radio" name="displayTab" value="custom" /><span>Personnaliser</span></label>
         </div>
-
-        <div class="display-tab-panel" id="displayTabLayout">
+        <div id="displayFold">
+        <div class="display-tab-panel" id="displayTabLayout" role="tabpanel" aria-label="Mise en page">
           <section class="block page-scope-block" id="layoutScopeBlock">
-            <h2>Appliquer à</h2>
-            <div class="seg duo" id="layoutScopeSeg">
-              <label><input type="radio" name="pageScopeLayout" value="selection" checked /><span>Sélection</span></label>
-              <label><input type="radio" name="pageScopeLayout" value="all" /><span>Toutes les pages</span></label>
-            </div>
-            <p class="page-scope-summary" id="layoutScopeSummary" hidden></p>
-            <div class="page-scope-pick" id="layoutPagesSlot">
-              <section class="block" id="filesBlock" hidden>
-                <p class="hint-note" id="pagesHint" style="margin:0 0 8px">Cochez les pages concernées par ces réglages.</p>
-                <div class="page-list" id="chips"></div>
-              </section>
+            <div class="files-group files-scope">
+              <p class="files-group-label">Appliquer à</p>
+              <div class="seg duo" id="layoutScopeSeg">
+                <label><input type="radio" name="pageScopeLayout" value="selection" checked /><span>Sélection</span></label>
+                <label><input type="radio" name="pageScopeLayout" value="all" /><span>Toutes les pages</span></label>
+              </div>
+              <p class="page-scope-summary" id="layoutScopeSummary" hidden></p>
+              <div class="page-scope-pick" id="layoutPagesSlot">
+                <div id="filesBlock" hidden>
+                  <p class="hint-note" id="pagesHint">Cochez les pages concernées par ces réglages.</p>
+                  <div class="page-list page-scope-grid" id="chips"></div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -4478,15 +4564,17 @@
           </section>
         </div>
 
-        <div class="display-tab-panel" id="displayTabCustom" hidden>
+        <div class="display-tab-panel" id="displayTabCustom" role="tabpanel" aria-label="Personnaliser" hidden>
           <section class="block page-scope-block" id="customScopeBlock">
-            <h2>Appliquer à</h2>
-            <div class="seg duo" id="customScopeSeg">
-              <label><input type="radio" name="pageScopeCustom" value="selection" checked /><span>Sélection</span></label>
-              <label><input type="radio" name="pageScopeCustom" value="all" /><span>Toutes les pages</span></label>
+            <div class="files-group files-scope">
+              <p class="files-group-label">Appliquer à</p>
+              <div class="seg duo" id="customScopeSeg">
+                <label><input type="radio" name="pageScopeCustom" value="selection" checked /><span>Sélection</span></label>
+                <label><input type="radio" name="pageScopeCustom" value="all" /><span>Toutes les pages</span></label>
+              </div>
+              <p class="page-scope-summary" id="customScopeSummary" hidden></p>
+              <div class="page-scope-pick" id="customPagesSlot"></div>
             </div>
-            <p class="page-scope-summary" id="customScopeSummary" hidden></p>
-            <div class="page-scope-pick" id="customPagesSlot"></div>
           </section>
 
           <section class="block" id="titlesBlock" hidden>
@@ -4610,6 +4698,7 @@
         </div>
         </div>
       </section>
+        </div>
         </div>
       </div>
       </div>
@@ -11684,6 +11773,10 @@
       const customPanel = $("displayTabCustom");
       if (layoutPanel) layoutPanel.hidden = tabVal !== "layout";
       if (customPanel) customPanel.hidden = tabVal !== "custom";
+      document.querySelectorAll("#displayTabSeg label[role='tab']").forEach((label) => {
+        const input = label.querySelector('input[name="displayTab"]');
+        label.setAttribute("aria-selected", input && input.checked ? "true" : "false");
+      });
       syncPagesSlot();
       syncLayoutTabVisibility();
     }
@@ -11767,15 +11860,16 @@
         return;
       }
       prunePageSelection();
-      const many = state.lists.length > 1;
       state.lists.forEach((list, i) => {
         const on = list.id === state.activeId;
         const picked = isListChecked(list.id);
         const row = document.createElement("div");
-        row.className = "page-row" + (on ? " is-on" : "") + (picked ? " is-picked" : "") + (list.sample ? " is-sample" : "");
+        row.className = "page-scope-item" + (on ? " is-on" : "") + (picked ? " is-picked" : "") + (list.sample ? " is-sample" : "");
+        row.setAttribute("role", "button");
+        row.tabIndex = 0;
         const box = document.createElement("input");
         box.type = "checkbox";
-        box.className = "page-check";
+        box.className = "page-scope-check";
         box.checked = picked;
         const pageTitle = ((list.titles && list.titles[0]) || list.name || ("Page " + (i + 1))).replace(/\.[^.]+$/, "");
         box.setAttribute("aria-label", "Page " + (i + 1) + " : " + pageTitle);
@@ -11786,52 +11880,12 @@
           onPageSelectionChange();
         });
         row.appendChild(box);
-        const num = document.createElement("span");
-        num.className = "page-num";
-        num.textContent = String(i + 1);
-        row.appendChild(num);
-        const nameWrap = document.createElement("span");
-        nameWrap.className = "page-name";
-        const name = document.createElement("input");
-        name.className = "page-name-field";
-        name.type = "text";
-        name.value = list.name.replace(/\.[^.]+$/, "");
-        name.placeholder = "Nom de la page";
-        name.setAttribute("aria-label", "Nom de la page");
-        name.addEventListener("click", (e) => e.stopPropagation());
-        name.addEventListener("keydown", (e) => {
-          e.stopPropagation();
-          if (e.key === "Enter") { e.preventDefault(); name.blur(); }
-        });
-        name.addEventListener("focus", () => {
-          if (list.id !== state.activeId) {
-            setActiveList(list.id);
-            const next = $("chips").querySelector(".page-row.is-on .page-name-field");
-            if (next && next !== name) next.focus();
-          }
-          pushHist();
-        });
-        name.addEventListener("change", () => {
-          const v = name.value.trim() || "Page";
-          list.name = v;
-          name.value = v;
-        });
-        nameWrap.appendChild(name);
-        row.appendChild(nameWrap);
-        const send = makePageSendBtn(list);
-        send.addEventListener("click", (e) => {
-          e.stopPropagation();
-          openPageSendMenu(send, list);
-        });
-        row.appendChild(send);
-        if (on && many) {
-          const tag = document.createElement("em");
-          tag.className = "page-status";
-          tag.textContent = "Aperçu";
-          row.appendChild(tag);
-        }
+        const name = document.createElement("span");
+        name.className = "page-scope-name";
+        name.textContent = list.name.replace(/\.[^.]+$/, "") || pageTitle;
+        row.appendChild(name);
         row.addEventListener("click", (e) => {
-          if (e.target.closest(".x") || e.target.closest(".page-check") || e.target.closest(".page-name-field") || e.target.closest(".page-send-toggle")) return;
+          if (e.target === box) return;
           if (e.ctrlKey || e.metaKey) {
             setListChecked(list.id, !isListChecked(list.id));
             setActiveList(list.id);
@@ -11841,20 +11895,14 @@
           }
           onPageSelectionChange();
         });
-        if (on) {
-          const x = document.createElement("button");
-          x.className = "x";
-          x.type = "button";
-          x.setAttribute("aria-label", "Retirer la page " + ((list.titles && list.titles[0]) || list.name || ""));
-          x.textContent = "×";
-          x.addEventListener("click", (e) => {
-            e.stopPropagation();
-            removeList(list.id);
-          });
-          row.appendChild(x);
-        }
+        row.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          e.preventDefault();
+          state.selectedIds = [list.id];
+          setActiveList(list.id);
+          onPageSelectionChange();
+        });
         wrap.appendChild(row);
-        if (many && i < state.lists.length - 1) wrap.appendChild(makePanelInsert(i + 1));
       });
       syncPagesHint();
     }
@@ -14910,10 +14958,11 @@
         open: "Afficher le panneau Fichiers",
         close: "Réduire le panneau Fichiers"
       }, liftMenuTo);
-      bind("displayFoldBtn", "displayFold", "epicsv-fold-display", {
+      bind("displayFoldBtn", "displayFoldInner", "epicsv-fold-display", {
         open: "Afficher les options d’affichage",
         close: "Réduire les options d’affichage"
       });
+      syncDisplayTabs();
       bind("modeFoldBtn", "modeFold", "epicsv-fold-mode", {
         open: "Afficher les modes",
         close: "Réduire les modes"
@@ -14933,7 +14982,7 @@
     (function bindPanelGrab() {
       const panel = $("panel");
       if (!panel) return;
-      const skip = "button, input, textarea, select, a, label, .drop, .col, .chip, .page-row, .seg, .fluo, .badge-chip, .swatch, .field, [contenteditable], .hist-dock, .skip-link, .fold-head";
+      const skip = "button, input, textarea, select, a, label, .drop, .col, .chip, .page-row, .page-scope-item, .seg, .fluo, .badge-chip, .swatch, .field, [contenteditable], .hist-dock, .skip-link, .fold-head";
       let dragging = false;
       let moved = false;
       let y0 = 0;
