@@ -2626,6 +2626,7 @@
       overflow: visible;
       left: 0;
       top: 0;
+      cursor: pointer;
     }
     .list-block.is-moved { z-index: 2; }
     .list-block.is-moving { z-index: 8; }
@@ -5758,6 +5759,7 @@
     }
 
     async function askPlaceNew(lead) {
+      if (replaceableBlankPage()) return "after";
       if (!tabHasRealContent(state.lists)) return "after";
       return showPlaceModal(lead || "Le contenu actuel n’est pas remplacé. Ajoutez la page à la suite dans cet onglet, ou dans un onglet suivant.");
     }
@@ -6268,6 +6270,27 @@
       if (isSheetForm(list)) return false;
       if (list.blank) return true;
       return !list.headers.length && !list.rows.length;
+    }
+
+    function replaceableBlankPage() {
+      const selected = selectedLists();
+      if (selected.length === 1 && isBlankList(selected[0])) return selected[0];
+      if (!selected.length) {
+        const active = activeList();
+        if (active && isBlankList(active)) return active;
+      }
+      return null;
+    }
+
+    function pickPageFromPreview(id, toggle) {
+      if (toggle) {
+        setListChecked(id, !isListChecked(id));
+        setActiveList(id);
+      } else {
+        state.selectedIds = [id];
+        setActiveList(id);
+      }
+      onPageSelectionChange();
     }
 
     function defaultTp() {
@@ -8435,6 +8458,17 @@
 
     function addEmptyTable(nCols, nRows) {
       const { headers, rows } = emptyTableSpec(nCols, nRows);
+      const blank = replaceableBlankPage();
+      if (blank) {
+        applyTableToList(blank, nextTableName(), headers, rows, { allOn: true });
+        blank.keepEmptyRows = true;
+        blank.orient = blank.orient || defaultListOrient();
+        applySharedCols(blank);
+        if (state.showNotes) ensureRqOrder(blank, state.notesPos === "left" ? "left" : "right");
+        if (showPastilles()) ensureMarksOrder(blank);
+        state.activeId = blank.id;
+        return blank;
+      }
       const list = makeList(nextTableName(), headers, rows);
       list.on = headers.map(() => true);
       list.keepEmptyRows = true;
@@ -12855,12 +12889,19 @@
     function createTpSheet(nCols, nRows, opts) {
       if (!opts || opts.hist !== false) pushHist();
       const shareRows = Math.max(TP_SHARE_SLOTS, Math.min(40, (clampEmptyRows(nRows) || 22) - 16));
-      const list = makeTpList();
+      const blank = replaceableBlankPage();
+      const list = blank || makeTpList();
       list.tpAlignReady = false;
       list.tpSized = false;
       list.tpFitted = false;
+      if (blank) {
+        convertToTp(list);
+        list.tpAlignReady = false;
+        list.tpSized = false;
+        list.tpFitted = false;
+      }
       applyTpSheetFrame(list, { size: { shareRows: shareRows } });
-      state.lists.push(list);
+      if (!blank) state.lists.push(list);
       state.activeId = list.id;
       state.selectedIds = [list.id];
       state.panelMode = "tp";
@@ -12875,12 +12916,19 @@
     function createProgSheet(nCols, nRows, opts) {
       if (!opts || opts.hist !== false) pushHist();
       const nSeances = Math.max(progSeanceCount(), Math.min(40, (clampEmptyRows(nRows) || 17) - 1));
-      const list = makeProgList();
+      const blank = replaceableBlankPage();
+      const list = blank || makeProgList();
       list.tpAlignReady = false;
       list.tpSized = false;
       list.tpFitted = false;
+      if (blank) {
+        convertToProg(list);
+        list.tpAlignReady = false;
+        list.tpSized = false;
+        list.tpFitted = false;
+      }
       applyProgSheetFrame(list, { nSeances: nSeances });
-      state.lists.push(list);
+      if (!blank) state.lists.push(list);
       state.activeId = list.id;
       state.selectedIds = [list.id];
       state.panelMode = "prog";
@@ -13120,15 +13168,15 @@
         state.selectedIds = [];
         state.combineAsked = false;
       }
-      const afterCount = state.lists.length + items.length - ((activeList() && isBlankList(activeList())) ? 1 : 0);
+      const afterCount = state.lists.length + items.length - (replaceableBlankPage() ? 1 : 0);
       if (afterCount >= 2 && !state.combineAsked) {
         state.combine = await askCombine();
         state.combineAsked = true;
       }
       items.forEach((item) => {
-        const active = activeList();
-        const list = (active && isBlankList(active))
-          ? fillActiveFromGrid(item.name, item.grid)
+        const blank = replaceableBlankPage();
+        const list = blank
+          ? fillListFromGrid(blank, item.name, item.grid)
           : addListFromGrid(item.name, item.grid);
         if (item.sample) list.sample = true;
       });
@@ -13617,6 +13665,29 @@
       if (!e.dataTransfer.files || !e.dataTransfer.files.length) return;
       e.preventDefault();
       ingestFiles(e.dataTransfer.files).catch((err) => showError(err.message || String(err)));
+    });
+
+    const sheetsEl = $("sheets");
+    if (sheetsEl) {
+      sheetsEl.addEventListener("click", (e) => {
+        if (zoneSuppressClick) return;
+        if (e.target.closest(
+          "button, a, input, select, textarea, .page-sheet-del, .block-move, .page-plus, .page-insert, " +
+          ".page-orient-toggle, .page-send-toggle, .page-send-menu, .table-frame-h, .row-handle, .col-del, " +
+          ".row-del, .col-resizer, .row-resizer, .sel-bar, .sel-shield, .tp-choice-menu"
+        )) return;
+        const block = e.target.closest(".list-block[data-lid]");
+        if (!block) return;
+        e.stopPropagation();
+        pickPageFromPreview(Number(block.dataset.lid), e.ctrlKey || e.metaKey);
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!state.selectedIds.length) return;
+      if (e.target.closest(".list-block, .page-scope-item, .page-row")) return;
+      state.selectedIds = [];
+      onPageSelectionChange();
     });
 
     document.addEventListener("paste", (e) => {
