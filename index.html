@@ -1022,7 +1022,8 @@
         z-index: 8;
         place-items: center;
       }
-      .list-block.is-editing .page-sheet-del {
+      .list-block.is-editing .page-sheet-del,
+      .list-block.is-blank-page .page-sheet-del {
         display: grid;
       }
       .page-sheet-del:hover {
@@ -8905,6 +8906,7 @@
       }
 
       async function askPlaceNew(lead) {
+        if (replaceableBlankPage()) return "after";
         if (!tabHasRealContent(state.lists)) return "after";
         return showPlaceModal(
           lead ||
@@ -9555,6 +9557,34 @@
         if (isSheetForm(list)) return false;
         if (list.blank) return true;
         return !list.headers.length && !list.rows.length;
+      }
+
+      function replaceableBlankPage() {
+        const selected = selectedLists();
+        if (selected.length === 1 && isBlankList(selected[0]))
+          return selected[0];
+        const active = activeList();
+        if (active && isBlankList(active)) {
+          if (!selected.length) return active;
+          if (
+            selected.length === 1 &&
+            selected[0] &&
+            selected[0].id === active.id
+          )
+            return active;
+        }
+        return null;
+      }
+
+      function pickPageFromPreview(id, toggle) {
+        if (toggle) {
+          setListChecked(id, !isListChecked(id));
+          setActiveList(id, { scroll: false });
+        } else {
+          state.selectedIds = [id];
+          setActiveList(id, { scroll: false });
+        }
+        onPageSelectionChange();
       }
 
       function defaultTp() {
@@ -12258,6 +12288,20 @@
 
       function addEmptyTable(nCols, nRows) {
         const { headers, rows } = emptyTableSpec(nCols, nRows);
+        const blank = replaceableBlankPage();
+        if (blank) {
+          applyTableToList(blank, nextTableName(), headers, rows, {
+            allOn: true,
+          });
+          blank.keepEmptyRows = true;
+          blank.orient = blank.orient || defaultListOrient();
+          applySharedCols(blank);
+          if (state.showNotes)
+            ensureRqOrder(blank, state.notesPos === "left" ? "left" : "right");
+          if (showPastilles()) ensureMarksOrder(blank);
+          state.activeId = blank.id;
+          return blank;
+        }
         const list = makeList(nextTableName(), headers, rows);
         list.on = headers.map(() => true);
         list.keepEmptyRows = true;
@@ -16677,22 +16721,20 @@
             }
             onPageSelectionChange();
           });
-          if (on) {
-            const x = document.createElement("button");
-            x.className = "x";
-            x.type = "button";
-            x.setAttribute(
-              "aria-label",
-              "Retirer la page " +
-                ((list.titles && list.titles[0]) || list.name || ""),
-            );
-            x.textContent = "×";
-            x.addEventListener("click", (e) => {
-              e.stopPropagation();
-              removeList(list.id);
-            });
-            row.appendChild(x);
-          }
+          const x = document.createElement("button");
+          x.className = "x";
+          x.type = "button";
+          x.setAttribute(
+            "aria-label",
+            "Retirer la page " +
+              ((list.titles && list.titles[0]) || list.name || ""),
+          );
+          x.textContent = "×";
+          x.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeList(list.id);
+          });
+          row.appendChild(x);
           wrap.appendChild(row);
           if (many && i < state.lists.length - 1)
             wrap.appendChild(makePanelInsert(i + 1));
@@ -17795,12 +17837,19 @@
           TP_SHARE_SLOTS,
           Math.min(40, (clampEmptyRows(nRows) || 22) - 16),
         );
-        const list = makeTpList();
+        const blank = replaceableBlankPage();
+        const list = blank || makeTpList();
         list.tpAlignReady = false;
         list.tpSized = false;
         list.tpFitted = false;
+        if (blank) {
+          convertToTp(list);
+          list.tpAlignReady = false;
+          list.tpSized = false;
+          list.tpFitted = false;
+        }
         applyTpSheetFrame(list, { size: { shareRows: shareRows } });
-        state.lists.push(list);
+        if (!blank) state.lists.push(list);
         state.activeId = list.id;
         state.selectedIds = [list.id];
         state.panelMode = "tp";
@@ -17818,12 +17867,19 @@
           progSeanceCount(),
           Math.min(40, (clampEmptyRows(nRows) || 17) - 1),
         );
-        const list = makeProgList();
+        const blank = replaceableBlankPage();
+        const list = blank || makeProgList();
         list.tpAlignReady = false;
         list.tpSized = false;
         list.tpFitted = false;
+        if (blank) {
+          convertToProg(list);
+          list.tpAlignReady = false;
+          list.tpSized = false;
+          list.tpFitted = false;
+        }
         applyProgSheetFrame(list, { nSeances: nSeances });
-        state.lists.push(list);
+        if (!blank) state.lists.push(list);
         state.activeId = list.id;
         state.selectedIds = [list.id];
         state.panelMode = "prog";
@@ -18094,19 +18150,16 @@
           state.combineAsked = false;
         }
         const afterCount =
-          state.lists.length +
-          items.length -
-          (activeList() && isBlankList(activeList()) ? 1 : 0);
+          state.lists.length + items.length - (replaceableBlankPage() ? 1 : 0);
         if (afterCount >= 2 && !state.combineAsked) {
           state.combine = await askCombine();
           state.combineAsked = true;
         }
         items.forEach((item) => {
-          const active = activeList();
-          const list =
-            active && isBlankList(active)
-              ? fillActiveFromGrid(item.name, item.grid)
-              : addListFromGrid(item.name, item.grid);
+          const blank = replaceableBlankPage();
+          const list = blank
+            ? fillListFromGrid(blank, item.name, item.grid)
+            : addListFromGrid(item.name, item.grid);
           if (item.sample) list.sample = true;
         });
         if (heldStyle && state.lists.length) {
@@ -20062,14 +20115,7 @@
         if (block) {
           const lid = Number(block.dataset.lid);
           if (lid) {
-            if (e.ctrlKey || e.metaKey) {
-              setListChecked(lid, !isListChecked(lid));
-              setActiveList(lid, { scroll: false });
-              onPageSelectionChange();
-              block.classList.toggle("is-picked", isListChecked(lid));
-            } else {
-              setActiveList(lid, { scroll: false });
-            }
+            pickPageFromPreview(lid, e.ctrlKey || e.metaKey);
           }
         }
         const delCol = e.target.closest("[data-del-col]");
