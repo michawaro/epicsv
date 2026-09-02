@@ -1749,6 +1749,21 @@
       border: 1.5px solid rgba(43, 61, 18, 0.22);
       box-shadow: 0 8px 22px rgba(32, 48, 6, 0.28);
     }
+    .files-export .btn-accent-save {
+      background: linear-gradient(180deg, #0e8f88 0%, var(--teal-deep) 55%, #065952 100%);
+      color: #f4fffb;
+      border: 1.5px solid rgba(255, 255, 255, 0.38);
+      box-shadow: 0 8px 20px rgba(0, 50, 48, 0.32);
+    }
+    .files-export .btn-accent-save:hover:not(:disabled) {
+      background: linear-gradient(180deg, #12a39b 0%, #0a6e69 55%, #054842 100%);
+    }
+    #listeModeOpts .mode-liste-import {
+      margin-bottom: 4px;
+    }
+    #listeModeOpts .mode-liste-import + .mode-liste-import {
+      margin-bottom: 8px;
+    }
     .btn-print:disabled,
     .btn-ghost:disabled,
     .btn-save:disabled,
@@ -4263,33 +4278,15 @@
       <button class="btn btn-print view-switch" id="viewSwitch" type="button" hidden>Voir l’aperçu</button>
       </div>
       <button class="fold-head" id="filesFoldBtn" type="button" aria-expanded="true" aria-controls="filesFold">
-        Fichier
+        Fichiers
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="menu-fold" id="filesFold">
       <div class="files-group">
-        <p class="files-group-label">Créer</p>
-        <div class="import-row">
-          <button class="btn btn-print btn-compact" id="pasteBtn" type="button">Coller le CSV</button>
-          <button class="btn btn-create btn-compact" id="createTableBtn" type="button">Créer un tableau</button>
-          <button class="btn btn-ghost btn-compact" id="sampleBtn" type="button">Exemple</button>
-        </div>
-      </div>
-      <div class="files-group">
-        <p class="files-group-label">Déposer</p>
-        <div class="add-replace-row" id="addReplaceRow">
-        <label class="drop" id="drop" for="file">
-          <input type="file" id="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Fichier à importer" />
-          <div class="drop-title" id="dropTitle">Déposer un fichier</div>
-          <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
-        </label>
-        </div>
-      </div>
-      <div class="files-group">
         <p class="files-group-label">Ouvrir</p>
         <div class="toolbar">
           <button class="btn btn-ghost" id="loadBtn" type="button" title="Ouvre un tableau .json enregistré avec cette application">Charger un tableau</button>
-          <button class="btn btn-ghost btn-style" id="styleBtn" type="button" title="Enregistrer ou charger un style de mise en page (sans les élèves)" aria-label="Style enregistrer/charger">Style enregistrer/charger</button>
+          <button class="btn btn-ghost" id="loadStyleBtn" type="button" title="Charge un style de mise en page (sans les élèves)">Charger un style</button>
         </div>
         <input type="file" id="loadFile" accept=".json,.listes,application/json" hidden aria-hidden="true" tabindex="-1" />
         <input type="file" id="styleFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1" />
@@ -4298,15 +4295,16 @@
         <p class="files-group-label">Exporter</p>
         <div class="toolbar">
           <button class="btn btn-print" id="printBtn" type="button" disabled title="Imprimer ou enregistrer en PDF (A4)">Imprimer</button>
-          <button class="btn btn-save" id="saveBtn" type="button" disabled title="Enregistre listes, colonnes, largeurs, pastilles, remarques et options">Enregistrer</button>
+          <button class="btn btn-accent-save" id="saveBtn" type="button" disabled title="Sauvegarde listes, colonnes, largeurs, pastilles, remarques et options">Sauvegarder</button>
+          <button class="btn btn-accent-save span-all" id="saveStyleBtn" type="button" title="Enregistre un style de mise en page (sans les élèves)">Sauvegarder un style</button>
         </div>
         <p class="autosave-hint" id="autosaveHint" hidden></p>
       </div>
       <div class="err" id="err" role="alert" aria-live="assertive"></div>
       </div>
-      <div id="modeFoldWrap" hidden>
+      <div id="modeFoldWrap">
       <button class="fold-head" id="modeFoldBtn" type="button" aria-expanded="true" aria-controls="modeFold">
-        Mode
+        Modes
         <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"/></svg>
       </button>
       <div class="fold-panel" id="modeFold">
@@ -4346,6 +4344,24 @@
       </section>
 
       <div id="listeModeOpts" class="mode-opts">
+        <div class="files-group mode-liste-import">
+          <p class="files-group-label">Créer</p>
+          <div class="import-row">
+            <button class="btn btn-print btn-compact" id="pasteBtn" type="button">Coller le CSV</button>
+            <button class="btn btn-create btn-compact" id="createTableBtn" type="button">Créer un tableau</button>
+            <button class="btn btn-ghost btn-compact" id="sampleBtn" type="button">Exemple</button>
+          </div>
+        </div>
+        <div class="files-group mode-liste-import">
+          <p class="files-group-label">Déposer</p>
+          <div class="add-replace-row" id="addReplaceRow">
+            <label class="drop" id="drop" for="file">
+              <input type="file" id="file" multiple accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Fichier à importer" />
+              <div class="drop-title" id="dropTitle">Déposer un fichier</div>
+              <div class="drop-sub" id="dropSub">CSV · TXT · Excel · tableau · modèle</div>
+            </label>
+          </div>
+        </div>
         <p class="mode-opts-lead">Mise en page liste</p>
         <section class="block" id="filesBlock" hidden>
           <h2>Pages concernées</h2>
@@ -12249,7 +12265,6 @@
 
     function renderDisplay() {
       const on = state.lists.length > 0;
-      $("modeFoldWrap").hidden = !on;
       $("displayFoldWrap").hidden = !on;
       $("infoBlock").hidden = !on;
       if (!on) return;
@@ -14754,16 +14769,16 @@
         btn.addEventListener("click", () => apply(btn.getAttribute("aria-expanded") === "true"));
       };
       bind("filesFoldBtn", "filesFold", "epicsv-fold-files", {
-        open: "Afficher le panneau Fichier",
-        close: "Réduire le panneau Fichier"
+        open: "Afficher le panneau Fichiers",
+        close: "Réduire le panneau Fichiers"
       }, liftMenuTo);
       bind("displayFoldBtn", "displayFold", "epicsv-fold-display", {
         open: "Afficher les options d’affichage",
         close: "Réduire les options d’affichage"
       });
       bind("modeFoldBtn", "modeFold", "epicsv-fold-mode", {
-        open: "Afficher le mode",
-        close: "Réduire le mode"
+        open: "Afficher les modes",
+        close: "Réduire les modes"
       });
     })();
 
@@ -14839,7 +14854,8 @@
       ingestFiles($("loadFile").files).catch((err) => showError(err.message || String(err)));
       $("loadFile").value = "";
     });
-    $("styleBtn").addEventListener("click", openStyleModal);
+    $("loadStyleBtn").addEventListener("click", () => $("styleFile").click());
+    $("saveStyleBtn").addEventListener("click", openStyleModal);
     const ytBell = $("ytBell");
     if (ytBell) {
       ytBell.addEventListener("click", () => {
