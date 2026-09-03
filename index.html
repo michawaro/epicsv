@@ -21875,10 +21875,6 @@
             d.wrap.style.width =
               Math.max(12, Math.min(400, d.tableW * fx)).toFixed(2) + "%";
           if (d.scaleH) {
-            // Lever le min-height avant de réduire, sinon offsetHeight/
-            // scrollHeight restent gonflés et la hauteur ne diminue plus
-            // (effet « inversé » / cadre qui grossit au lieu de rétrécir).
-            d.wrap.style.removeProperty("min-height");
             d.rows.forEach((r) => {
               if (d.tpForm) {
                 const next = clampTpRowMm(r.mm * fy);
@@ -21904,28 +21900,30 @@
                 }
               });
             }
-            const scaledH = Math.max(8, (d.layoutH0 || 0) * fy);
-            d.wrap.style.minHeight = scaledH + "px";
+            const liveH = Math.max(
+              d.table.scrollHeight,
+              d.table.offsetHeight,
+              (d.layoutH0 || 0) * fy,
+            );
+            if (liveH > 1) d.wrap.style.minHeight = liveH + "px";
           }
         };
         const ratiosFrom = (e, d) => {
           let fx = 1;
           let fy = 1;
           if (d.scaleW) {
-            // Est : +X agrandit ; Ouest : −X agrandit.
-            const fromW = d.dir.indexOf("w") >= 0;
-            const newW = fromW
-              ? d.w0 - (e.clientX - d.x0)
-              : d.w0 + (e.clientX - d.x0);
-            fx = Math.max(0.15, Math.min(6, newW / d.w0));
+            const sign = d.dir.indexOf("w") >= 0 ? -1 : 1;
+            fx = Math.max(
+              0.15,
+              Math.min(6, (d.w0 + sign * (e.clientX - d.x0)) / d.w0),
+            );
           }
           if (d.scaleH) {
-            // Sud : +Y agrandit ; Nord : −Y agrandit (remonter le bas → fy < 1).
-            const fromN = d.dir.indexOf("n") >= 0;
-            const newH = fromN
-              ? d.h0 - (e.clientY - d.y0)
-              : d.h0 + (e.clientY - d.y0);
-            fy = Math.max(0.15, Math.min(6, newH / d.h0));
+            const sign = d.dir.indexOf("n") >= 0 ? -1 : 1;
+            fy = Math.max(
+              0.15,
+              Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
+            );
           }
           return { fx: fx, fy: fy };
         };
@@ -21946,13 +21944,7 @@
         const stop = (e) => {
           if (!drag) return;
           const d = drag;
-          // pointerup : recalcul final ; pointercancel : garder le dernier fy live.
-          if (
-            e &&
-            e.type === "pointerup" &&
-            Number.isFinite(e.clientX) &&
-            Number.isFinite(e.clientY)
-          ) {
+          if (e && e.clientX != null) {
             const next = ratiosFrom(e, d);
             d.fx = next.fx;
             d.fy = next.fy;
@@ -21962,27 +21954,15 @@
           document.removeEventListener("pointerup", stop);
           document.removeEventListener("pointercancel", stop);
           clearBody();
-          try {
-            d.wrap.style.removeProperty("min-height");
-            d.wrap.style.removeProperty("width");
-          } catch (_) {}
           const fx = d.fx != null ? d.fx : 1;
           const fy = d.fy != null ? d.fy : 1;
           const useW = d.scaleW && Math.abs(fx - 1) > 0.004;
           const useH = d.scaleH && Math.abs(fy - 1) > 0.004;
           if (!useW && !useH) {
             discardLastHist();
-            syncListeFrameSize(d.wrap);
             return;
           }
-          const targets = tableScaleTargets(d.list);
-          if (
-            d.list &&
-            !isBlankList(d.list) &&
-            targets.indexOf(d.list) < 0
-          )
-            targets.unshift(d.list);
-          targets.forEach((lst) => {
+          tableScaleTargets(d.list).forEach((lst) => {
             scaleListFrame(lst, useW ? fx : 1, useH ? fy : 1, {
               scaleW: useW,
               scaleH: useH,
