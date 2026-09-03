@@ -19236,7 +19236,7 @@
           limit.className = "sheet-limit no-print";
           limit.setAttribute("aria-hidden", "true");
           limit.innerHTML =
-            '<button type="button" class="sheet-cut-btn no-print" title="Couper ici : le surplus passe à la page suivante de cet onglet" aria-label="Couper ici : le surplus passe à la page suivante">' +
+            '<button type="button" class="sheet-cut-btn no-print" title="Créer la page suivante avec les lignes qui dépassent" aria-label="Créer la page suivante avec les lignes qui dépassent">' +
             SHEET_CUT_SVG +
             "</button><span>Limite A4</span>";
           if (!combining() && group.length === 1 && group[0]) {
@@ -19381,47 +19381,52 @@
         return true;
       }
 
-      function sheetInnerBottomPx(sheet) {
-        if (!sheet) return 0;
-        const scale = stageScale() || 1;
-        const sheetRect = sheet.getBoundingClientRect();
-        const cs = getComputedStyle(sheet);
-        return (
-          sheetRect.bottom - (parseFloat(cs.paddingBottom) || 0) * scale
-        );
+      function pageCutLineY(frame) {
+        const paper = frame && frame.querySelector(".sheet-paper");
+        return paper ? paper.getBoundingClientRect().bottom : null;
       }
 
-      function mergeSpansRow(list, ri) {
-        return (list.merges || []).some(
+      function mergeRowSpanAt(list, ri) {
+        return (list.merges || []).find(
           (m) => m.r < ri && m.r + m.rs > ri,
         );
       }
 
       function adjustCutRowForMerges(list, cutRow) {
         let c = cutRow;
-        while (c < list.rows.length && mergeSpansRow(list, c)) c++;
-        if (c >= list.rows.length) return -1;
+        let guard = 0;
+        while (guard++ < (list.rows || []).length) {
+          const span = mergeRowSpanAt(list, c);
+          if (!span) break;
+          c = span.r;
+        }
         return c;
       }
 
-      function findListCutRow(list, block) {
+      function minCutRowForList(list) {
+        if (isProgList(list)) return 2;
+        return 1;
+      }
+
+      function findListCutRow(list, block, frame) {
         if (!list || !block || !Array.isArray(list.rows) || !list.rows.length)
           return -1;
-        const sheet = block.closest(".sheet");
+        const cutY = pageCutLineY(frame || block.closest(".sheet-frame"));
+        if (cutY == null) return -1;
         const table = block.querySelector("table.liste tbody");
-        if (!sheet || !table) return -1;
-        const innerBottom = sheetInnerBottomPx(sheet);
-        if (!innerBottom) return -1;
+        if (!table) return -1;
         let lastFitRi = -1;
         table.querySelectorAll("tr[data-ri]").forEach((tr) => {
           const ri = Number(tr.getAttribute("data-ri"));
           if (!Number.isInteger(ri) || ri < 0) return;
-          if (tr.getBoundingClientRect().bottom <= innerBottom + 2)
-            lastFitRi = ri;
+          const rect = tr.getBoundingClientRect();
+          if (rect.bottom <= cutY + 1) lastFitRi = ri;
         });
         if (lastFitRi < 0) return -1;
-        const cutRow = adjustCutRowForMerges(list, lastFitRi + 1);
-        if (cutRow < 1 || cutRow >= list.rows.length) return -1;
+        let cutRow = lastFitRi + 1;
+        cutRow = adjustCutRowForMerges(list, cutRow);
+        const minCut = minCutRowForList(list);
+        if (cutRow < minCut || cutRow >= list.rows.length) return -1;
         return cutRow;
       }
 
@@ -19463,8 +19468,7 @@
         const keep = [];
         const tail = [];
         (merges || []).forEach((m) => {
-          const end = m.r + m.rs;
-          if (end <= cutRow) {
+          if (m.r + m.rs <= cutRow) {
             keep.push({ r: m.r, c: m.c, rs: m.rs, cs: m.cs });
           } else if (m.r >= cutRow) {
             tail.push({
@@ -19473,19 +19477,93 @@
               rs: m.rs,
               cs: m.cs,
             });
-          } else {
-            const topRs = cutRow - m.r;
-            const botRs = end - cutRow;
-            if (topRs >= 1)
-              keep.push({ r: m.r, c: m.c, rs: topRs, cs: m.cs });
-            if (botRs >= 1)
-              tail.push({ r: 0, c: m.c, rs: botRs, cs: m.cs });
           }
         });
         return {
           keep: normalizeMerges(keep),
           tail: normalizeMerges(tail),
         };
+      }
+
+      function shiftIndexedBag(bag, delta) {
+        if (!bag || !delta) return;
+        const next = {};
+        Object.keys(bag).forEach((k) => {
+          const i = Number(k);
+          if (!Number.isInteger(i)) next[k] = bag[k];
+          else next[i + delta] = bag[k];
+        });
+        Object.keys(bag).forEach((k) => {
+          delete bag[k];
+        });
+        Object.keys(next).forEach((k) => {
+          bag[k] = next[k];
+        });
+      }
+
+      function shiftHlBagRows(bag, delta) {
+        if (!bag || !delta) return;
+        const next = {};
+        Object.keys(bag).forEach((k) => {
+          const parts = String(k).split(":");
+          const i = Number(parts[0]);
+          const rest = parts.slice(1).join(":");
+          if (!Number.isInteger(i)) next[k] = bag[k];
+          else next[i + delta + ":" + rest] = bag[k];
+        });
+        Object.keys(bag).forEach((k) => {
+          delete bag[k];
+        });
+        Object.keys(next).forEach((k) => {
+          bag[k] = next[k];
+        });
+      }
+
+      function rebuildProgPeriodMerges(list) {
+        if (!isProgList(list) || !list.rows) return;
+        list.merges = (list.merges || []).filter(
+          (m) => !(Number(m.r) >= 2 && Number(m.c) === 0 && Number(m.rs) > 1),
+        );
+        let ri = 2;
+        while (ri < list.rows.length) {
+          const label = String((list.rows[ri] && list.rows[ri][0]) || "").trim();
+          if (label) {
+            let end = ri + 1;
+            while (
+              end < list.rows.length &&
+              !String((list.rows[end] && list.rows[end][0]) || "").trim()
+            )
+              end++;
+            const rs = end - ri;
+            if (rs > 1) list.merges.push({ r: ri, c: 0, rs: rs, cs: 1 });
+            ri = end;
+          } else ri++;
+        }
+        list.merges = normalizeMerges(list.merges);
+      }
+
+      function prependProgHeaderRows(tailList, headerRows) {
+        const n = headerRows.length;
+        if (!n || !tailList) return;
+        tailList.rows = headerRows.map((r) => r.slice()).concat(tailList.rows);
+        shiftIndexedBag(tailList.hidden, n);
+        shiftIndexedBag(tailList.notes, n);
+        shiftIndexedBag(tailList.marks, n);
+        shiftIndexedBag(tailList.rowH, n);
+        shiftHlBagRows(tailList.hl, n);
+        shiftHlBagRows(tailList.hlText, n);
+        shiftHlBagRows(tailList.alignH, n);
+        shiftHlBagRows(tailList.alignV, n);
+        (tailList.merges || []).forEach((m) => {
+          m.r += n;
+        });
+        rebuildProgPeriodMerges(tailList);
+        ensureProgHeadingMerges(tailList);
+        writeProgMeta(tailList);
+      }
+
+      function listCutBlocked(list) {
+        return Boolean(list && isTpList(list) && !isProgList(list));
       }
 
       function splitPageName(name) {
@@ -19503,7 +19581,12 @@
       function splitListAtRow(list, cutRow) {
         if (!list || !Array.isArray(list.rows)) return null;
         const n = list.rows.length;
-        if (cutRow < 1 || cutRow >= n) return null;
+        const minCut = minCutRowForList(list);
+        if (cutRow < minCut || cutRow >= n) return null;
+        const progHeaders =
+          isProgList(list) && cutRow >= 2
+            ? list.rows.slice(0, 2).map((r) => r.slice())
+            : null;
         const tailList = hydrateList(serializeList(list));
         tailList.id = nextId++;
         tailList.rows = list.rows.slice(cutRow);
@@ -19521,6 +19604,11 @@
         list.merges = parts.keep;
         tailList.merges = parts.tail;
         list.rows = list.rows.slice(0, cutRow);
+        if (progHeaders) prependProgHeaderRows(tailList, progHeaders);
+        if (isProgList(list)) {
+          rebuildProgPeriodMerges(list);
+          ensureProgHeadingMerges(list);
+        }
         tailList.name = splitPageName(list.name);
         tailList.pageBreakBefore = true;
         tailList.orient = listOrient(list);
@@ -19534,15 +19622,9 @@
         frame.querySelectorAll(".list-block[data-lid]").forEach((block) => {
           const lid = Number(block.dataset.lid);
           const list = state.lists.find((l) => l && l.id === lid);
-          if (
-            !list ||
-            isBlankList(list) ||
-            isSheetForm(list) ||
-            listBlockOverflowPx(block) < 4
-          )
-            return;
-          const cutRow = findListCutRow(list, block);
-          if (cutRow < 1) return;
+          if (!list || isBlankList(list) || listCutBlocked(list)) return;
+          const cutRow = findListCutRow(list, block, frame);
+          if (cutRow < minCutRowForList(list)) return;
           const idx = state.lists.findIndex((l) => l && l.id === list.id);
           if (idx < 0) return;
           cuts.push({ idx: idx, list: list, cutRow: cutRow });
@@ -25681,27 +25763,23 @@
         blocks.forEach((block) => {
           const lid = Number(block.dataset.lid);
           const list = state.lists.find((l) => l && l.id === lid);
-          if (
-            list &&
-            !isBlankList(list) &&
-            isSheetForm(list) &&
-            listBlockOverflowPx(block) > 3
-          )
+          if (list && !isBlankList(list) && listCutBlocked(list))
             blockedForm = true;
         });
         if (blockedForm) {
           announce(
-            "Découpage indisponible sur les fiches TP / Progression : ajustez les hauteurs.",
+            "Découpage indisponible sur les fiches TP : ajustez les hauteurs ou réduisez le contenu.",
           );
           return;
         }
         if (cutSheetOverflow(frame))
-          announce("Page découpée : la suite est sur la page suivante.", {
-            toast: true,
-          });
+          announce(
+            "Page suivante créée : les lignes qui dépassaient y ont été déplacées.",
+            { toast: true },
+          );
         else
           announce(
-            "Impossible de découper ici : pas assez de lignes au-dessus de la limite.",
+            "Impossible de découper : aucune ligne entière ne tient au-dessus de la limite A4.",
           );
       });
 
