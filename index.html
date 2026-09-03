@@ -2839,11 +2839,72 @@
       .sheet-grid[data-n="2"] {
         grid-template-columns: 1fr 1fr;
       }
+      .sheet.is-portrait.is-combo .sheet-grid[data-n="2"] {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
       .sheet-grid[data-n="3"] {
         grid-template-columns: 1fr 1fr 1fr;
       }
       .sheet-grid[data-n="4"] {
         grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
+      body.is-place-picking {
+        cursor: crosshair;
+      }
+      body.is-place-picking .sheet-stage {
+        position: relative;
+      }
+      .place-pick-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 40;
+        display: flex;
+        pointer-events: auto;
+      }
+      .place-pick-overlay.is-rows {
+        flex-direction: column;
+      }
+      .place-pick-half {
+        flex: 1;
+        margin: 0;
+        border: 2px dashed transparent;
+        border-radius: 4px;
+        background: rgba(14, 143, 140, 0.06);
+        cursor: crosshair;
+        transition:
+          background 0.12s ease,
+          border-color 0.12s ease;
+      }
+      .place-pick-half.is-hot,
+      .place-pick-half.is-picked {
+        background: rgba(14, 143, 140, 0.22);
+        border-color: rgba(14, 143, 140, 0.7);
+      }
+      .place-pick-half.is-picked {
+        background: rgba(14, 143, 140, 0.32);
+      }
+      .place-pick-banner {
+        position: fixed;
+        left: 50%;
+        bottom: 1.25rem;
+        transform: translateX(-50%);
+        z-index: 60;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        max-width: min(92vw, 36rem);
+        padding: 0.65rem 0.85rem;
+        border-radius: 10px;
+        background: rgba(20, 36, 40, 0.92);
+        color: #f4fbfb;
+        font-size: 0.92rem;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+      }
+      .place-pick-banner span {
+        flex: 1;
+        line-height: 1.35;
       }
 
       .list-block {
@@ -6913,30 +6974,6 @@
       aria-label="Envoyer vers un onglet"
     ></div>
 
-    <div class="modal-back no-print" id="modal" hidden>
-      <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modalTitle"
-      >
-        <h3 id="modalTitle">Intégrer sur une même page ?</h3>
-        <p>
-          Vous pouvez les composer côte à côte (format paysage, 4 listes maximum
-          par feuille) ou garder une liste par page. Ce choix reste modifiable
-          ensuite.
-        </p>
-        <div class="modal-actions">
-          <button class="btn btn-print" id="btnSame" type="button">
-            Même page
-          </button>
-          <button class="btn btn-ghost" id="btnSep" type="button">
-            Pages séparées
-          </button>
-        </div>
-      </div>
-    </div>
-
     <div class="modal-back no-print" id="colDelModal" hidden>
       <div
         class="modal"
@@ -7116,11 +7153,15 @@
       >
         <h3 id="placeTitle">Où placer ce contenu ?</h3>
         <p id="placeLead">
-          Le contenu actuel n’est pas remplacé. Ajoutez la page à la suite dans
-          cet onglet, ou dans un onglet suivant.
+          Le contenu actuel n’est pas remplacé. Placez-le sur la même page (en
+          choisissant une moitié), à la suite dans cet onglet, ou dans un onglet
+          suivant.
         </p>
         <div class="modal-actions">
-          <button class="btn btn-print" id="placeAfter" type="button">
+          <button class="btn btn-print" id="placeSame" type="button">
+            Même page
+          </button>
+          <button class="btn btn-ghost" id="placeAfter" type="button">
             Même onglet
           </button>
           <button class="btn btn-ghost" id="placeTab" type="button">
@@ -8923,6 +8964,7 @@
           sharedCols: state.sharedCols,
           editFrame: state.editFrame,
           tpInner: state.tpInner,
+          tpVlines: state.tpVlines,
         };
       }
 
@@ -8959,6 +9001,10 @@
         if (pack.tpInner != null) {
           state.tpInner = normalizeTpInner(pack.tpInner);
           persistTpInner();
+        }
+        if (pack.tpVlines != null) {
+          state.tpVlines = normalizeTpVlines(pack.tpVlines);
+          persistTpVlines();
         }
         if (pack.fontPt != null) state.fontPt = clampFontPt(pack.fontPt);
         if (pack.titlePt != null) state.titlePt = clampTitlePt(pack.titlePt);
@@ -9182,6 +9228,7 @@
             resolve(val);
           };
           placeDlgRestore = attachDialog(back, () => finish(""));
+          if ($("placeSame")) $("placeSame").onclick = () => finish("same");
           $("placeAfter").onclick = () => finish("after");
           $("placeTab").onclick = () => finish("tab");
           if (replaceBtn) replaceBtn.onclick = () => finish("replace");
@@ -9189,13 +9236,183 @@
         });
       }
 
+      function enableSamePageCombine() {
+        state.combine = true;
+        state.combineAsked = true;
+      }
+
+      function isSamePagePlace(place) {
+        return place === "same-first" || place === "same-second";
+      }
+
+      function samePageInsertIndex(place) {
+        const active = activeList();
+        const idx = active
+          ? state.lists.indexOf(active)
+          : state.lists.length - 1;
+        const at = idx < 0 ? state.lists.length : idx;
+        return place === "same-first" ? at : at + 1;
+      }
+
+      function askPickPageHalf() {
+        return new Promise((resolve) => {
+          const list = activeList() || state.lists[0];
+          const lid = list && list.id;
+          const block =
+            (lid != null &&
+              $("sheets").querySelector(
+                '.list-block[data-lid="' + lid + '"]',
+              )) ||
+            $("sheets").querySelector(".list-block");
+          if (!block) {
+            resolve("second");
+            return;
+          }
+          const hold =
+            block.closest(".sheet-stage") ||
+            block.closest(".sheet-frame") ||
+            block.parentElement;
+          const sheet = block.closest(".sheet") || block;
+          if (!hold) {
+            resolve("second");
+            return;
+          }
+          const cols = list ? selectedCols(list).length : 1;
+          const orient = resolvedOrient(list, cols);
+          const asRows = orient !== "paysage";
+          const labelFirst = asRows ? "Moitié haute" : "Moitié gauche";
+          const labelSecond = asRows ? "Moitié basse" : "Moitié droite";
+          announce(
+            asRows
+              ? "Cliquez la zone d’insertion (haut ou bas), puis recliquez pour confirmer."
+              : "Cliquez la zone d’insertion (gauche ou droite), puis recliquez pour confirmer.",
+          );
+
+          const overlay = document.createElement("div");
+          overlay.className =
+            "place-pick-overlay" + (asRows ? " is-rows" : "");
+          overlay.setAttribute("role", "group");
+          overlay.setAttribute(
+            "aria-label",
+            "Choisir la zone d’insertion sur la page",
+          );
+          const mkHalf = (which, lab) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "place-pick-half";
+            btn.dataset.half = which;
+            btn.setAttribute("aria-label", lab);
+            return btn;
+          };
+          const first = mkHalf("first", labelFirst);
+          const second = mkHalf("second", labelSecond);
+          overlay.appendChild(first);
+          overlay.appendChild(second);
+
+          const banner = document.createElement("div");
+          banner.className = "place-pick-banner no-print";
+          const msg = document.createElement("span");
+          msg.textContent = asRows
+            ? "Survolez ou touchez une moitié (haut / bas), puis recliquez pour confirmer."
+            : "Survolez ou touchez une moitié (gauche / droite), puis recliquez pour confirmer.";
+          const cancelBtn = document.createElement("button");
+          cancelBtn.type = "button";
+          cancelBtn.className = "btn btn-ghost";
+          cancelBtn.textContent = "Annuler";
+          banner.appendChild(msg);
+          banner.appendChild(cancelBtn);
+
+          let pending = null;
+          let done = false;
+          const syncPicked = () => {
+            [first, second].forEach((el) => {
+              el.classList.toggle("is-picked", el.dataset.half === pending);
+            });
+          };
+          const cleanup = () => {
+            document.body.classList.remove("is-place-picking");
+            document.removeEventListener("keydown", onKey, true);
+            overlay.remove();
+            banner.remove();
+          };
+          const finish = (val) => {
+            if (done) return;
+            done = true;
+            cleanup();
+            resolve(val);
+          };
+          const onKey = (e) => {
+            if (e.key !== "Escape") return;
+            e.preventDefault();
+            e.stopPropagation();
+            finish("");
+          };
+          const onHalfClick = (which) => {
+            if (pending === which) finish(which);
+            else {
+              pending = which;
+              syncPicked();
+              announce("Recliquez pour confirmer l’insertion.");
+            }
+          };
+
+          [first, second].forEach((el) => {
+            el.addEventListener("pointerenter", (e) => {
+              if (e.pointerType && e.pointerType !== "mouse") return;
+              el.classList.add("is-hot");
+            });
+            el.addEventListener("pointerleave", () => {
+              el.classList.remove("is-hot");
+            });
+            el.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onHalfClick(el.dataset.half);
+            });
+          });
+          cancelBtn.addEventListener("click", () => finish(""));
+          document.addEventListener("keydown", onKey, true);
+          document.body.classList.add("is-place-picking");
+          hold.appendChild(overlay);
+          document.body.appendChild(banner);
+          try {
+            sheet.scrollIntoView({
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                .matches
+                ? "auto"
+                : "smooth",
+              block: "nearest",
+            });
+          } catch (_) {}
+        });
+      }
+
+      async function finalizePlace(place) {
+        if (!place || place === "after" || place === "tab" || place === "replace")
+          return place;
+        if (place !== "same") return place;
+        if (isPhoneLayout()) showPreview();
+        if (!$("sheets").querySelector(".list-block")) {
+          renderPreview();
+          fitStage();
+        }
+        revealActivePage();
+        await new Promise((r) =>
+          requestAnimationFrame(() => requestAnimationFrame(r)),
+        );
+        const half = await askPickPageHalf();
+        if (!half) return "";
+        return half === "first" ? "same-first" : "same-second";
+      }
+
       async function askPlaceNew(lead) {
         if (replaceableBlankPage()) return "after";
-        if (!tabHasRealContent(state.lists)) return "after";
-        return showPlaceModal(
+        if (!state.lists.some((l) => l && !isBlankList(l))) return "after";
+        const place = await showPlaceModal(
           lead ||
-            "Le contenu actuel n’est pas remplacé. Ajoutez la page à la suite dans cet onglet, ou dans un onglet suivant.",
+            "Le contenu actuel n’est pas remplacé. Placez-le sur la même page (en choisissant une moitié), à la suite dans cet onglet, ou dans un onglet suivant.",
         );
+        return finalizePlace(place);
       }
 
       function pageSizeOf(orient) {
@@ -9214,14 +9431,20 @@
       }
 
       function resolvedOrient(list, colCount) {
-        if (combining()) return "paysage";
         let orient = listOrient(list);
         if (orient === "auto") {
-          orient = isSheetForm(list)
+          orient = combining()
             ? "paysage"
-            : colCount >= 8
+            : isSheetForm(list)
               ? "paysage"
-              : "portrait";
+              : colCount >= 8
+                ? "paysage"
+                : "portrait";
+        } else if (combining()) {
+          const group = previewGroups().find((g) =>
+            g.some((l) => l && list && l.id === list.id),
+          );
+          if (group && group.length > 2) orient = "paysage";
         }
         return orient;
       }
@@ -9345,6 +9568,7 @@
             sharedCols: state.sharedCols,
             editFrame: state.editFrame,
             tpInner: state.tpInner !== false,
+            tpVlines: state.tpVlines === true,
           }),
         );
       }
@@ -9487,6 +9711,9 @@
         state.editFrame = normalizeEditFrame(s.editFrame);
         state.tpInner = s.tpInner != null ? normalizeTpInner(s.tpInner) : true;
         persistTpInner();
+        state.tpVlines =
+          s.tpVlines != null ? normalizeTpVlines(s.tpVlines) : false;
+        persistTpVlines();
         applyTheme(state.design, state.palette, state.forme, state.titre);
         applyRootTheme();
         reviveLists(state.lists);
@@ -12475,22 +12702,26 @@
 
       async function addBlankPage(index) {
         const intercalate = Number.isInteger(index);
+        let place = "after";
         if (!intercalate) {
-          const place = await askPlaceNew(
-            "Ajouter une page blanche à la suite, ou dans un autre onglet ?",
+          place = await askPlaceNew(
+            "Ajouter une page blanche sur la même page, à la suite, ou dans un autre onglet ?",
           );
           if (!place) return;
           pushHist();
           if (place === "tab") activateFreshTab();
+          if (isSamePagePlace(place)) enableSamePageCombine();
         } else {
           if (!state.lists.length) return;
           pushHist();
         }
         const list = makeBlankList(nextBlankName());
         list.orient = defaultListOrient();
-        const at = Number.isInteger(index)
+        const at = intercalate
           ? Math.max(0, Math.min(state.lists.length, index))
-          : state.lists.length;
+          : isSamePagePlace(place)
+            ? samePageInsertIndex(place)
+            : state.lists.length;
         state.lists.splice(at, 0, list);
         state.activeId = list.id;
         state.selectedIds = [list.id];
@@ -12562,12 +12793,19 @@
         return applyTableToList(list, name, headers, rows);
       }
 
-      function addListFromGrid(name, grid) {
+      function addListFromGrid(name, grid, opts) {
         const { headers, rows } = gridFromParsed(name, grid);
         const list = makeList(name, headers, rows);
         list.orient = defaultListOrient();
         applySharedCols(list);
-        state.lists.push(list);
+        const at = opts && Number.isInteger(opts.at) ? opts.at : null;
+        if (at == null) state.lists.push(list);
+        else
+          state.lists.splice(
+            Math.max(0, Math.min(state.lists.length, at)),
+            0,
+            list,
+          );
         state.activeId = list.id;
         return list;
       }
@@ -12601,7 +12839,7 @@
         return n === 1 ? "Tableau" : "Tableau " + n;
       }
 
-      function addEmptyTable(nCols, nRows) {
+      function addEmptyTable(nCols, nRows, opts) {
         const { headers, rows } = emptyTableSpec(nCols, nRows);
         const blank = replaceableBlankPage();
         if (blank) {
@@ -12625,7 +12863,14 @@
         if (state.showNotes)
           ensureRqOrder(list, state.notesPos === "left" ? "left" : "right");
         if (showPastilles()) ensureMarksOrder(list);
-        state.lists.push(list);
+        const at = opts && Number.isInteger(opts.at) ? opts.at : null;
+        if (at == null) state.lists.push(list);
+        else
+          state.lists.splice(
+            Math.max(0, Math.min(state.lists.length, at)),
+            0,
+            list,
+          );
         state.activeId = list.id;
         return list;
       }
@@ -12634,7 +12879,7 @@
         const cols = clampEmptyCols(nCols);
         const rows = clampEmptyRows(nRows);
         if (!opts || opts.hist !== false) pushHist();
-        addEmptyTable(cols, rows);
+        addEmptyTable(cols, rows, opts);
         state.selectedIds = state.activeId != null ? [state.activeId] : [];
         state.panelMode = "liste";
         showError("");
@@ -13595,13 +13840,18 @@
       }
 
       function layoutFor(colCount, nOnPage, list) {
-        let orient = combining() ? "paysage" : listOrient(list);
-        if (orient === "auto")
-          orient = isSheetForm(list)
+        let orient = listOrient(list);
+        if (orient === "auto") {
+          orient = combining()
             ? "paysage"
-            : colCount >= 8
+            : isSheetForm(list)
               ? "paysage"
-              : "portrait";
+              : colCount >= 8
+                ? "paysage"
+                : "portrait";
+        } else if (combining() && nOnPage > 2) {
+          orient = "paysage";
+        }
         let font = 9.5;
         if (combining()) {
           if (nOnPage >= 4) font = 6.8;
@@ -14152,6 +14402,7 @@
           (state.vlines ? " has-vlines" : "") +
           (isSheetForm(list) ? " is-tp" : "") +
           (isTpForm(list) && state.tpInner !== false ? " has-tp-inner" : "") +
+          (isTpForm(list) && state.tpVlines === true ? " has-tp-vlines" : "") +
           '" style="font-size:' +
           clampFontPt(state.fontPt) +
           'pt">';
@@ -16127,6 +16378,7 @@
           out.settings.combine = state.combine;
           out.settings.editFrame = normalizeEditFrame(state.editFrame);
           out.settings.tpInner = state.tpInner !== false;
+          out.settings.tpVlines = state.tpVlines === true;
         }
         if (parts.info) {
           out.settings.legend = state.legend;
@@ -16452,6 +16704,10 @@
           if (s.tpInner != null) {
             state.tpInner = normalizeTpInner(s.tpInner);
             persistTpInner();
+          }
+          if (s.tpVlines != null) {
+            state.tpVlines = normalizeTpVlines(s.tpVlines);
+            persistTpVlines();
           }
         }
         if (parts.info) {
@@ -17698,9 +17954,14 @@
         if (infoBlock) infoBlock.hidden = !on;
         if (!on) return;
         $("optVlines").checked = state.vlines;
+        const hasTp = state.lists.some(isTpList);
+        const tpVlinesWrap = $("optTpVlinesWrap");
+        const tpVlinesEl = $("optTpVlines");
+        if (tpVlinesWrap) tpVlinesWrap.hidden = !hasTp;
+        if (tpVlinesEl) tpVlinesEl.checked = state.tpVlines === true;
         const tpInnerWrap = $("optTpInnerWrap");
         const tpInnerEl = $("optTpInner");
-        if (tpInnerWrap) tpInnerWrap.hidden = !state.lists.some(isTpList);
+        if (tpInnerWrap) tpInnerWrap.hidden = !hasTp;
         if (tpInnerEl) tpInnerEl.checked = state.tpInner !== false;
         $("optBadges").checked = state.showBadges;
         $("optNotes").checked = state.showNotes;
@@ -18165,7 +18426,16 @@
           list.tpFitted = false;
         }
         applyTpSheetFrame(list, { size: { shareRows: shareRows } });
-        if (!blank) state.lists.push(list);
+        if (!blank) {
+          const at = opts && Number.isInteger(opts.at) ? opts.at : null;
+          if (at == null) state.lists.push(list);
+          else
+            state.lists.splice(
+              Math.max(0, Math.min(state.lists.length, at)),
+              0,
+              list,
+            );
+        }
         state.activeId = list.id;
         state.selectedIds = [list.id];
         state.panelMode = "tp";
@@ -18195,7 +18465,16 @@
           list.tpFitted = false;
         }
         applyProgSheetFrame(list, { nSeances: nSeances });
-        if (!blank) state.lists.push(list);
+        if (!blank) {
+          const at = opts && Number.isInteger(opts.at) ? opts.at : null;
+          if (at == null) state.lists.push(list);
+          else
+            state.lists.splice(
+              Math.max(0, Math.min(state.lists.length, at)),
+              0,
+              list,
+            );
+        }
         state.activeId = list.id;
         state.selectedIds = [list.id];
         state.panelMode = "prog";
@@ -18210,10 +18489,10 @@
       async function placeAndCreateSheet(kind, cols, rows) {
         const placeLead =
           kind === "prog"
-            ? "Créer la progression dans cet onglet (à la suite) ou dans un onglet suivant ?"
+            ? "Créer la progression sur la même page, à la suite, ou dans un onglet suivant ?"
             : kind === "tp"
-              ? "Créer le TP dans cet onglet (à la suite) ou dans un onglet suivant ?"
-              : "Créer le tableau dans cet onglet (à la suite) ou dans un onglet suivant ?";
+              ? "Créer le TP sur la même page, à la suite, ou dans un onglet suivant ?"
+              : "Créer le tableau sur la même page, à la suite, ou dans un onglet suivant ?";
         const place = await askPlaceNew(placeLead);
         if (!place) return;
         const skipHist = place === "tab";
@@ -18221,9 +18500,14 @@
           pushHist();
           activateFreshTab();
         }
-        if (kind === "prog") createProgSheet(cols, rows, { hist: !skipHist });
-        else if (kind === "tp") createTpSheet(cols, rows, { hist: !skipHist });
-        else createEmptyTable(cols, rows, { hist: !skipHist });
+        const sheetOpts = { hist: !skipHist };
+        if (isSamePagePlace(place)) {
+          enableSamePageCombine();
+          sheetOpts.at = samePageInsertIndex(place);
+        }
+        if (kind === "prog") createProgSheet(cols, rows, sheetOpts);
+        else if (kind === "tp") createTpSheet(cols, rows, sheetOpts);
+        else createEmptyTable(cols, rows, sheetOpts);
       }
 
       async function createPresetModel(kind) {
@@ -18435,37 +18719,20 @@
         applyZoneDelete(scope);
       }
 
-      function askCombine() {
-        return new Promise((resolve) => {
-          const back = $("modal");
-          back.hidden = false;
-          let restore;
-          const finish = (val) => {
-            if (restore) restore();
-            back.hidden = true;
-            $("btnSame").onclick = null;
-            $("btnSep").onclick = null;
-            resolve(val);
-          };
-          restore = attachDialog(back, () => finish(false));
-          $("btnSame").onclick = () => finish(true);
-          $("btnSep").onclick = () => finish(false);
-        });
-      }
-
       async function ingestParsed(items) {
         if (!items.length) return;
         const addingReal = items.some((item) => !item.sample);
-        if (addingReal && tabHasRealContent(state.lists)) {
-          const place = await askPlaceNew();
+        let place = "after";
+        if (!replaceableBlankPage() && state.lists.some((l) => l && !isBlankList(l))) {
+          place = await askPlaceNew();
           if (!place) return;
-          pushHist();
-          if (place === "tab") activateFreshTab();
-        } else {
-          pushHist();
         }
+        pushHist();
+        if (place === "tab") activateFreshTab();
+        if (isSamePagePlace(place)) enableSamePageCombine();
         if (
           addingReal &&
+          !isSamePagePlace(place) &&
           state.lists.length &&
           state.lists.every((l) => l.sample)
         ) {
@@ -18474,17 +18741,16 @@
           state.selectedIds = [];
           state.combineAsked = false;
         }
-        const afterCount =
-          state.lists.length + items.length - (replaceableBlankPage() ? 1 : 0);
-        if (afterCount >= 2 && !state.combineAsked) {
-          state.combine = await askCombine();
-          state.combineAsked = true;
-        }
-        items.forEach((item) => {
+        let insertAt = isSamePagePlace(place) ? samePageInsertIndex(place) : null;
+        items.forEach((item, i) => {
           const blank = replaceableBlankPage();
           const list = blank
             ? fillListFromGrid(blank, item.name, item.grid)
-            : addListFromGrid(item.name, item.grid);
+            : addListFromGrid(
+                item.name,
+                item.grid,
+                insertAt == null ? null : { at: insertAt + i },
+              );
           if (item.sample) list.sample = true;
         });
         if (heldStyle && state.lists.length) {
@@ -18557,6 +18823,7 @@
           titre: src.titre,
           editFrame: src.editFrame,
           tpInner: src.tpInner !== false,
+          tpVlines: src.tpVlines === true,
           fontPt: src.fontPt,
           titlePt: src.titlePt,
           thPt: src.thPt,
@@ -18605,10 +18872,11 @@
                 ),
               ];
         if (hasRealContent()) {
-          const place = await showPlaceModal(
-            "Charger ce fichier à la suite des pages actuelles, ou dans un autre onglet ?",
+          let place = await showPlaceModal(
+            "Charger ce fichier sur la même page, à la suite, ou dans un autre onglet ?",
             { replace: true },
           );
+          place = await finalizePlace(place);
           if (!place) return;
           if (place === "replace") {
             if (!(await guardLeave())) return;
@@ -18636,6 +18904,19 @@
           if (place === "tab") {
             incoming.forEach((t) => state.tabs.push(t));
             switchToTab(incoming[0].id, { hist: false });
+          } else if (isSamePagePlace(place)) {
+            enableSamePageCombine();
+            const at = samePageInsertIndex(place);
+            const firstLists = incoming[0].lists || [];
+            firstLists.forEach((l, i) => {
+              state.lists.splice(at + i, 0, l);
+            });
+            incoming.slice(1).forEach((t) => state.tabs.push(t));
+            if (firstLists[0]) state.activeId = firstLists[0].id;
+            else if (!state.activeId && state.lists[0])
+              state.activeId = state.lists[0].id;
+            state.selectedIds = state.activeId != null ? [state.activeId] : [];
+            renderAll();
           } else {
             incoming[0].lists.forEach((l) => state.lists.push(l));
             incoming.slice(1).forEach((t) => state.tabs.push(t));
@@ -18702,6 +18983,7 @@
             titre: state.titre,
             editFrame: normalizeEditFrame(state.editFrame),
             tpInner: state.tpInner !== false,
+            tpVlines: state.tpVlines === true,
             fontPt: state.fontPt,
             titlePt: state.titlePt,
             thPt: state.thPt,
@@ -19218,6 +19500,12 @@
       $("optVlines").addEventListener("change", () => {
         pushHist();
         state.vlines = $("optVlines").checked;
+        renderPreview();
+      });
+      $("optTpVlines").addEventListener("change", () => {
+        pushHist();
+        state.tpVlines = $("optTpVlines").checked;
+        persistTpVlines();
         renderPreview();
       });
       $("optTpInner").addEventListener("change", () => {
@@ -20651,7 +20939,6 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           if ($("styleModal") && !$("styleModal").hidden) return;
-          if ($("modal") && !$("modal").hidden) return;
           if ($("pasteModal") && !$("pasteModal").hidden) return;
           if ($("createTableModal") && !$("createTableModal").hidden) return;
           if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
@@ -20678,8 +20965,7 @@
           if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
           if (e.target && e.target.isContentEditable) return;
           if ($("styleModal") && !$("styleModal").hidden) return;
-          if ($("modal") && !$("modal").hidden) return;
-          if ($("pasteModal") && !$("pasteModal").hidden) return;
+                    if ($("pasteModal") && !$("pasteModal").hidden) return;
           if ($("createTableModal") && !$("createTableModal").hidden) return;
           if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
           if ($("tpMatModal") && !$("tpMatModal").hidden) return;
