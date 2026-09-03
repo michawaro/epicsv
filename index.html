@@ -7344,20 +7344,38 @@
       </div>
       <div class="sel-group" role="group" aria-label="Fusionner ou fractionner">
         <span class="sel-group-lab">Fusion</span>
-        <button
-          type="button"
-          id="selMerge"
-          title="Fusionner les cellules sélectionnées"
+        <div
+          class="sel-dim sel-insert"
+          role="group"
+          aria-label="Fusionner ou fractionner"
         >
-          Fusionner
-        </button>
-        <button
-          type="button"
-          id="selSplit"
-          title="Fractionner la sélection en colonnes × lignes"
-        >
-          Fractionner
-        </button>
+          <button
+            type="button"
+            id="selMerge"
+            title="Fusionner les cellules sélectionnées"
+            aria-label="Fusionner les cellules sélectionnées"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="8" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <rect x="13" y="3" width="8" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <rect x="3" y="13" width="8" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <rect x="13" y="13" width="8" height="8" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M8.5 8.5L12 12m0 0l3.5-3.5M12 12l-3.5 3.5M12 12l3.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            id="selSplit"
+            title="Fractionner la sélection en colonnes × lignes"
+            aria-label="Fractionner la sélection"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.4"/>
+              <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+          </button>
+        </div>
       </div>
       <div
         class="sel-group sel-group-insert"
