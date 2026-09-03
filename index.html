@@ -620,8 +620,13 @@
         .customize-backdrop[hidden] {
           display: none !important;
         }
-        .app.customize-open .hist-dock {
-          right: calc(min(360px, 92vw) + var(--customize-rail) + 14px);
+        /* hist-dock est frère de .app (pas descendant) → ~ */
+        .app.customize-open ~ .hist-dock {
+          right: min(
+            calc(100vw - 148px),
+            calc(min(360px, 92vw) + var(--customize-rail) + 14px)
+          );
+          z-index: 64;
         }
       }
 
@@ -679,8 +684,11 @@
         .customize-panel-body {
           padding-top: max(16px, env(safe-area-inset-top, 0px));
         }
-        .hist-dock {
-          right: max(14px, env(safe-area-inset-right, 0px));
+        /* À gauche du FAB Personnaliser */
+        .hist-dock,
+        .app.customize-open ~ .hist-dock {
+          right: max(74px, calc(52px + 22px + env(safe-area-inset-right, 0px)));
+          z-index: 57;
         }
       }
 
@@ -866,11 +874,13 @@
         bottom: max(14px, env(safe-area-inset-bottom, 0px));
         z-index: 11;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 2px 8px;
-        max-width: min(320px, calc(100vw - 48px));
-        padding: 4px 8px 4px 6px;
-        border-radius: 999px;
+        justify-content: center;
+        gap: 2px;
+        max-width: min(160px, calc(100vw - 48px));
+        padding: 8px 10px;
+        border-radius: 16px;
         background: rgba(255, 255, 255, 0.86);
         box-shadow: 0 6px 18px rgba(14, 143, 140, 0.16);
         backdrop-filter: blur(10px);
@@ -879,24 +889,27 @@
         font-weight: 800;
         letter-spacing: -0.02em;
         line-height: 1.15;
+        text-align: center;
       }
       .yt-dock-link {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 5px;
         color: inherit;
         text-decoration: none;
         border-radius: 999px;
-        padding: 3px 4px;
+        padding: 2px 4px;
+        text-align: center;
       }
       .yt-dock-link:hover {
         color: #0a6561;
       }
-      .yt-dock-link.is-sub {
-        color: #3a4a12;
+      .yt-dock-link.is-yt {
+        color: #b91c1c;
       }
-      .yt-dock-link.is-sub:hover {
-        color: #2b3d12;
+      .yt-dock-link.is-yt:hover {
+        color: #9f1239;
       }
       .yt-dock-ico {
         width: 16px;
@@ -909,9 +922,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 22px;
-        height: 22px;
-        margin-left: 2px;
+        width: 28px;
+        height: 28px;
+        margin: 0;
         padding: 0;
         border: 0;
         border-radius: 999px;
@@ -1000,7 +1013,7 @@
       .yt-dock-bell::after {
         content: attr(data-tip);
         position: absolute;
-        left: 0;
+        left: 50%;
         right: auto;
         bottom: calc(100% + 8px);
         top: auto;
@@ -1020,7 +1033,7 @@
         box-shadow: 0 10px 24px rgba(14, 143, 140, 0.22);
         opacity: 0;
         pointer-events: none;
-        transform: translateY(4px);
+        transform: translate(-50%, 4px);
         transition:
           opacity 0.12s ease,
           transform 0.12s ease;
@@ -1030,44 +1043,11 @@
       .yt-dock-bell:focus-visible::after,
       .yt-dock-bell.is-tip::after {
         opacity: 1;
-        transform: none;
+        transform: translate(-50%, 0);
       }
-      .yt-dock-sep {
-        opacity: 0.35;
-        font-weight: 700;
-      }
+      .yt-dock-sep,
       .yt-dock-more {
-        display: none;
-        position: relative;
-      }
-      .yt-dock-more > summary {
-        list-style: none;
-        cursor: pointer;
-        padding: 2px 6px;
-        border-radius: 999px;
-        color: var(--teal-deep);
-        font-weight: 800;
-      }
-      .yt-dock-more > summary::-webkit-details-marker {
-        display: none;
-      }
-      .yt-dock-more[open] > summary {
-        background: rgba(14, 143, 140, 0.12);
-      }
-      .yt-dock-pop {
-        position: absolute;
-        left: 0;
-        right: auto;
-        bottom: calc(100% + 6px);
-        top: auto;
-        min-width: 168px;
-        padding: 8px 10px;
-        border-radius: 12px;
-        background: #fff;
-        box-shadow: 0 12px 28px rgba(14, 143, 140, 0.22);
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+        display: none !important;
       }
 
       .block h2 {
@@ -2026,9 +2006,10 @@
       }
       .hist-dock {
         position: fixed;
+        /* Décalage rail Personnaliser (frère de .app, hors flux grille) */
         right: calc(var(--customize-rail) + 14px);
         bottom: max(14px, env(safe-area-inset-bottom, 0px));
-        z-index: 12;
+        z-index: 55;
         display: flex;
         transition: right 0.22s ease;
         gap: 2px;
@@ -2038,8 +2019,13 @@
         box-shadow: 0 10px 28px rgba(14, 143, 140, 0.22);
         backdrop-filter: blur(10px);
       }
-      .app.customize-open .hist-dock {
-        right: calc(var(--customize-rail) + var(--customize-panel-w) + 14px);
+      /* hist-dock est frère de .app — ~ obligatoire, sinon right reste trop petit
+         et le dock disparaît sous le panneau / backdrop Personnaliser. */
+      .app.customize-open ~ .hist-dock {
+        right: min(
+          calc(100vw - 148px),
+          calc(var(--customize-rail) + var(--customize-panel-w) + 14px)
+        );
       }
       .hist-dock[hidden] {
         display: none !important;
@@ -5480,17 +5466,9 @@
           right: auto;
           left: max(10px, env(safe-area-inset-left, 0px));
           bottom: max(12px, env(safe-area-inset-bottom, 0px));
-          padding: 3px 4px;
-          gap: 0;
-        }
-        .yt-dock-full {
-          display: none;
-        }
-        .yt-dock-sep {
-          display: none;
-        }
-        .yt-dock-more {
-          display: block;
+          padding: 6px 8px;
+          gap: 1px;
+          max-width: min(140px, calc(100vw - 24px));
         }
         .page-format-hud {
           margin-right: 48px;
@@ -7445,32 +7423,6 @@
 
     <nav class="yt-dock no-print" aria-label="Chaîne YouTube Michawaro">
       <a
-        class="yt-dock-link is-sub"
-        href="https://www.youtube.com/@michawaro?sub_confirmation=1"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="S’abonner à la chaîne YouTube Michawaro"
-        title="S’abonner"
-      >
-        <svg class="yt-dock-ico" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 32 32 0 0 0 0 12a32 32 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A32 32 0 0 0 24 12a32 32 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"
-          />
-        </svg>
-        <span class="yt-dock-full">S’abonner</span>
-      </a>
-      <span class="yt-dock-sep yt-dock-full" aria-hidden="true">·</span>
-      <a
-        class="yt-dock-link yt-dock-full"
-        href="https://youtu.be/mq8bfjaVKV8"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Voir le tutoriel YouTube"
-        title="Tutoriel"
-        >Tutoriel</a
-      >
-      <a
         class="yt-dock-bell"
         id="ytBell"
         href="https://www.youtube.com/@michawaro?sub_confirmation=1"
@@ -7486,25 +7438,31 @@
           />
         </svg>
       </a>
-      <details class="yt-dock-more">
-        <summary aria-label="Liens YouTube">···</summary>
-        <div class="yt-dock-pop">
-          <a
-            class="yt-dock-link is-sub"
-            href="https://www.youtube.com/@michawaro?sub_confirmation=1"
-            target="_blank"
-            rel="noopener noreferrer"
-            >S’abonner</a
-          >
-          <a
-            class="yt-dock-link"
-            href="https://youtu.be/mq8bfjaVKV8"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Tutoriel</a
-          >
-        </div>
-      </details>
+      <a
+        class="yt-dock-link is-yt"
+        href="https://www.youtube.com/@michawaro?sub_confirmation=1"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chaîne YouTube Michawaro"
+        title="YouTube"
+      >
+        <svg class="yt-dock-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 32 32 0 0 0 0 12a32 32 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A32 32 0 0 0 24 12a32 32 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"
+          />
+        </svg>
+        <span>YouTube</span>
+      </a>
+      <a
+        class="yt-dock-link"
+        href="https://youtu.be/mq8bfjaVKV8"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Voir le tutoriel YouTube"
+        title="Tutoriel"
+        >Tutoriel</a
+      >
     </nav>
     <div
       class="hist-dock no-print"
