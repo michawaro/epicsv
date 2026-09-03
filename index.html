@@ -621,6 +621,9 @@
         .customize-backdrop[hidden] {
           display: none !important;
         }
+        .app.customize-open .hist-dock {
+          right: calc(min(360px, 92vw) + var(--customize-rail) + 14px);
+        }
       }
 
       @media (max-width: 767px) {
@@ -676,6 +679,9 @@
         }
         .customize-panel-body {
           padding-top: max(16px, env(safe-area-inset-top, 0px));
+        }
+        .hist-dock {
+          right: max(14px, env(safe-area-inset-right, 0px));
         }
       }
 
@@ -1847,13 +1853,15 @@
         background: rgba(255, 255, 255, 0.24);
         border: 1.5px solid rgba(255, 255, 255, 0.38);
         box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
-        padding: 5px;
-        gap: 4px;
+        padding: 3px;
+        gap: 2px;
+        flex-wrap: nowrap;
       }
       .seg.mode-seg label {
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 800;
-        padding: 9px 4px;
+        padding: 7px 2px;
+        white-space: nowrap;
       }
       .seg.mode-seg label:has(input:checked) {
         background: linear-gradient(
@@ -1937,16 +1945,20 @@
       }
       .hist-dock {
         position: fixed;
-        right: max(14px, env(safe-area-inset-right, 0px));
+        right: calc(var(--customize-rail) + 14px);
         bottom: max(14px, env(safe-area-inset-bottom, 0px));
         z-index: 12;
         display: flex;
+        transition: right 0.22s ease;
         gap: 2px;
         padding: 4px;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.94);
         box-shadow: 0 10px 28px rgba(14, 143, 140, 0.22);
         backdrop-filter: blur(10px);
+      }
+      .app.customize-open .hist-dock {
+        right: calc(var(--customize-rail) + var(--customize-panel-w) + 14px);
       }
       .hist-dock[hidden] {
         display: none !important;
@@ -7080,7 +7092,7 @@
                   colonnes.
                 </p>
               </div>
-<div class="opt-label">Contour</div>
+              <div class="opt-label">Contour</div>
               <div class="seg">
                 <label
                   ><input type="radio" name="forme" value="arrondis" /><span
