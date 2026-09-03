@@ -6273,74 +6273,29 @@
                   </label>
                 </div>
               </div>
-              <p class="mode-opts-lead">Mise en page liste</p>
-
-              <section class="block" id="combineBlock" hidden>
-                <h2>Combiner les listes</h2>
-                <div class="seg duo">
-                  <label
-                    ><input type="radio" name="combine" value="same" /><span
-                      >Même page</span
-                    ></label
-                  >
-                  <label
-                    ><input
-                      type="radio"
-                      name="combine"
-                      value="sep"
-                      checked
-                    /><span>Pages séparées</span></label
-                  >
-                </div>
-                <p class="hint-note" style="margin: 8px 0 0">
-                  Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
-                </p>
-              </section>
-
-              <section class="block" id="numBlock">
-                <h2>Numérotation</h2>
-                <div class="num-row">
-                  <div class="seg">
-                    <label
-                      ><input
-                        type="radio"
-                        name="num"
-                        value="off"
-                        checked
-                      /><span>Aucune</span></label
-                    >
-                    <label
-                      ><input type="radio" name="num" value="digits" /><span
-                        >1 2 3</span
-                      ></label
-                    >
-                    <label
-                      ><input type="radio" name="num" value="letters" /><span
-                        >A B C</span
-                      ></label
-                    >
-                  </div>
-                  <div class="opt-from" id="numFromWrap" hidden>
-                    <label for="numFrom">À partir de la ligne</label>
-                    <input
-                      class="field field-num"
-                      id="numFrom"
-                      type="number"
-                      min="1"
-                      value="1"
-                      aria-label="Numéroter à partir de la ligne"
-                    />
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  class="linkish"
-                  id="restoreRows"
-                  hidden
-                  style="margin-top: 8px"
-                ></button>
-              </section>
             </div>
+
+            <section class="block" id="combineBlock" hidden>
+              <h2>Combiner les listes</h2>
+              <div class="seg duo">
+                <label
+                  ><input type="radio" name="combine" value="same" /><span
+                    >Même page</span
+                  ></label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="combine"
+                    value="sep"
+                    checked
+                  /><span>Pages séparées</span></label
+                >
+              </div>
+              <p class="hint-note" style="margin: 8px 0 0">
+                Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
+              </p>
+            </section>
 
             <section class="block" id="colsBlock" hidden>
               <h2>Colonnes à conserver</h2>
@@ -6383,6 +6338,50 @@
                 <input type="checkbox" id="colAll" />
                 Ajouter cette colonne à toutes les listes
               </label>
+            </section>
+
+            <section class="block" id="numBlock">
+              <h2>Numérotation</h2>
+              <div class="num-row">
+                <div class="seg">
+                  <label
+                    ><input
+                      type="radio"
+                      name="num"
+                      value="off"
+                      checked
+                    /><span>Aucune</span></label
+                  >
+                  <label
+                    ><input type="radio" name="num" value="digits" /><span
+                      >1 2 3</span
+                    ></label
+                  >
+                  <label
+                    ><input type="radio" name="num" value="letters" /><span
+                      >A B C</span
+                    ></label
+                  >
+                </div>
+                <div class="opt-from" id="numFromWrap" hidden>
+                  <label for="numFrom">À partir de la ligne</label>
+                  <input
+                    class="field field-num"
+                    id="numFrom"
+                    type="number"
+                    min="1"
+                    value="1"
+                    aria-label="Numéroter à partir de la ligne"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                class="linkish"
+                id="restoreRows"
+                hidden
+                style="margin-top: 8px"
+              ></button>
             </section>
 
           </div>
