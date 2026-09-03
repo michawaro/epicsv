@@ -17902,10 +17902,7 @@
         announce("Fiche progression créée.");
       }
 
-      async function confirmCreateTable() {
-        const { cols, rows } = readCreateSize();
-        const kind = createAsKind;
-        closeCreateTableModal();
+      async function placeAndCreateSheet(kind, cols, rows) {
         const placeLead =
           kind === "prog"
             ? "Créer la progression dans cet onglet (à la suite) ou dans un onglet suivant ?"
@@ -17922,6 +17919,18 @@
         if (kind === "prog") createProgSheet(cols, rows, { hist: !skipHist });
         else if (kind === "tp") createTpSheet(cols, rows, { hist: !skipHist });
         else createEmptyTable(cols, rows, { hist: !skipHist });
+      }
+
+      async function createPresetModel(kind) {
+        if (kind === "prog") await placeAndCreateSheet("prog", 10, 17);
+        else await placeAndCreateSheet("tp", 5, 22);
+      }
+
+      async function confirmCreateTable() {
+        const { cols, rows } = readCreateSize();
+        const kind = createAsKind;
+        closeCreateTableModal();
+        await placeAndCreateSheet(kind, cols, rows);
       }
 
       async function pasteFromClipboard() {
@@ -18787,15 +18796,21 @@
       );
       const tpCreateBtn = $("tpCreateBtn");
       if (tpCreateBtn)
-        tpCreateBtn.addEventListener("click", () => openCreateTableModal(true));
+        tpCreateBtn.addEventListener("click", () => {
+          createPresetModel("tp").catch((err) =>
+            showError(err.message || String(err)),
+          );
+        });
       const tpLoadBtn = $("tpLoadBtn");
       if (tpLoadBtn)
         tpLoadBtn.addEventListener("click", () => $("loadFile").click());
       const progCreateBtn = $("progCreateBtn");
       if (progCreateBtn)
-        progCreateBtn.addEventListener("click", () =>
-          openCreateTableModal("prog"),
-        );
+        progCreateBtn.addEventListener("click", () => {
+          createPresetModel("prog").catch((err) =>
+            showError(err.message || String(err)),
+          );
+        });
       const progLoadBtn = $("progLoadBtn");
       if (progLoadBtn)
         progLoadBtn.addEventListener("click", () => $("loadFile").click());
