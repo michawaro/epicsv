@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr" class="palette-teal">
   <head>
     <meta charset="UTF-8" />
@@ -3632,9 +3632,6 @@
         border-left: var(--tp-inner);
         border-left-color: #111;
       }
-      .list-block.is-tp-page .liste.has-tp-vlines {
-        --tp-vline: 2.75pt solid #111;
-      }
       .list-block.is-tp-page
         .liste.has-tp-vlines
         tbody
@@ -4627,6 +4624,29 @@
       }
       .liste.has-vlines thead tr > *:last-child {
         border-right-color: var(--d-vline-th, var(--rule));
+      }
+      .liste.has-tp-vlines {
+        --tp-vline: 2.75pt solid #111;
+      }
+      /* Filets épais hors fiches TP (le TP garde ses règles structurelles) */
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines th:not(.no-print) {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines td:not(.no-print) {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines tr > *:last-child {
+        border-right: var(--tp-vline);
+        border-right-color: #111;
+      }
+      .list-block:not(.is-tp-page)
+        .liste.has-tp-vlines
+        thead
+        tr
+        > *:last-child {
+        border-right-color: #111;
       }
       .liste thead th:last-child .col-resizer {
         width: 10px;
@@ -5639,6 +5659,13 @@
           tr.is-tp-band-order
           td.is-tp-salles {
           border-left: 1.65pt solid #111 !important;
+        }
+        .list-block:not(.is-tp-page) .liste.has-tp-vlines th:not(.no-print),
+        .list-block:not(.is-tp-page) .liste.has-tp-vlines td:not(.no-print) {
+          border-left: 2.75pt solid #111 !important;
+        }
+        .list-block:not(.is-tp-page) .liste.has-tp-vlines tr > *:last-child {
+          border-right: 2.75pt solid #111 !important;
         }
         .list-block.is-tp-page
           .liste.has-tp-vlines
@@ -6863,7 +6890,7 @@
                 <input type="checkbox" id="optVlines" checked />
                 Traits de séparation verticaux
               </label>
-              <label class="check-row" id="optTpVlinesWrap" hidden>
+              <label class="check-row" id="optTpVlinesWrap">
                 <input type="checkbox" id="optTpVlines" />
                 Traits de séparation verticaux visibles
               </label>
@@ -14838,7 +14865,7 @@
           (state.vlines ? " has-vlines" : "") +
           (isSheetForm(list) ? " is-tp" : "") +
           (isTpForm(list) && state.tpInner !== false ? " has-tp-inner" : "") +
-          (isTpForm(list) && state.tpVlines === true ? " has-tp-vlines" : "") +
+          (state.tpVlines === true ? " has-tp-vlines" : "") +
           '" style="font-size:' +
           clampFontPt(state.fontPt) +
           'pt">';
@@ -18436,7 +18463,7 @@
         const hasTp = state.lists.some(isTpList);
         const tpVlinesWrap = $("optTpVlinesWrap");
         const tpVlinesEl = $("optTpVlines");
-        if (tpVlinesWrap) tpVlinesWrap.hidden = !hasTp;
+        if (tpVlinesWrap) tpVlinesWrap.hidden = false;
         if (tpVlinesEl) tpVlinesEl.checked = state.tpVlines === true;
         const tpInnerWrap = $("optTpInnerWrap");
         const tpInnerEl = $("optTpInner");
