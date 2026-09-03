@@ -1700,6 +1700,22 @@
       .liste tbody tr:nth-child(even) td.is-fluo-rouge {
         background: #f8c9c6 !important;
       }
+      .liste td.is-fluo-bleu,
+      .liste tbody tr:nth-child(even) td.is-fluo-bleu {
+        background: #B3D9FF !important;
+      }
+      .liste td.is-fluo-turquoise,
+      .liste tbody tr:nth-child(even) td.is-fluo-turquoise {
+        background: #A7E8D8 !important;
+      }
+      .liste td.is-fluo-violet,
+      .liste tbody tr:nth-child(even) td.is-fluo-violet {
+        background: #D1C4E9 !important;
+      }
+      .liste td.is-fluo-lavande,
+      .liste tbody tr:nth-child(even) td.is-fluo-lavande {
+        background: #C5CAE9 !important;
+      }
       .cell-edit.is-fluo-text-vert,
       .rq-note.is-fluo-text-vert {
         background: #d4f5c8;
@@ -1719,6 +1735,26 @@
       .rq-note.is-fluo-text-rouge {
         background: #f8c9c6;
         box-shadow: 0 0 0 0.14em #f8c9c6;
+      }
+      .cell-edit.is-fluo-text-bleu,
+      .rq-note.is-fluo-text-bleu {
+        background: #B3D9FF;
+        box-shadow: 0 0 0 0.14em #B3D9FF;
+      }
+      .cell-edit.is-fluo-text-turquoise,
+      .rq-note.is-fluo-text-turquoise {
+        background: #A7E8D8;
+        box-shadow: 0 0 0 0.14em #A7E8D8;
+      }
+      .cell-edit.is-fluo-text-violet,
+      .rq-note.is-fluo-text-violet {
+        background: #D1C4E9;
+        box-shadow: 0 0 0 0.14em #D1C4E9;
+      }
+      .cell-edit.is-fluo-text-lavande,
+      .rq-note.is-fluo-text-lavande {
+        background: #C5CAE9;
+        box-shadow: 0 0 0 0.14em #C5CAE9;
       }
       .cell-edit[class*="is-fluo-text-"],
       .rq-note[class*="is-fluo-text-"] {
@@ -5913,6 +5949,22 @@
         .liste tbody tr:nth-child(even) td.is-fluo-rouge {
           background: #f8c9c6 !important;
         }
+        .liste td.is-fluo-bleu,
+        .liste tbody tr:nth-child(even) td.is-fluo-bleu {
+          background: #B3D9FF !important;
+        }
+        .liste td.is-fluo-turquoise,
+        .liste tbody tr:nth-child(even) td.is-fluo-turquoise {
+          background: #A7E8D8 !important;
+        }
+        .liste td.is-fluo-violet,
+        .liste tbody tr:nth-child(even) td.is-fluo-violet {
+          background: #D1C4E9 !important;
+        }
+        .liste td.is-fluo-lavande,
+        .liste tbody tr:nth-child(even) td.is-fluo-lavande {
+          background: #C5CAE9 !important;
+        }
         .liste td.is-align-left,
         .liste th.is-align-left,
         .list-block.is-tp-page td.is-align-left,
@@ -5968,6 +6020,26 @@
         .rq-note.is-fluo-text-rouge {
           background: #f8c9c6 !important;
           box-shadow: 0 0 0 0.14em #f8c9c6 !important;
+        }
+        .cell-edit.is-fluo-text-bleu,
+        .rq-note.is-fluo-text-bleu {
+          background: #B3D9FF !important;
+          box-shadow: 0 0 0 0.14em #B3D9FF !important;
+        }
+        .cell-edit.is-fluo-text-turquoise,
+        .rq-note.is-fluo-text-turquoise {
+          background: #A7E8D8 !important;
+          box-shadow: 0 0 0 0.14em #A7E8D8 !important;
+        }
+        .cell-edit.is-fluo-text-violet,
+        .rq-note.is-fluo-text-violet {
+          background: #D1C4E9 !important;
+          box-shadow: 0 0 0 0.14em #D1C4E9 !important;
+        }
+        .cell-edit.is-fluo-text-lavande,
+        .rq-note.is-fluo-text-lavande {
+          background: #C5CAE9 !important;
+          box-shadow: 0 0 0 0.14em #C5CAE9 !important;
         }
         .sheet.forme-encadre .liste {
           box-shadow:
@@ -6659,8 +6731,8 @@
             type="button"
             class="customize-rail-btn"
             data-customize-sec="colors"
-            aria-label="Couleurs"
-            title="Couleurs"
+            aria-label="Design"
+            title="Design"
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -6813,6 +6885,42 @@
                   aria-pressed="false"
                   title="Fluo rouge. Clic : case. Double-clic : texte."
                   style="background: #f5c4c0"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="bleu"
+                  aria-label="Surligneur bleu"
+                  aria-pressed="false"
+                  title="Fluo bleu. Clic : case. Double-clic : texte."
+                  style="background: #B3D9FF"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="turquoise"
+                  aria-label="Surligneur turquoise"
+                  aria-pressed="false"
+                  title="Fluo turquoise. Clic : case. Double-clic : texte."
+                  style="background: #A7E8D8"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="violet"
+                  aria-label="Surligneur violet"
+                  aria-pressed="false"
+                  title="Fluo violet. Clic : case. Double-clic : texte."
+                  style="background: #D1C4E9"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="lavande"
+                  aria-label="Surligneur lavande"
+                  aria-pressed="false"
+                  title="Fluo lavande. Clic : case. Double-clic : texte."
+                  style="background: #C5CAE9"
                 ></button>
               </div>
               <label class="check-row" style="margin-top: 10px">
@@ -8203,6 +8311,10 @@
         { id: "rose", color: "#f5c9d6", label: "Fluo rose" },
         { id: "jaune", color: "#ffe9a3", label: "Fluo jaune" },
         { id: "rouge", color: "#f5c4c0", label: "Fluo rouge" },
+        { id: "bleu", color: "#B3D9FF", label: "Fluo bleu" },
+        { id: "turquoise", color: "#A7E8D8", label: "Fluo turquoise" },
+        { id: "violet", color: "#D1C4E9", label: "Fluo violet" },
+        { id: "lavande", color: "#C5CAE9", label: "Fluo lavande" },
       ];
       const EMPTY_COLS_MAX = 40;
       const EMPTY_ROWS_MAX = 80;
@@ -22102,7 +22214,21 @@
           });
         };
 
+        const _collapseIds = ["orientBlock", "marginsBlock", "titlesBlock"];
+        const _savedVis = {};
+
         const scrollToSec = (sec) => {
+          if (sec === "colors") {
+            _collapseIds.forEach((id) => {
+              const el = $(id);
+              if (el) { _savedVis[id] = el.hidden; el.hidden = true; }
+            });
+          } else {
+            _collapseIds.forEach((id) => {
+              const el = $(id);
+              if (el && id in _savedVis) { el.hidden = _savedVis[id]; delete _savedVis[id]; }
+            });
+          }
           const map = {
             settings: $("marginsBlock") || body,
             colors: $("customizeSecColors") || $("displayBlock"),
