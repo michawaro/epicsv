@@ -3271,6 +3271,85 @@
         border-left: var(--tp-inner);
         border-left-color: #111;
       }
+      .list-block.is-tp-page .liste.has-tp-vlines {
+        --tp-vline: 2.75pt solid #111;
+      }
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-share
+        td.is-tp-section,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-prof
+        td.is-tp-section,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-order
+        td.is-tp-section {
+        border-right: var(--tp-vline);
+        border-right-color: #111;
+      }
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-mat-head
+        td.is-tp-dates {
+        border-left: 0;
+      }
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-share
+        td.is-tp-dates,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-prof
+        td.is-tp-dates,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-order
+        td.is-tp-dates {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-share
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-prof
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-order
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-share
+        td.is-tp-salles,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-prof
+        td.is-tp-salles,
+      .list-block.is-tp-page
+        .liste.has-tp-vlines
+        tbody
+        tr.is-tp-band-order
+        td.is-tp-salles {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
       .tp-meta-bar {
         display: flex;
         flex-wrap: wrap;
@@ -5200,6 +5279,79 @@
           td.is-tp-salles {
           border-left: 1.65pt solid #111 !important;
         }
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-share
+          td.is-tp-section,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-prof
+          td.is-tp-section,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-order
+          td.is-tp-section {
+          border-right: 2.75pt solid #111 !important;
+        }
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-mat-head
+          td.is-tp-dates {
+          border-left: 0 !important;
+        }
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-share
+          td.is-tp-dates,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-prof
+          td.is-tp-dates,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-order
+          td.is-tp-dates {
+          border-left: 2.75pt solid #111 !important;
+        }
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-share
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-prof
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-order
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-share
+          td.is-tp-salles,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-prof
+          td.is-tp-salles,
+        .list-block.is-tp-page
+          .liste.has-tp-vlines
+          tbody
+          tr.is-tp-band-order
+          td.is-tp-salles {
+          border-left: 2.75pt solid #111 !important;
+        }
         .sheet.design-bandeau .list-block.is-tp-page td.is-tp-label,
         .sheet.design-bandeau .list-block.is-tp-page tr.is-tp-section td {
           background: var(--d-head, var(--d-accent)) !important;
@@ -5869,6 +6021,10 @@
               <label class="check-row">
                 <input type="checkbox" id="optVlines" checked />
                 Traits de séparation verticaux
+              </label>
+              <label class="check-row" id="optTpVlinesWrap" hidden>
+                <input type="checkbox" id="optTpVlines" />
+                Traits de séparation verticaux visibles
               </label>
               <label class="check-row" id="optTpInnerWrap" hidden>
                 <input type="checkbox" id="optTpInner" checked />
@@ -7328,6 +7484,7 @@
         sharedCols: [],
         editFrame: "tirets",
         tpInner: true,
+        tpVlines: false,
         tabs: [{ id: 1, name: "Onglet 1" }],
         activeTabId: 1,
         panelMode: "liste",
@@ -8545,9 +8702,24 @@
         return true;
       }
 
+      function normalizeTpVlines(v) {
+        if (v === true || v === 1 || v === "1" || v === "on" || v === "true")
+          return true;
+        return false;
+      }
+
       function persistTpInner() {
         try {
           localStorage.setItem("epicsv-tp-inner", state.tpInner ? "1" : "0");
+        } catch (_) {}
+      }
+
+      function persistTpVlines() {
+        try {
+          localStorage.setItem(
+            "epicsv-tp-vlines",
+            state.tpVlines ? "1" : "0",
+          );
         } catch (_) {}
       }
 
@@ -8560,7 +8732,17 @@
         return true;
       }
 
+      function readStoredTpVlines() {
+        try {
+          const v = localStorage.getItem("epicsv-tp-vlines");
+          if (v === "1") return true;
+          if (v === "0") return false;
+        } catch (_) {}
+        return false;
+      }
+
       state.tpInner = readStoredTpInner();
+      state.tpVlines = readStoredTpVlines();
 
       function syncEditFrame() {
         const v = normalizeEditFrame(state.editFrame);
@@ -10788,7 +10970,7 @@
       function progMatCell(list, ri, ci) {
         if (!isProgList(list) || !Number.isInteger(ri) || !Number.isInteger(ci))
           return false;
-        if (ri < 1) return false;
+        if (ri < 2) return false;
         return ci === progMatCol(list);
       }
 
@@ -11925,11 +12107,12 @@
       }
 
       function progMerges() {
+        const titleCs = Math.max(1, PROG_HEADERS.length - PROG_BANNER_META_CS);
         const out = [
-          { r: 0, c: 0, rs: 1, cs: 3 },
-          { r: 0, c: 3, rs: 1, cs: 7 },
+          { r: 0, c: 0, rs: 1, cs: PROG_BANNER_META_CS },
+          { r: 0, c: PROG_BANNER_TITLE_CI, rs: 1, cs: titleCs },
         ];
-        let ri = 1;
+        let ri = 2;
         PROG_PERIODS.forEach((p) => {
           out.push({ r: ri, c: 0, rs: p.n, cs: 1 });
           ri += p.n;
@@ -11956,11 +12139,10 @@
           return row;
         };
         const banner = cell();
-        banner[0] = [tp.matiere, tp.niveau, tp.partie]
-          .filter(Boolean)
-          .join(" · ");
-        banner[3] = titre;
+        banner[0] = [tp.matiere, tp.partie].filter(Boolean).join(" · ");
+        banner[PROG_BANNER_TITLE_CI] = titre;
         rows.push(banner);
+        rows.push(PROG_HEADERS.slice());
         let num = 1;
         PROG_PERIODS.forEach((p) => {
           for (let i = 0; i < p.n; i++) {
@@ -11971,9 +12153,9 @@
             num += 1;
           }
         });
-        while (rows.length < 1 + n) {
+        while (rows.length < 2 + n) {
           const row = cell();
-          row[1] = String(rows.length);
+          row[1] = String(rows.length - 1);
           rows.push(row);
         }
         list.rows = rows;
@@ -11992,8 +12174,7 @@
             5: "center",
             6: "left",
             7: "left",
-            8: "center",
-            9: "left",
+            8: "left",
           },
           list.colAlignH || {},
         );
@@ -12008,12 +12189,11 @@
             6: "middle",
             7: "middle",
             8: "middle",
-            9: "middle",
           },
           list.colAlignV || {},
         );
         setCellAlign(list, 0, 0, "h", "center");
-        setCellAlign(list, 0, 3, "h", "center");
+        setCellAlign(list, 0, PROG_BANNER_TITLE_CI, "h", "center");
       }
 
       function fitProgSheet(list, opts) {
@@ -12049,10 +12229,13 @@
             PROG_TITLE_DEFAULT
           ).trim() || PROG_TITLE_DEFAULT;
         while (list.rows[0].length < PROG_HEADERS.length) list.rows[0].push("");
-        list.rows[0][0] = [tp.matiere, tp.niveau, tp.partie]
-          .filter(Boolean)
-          .join(" · ");
-        list.rows[0][3] = titre;
+        list.rows[0][0] = [tp.matiere, tp.partie].filter(Boolean).join(" · ");
+        list.rows[0][PROG_BANNER_TITLE_CI] = titre;
+        if (!list.rows[1]) list.rows[1] = PROG_HEADERS.slice();
+        while (list.rows[1].length < PROG_HEADERS.length) list.rows[1].push("");
+        (list.headers || PROG_HEADERS).forEach((h, i) => {
+          list.rows[1][i] = h;
+        });
         if (!Array.isArray(list.titles) || !list.titles.length)
           list.titles = [titre];
         else list.titles[0] = titre;
@@ -12097,7 +12280,7 @@
           list.headers.length !== PROG_HEADERS.length
         )
           return false;
-        return (list.rows || []).length >= 2;
+        return (list.rows || []).length >= 3;
       }
 
       function ensureProgTable(list, opts) {
@@ -12161,9 +12344,10 @@
       function progLabelKind(list, ri, ci) {
         if (!isProgList(list)) return "";
         if (ri === 0 && ci === 0) return "banner";
-        if (ri === 0 && ci === 3) return "titre";
-        if (ri >= 1 && ci === 0) return "periode";
-        if (ri >= 1 && ci === 5) return "support";
+        if (ri === 0 && ci === PROG_BANNER_TITLE_CI) return "titre";
+        if (ri === 1) return "colnames";
+        if (ri >= 2 && ci === 0) return "periode";
+        if (ri >= 2 && ci === 5) return "support";
         return "";
       }
 
@@ -12181,7 +12365,22 @@
         if (kind === "banner") {
           return (
             '<span class="tp-struct">' +
-            tpChipHtml(list, "matiere", "Matière", tp.matiere) +
+            tpChipHtml(list, "matiere", "Discipline", tp.matiere) +
+            tpChipHtml(list, "partie", "Partie", tp.partie, "Partie") +
+            "</span>"
+          );
+        }
+        if (kind === "titre") {
+          return (
+            '<span class="tp-struct tp-struct-prog-title">' +
+            cellEditHtml(
+              text || PROG_TITLE_DEFAULT,
+              list.id,
+              ri,
+              ci,
+              list,
+              freeze,
+            ) +
             tpChipHtml(
               list,
               "niveau",
@@ -12189,8 +12388,17 @@
               tp.niveau || "Niveau",
               "Niveau",
             ) +
-            tpChipHtml(list, "partie", "Partie", tp.partie, "Partie") +
             "</span>"
+          );
+        }
+        if (kind === "colnames") {
+          const lab =
+            (list.headers && list.headers[ci]) ||
+            PROG_HEADERS[ci] ||
+            text ||
+            "";
+          return (
+            '<span class="prog-col-lab">' + escapeHtml(lab) + "</span>"
           );
         }
         if (kind === "periode") {
@@ -12222,8 +12430,13 @@
         const next = {};
         const head = vis[0];
         next[head] = 11;
-        const body = vis.slice(1);
-        const leftover = Math.max(body.length * 3.2, avail - next[head]);
+        const colHead = vis.length > 1 ? vis[1] : -1;
+        if (colHead >= 0) next[colHead] = 7.5;
+        const body = vis.slice(colHead >= 0 ? 2 : 1);
+        const leftover = Math.max(
+          body.length * 3.2,
+          avail - next[head] - (colHead >= 0 ? next[colHead] : 0),
+        );
         const per = body.length ? leftover / body.length : 8;
         body.forEach((ri) => {
           next[ri] = clampTpRowMm(per);
@@ -12958,7 +13171,7 @@
       function renumberProgSeances(list) {
         if (!isProgList(list) || !list.rows) return;
         let num = 1;
-        for (let ri = 1; ri < list.rows.length; ri++) {
+        for (let ri = 2; ri < list.rows.length; ri++) {
           const row = list.rows[ri];
           if (!row) continue;
           while (row.length < (list.headers || []).length) row.push("");
@@ -13957,9 +14170,10 @@
               '%">';
         });
         const tpForm = isTpForm(list);
+        const prog = isProgList(list);
         html +=
           "</colgroup><thead" +
-          (tpForm ? ' class="is-tp-ghost"' : "") +
+          (tpForm || prog ? ' class="is-tp-ghost"' : "") +
           "><tr>";
         if (showNum)
           html +=
@@ -14003,7 +14217,7 @@
               "</span>";
             html +=
               '<span class="tp-head-split"><span class="tp-poste-label">Poste</span><span></span></span></span>';
-          } else if (!tpForm) {
+          } else if (!tpForm && !prog) {
             html +=
               '<span class="th-edit" contenteditable="' +
               (canWriteCells() ? "true" : "false") +
@@ -14015,7 +14229,7 @@
               escapeHtml(list.headers[col.i]) +
               "</span>";
           }
-          if (!tpForm && list.custom[col.i]) {
+          if (!tpForm && !prog && list.custom[col.i]) {
             html +=
               '<button type="button" class="col-del no-print" data-del-col="' +
               list.id +
@@ -14186,10 +14400,10 @@
             }
             if (shareTotal) cls.push("is-tp-total");
             if (matCell) cls.push("is-tp-mat");
-            if (isProgList(list) && contentRi === 0) cls.push("is-tp-label");
+            if (isProgList(list) && contentRi <= 1) cls.push("is-tp-label");
             if (
               isProgList(list) &&
-              contentRi >= 1 &&
+              contentRi >= 2 &&
               contentCi !== 0 &&
               !matCell
             ) {
@@ -14404,7 +14618,7 @@
             while (list.rows[ri].length <= ci) list.rows[ri].push("");
             list.rows[ri][ci] = v;
             if (trim && el.textContent !== v) el.textContent = v;
-            if (ri === 0 && ci === 3) {
+            if (ri === 0 && ci === PROG_BANNER_TITLE_CI) {
               if (!Array.isArray(list.titles) || !list.titles.length)
                 list.titles = [""];
               list.titles[0] = v;
@@ -18013,7 +18227,7 @@
       }
 
       async function createPresetModel(kind) {
-        if (kind === "prog") await placeAndCreateSheet("prog", 10, 17);
+        if (kind === "prog") await placeAndCreateSheet("prog", 9, 17);
         else await placeAndCreateSheet("tp", 5, 22);
       }
 
