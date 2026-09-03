@@ -334,8 +334,7 @@
       .fold-panel[hidden],
       #customizeFoldWrap[hidden],
       #modeFoldWrap[hidden],
-      #selFoldWrap[hidden],
-      #infoBlock[hidden] {
+      #selFoldWrap[hidden] {
         display: none !important;
       }
 
@@ -1178,12 +1177,6 @@
         margin: 0;
         accent-color: var(--seal);
         cursor: pointer;
-      }
-      .page-apply-hint {
-        margin: 8px 0 0;
-        font-size: 12px;
-        line-height: 1.4;
-        color: rgba(255, 255, 255, 0.78);
       }
       .page-row {
         display: grid;
@@ -5122,6 +5115,13 @@
         text-transform: uppercase;
         color: var(--cream-dim);
       }
+      #displayBlock > .opt-label.cartouche-head,
+      #typoBlock > .opt-label.cartouche-head {
+        text-align: center;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        margin-bottom: 10px;
+      }
       .font-row {
         display: flex;
         align-items: center;
@@ -5159,6 +5159,11 @@
         font-style: italic;
         font-weight: 600;
       }
+      .fmt-btn .fmt-u {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        font-weight: 700;
+      }
       .fmt-btn[aria-pressed="true"] {
         outline: 2px solid var(--seal);
         outline-offset: 1px;
@@ -5166,9 +5171,6 @@
       }
       .fmt-btn:hover {
         background: rgba(255, 255, 255, 0.34);
-      }
-      .files-typo .fluo-row {
-        margin-top: 2px;
       }
       .cell-edit b,
       .cell-edit strong,
@@ -5181,6 +5183,11 @@
       .rq-note i,
       .rq-note em {
         font-style: italic;
+      }
+      .cell-edit u,
+      .rq-note u,
+      .th-edit u {
+        text-decoration: underline;
       }
       .font-col {
         display: flex;
@@ -6936,11 +6943,6 @@
 
             <section class="block" id="titlesBlock" hidden>
               <h2>Titre</h2>
-              <p
-                class="hint-note page-apply-hint"
-                id="titlesApplyHint"
-                hidden
-              ></p>
               <div id="titleList"></div>
               <h2 class="follow">Commentaire</h2>
               <div id="commentList"></div>
@@ -6958,7 +6960,66 @@
               </div>
             </section>
 
-            <section class="block" id="infoBlock" hidden>
+
+            <div class="files-group files-export">
+            <section class="block" id="displayBlock">
+              <div class="opt-label cartouche-head" style="margin-top: 0">Design tableau</div>
+              <div class="seg">
+                <label
+                  ><input
+                    type="radio"
+                    name="design"
+                    value="registre"
+                    checked
+                  /><span>Registre</span></label
+                >
+                <label
+                  ><input type="radio" name="design" value="classique" /><span
+                    >Classique</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="design" value="bandeau" /><span
+                    >Bandeau</span
+                  ></label
+                >
+              </div>
+              <div class="opt-label" id="customizeSecColors">Couleur</div>
+              <div class="seg tall">
+                <label
+                  ><input
+                    type="radio"
+                    name="palette"
+                    value="teal"
+                    checked
+                  /><span>Lagon</span></label
+                >
+                <label
+                  ><input type="radio" name="palette" value="marine" /><span
+                    >Marine</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="palette" value="carmin" /><span
+                    >Carmin</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="palette" value="safran" /><span
+                    >Safran</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="palette" value="foret" /><span
+                    >Forêt</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="palette" value="prune" /><span
+                    >Prune</span
+                  ></label
+                >
+              </div>
               <div
                 class="fluo-row"
                 id="fluoRow"
@@ -7122,92 +7183,7 @@
                   Affichage légende des pastilles
                 </label>
               </div>
-              <div class="notes-line">
-                <label class="check-row">
-                  <input type="checkbox" id="optNotes" />
-                  Colonne remarques (Rq.)
-                </label>
-                <div class="notes-pos" id="notesPosWrap" hidden>
-                  <span>Gauche</span>
-                  <input
-                    type="range"
-                    id="notesPos"
-                    min="0"
-                    max="1"
-                    step="1"
-                    value="1"
-                    aria-label="Position de la colonne Rq. : gauche ou droite"
-                  />
-                  <span>Droite</span>
-                </div>
-              </div>
-            </section>
-
-            <div class="files-group files-export">
-            <section class="block" id="displayBlock">
-              <div class="opt-label" style="margin-top: 0">Design</div>
-              <div class="seg">
-                <label
-                  ><input
-                    type="radio"
-                    name="design"
-                    value="registre"
-                    checked
-                  /><span>Registre</span></label
-                >
-                <label
-                  ><input type="radio" name="design" value="classique" /><span
-                    >Classique</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="design" value="bandeau" /><span
-                    >Bandeau</span
-                  ></label
-                >
-              </div>
-              <p
-                class="hint-note page-apply-hint"
-                id="displayApplyHint"
-                hidden
-              ></p>
-              <div class="opt-label" id="customizeSecColors">Couleur</div>
-              <div class="seg tall">
-                <label
-                  ><input
-                    type="radio"
-                    name="palette"
-                    value="teal"
-                    checked
-                  /><span>Lagon</span></label
-                >
-                <label
-                  ><input type="radio" name="palette" value="marine" /><span
-                    >Marine</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="palette" value="carmin" /><span
-                    >Carmin</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="palette" value="safran" /><span
-                    >Safran</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="palette" value="foret" /><span
-                    >Forêt</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="palette" value="prune" /><span
-                    >Prune</span
-                  ></label
-                >
-              </div>
-              <div class="opt-label" style="margin-top:8px">TABLEAU <button type="button" id="colsAdjustToggle" class="btn-hint-toggle" aria-label="Afficher/masquer les conseils d'ajustement" title="Conseils d'ajustement">?</button></div>
+              <div class="opt-label" style="margin-top:8px">ASTUCES <button type="button" id="colsAdjustToggle" class="btn-hint-toggle" aria-label="Afficher/masquer les conseils d'ajustement" title="Conseils d'ajustement">?</button></div>
               <div class="hint-callout" id="colsAdjustCallout" hidden>
                 <p>
                   Glissez un en-tête pour réordonner, le bord d’une colonne
@@ -7283,7 +7259,7 @@
             </div>
             <div class="files-group files-typo" id="customizeSecTypo">
             <section class="block" id="typoBlock">
-              <div class="opt-label" style="margin-top: 0">Typographie</div>
+              <div class="opt-label cartouche-head" style="margin-top: 0">Typographie</div>
               <div class="opt-label">Police</div>
               <select
                 id="sheetFont"
@@ -7421,7 +7397,7 @@
                 <strong id="fontPtVal">9,5 pt</strong>
               </div>
               <div class="opt-label">Mise en forme</div>
-              <div class="fmt-tools" role="group" aria-label="Gras et italique">
+              <div class="fmt-tools" role="group" aria-label="Gras, italique et souligné">
                 <button
                   type="button"
                   class="fmt-btn"
@@ -7444,92 +7420,21 @@
                 >
                   <em>I</em>
                 </button>
-              </div>
-              <div class="opt-label">Surligner</div>
-              <div
-                class="fluo-row"
-                id="fluoRowTypo"
-                role="group"
-                aria-label="Surligneurs"
-                title="Clic : toute la case. Double-clic sur le texte : fluo du texte seulement."
-              >
                 <button
                   type="button"
-                  class="fluo"
-                  data-fluo="rouge"
-                  aria-label="Surligneur rouge"
+                  class="fmt-btn"
+                  id="typoUnderline"
+                  data-fmt="underline"
                   aria-pressed="false"
-                  title="Fluo rouge. Clic : case. Double-clic : texte."
-                  style="background: #f5c4c0"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="jaune"
-                  aria-label="Surligneur jaune"
-                  aria-pressed="false"
-                  title="Fluo jaune. Clic : case. Double-clic : texte."
-                  style="background: #ffe9a3"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="vert"
-                  aria-label="Surligneur vert"
-                  aria-pressed="false"
-                  title="Fluo vert. Clic : case. Double-clic : texte."
-                  style="background: #c9ebc4"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="turquoise"
-                  aria-label="Surligneur turquoise"
-                  aria-pressed="false"
-                  title="Fluo turquoise. Clic : case. Double-clic : texte."
-                  style="background: #A7E8D8"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="bleu"
-                  aria-label="Surligneur bleu"
-                  aria-pressed="false"
-                  title="Fluo bleu. Clic : case. Double-clic : texte."
-                  style="background: #B3D9FF"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="violet"
-                  aria-label="Surligneur violet"
-                  aria-pressed="false"
-                  title="Fluo violet. Clic : case. Double-clic : texte."
-                  style="background: #D1C4E9"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="lavande"
-                  aria-label="Surligneur lavande"
-                  aria-pressed="false"
-                  title="Fluo lavande. Clic : case. Double-clic : texte."
-                  style="background: #C5CAE9"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="rose"
-                  aria-label="Surligneur rose"
-                  aria-pressed="false"
-                  title="Fluo rose. Clic : case. Double-clic : texte."
-                  style="background: #f5c9d6"
-                ></button>
+                  title="Souligner (sélection dans une cellule)"
+                  aria-label="Souligner"
+                >
+                  <span class="fmt-u">S</span>
+                </button>
               </div>
               <p class="hint-note" style="margin: 8px 0 0">
-                Gras et italique s’appliquent au texte sélectionné dans une
-                cellule. Les pastilles fluo activent le surligneur (comme dans
-                Infos).
+                Gras, italique et souligné s’appliquent au texte sélectionné
+                dans une cellule.
               </p>
             </section>
             </div>
@@ -8169,7 +8074,7 @@
           >
           <label
             ><input type="checkbox" id="stInfo" checked /><span
-              >Informations<small>Pastilles, légende, colonne Rq.</small></span
+              >Informations<small>Pastilles, légende</small></span
             ></label
           >
           <label
@@ -15290,7 +15195,8 @@
       }
 
       function applyInlineFmt(cmd) {
-        const tag = cmd === "italic" ? "i" : "b";
+        const tag =
+          cmd === "italic" ? "i" : cmd === "underline" ? "u" : "b";
         const el = editableFocusEl();
         if (el && el.isContentEditable) {
           try {
@@ -15465,7 +15371,7 @@
       }
 
       function showRemarks() {
-        return Boolean(state.showNotes);
+        return false;
       }
 
       function droppableTh(e) {
@@ -18541,32 +18447,6 @@
         return wrap;
       }
 
-      function pageApplyLabel() {
-        const n = checkedLists().length;
-        const total = state.lists.length;
-        if (!total) return "";
-        if (!n)
-          return "Aucune page cochée — ces réglages ne s’appliquent à rien.";
-        if (n === total)
-          return total === 1
-            ? "S’applique à la page de cet onglet."
-            : "S’applique à toutes les pages de cet onglet.";
-        if (n === 1) return "S’applique à la page cochée.";
-        return "S’applique aux " + n + " pages cochées.";
-      }
-
-      function syncPageApplyHints() {
-        const text = pageApplyLabel();
-        ["titlesApplyHint", "displayApplyHint"].forEach(
-          (id) => {
-            const el = $(id);
-            if (!el) return;
-            el.hidden = !state.lists.length;
-            el.textContent = text;
-          },
-        );
-      }
-
       function syncPageScopeUI() {
         const chips = $("chips");
         const scopeSeg = $("pageScopeSeg");
@@ -18601,7 +18481,6 @@
         const n = checkedLists().length;
         const total = state.lists.length;
         syncAllPagesCheck();
-        syncPageApplyHints();
         if (!hint) return;
         if (!total || hint.hidden) return;
         if (n <= 0)
@@ -19424,8 +19303,6 @@
         const on = state.lists.length > 0;
         const customizeWrap = $("customizeFoldWrap");
         if (customizeWrap) customizeWrap.hidden = !on;
-        const infoBlock = $("infoBlock");
-        if (infoBlock) infoBlock.hidden = !on;
         applySheetFont(state.sheetFont);
         if (!on) return;
         $("optVlines").checked = state.vlines;
@@ -19439,9 +19316,6 @@
         if (tpInnerWrap) tpInnerWrap.hidden = !hasTp;
         if (tpInnerEl) tpInnerEl.checked = state.tpInner !== false;
         $("optBadges").checked = state.showBadges;
-        $("optNotes").checked = state.showNotes;
-        $("notesPosWrap").hidden = !state.showNotes;
-        $("notesPos").value = rqPlacement(activeList()) === "left" ? "0" : "1";
         $("optLegend").checked = state.legend;
         $("badgeWrap").hidden = !state.showBadges;
         syncEditFrame();
@@ -21078,7 +20952,7 @@
           applySheetFont(sheetFontSel.value);
         });
       }
-      ["typoBold", "typoItalic", "selBold", "selItalic"].forEach((id) => {
+      ["typoBold", "typoItalic", "typoUnderline", "selBold", "selItalic"].forEach((id) => {
         const btn = $(id);
         if (!btn) return;
         btn.addEventListener("mousedown", (e) => e.preventDefault());
@@ -21126,22 +21000,6 @@
           renderBadgeTypes();
           renderPreview();
         });
-      });
-      $("optNotes").addEventListener("change", () => {
-        pushHist();
-        state.showNotes = $("optNotes").checked;
-        if (state.showNotes) {
-          const pos = state.notesPos === "left" ? "left" : "right";
-          state.lists.forEach((l) => ensureRqOrder(l, pos));
-        }
-        renderAll();
-      });
-      $("notesPos").addEventListener("pointerdown", pushHist);
-      $("notesPos").addEventListener("input", () => {
-        state.notesPos = $("notesPos").value === "0" ? "left" : "right";
-        state.lists.forEach((l) => placeRqInOrder(l, state.notesPos));
-        renderCols();
-        renderPreview();
       });
       document.querySelectorAll('input[name="num"]').forEach((el) => {
         el.addEventListener("change", () => {
