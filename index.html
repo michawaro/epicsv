@@ -3248,6 +3248,32 @@
         pointer-events: none;
         border-top: 2px dashed #c45c4a;
       }
+      .sheet-cut-btn {
+        position: absolute;
+        left: 8px;
+        top: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: #c45c4a;
+        color: #fff;
+        cursor: pointer;
+        pointer-events: auto;
+        box-shadow: 0 2px 8px rgba(196, 92, 74, 0.35);
+      }
+      .sheet-cut-btn:hover {
+        background: #b04f3f;
+      }
+      .sheet-cut-btn svg {
+        width: 17px;
+        height: 17px;
+        display: block;
+      }
       .sheet-limit span {
         position: absolute;
         right: 8px;
@@ -8953,6 +8979,13 @@
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.8" width="10.2" height="14.4" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"/></svg>';
       const COMBO_SWAP_SVG =
         '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7.2 8.2h9.2M14.2 5.4l2.8 2.8-2.8 2.8M16.8 15.8H7.6M9.8 13l-2.8 2.8 2.8 2.8"/></svg>';
+      const SHEET_CUT_SVG =
+        '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+        '<circle cx="6" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>' +
+        '<circle cx="6" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>' +
+        '<path d="M8.5 7.5L20 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+        '<path d="M8.5 16.5L17 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+        "</svg>";
       const MATERIEL_CATALOG = [
         {
           id: "1",
@@ -14852,6 +14885,7 @@
         list.posY = Number.isFinite(py) ? Math.round(py * 100) / 100 : 0;
         const fs = Number(raw.fontScale);
         if (fs > 0) list.fontScale = fs;
+        if (raw.pageBreakBefore) list.pageBreakBefore = true;
         return list;
       }
 
@@ -17194,11 +17228,11 @@
           : sheetCaption(lay.orient, lay.marge);
         if (label)
           label.textContent = over
-            ? cap + " · dépasse la feuille · clic pour ajuster"
+            ? cap + " · dépasse la feuille · ciseaux ou clic pour ajuster"
             : cap;
         else
           hud.textContent = over
-            ? cap + " · dépasse la feuille · clic pour ajuster"
+            ? cap + " · dépasse la feuille · ciseaux ou clic pour ajuster"
             : cap;
         syncPageOrientToggle(lay.orient);
         syncPageSendToggle();
@@ -19034,6 +19068,7 @@
           }
         };
         state.lists.forEach((l) => {
+          if (l.pageBreakBefore) flush();
           if (isBlankList(l) || isSheetForm(l) || !selectedCols(l).length) {
             flush();
             groups.push([l]);
@@ -19107,7 +19142,10 @@
           const limit = document.createElement("div");
           limit.className = "sheet-limit no-print";
           limit.setAttribute("aria-hidden", "true");
-          limit.innerHTML = "<span>Limite A4</span>";
+          limit.innerHTML =
+            '<button type="button" class="sheet-cut-btn no-print" title="Couper ici : le surplus passe à la page suivante de cet onglet" aria-label="Couper ici : le surplus passe à la page suivante">' +
+            SHEET_CUT_SVG +
+            "</button><span>Limite A4</span>";
           if (!combining() && group.length === 1 && group[0]) {
             hold.appendChild(makeSheetOrientToggle(group[0], lay.orient));
           } else if (group.length === 2) {
@@ -19247,6 +19285,196 @@
         });
         markTpSized(list);
         renderPreview();
+        return true;
+      }
+
+      function sheetInnerBottomPx(sheet) {
+        if (!sheet) return 0;
+        const scale = stageScale() || 1;
+        const sheetRect = sheet.getBoundingClientRect();
+        const cs = getComputedStyle(sheet);
+        return (
+          sheetRect.bottom - (parseFloat(cs.paddingBottom) || 0) * scale
+        );
+      }
+
+      function mergeSpansRow(list, ri) {
+        return (list.merges || []).some(
+          (m) => m.r < ri && m.r + m.rs > ri,
+        );
+      }
+
+      function adjustCutRowForMerges(list, cutRow) {
+        let c = cutRow;
+        while (c < list.rows.length && mergeSpansRow(list, c)) c++;
+        if (c >= list.rows.length) return -1;
+        return c;
+      }
+
+      function findListCutRow(list, block) {
+        if (!list || !block || !Array.isArray(list.rows) || !list.rows.length)
+          return -1;
+        const sheet = block.closest(".sheet");
+        const table = block.querySelector("table.liste tbody");
+        if (!sheet || !table) return -1;
+        const innerBottom = sheetInnerBottomPx(sheet);
+        if (!innerBottom) return -1;
+        let lastFitRi = -1;
+        table.querySelectorAll("tr[data-ri]").forEach((tr) => {
+          const ri = Number(tr.getAttribute("data-ri"));
+          if (!Number.isInteger(ri) || ri < 0) return;
+          if (tr.getBoundingClientRect().bottom <= innerBottom + 2)
+            lastFitRi = ri;
+        });
+        if (lastFitRi < 0) return -1;
+        const cutRow = adjustCutRowForMerges(list, lastFitRi + 1);
+        if (cutRow < 1 || cutRow >= list.rows.length) return -1;
+        return cutRow;
+      }
+
+      function extractBagFromRow(bag, cutRow) {
+        const keep = {};
+        const tail = {};
+        if (!bag) return { keep: keep, tail: tail };
+        Object.keys(bag).forEach((k) => {
+          const i = Number(k);
+          if (!Number.isInteger(i)) {
+            keep[k] = bag[k];
+            return;
+          }
+          if (i >= cutRow) tail[i - cutRow] = bag[k];
+          else keep[i] = bag[k];
+        });
+        return { keep: keep, tail: tail };
+      }
+
+      function extractHlBagFromRow(bag, cutRow) {
+        const keep = {};
+        const tail = {};
+        if (!bag) return { keep: keep, tail: tail };
+        Object.keys(bag).forEach((k) => {
+          const parts = String(k).split(":");
+          const i = Number(parts[0]);
+          const rest = parts.slice(1).join(":");
+          if (!Number.isInteger(i)) {
+            keep[k] = bag[k];
+            return;
+          }
+          if (i >= cutRow) tail[i - cutRow + ":" + rest] = bag[k];
+          else keep[k] = bag[k];
+        });
+        return { keep: keep, tail: tail };
+      }
+
+      function splitMergesAtRow(merges, cutRow) {
+        const keep = [];
+        const tail = [];
+        (merges || []).forEach((m) => {
+          const end = m.r + m.rs;
+          if (end <= cutRow) {
+            keep.push({ r: m.r, c: m.c, rs: m.rs, cs: m.cs });
+          } else if (m.r >= cutRow) {
+            tail.push({
+              r: m.r - cutRow,
+              c: m.c,
+              rs: m.rs,
+              cs: m.cs,
+            });
+          } else {
+            const topRs = cutRow - m.r;
+            const botRs = end - cutRow;
+            if (topRs >= 1)
+              keep.push({ r: m.r, c: m.c, rs: topRs, cs: m.cs });
+            if (botRs >= 1)
+              tail.push({ r: 0, c: m.c, rs: botRs, cs: m.cs });
+          }
+        });
+        return {
+          keep: normalizeMerges(keep),
+          tail: normalizeMerges(tail),
+        };
+      }
+
+      function splitPageName(name) {
+        const base = String(name || "Page").replace(/ \(suite(?: \d+)?\)$/i, "");
+        const used = new Set(state.lists.map((l) => l.name));
+        let candidate = base + " (suite)";
+        let n = 2;
+        while (used.has(candidate)) {
+          candidate = base + " (suite " + n + ")";
+          n++;
+        }
+        return candidate;
+      }
+
+      function splitListAtRow(list, cutRow) {
+        if (!list || !Array.isArray(list.rows)) return null;
+        const n = list.rows.length;
+        if (cutRow < 1 || cutRow >= n) return null;
+        const tailList = hydrateList(serializeList(list));
+        tailList.id = nextId++;
+        tailList.rows = list.rows.slice(cutRow);
+        ["hidden", "notes", "marks", "rowH"].forEach((name) => {
+          const ex = extractBagFromRow(list[name], cutRow);
+          list[name] = ex.keep;
+          tailList[name] = ex.tail;
+        });
+        ["hl", "hlText", "alignH", "alignV"].forEach((name) => {
+          const ex = extractHlBagFromRow(list[name], cutRow);
+          list[name] = ex.keep;
+          tailList[name] = ex.tail;
+        });
+        const parts = splitMergesAtRow(list.merges, cutRow);
+        list.merges = parts.keep;
+        tailList.merges = parts.tail;
+        list.rows = list.rows.slice(0, cutRow);
+        tailList.name = splitPageName(list.name);
+        tailList.pageBreakBefore = true;
+        tailList.orient = listOrient(list);
+        return tailList;
+      }
+
+      function cutSheetOverflow(frame) {
+        if (!frame || !frame.classList.contains("is-overflow")) return false;
+        flushPreviewEditsFromDom({ onlyActive: true });
+        const cuts = [];
+        frame.querySelectorAll(".list-block[data-lid]").forEach((block) => {
+          const lid = Number(block.dataset.lid);
+          const list = state.lists.find((l) => l && l.id === lid);
+          if (
+            !list ||
+            isBlankList(list) ||
+            isSheetForm(list) ||
+            listBlockOverflowPx(block) < 4
+          )
+            return;
+          const cutRow = findListCutRow(list, block);
+          if (cutRow < 1) return;
+          const idx = state.lists.findIndex((l) => l && l.id === list.id);
+          if (idx < 0) return;
+          cuts.push({ idx: idx, list: list, cutRow: cutRow });
+        });
+        if (!cuts.length) return false;
+        pushHist();
+        let activeTail = null;
+        cuts
+          .sort((a, b) => b.idx - a.idx)
+          .forEach((cut) => {
+            const tail = splitListAtRow(cut.list, cut.cutRow);
+            if (!tail) return;
+            state.lists.splice(cut.idx + 1, 0, tail);
+            pinSamePageOrients(cut.list, [tail]);
+            activeTail = tail;
+          });
+        if (activeTail) {
+          state.activeId = activeTail.id;
+          state.selectedIds = [activeTail.id];
+        } else {
+          discardLastHist();
+          return false;
+        }
+        dirty = true;
+        renderAll();
         return true;
       }
 
@@ -21591,6 +21819,7 @@
           tpSized: Boolean(l.tpSized),
           tpFitted: Boolean(l.tpFitted),
           tpAlignReady: Boolean(l.tpAlignReady),
+          pageBreakBefore: Boolean(l.pageBreakBefore),
         };
       }
 
@@ -21732,6 +21961,7 @@
         state.tabs = incoming;
         state.activeTabId = wanted.id;
         applyTabPack(wanted, { render: false });
+        if (s.combineAsked != null) state.combineAsked = Boolean(s.combineAsked);
         if (state.showNotes) {
           const pos = state.notesPos === "left" ? "left" : "right";
           state.lists.forEach((l) => ensureRqOrder(l, pos));
@@ -21766,6 +21996,7 @@
             marge: state.marge,
             orient: state.orient,
             combine: state.combine,
+            combineAsked: state.combineAsked,
             vlines: state.vlines,
             numbering: state.numbering,
             numberFrom: state.numberFrom,
@@ -25339,6 +25570,42 @@
             });
         });
       }
+
+      $("sheets").addEventListener("click", (e) => {
+        const btn = e.target.closest(".sheet-cut-btn");
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const frame = btn.closest(".sheet-frame");
+        if (!frame) return;
+        const blocks = frame.querySelectorAll(".list-block[data-lid]");
+        let blockedForm = false;
+        blocks.forEach((block) => {
+          const lid = Number(block.dataset.lid);
+          const list = state.lists.find((l) => l && l.id === lid);
+          if (
+            list &&
+            !isBlankList(list) &&
+            isSheetForm(list) &&
+            listBlockOverflowPx(block) > 3
+          )
+            blockedForm = true;
+        });
+        if (blockedForm) {
+          announce(
+            "Découpage indisponible sur les fiches TP / Progression : ajustez les hauteurs.",
+          );
+          return;
+        }
+        if (cutSheetOverflow(frame))
+          announce("Page découpée : la suite est sur la page suivante.", {
+            toast: true,
+          });
+        else
+          announce(
+            "Impossible de découper ici : pas assez de lignes au-dessus de la limite.",
+          );
+      });
 
       $("sampleBtn").addEventListener("click", () => {
         const used = new Set(state.lists.map((l) => l.name));
