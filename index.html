@@ -3145,25 +3145,11 @@
         border-top: var(--tp-inner);
         border-top-color: #111;
       }
-      /* Pas de filet horizontal Dates|Nb groupes|Salles entre enseignant / commander */
-      .list-block.is-tp-page
-        .liste.has-tp-inner
-        tbody
-        tr.is-tp-order-start
-        td.is-tp-dates,
-      .list-block.is-tp-page
-        .liste.has-tp-inner
-        tbody
-        tr.is-tp-order-start
-        td.is-tp-ngroups,
-      .list-block.is-tp-page
-        .liste.has-tp-inner
-        tbody
-        tr.is-tp-order-start
-        td.is-tp-salles {
-        border-top: 0;
-      }
       .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
+        border-bottom: var(--tp-inner);
+        border-bottom-color: #111;
+      }
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td {
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
@@ -3180,14 +3166,11 @@
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
-      /* Pas de filet vertical Matériel|Total dans la rangée d’en-tête teal */
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
         tr.is-tp-mat-head
-        td.is-tp-dates {
-        border-left: 0;
-      }
+        td.is-tp-dates,
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
@@ -5066,24 +5049,8 @@
           td {
           border-top: 1.65pt solid #111 !important;
         }
-        .list-block.is-tp-page
-          .liste.has-tp-inner
-          tbody
-          tr.is-tp-order-start
-          td.is-tp-dates,
-        .list-block.is-tp-page
-          .liste.has-tp-inner
-          tbody
-          tr.is-tp-order-start
-          td.is-tp-ngroups,
-        .list-block.is-tp-page
-          .liste.has-tp-inner
-          tbody
-          tr.is-tp-order-start
-          td.is-tp-salles {
-          border-top: 0 !important;
-        }
         .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td,
+        .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td,
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
@@ -5100,9 +5067,7 @@
           .liste.has-tp-inner
           tbody
           tr.is-tp-mat-head
-          td.is-tp-dates {
-          border-left: 0 !important;
-        }
+          td.is-tp-dates,
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
