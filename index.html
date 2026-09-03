@@ -1884,20 +1884,37 @@
         pointer-events: none;
       }
 
-      /* Sélecteur Liste / TP / Progression — accent prune, distinct du teal/citron */
+      /* Sélecteur Tableau / Liste / TP / Progression — accent prune, 4 modes sur une ligne */
       .seg.mode-seg {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        width: 100%;
         background: rgba(255, 255, 255, 0.24);
         border: 1.5px solid rgba(255, 255, 255, 0.38);
         box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
-        padding: 3px;
-        gap: 2px;
-        flex-wrap: nowrap;
+        padding: 2px;
+        gap: 1px;
       }
       .seg.mode-seg label {
-        font-size: 11px;
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        font-size: 10.5px;
         font-weight: 800;
-        padding: 7px 2px;
+        padding: 6px 3px;
         white-space: nowrap;
+      }
+      .seg.mode-seg label span {
+        white-space: nowrap;
+      }
+      #pageModeSeg {
+        gap: 0;
+        padding: 2px;
+      }
+      #pageModeSeg label {
+        font-size: 10px;
+        padding: 6px 2px;
       }
       .seg.mode-seg label:has(input:checked) {
         background: linear-gradient(
@@ -5442,6 +5459,14 @@
         }
         .seg label span {
           font-size: 11px;
+        }
+        #pageModeSeg label,
+        #pageModeSeg label span {
+          font-size: 10px;
+          white-space: nowrap;
+        }
+        #pageModeSeg label {
+          padding: 6px 2px;
         }
         .modal-back {
           padding: max(16px, env(safe-area-inset-top)) 12px
