@@ -4770,13 +4770,13 @@
         border-collapse: collapse;
         table-layout: fixed;
         font-family: var(--sheet-font);
-        font-size: var(--font-pt);
+        font-size: var(--list-font-pt, var(--font-pt));
         line-height: 1.28;
         color: var(--ink);
         overflow: visible;
       }
       .liste thead th {
-        font-size: var(--th-pt, var(--th-size, 7.4pt));
+        font-size: var(--list-th-pt, var(--th-pt, var(--th-size, 7.4pt)));
         font-weight: var(--th-weight, 800);
         letter-spacing: var(--th-track, 0.12em);
         text-transform: uppercase;
@@ -14825,6 +14825,8 @@
         const py = Number(raw.posY);
         list.posX = Number.isFinite(px) ? Math.round(px * 100) / 100 : 0;
         list.posY = Number.isFinite(py) ? Math.round(py * 100) / 100 : 0;
+        const fs = Number(raw.fontScale);
+        if (fs > 0) list.fontScale = fs;
         return list;
       }
 
@@ -16364,8 +16366,12 @@
           (isSheetForm(list) ? " is-tp" : "") +
           (isTpForm(list) && state.tpInner !== false ? " has-tp-inner" : "") +
           (state.tpVlines === true ? " has-tp-vlines" : "") +
-          '" style="font-size:' +
-          clampFontPt(state.fontPt) +
+          '" style="--list-font-pt:' +
+          listFontPt(list) +
+          "pt;--list-th-pt:" +
+          listThPt(list) +
+          "pt;font-size:" +
+          listFontPt(list) +
           'pt">';
         html += "<colgroup>";
         if (showNum) html += '<col class="col-num">';
@@ -17380,6 +17386,103 @@
             : 0.38;
       }
 
+      const LIST_FONT_SCALE_MIN = 0.45;
+      const LIST_FONT_SCALE_MAX = 1.35;
+      const ROW_EM_MIN = 0.04;
+      const ROW_EM_MAX = 2.4;
+
+      function listFontScale(list) {
+        const v = Number(list && list.fontScale);
+        return v > 0 ? v : 1;
+      }
+
+      function setListFontScale(list, scale) {
+        if (!list) return;
+        list.fontScale =
+          Math.round(
+            Math.max(
+              LIST_FONT_SCALE_MIN,
+              Math.min(LIST_FONT_SCALE_MAX, scale),
+            ) * 1000,
+          ) / 1000;
+      }
+
+      function listFontPt(list) {
+        return clampFontPt(state.fontPt * listFontScale(list));
+      }
+
+      function listThPt(list) {
+        return clampThPt(state.thPt * listFontScale(list));
+      }
+
+      function heightScaleBaseFromList(list) {
+        const rows = {};
+        visibleRowIndices(list).forEach((ri) => {
+          rows[ri] = tpUsesRowMm(list)
+            ? Number(list.rowH && list.rowH[ri]) > 0
+              ? Number(list.rowH[ri])
+              : 6
+            : rowEmOf(list, ri);
+        });
+        return { rows: rows, fontScale: listFontScale(list) };
+      }
+
+      function computeHeightFontMul(vis, rowsBase, fy, isMm) {
+        const min = isMm ? 3 : ROW_EM_MIN;
+        const max = isMm ? 48 : ROW_EM_MAX;
+        const def = isMm ? 6 : defaultRowEm();
+        let sumBase = 0;
+        let sumNew = 0;
+        vis.forEach((ri) => {
+          const b = rowsBase[ri] != null ? rowsBase[ri] : def;
+          sumBase += b;
+          sumNew += Math.max(min, Math.min(max, b * fy));
+        });
+        if (!(sumNew > 0)) return 1;
+        return (fy * sumBase) / sumNew;
+      }
+
+      function applyTableFontLive(table, fontScale) {
+        if (!table) return;
+        const fPt = clampFontPt(state.fontPt * fontScale);
+        const tPt = clampThPt(state.thPt * fontScale);
+        table.style.fontSize = fPt + "pt";
+        table.style.setProperty("--list-font-pt", fPt + "pt");
+        table.style.setProperty("--list-th-pt", tPt + "pt");
+      }
+
+      function applyListHeightScale(list, fy, base) {
+        if (!list || !(fy > 0)) return;
+        const vis = visibleRowIndices(list);
+        if (!vis.length) return;
+        if (!list.rowH) list.rowH = {};
+        const rowsBase = (base && base.rows) || {};
+        const baseScale = (base && base.fontScale) || listFontScale(list);
+        const tpMm = tpUsesRowMm(list);
+        if (tpMm) {
+          vis.forEach((ri) => {
+            const b =
+              rowsBase[ri] != null
+                ? rowsBase[ri]
+                : Number(list.rowH[ri]) > 0
+                  ? Number(list.rowH[ri])
+                  : 6;
+            list.rowH[ri] = clampTpRowMm(b * fy);
+          });
+          equalizeTpBandRowHeights(list);
+        } else {
+          vis.forEach((ri) => {
+            const b = rowsBase[ri] != null ? rowsBase[ri] : rowEmOf(list, ri);
+            list.rowH[ri] =
+              Math.round(
+                Math.max(ROW_EM_MIN, Math.min(ROW_EM_MAX, b * fy)) * 1000,
+              ) / 1000;
+          });
+        }
+        const fontMul = computeHeightFontMul(vis, rowsBase, fy, tpMm);
+        setListFontScale(list, baseScale * fontMul);
+      }
+
       function tableScaleTargets(list) {
         const sameKind = (l) =>
           !isBlankList(l) &&
@@ -17417,21 +17520,11 @@
             Math.round(Math.max(12, Math.min(400, tw * fx)) * 100) / 100;
         }
         if (scaleH && fy > 0) {
-          if (!list.rowH) list.rowH = {};
-          if (tpUsesRowMm(list)) {
-            visibleRowIndices(list).forEach((ri) => {
-              const cur = Number(list.rowH[ri]) > 0 ? Number(list.rowH[ri]) : 6;
-              list.rowH[ri] = clampTpRowMm(cur * fy);
-            });
-            equalizeTpBandRowHeights(list);
-          } else {
-            visibleRowIndices(list).forEach((ri) => {
-              const cur = rowEmOf(list, ri);
-              list.rowH[ri] =
-                Math.round(Math.max(0.04, Math.min(2.4, cur * fy)) * 1000) /
-                1000;
-            });
-          }
+          applyListHeightScale(
+            list,
+            fy,
+            (opts && opts.heightBase) || heightScaleBaseFromList(list),
+          );
         }
         if (
           isSheetForm(list) &&
@@ -19117,7 +19210,10 @@
         if (Math.abs(fy - 1) < 0.004) return false;
         pushHist();
         tableScaleTargets(list).forEach((lst) => {
-          scaleListFrame(lst, 1, fy, { scaleH: true });
+          scaleListFrame(lst, 1, fy, {
+            scaleH: true,
+            heightBase: heightScaleBaseFromList(lst),
+          });
         });
         markTpSized(list);
         renderPreview();
@@ -21449,6 +21545,10 @@
           tableW: Number(l.tableW) > 0 ? Number(l.tableW) : 100,
           posX: Number(l.posX) || 0,
           posY: Number(l.posY) || 0,
+          fontScale:
+            Number(l.fontScale) > 0 && Number(l.fontScale) !== 1
+              ? Number(l.fontScale)
+              : undefined,
           sample: Boolean(l.sample),
           blank: Boolean(l.blank) || (!l.headers.length && !l.rows.length),
           keepEmptyRows: Boolean(l.keepEmptyRows),
@@ -22622,6 +22722,14 @@
                 }
               });
             }
+            const vis = d.rows.map((r) => r.ri);
+            const fontMul = computeHeightFontMul(
+              vis,
+              d.heightBase.rows,
+              fy,
+              d.tpForm,
+            );
+            applyTableFontLive(d.table, d.heightBase.fontScale * fontMul);
             d.wrap.style.removeProperty("height");
             d.wrap.style.removeProperty("overflow");
             syncListeFrameSize(d.wrap);
@@ -22722,12 +22830,18 @@
               });
             }
             if (d.wrap) syncListeFrameSize(d.wrap);
+            if (d.table && d.heightBase)
+              applyTableFontLive(d.table, d.heightBase.fontScale);
             return;
           }
           tableScaleTargets(d.list).forEach((lst) => {
             scaleListFrame(lst, useW ? fx : 1, useH ? fy : 1, {
               scaleW: useW,
               scaleH: useH,
+              heightBase:
+                lst === d.list
+                  ? d.heightBase
+                  : heightScaleBaseFromList(lst),
             });
           });
           markTpSized(d.list);
@@ -22772,6 +22886,7 @@
             wrap: wrap,
             table: table,
             tpForm: tpForm,
+            heightBase: heightScaleBaseFromList(list),
             rows: visibleRowIndices(list).map((ri) => {
               const el = table.querySelector('tr[data-ri="' + ri + '"]');
               const mm = tpForm
