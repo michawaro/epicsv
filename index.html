@@ -2566,6 +2566,84 @@
         display: block;
       }
 
+      .action-toast {
+        position: fixed;
+        left: 50%;
+        bottom: max(18px, env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%) translateY(10px);
+        z-index: 130;
+        max-width: min(92vw, 360px);
+        padding: 8px 16px 8px 36px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.25;
+        color: #fff;
+        background: rgba(14, 143, 140, 0.95);
+        box-shadow:
+          0 4px 18px rgba(14, 143, 140, 0.32),
+          0 0 0 1px rgba(255, 255, 255, 0.22) inset;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.2s ease,
+          transform 0.2s ease;
+      }
+      .action-toast::before {
+        content: "✓";
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 900;
+        background: rgba(255, 255, 255, 0.22);
+      }
+      .action-toast.is-on {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .action-toast.is-save {
+        background: rgba(18, 118, 88, 0.96);
+        box-shadow:
+          0 4px 18px rgba(18, 118, 88, 0.32),
+          0 0 0 1px rgba(255, 255, 255, 0.22) inset;
+      }
+      .action-toast.is-clip::before {
+        content: "⎘";
+        font-size: 12px;
+      }
+      @keyframes actionOkPulse {
+        0%,
+        100% {
+          filter: none;
+        }
+        40% {
+          filter: brightness(1.1);
+          box-shadow:
+            0 0 0 2px #fff,
+            0 0 0 4px rgba(14, 143, 140, 0.42);
+        }
+      }
+      .is-action-ok {
+        animation: actionOkPulse 0.95s ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .action-toast {
+          transition: opacity 0.01s linear;
+        }
+        .is-action-ok {
+          animation: none;
+          outline: 2px solid rgba(14, 143, 140, 0.55);
+          outline-offset: 2px;
+        }
+      }
+
       .modal-back {
         position: fixed;
         inset: 0;
@@ -6927,6 +7005,11 @@
         >
           +
         </button>
+        <div
+          class="action-toast no-print"
+          id="actionToast"
+          aria-hidden="true"
+        ></div>
       </main>
       <div id="customizeFoldWrap" class="customize-shell no-print" hidden>
         <button
@@ -9982,13 +10065,46 @@
         announce("Options");
       }
 
-      function announce(msg) {
+      let actionToastTimer = 0;
+
+      function flashControl(el) {
+        if (!el) return;
+        el.classList.add("is-action-ok");
+        clearTimeout(el._actionOkT);
+        el._actionOkT = setTimeout(() => {
+          el.classList.remove("is-action-ok");
+        }, 980);
+      }
+
+      function showActionToast(msg, kind) {
+        const el = $("actionToast");
+        if (!el || !msg) return;
+        if (actionToastTimer) clearTimeout(actionToastTimer);
+        el.textContent = msg;
+        el.className =
+          "action-toast no-print is-on" + (kind ? " is-" + kind : "");
+        el.setAttribute("aria-hidden", "false");
+        actionToastTimer = setTimeout(() => {
+          el.classList.remove("is-on");
+          el.setAttribute("aria-hidden", "true");
+          actionToastTimer = 0;
+        }, 2100);
+      }
+
+      function announce(msg, opts) {
         const el = $("a11yStatus");
         if (!el) return;
         el.textContent = "";
         requestAnimationFrame(() => {
           el.textContent = msg || "";
         });
+        if (!msg || !opts || !opts.toast) return;
+        showActionToast(msg, opts.kind || "ok");
+        if (opts.flash) {
+          const target =
+            typeof opts.flash === "string" ? $(opts.flash) : opts.flash;
+          flashControl(target);
+        }
       }
 
       function showError(msg) {
@@ -18705,6 +18821,11 @@
         const json = JSON.stringify(buildStylePayload(), null, 2);
         downloadProject(json, "epicsv-modele.json");
         closeStyleModal();
+        announce("Style enregistré.", {
+          toast: true,
+          kind: "save",
+          flash: "saveStyleBtn",
+        });
       }
 
       function sheetLayoutFor(group, maxCols) {
@@ -20680,6 +20801,7 @@
               " × " +
               (clip.cells[0] ? clip.cells[0].length : 0) +
               ").",
+            { toast: true, kind: "clip", flash: "selCopy" },
           );
         }
         return true;
@@ -20882,7 +21004,12 @@
           c0: anchorBox.c0,
           c1: endC,
         });
-        if (!opts || opts.announce !== false) announce("Collage effectué.");
+        if (!opts || opts.announce !== false)
+          announce("Collage effectué.", {
+            toast: true,
+            kind: "clip",
+            flash: "selPaste",
+          });
         return true;
       }
 
@@ -21724,6 +21851,13 @@
           return false;
         const json = JSON.stringify(projectPayload(), null, 2);
         const filename = projectFileName();
+        const saved = () => {
+          announce("Enregistré.", {
+            toast: true,
+            kind: "save",
+            flash: "saveBtn",
+          });
+        };
         if (
           projectHandle &&
           (await ensureHandleWritable(projectHandle, true))
@@ -21735,7 +21869,7 @@
             lastAutosaveAt = Date.now();
             startAutosave();
             syncAutosaveHint();
-            announce("Enregistré.");
+            saved();
             return true;
           } catch (err) {
             if (err && err.name === "AbortError") return false;
@@ -21758,7 +21892,7 @@
             dirty = false;
             clearLocalAutosave();
             lastAutosaveAt = Date.now();
-            announce("Enregistré.");
+            saved();
             return true;
           } catch (err) {
             if (err && err.name === "AbortError") return false;
@@ -21769,6 +21903,7 @@
         dirty = false;
         startAutosave();
         syncAutosaveHint();
+        saved();
         return true;
       }
 
@@ -24998,7 +25133,9 @@
           const list = activeList();
           if (!list || isBlankList(list)) return;
           if (fitListHeightToPage(list))
-            announce("Hauteur ajustée pour tenir sur la feuille.");
+            announce("Hauteur ajustée pour tenir sur la feuille.", {
+              toast: true,
+            });
         });
       }
 
