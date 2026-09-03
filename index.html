@@ -12217,9 +12217,8 @@
             const merge = list.merges.find(
               (m) => m.r === cover.r && m.c === cover.c,
             );
-            if (merge && merge.r + merge.rs === at) merge.rs += count;
-          } else {
-            list.merges.push({ r: box.r1, c: c, rs: 1 + count, cs: 1 });
+            if (merge && merge.rs > 1 && merge.r + merge.rs === at)
+              merge.rs += count;
           }
         }
         list.merges = normalizeMerges(list.merges);
@@ -12237,9 +12236,8 @@
             const merge = list.merges.find(
               (m) => m.r === cover.r && m.c === cover.c,
             );
-            if (merge && merge.c + merge.cs === at) merge.cs += count;
-          } else {
-            list.merges.push({ r: r, c: box.c1, rs: 1, cs: 1 + count });
+            if (merge && merge.cs > 1 && merge.c + merge.cs === at)
+              merge.cs += count;
           }
         }
         list.merges = normalizeMerges(list.merges);
@@ -12259,12 +12257,10 @@
             const merge = list.merges.find(
               (m) => m.r === cover.r && m.c === cover.c,
             );
-            if (merge && merge.c === anchor) {
+            if (merge && merge.cs > 1 && merge.c === anchor) {
               merge.c = at;
               merge.cs += count;
             }
-          } else {
-            list.merges.push({ r: r, c: at, rs: 1, cs: 1 + count });
           }
         }
         list.merges = normalizeMerges(list.merges);
@@ -15290,12 +15286,16 @@
         growBefore.forEach((g) =>
           growMergeAfterInsert(list, g, at, kind, side),
         );
-        if (kind === "col" && partialAxis && side === "after")
-          extendNeighborsAfterColInsert(list, box, at, 1);
-        else if (kind === "col" && partialAxis && side === "before")
-          extendNeighborsBeforeColInsert(list, box, at, 1);
-        else if (kind === "row" && partialAxis && side === "after")
-          extendNeighborsAfterRowInsert(list, box, at, 1);
+        if (!isTpForm(list)) {
+          if (kind === "col" && partialAxis && side === "after")
+            extendNeighborsAfterColInsert(list, box, at, 1);
+          else if (kind === "col" && partialAxis && side === "before")
+            extendNeighborsBeforeColInsert(list, box, at, 1);
+          else if (kind === "row" && partialAxis && side === "after")
+            extendNeighborsAfterRowInsert(list, box, at, 1);
+        } else if (kind === "col") {
+          ensureTpHeadingMerges(list);
+        }
         applyInsertFormat(list, at, formatSnap);
         if (kind === "row" && isProgList(list)) renumberProgSeances(list);
         if (zoneSel) {
