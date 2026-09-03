@@ -841,6 +841,22 @@
         background: rgba(186, 164, 232, 0.32);
         box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
       }
+      .files-reglages {
+        margin-bottom: 12px;
+        padding: 10px 10px 12px;
+        border-radius: 18px;
+        background: rgba(255, 238, 148, 0.32);
+        box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+      }
+      .files-reglages .block {
+        padding-top: 0;
+      }
+      .files-reglages .block h2 {
+        margin-top: 10px;
+      }
+      .files-reglages .block:first-of-type h2 {
+        margin-top: 4px;
+      }
       .autosave-hint {
         margin: 8px 2px 0;
         font-size: 11px;
@@ -5354,7 +5370,8 @@
         color: var(--cream-dim);
       }
       #displayBlock > .opt-label.cartouche-head,
-      #typoBlock > .opt-label.cartouche-head {
+      #typoBlock > .opt-label.cartouche-head,
+      #customizeSecSettings > .opt-label.cartouche-head {
         text-align: center;
         font-weight: 800;
         letter-spacing: 0.14em;
@@ -7125,6 +7142,10 @@
           aria-label="Personnaliser"
         >
           <div class="customize-panel-body fold-panel" id="customizeFold">
+            <div class="files-group files-reglages" id="customizeSecSettings">
+              <div class="opt-label cartouche-head" style="margin-top: 0">
+                Réglages
+              </div>
             <section class="block" id="orientBlock" hidden>
               <h2>Orientation feuilles</h2>
               <div class="seg" id="orients">
@@ -7197,7 +7218,7 @@
                 </button>
               </div>
             </section>
-
+            </div>
 
             <div class="files-group files-export">
             <section class="block" id="displayBlock">
@@ -24180,23 +24201,28 @@
           });
         };
 
-        const _collapseIds = ["orientBlock", "marginsBlock", "titlesBlock"];
+        const _collapseIds = ["customizeSecSettings"];
         const _savedVis = {};
 
         const scrollToSec = (sec) => {
           if (sec === "colors" || sec === "typo") {
             _collapseIds.forEach((id) => {
               const el = $(id);
-              if (el) { _savedVis[id] = el.hidden; el.hidden = true; }
+              if (el) {
+                _savedVis[id] = el.hidden;
+                el.hidden = true;
+              }
             });
           } else {
             _collapseIds.forEach((id) => {
               const el = $(id);
-              if (el && id in _savedVis) { el.hidden = _savedVis[id]; delete _savedVis[id]; }
+              if (!el) return;
+              el.hidden = id in _savedVis ? _savedVis[id] : false;
+              delete _savedVis[id];
             });
           }
           const map = {
-            settings: $("marginsBlock") || body,
+            settings: $("customizeSecSettings") || $("marginsBlock") || body,
             colors: $("customizeSecColors") || $("displayBlock"),
             typo: $("customizeSecTypo") || $("displayBlock"),
           };
