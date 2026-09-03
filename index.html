@@ -14129,8 +14129,12 @@
         return PROG_PERIODS.reduce((s, p) => s + p.n, 0);
       }
 
-      function progMerges() {
-        const titleCs = Math.max(1, PROG_HEADERS.length - PROG_BANNER_META_CS);
+      function progMerges(list) {
+        const nCols = Math.max(
+          PROG_HEADERS.length,
+          (list && list.headers && list.headers.length) || 0,
+        );
+        const titleCs = Math.max(1, nCols - PROG_BANNER_META_CS);
         const out = [
           { r: 0, c: 0, rs: 1, cs: PROG_BANNER_META_CS },
           { r: 0, c: PROG_BANNER_TITLE_CI, rs: 1, cs: titleCs },
@@ -14141,6 +14145,28 @@
           ri += p.n;
         });
         return out;
+      }
+
+      function ensureProgHeadingMerges(list) {
+        if (!isProgList(list) || !list.rows) return;
+        const nCols = (list.headers || []).length;
+        const titleCs = Math.max(1, nCols - PROG_BANNER_META_CS);
+        const periodMerges = (list.merges || []).filter((m) => {
+          const r = Number(m && m.r);
+          const c = Number(m && m.c);
+          const rs = Math.max(1, Number(m && m.rs) || 1);
+          const cs = Math.max(1, Number(m && m.cs) || 1);
+          return r >= 2 && c === 0 && rs > 1 && cs === 1;
+        });
+        list.merges = periodMerges;
+        list.merges.push({ r: 0, c: 0, rs: 1, cs: PROG_BANNER_META_CS });
+        list.merges.push({
+          r: 0,
+          c: PROG_BANNER_TITLE_CI,
+          rs: 1,
+          cs: titleCs,
+        });
+        list.merges = normalizeMerges(list.merges);
       }
 
       function rebuildProgRows(list, nSeances) {
@@ -14182,7 +14208,7 @@
           rows.push(row);
         }
         list.rows = rows;
-        list.merges = progMerges();
+        list.merges = progMerges(list);
       }
 
       function seedProgAlign(list) {
@@ -14867,6 +14893,7 @@
           ensureProgTable(list, { fill: !headers.length || !rows.length });
           if (savedMerges.length && progLayoutOk(list))
             list.merges = savedMerges;
+          ensureProgHeadingMerges(list);
         } else {
           list.mode = "";
           list.tp = null;
@@ -14963,6 +14990,8 @@
         remapColAlignBag(list.colAlignH, index);
         remapColAlignBag(list.colAlignV, index);
         remapMergesAfterColDelete(list, index);
+        if (isProgList(list)) ensureProgHeadingMerges(list);
+        else if (isTpForm(list)) ensureTpHeadingMerges(list);
       }
 
       function remapColAlignBag(bag, removedIndex) {
@@ -15320,7 +15349,7 @@
         growBefore.forEach((g) =>
           growMergeAfterInsert(list, g, at, kind, side),
         );
-        if (!isTpForm(list)) {
+        if (!isTpForm(list) && !isProgList(list)) {
           if (kind === "col" && partialAxis && side === "after")
             extendNeighborsAfterColInsert(list, box, at, 1);
           else if (kind === "col" && partialAxis && side === "before")
@@ -15328,7 +15357,8 @@
           else if (kind === "row" && partialAxis && side === "after")
             extendNeighborsAfterRowInsert(list, box, at, 1);
         } else if (kind === "col") {
-          ensureTpHeadingMerges(list);
+          if (isTpForm(list)) ensureTpHeadingMerges(list);
+          else if (isProgList(list)) ensureProgHeadingMerges(list);
         }
         applyInsertFormat(list, at, formatSnap);
         if (kind === "row" && isProgList(list)) renumberProgSeances(list);
@@ -17619,7 +17649,63 @@
         return Number.isInteger(n) ? n : null;
       }
 
-      function cellHit(el) {
+      function isStructuralBannerMerge(list, ri, c0, cs) {
+        if (!list || cs <= 1 || ri < 0) return false;
+        if (isProgList(list) && ri === 0) return true;
+        if (isTpForm(list) && ri < 3 && c0 >= 2) return true;
+        return false;
+      }
+
+      function structuralBannerRefRow(list, ri) {
+        if (isProgList(list) && ri === 0) return 1;
+        if (isTpForm(list) && ri < 3) return 2;
+        return ri;
+      }
+
+      function structuralColumnHits(list, hit, opts) {
+        opts = opts || {};
+        if (!list || !hit) return [];
+        const cs = Math.max(1, Number(hit.cs) || 1);
+        if (cs <= 1) return [hit];
+        const ck0 = hit.ck;
+        if (typeof ck0 !== "number") return [hit];
+        if (!isStructuralBannerMerge(list, hit.ri, ck0, cs)) return [hit];
+        const table = hit.cell && hit.cell.closest("table.liste");
+        if (!table) return [hit];
+        const refRi = structuralBannerRefRow(list, hit.ri);
+        const rect = opts.rect;
+        const clientX = opts.clientX;
+        const out = [];
+        for (let d = 0; d < cs; d++) {
+          const ci = ck0 + d;
+          const refCell = table.querySelector(
+            'tbody tr[data-ri="' + refRi + '"] td[data-ci="' + ci + '"]',
+          );
+          if (!refCell) continue;
+          const b = refCell.getBoundingClientRect();
+          if (rect) {
+            if (
+              b.right < rect.left ||
+              b.left > rect.right ||
+              b.bottom < rect.top ||
+              b.top > rect.bottom
+            )
+              continue;
+          } else if (clientX != null) {
+            if (clientX < b.left || clientX > b.right) continue;
+          }
+          out.push(
+            Object.assign({}, hit, {
+              ck: ci,
+              cs: 1,
+              rs: 1,
+            }),
+          );
+        }
+        return out.length ? out : [hit];
+      }
+
+      function cellHit(el, clientX) {
         const cell =
           el && el.closest ? el.closest("td[data-ck], th[data-ck]") : null;
         if (!cell || !cell.closest("table.liste")) return null;
@@ -17634,7 +17720,7 @@
         if (!head && !Number.isInteger(ri)) return null;
         const cs = Math.max(1, Number(cell.dataset.cs) || 1);
         const rs = Math.max(1, Number(cell.dataset.rs) || 1);
-        return {
+        const hit = {
           lid: String(block.dataset.lid),
           ri: ri,
           ck: ck,
@@ -17642,6 +17728,12 @@
           cs: cs,
           rs: rs,
         };
+        const list = state.lists.find((l) => String(l.id) === hit.lid);
+        if (!list) return hit;
+        const splits = structuralColumnHits(list, hit, {
+          clientX: clientX,
+        });
+        return splits.length === 1 ? splits[0] : hit;
       }
 
       function zoneFromHits(hits) {
@@ -17744,7 +17836,7 @@
       }
 
       function openSelBarFromEvent(e) {
-        const hit = cellHit(e.target);
+        const hit = cellHit(e.target, e.clientX);
         if (!hit) return false;
         e.preventDefault();
         if (String(hit.lid) !== String(state.activeId))
@@ -19113,6 +19205,7 @@
           )
             ensureTpTable(l, { fillGroups: true });
           else if (isTpForm(l)) ensureTpHeadingMerges(l);
+          else if (isProgList(l)) ensureProgHeadingMerges(l);
           else if (isProgList(l) && !progLayoutOk(l))
             ensureProgTable(l, { fill: true });
         });
@@ -23435,7 +23528,12 @@
             )
               return;
             const hit = cellHit(cell);
-            if (hit) hits.push(hit);
+            if (!hit) return;
+            const list = state.lists.find((l) => String(l.id) === lid);
+            const expanded = list
+              ? structuralColumnHits(list, hit, { rect: r })
+              : [hit];
+            expanded.forEach((h) => hits.push(h));
           });
           return hits;
         };
