@@ -8600,6 +8600,7 @@
       let zoneSel = null;
       let zoneDim = "w";
       let zoneSuppressClick = false;
+      let cellClip = null;
       let selBarUserPos = null;
       let heldStyle = null;
       let styleDlgRestore = null;
@@ -11568,6 +11569,142 @@
         else delete list.alignH[k];
         if (looks.alignV) list.alignV[k] = looks.alignV;
         else delete list.alignV[k];
+      }
+
+      function formatShellFromText(text) {
+        const html = sanitizeCellHtml(text);
+        if (!html || !/<(b|strong|i|em|u)\b/i.test(html)) return "";
+        const root = document.createElement("div");
+        root.innerHTML = html;
+        const walk = (node) => {
+          [...node.childNodes].forEach((child) => {
+            if (child.nodeType === 3) {
+              child.textContent = "";
+              return;
+            }
+            if (child.nodeType === 1) walk(child);
+          });
+        };
+        walk(root);
+        const out = sanitizeCellHtml(root.innerHTML);
+        return /<(b|strong|i|em|u)\b/i.test(out) ? out : "";
+      }
+
+      function plainTextFromCell(text) {
+        const s = String(text != null ? text : "");
+        if (!/<(b|strong|i|em|u)\b/i.test(s)) return s;
+        const root = document.createElement("div");
+        root.innerHTML = sanitizeCellHtml(s);
+        return root.textContent || "";
+      }
+
+      function writeCellFormatOnly(list, ri, ci, looks) {
+        if (!list || !list.rows || !list.rows[ri] || looks == null) return;
+        writeCellLooks(
+          list,
+          ri,
+          ci,
+          {
+            hl: looks.hl,
+            hlText: looks.hlText,
+            alignH: looks.alignH,
+            alignV: looks.alignV,
+          },
+          false,
+        );
+        const shell = formatShellFromText(looks.text);
+        if (!shell) return;
+        while (list.rows[ri].length <= ci) list.rows[ri].push("");
+        if (!String(list.rows[ri][ci] != null ? list.rows[ri][ci] : "").trim()) {
+          list.rows[ri][ci] = shell;
+        }
+      }
+
+      function writeCellLooksFull(list, ri, ci, looks) {
+        if (!list || !list.rows || !list.rows[ri] || looks == null) return;
+        ensureAlign(list);
+        if (!list.hl) list.hl = {};
+        if (!list.hlText) list.hlText = {};
+        while (list.rows[ri].length <= ci) list.rows[ri].push("");
+        list.rows[ri][ci] = looks.text != null ? looks.text : "";
+        writeCellLooks(
+          list,
+          ri,
+          ci,
+          {
+            hl: looks.hl,
+            hlText: looks.hlText,
+            alignH: looks.alignH,
+            alignV: looks.alignV,
+          },
+          false,
+        );
+      }
+
+      function captureInsertFormat(list, box, kind, side) {
+        if (!list || !box) return null;
+        if (isFullAxisSelection(list, box, kind)) return null;
+        const cells = [];
+        const merges = [];
+        if (kind === "row") {
+          const srcR = side === "before" ? box.r0 : box.r1;
+          for (let c = box.c0; c <= box.c1; c++) {
+            cells.push({ c: c, looks: readCellLooks(list, srcR, c) });
+          }
+          ((list && list.merges) || []).forEach((m) => {
+            if (!(m.cs > 1)) return;
+            if (m.r > srcR || m.r + m.rs - 1 < srcR) return;
+            if (m.c < box.c0 || m.c + m.cs - 1 > box.c1) return;
+            if (
+              merges.some((x) => x.c === m.c && x.cs === m.cs)
+            )
+              return;
+            merges.push({ c: m.c, cs: m.cs });
+          });
+        } else {
+          const srcC = side === "before" ? box.c0 : box.c1;
+          for (let r = box.r0; r <= box.r1; r++) {
+            cells.push({ r: r, looks: readCellLooks(list, r, srcC) });
+          }
+          ((list && list.merges) || []).forEach((m) => {
+            if (!(m.rs > 1)) return;
+            if (m.c > srcC || m.c + m.cs - 1 < srcC) return;
+            if (m.r < box.r0 || m.r + m.rs - 1 > box.r1) return;
+            if (
+              merges.some((x) => x.r === m.r && x.rs === m.rs)
+            )
+              return;
+            merges.push({ r: m.r, rs: m.rs });
+          });
+        }
+        return { kind: kind, cells: cells, merges: merges };
+      }
+
+      function applyInsertFormat(list, at, snap) {
+        if (!list || !snap || at < 0) return;
+        if (snap.kind === "row") {
+          if (!list.rows || !list.rows[at]) return;
+          snap.cells.forEach((cell) => {
+            writeCellFormatOnly(list, at, cell.c, cell.looks);
+          });
+          if (!list.merges) list.merges = [];
+          snap.merges.forEach((m) => {
+            if (m.cs > 1)
+              list.merges.push({ r: at, c: m.c, rs: 1, cs: m.cs });
+          });
+          list.merges = normalizeMerges(list.merges);
+          return;
+        }
+        snap.cells.forEach((cell) => {
+          if (!list.rows || !list.rows[cell.r]) return;
+          writeCellFormatOnly(list, cell.r, at, cell.looks);
+        });
+        if (!list.merges) list.merges = [];
+        snap.merges.forEach((m) => {
+          if (m.rs > 1)
+            list.merges.push({ r: m.r, c: at, rs: m.rs, cs: 1 });
+        });
+        list.merges = normalizeMerges(list.merges);
       }
 
       function spreadRectLooks(list, rect, looks) {
@@ -14595,6 +14732,7 @@
             cs: g.cs,
           }),
         );
+        const formatSnap = captureInsertFormat(list, box, kind, side);
         pushHist();
         const ok =
           kind === "row"
@@ -14607,6 +14745,7 @@
         growBefore.forEach((g) =>
           growMergeAfterInsert(list, g, at, kind, side),
         );
+        applyInsertFormat(list, at, formatSnap);
         if (kind === "row" && isProgList(list)) renumberProgSeances(list);
         if (zoneSel) {
           if (kind === "row") {
@@ -19666,6 +19805,239 @@
         setZone({ lid: String(list.id), keys: keys, ris: ris });
       }
 
+      function zoneCellRect(list) {
+        const rect = zoneMergeRect(list);
+        if (rect) return rect;
+        if (!list || !zoneSel || String(zoneSel.lid) !== String(list.id))
+          return null;
+        const nR = (list.rows || []).length;
+        const nC = (list.headers || []).length;
+        const ris = (zoneSel.ris || []).filter(
+          (ri) => Number.isInteger(ri) && ri >= 0 && ri < nR,
+        );
+        const cols = (zoneSel.keys || []).filter(
+          (k) => Number.isInteger(k) && k >= 0 && k < nC,
+        );
+        if (!ris.length || !cols.length) return null;
+        const sorted = cols.slice().sort((a, b) => a - b);
+        for (let i = 1; i < sorted.length; i++) {
+          if (sorted[i] !== sorted[i - 1] + 1) return null;
+        }
+        return {
+          r0: Math.min.apply(null, ris),
+          r1: Math.max.apply(null, ris),
+          c0: sorted[0],
+          c1: sorted[sorted.length - 1],
+        };
+      }
+
+      function isTypingTarget(el) {
+        if (!el) return false;
+        const tag = (el.tagName || "").toUpperCase();
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT")
+          return true;
+        if (el.isContentEditable) return true;
+        return false;
+      }
+
+      function buildCellClipFromRect(list, box) {
+        if (!list || !box) return null;
+        const cells = [];
+        for (let r = box.r0; r <= box.r1; r++) {
+          const row = [];
+          for (let c = box.c0; c <= box.c1; c++) {
+            row.push(readCellLooks(list, r, c));
+          }
+          cells.push(row);
+        }
+        const merges = ((list && list.merges) || [])
+          .filter(
+            (m) =>
+              m.r >= box.r0 &&
+              m.r + m.rs - 1 <= box.r1 &&
+              m.c >= box.c0 &&
+              m.c + m.cs - 1 <= box.c1,
+          )
+          .map((m) => ({
+            r: m.r - box.r0,
+            c: m.c - box.c0,
+            rs: m.rs,
+            cs: m.cs,
+          }));
+        const plain = cells
+          .map((row) =>
+            row.map((cell) => plainTextFromCell(cell.text)).join("\t"),
+          )
+          .join("\n");
+        return { cells: cells, merges: merges, plain: plain };
+      }
+
+      function copyZoneCells(opts) {
+        const list = zoneList();
+        const box = zoneCellRect(list);
+        if (!list || !box) return false;
+        const clip = buildCellClipFromRect(list, box);
+        if (!clip) return false;
+        cellClip = clip;
+        const ev = opts && opts.event;
+        if (ev && ev.clipboardData) {
+          ev.clipboardData.setData("text/plain", clip.plain);
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(clip.plain).catch(function () {});
+        }
+        if (!opts || opts.announce !== false) {
+          announce(
+            "Sélection copiée (" +
+              clip.cells.length +
+              " × " +
+              (clip.cells[0] ? clip.cells[0].length : 0) +
+              ").",
+          );
+        }
+        return true;
+      }
+
+      function pasteLooksGridAt(list, r0, c0, cells, merges) {
+        if (!list || !cells || !cells.length) return false;
+        const nR = (list.rows || []).length;
+        const nC = (list.headers || []).length;
+        if (!nR || !nC) return false;
+        let wrote = false;
+        for (let dr = 0; dr < cells.length; dr++) {
+          const ri = r0 + dr;
+          if (ri < 0 || ri >= nR || !list.rows[ri]) continue;
+          const row = cells[dr] || [];
+          for (let dc = 0; dc < row.length; dc++) {
+            const ci = c0 + dc;
+            if (ci < 0 || ci >= nC) continue;
+            writeCellLooksFull(list, ri, ci, row[dc]);
+            wrote = true;
+          }
+        }
+        if (merges && merges.length) {
+          if (!list.merges) list.merges = [];
+          const pasteR1 = r0 + cells.length - 1;
+          const pasteC1 =
+            c0 + Math.max.apply(
+              null,
+              cells.map(function (row) {
+                return row.length;
+              }),
+            ) -
+            1;
+          const pasteBox = {
+            r0: r0,
+            r1: Math.min(nR - 1, pasteR1),
+            c0: c0,
+            c1: Math.min(nC - 1, pasteC1),
+          };
+          removeMergesInRect(list, pasteBox);
+          merges.forEach(function (m) {
+            const rr = r0 + m.r;
+            const cc = c0 + m.c;
+            if (rr < 0 || cc < 0 || rr >= nR || cc >= nC) return;
+            if (rr + m.rs - 1 >= nR || cc + m.cs - 1 >= nC) return;
+            if (m.rs > 1 || m.cs > 1)
+              list.merges.push({ r: rr, c: cc, rs: m.rs, cs: m.cs });
+          });
+          list.merges = normalizeMerges(list.merges);
+        }
+        return wrote;
+      }
+
+      function pasteZoneCells(opts) {
+        const list = zoneList();
+        const anchorBox = zoneCellRect(list);
+        if (!list || !anchorBox) return false;
+        let cells = null;
+        let merges = null;
+        if (cellClip && cellClip.cells && cellClip.cells.length) {
+          cells = cellClip.cells;
+          merges = cellClip.merges || [];
+        } else {
+          const text =
+            (opts && opts.text) ||
+            (opts &&
+              opts.event &&
+              opts.event.clipboardData &&
+              opts.event.clipboardData.getData("text/plain")) ||
+            "";
+          if (!text || !String(text).trim()) return false;
+          const grid = clipboardToGrid(text, "");
+          if (!grid || !grid.length) {
+            const lines = String(text)
+              .replace(/\r\n/g, "\n")
+              .replace(/\r/g, "\n")
+              .split("\n");
+            cells = lines.map(function (line) {
+              return String(line)
+                .split("\t")
+                .map(function (v) {
+                  return {
+                    text: v,
+                    hl: undefined,
+                    hlText: undefined,
+                    alignH: undefined,
+                    alignV: undefined,
+                  };
+                });
+            });
+          } else {
+            cells = grid.map(function (row) {
+              return (row || []).map(function (v) {
+                return {
+                  text: v,
+                  hl: undefined,
+                  hlText: undefined,
+                  alignH: undefined,
+                  alignV: undefined,
+                };
+              });
+            });
+          }
+          merges = [];
+        }
+        if (!cells || !cells.length) return false;
+        pushHist();
+        const ok = pasteLooksGridAt(
+          list,
+          anchorBox.r0,
+          anchorBox.c0,
+          cells,
+          merges,
+        );
+        if (!ok) {
+          discardLastHist();
+          return false;
+        }
+        if (isTpList(list)) writeTpComputed(list);
+        dirty = true;
+        renderPreview();
+        const endR = Math.min(
+          (list.rows || []).length - 1,
+          anchorBox.r0 + cells.length - 1,
+        );
+        const endC = Math.min(
+          (list.headers || []).length - 1,
+          anchorBox.c0 +
+            Math.max.apply(
+              null,
+              cells.map(function (row) {
+                return row.length;
+              }),
+            ) -
+            1,
+        );
+        setZoneFromRect(list, {
+          r0: anchorBox.r0,
+          r1: endR,
+          c0: anchorBox.c0,
+          c1: endC,
+        });
+        if (!opts || opts.announce !== false) announce("Collage effectué.");
+        return true;
+      }
+
       function applyMergeDirect() {
         hideSelMenu();
         const list = zoneList();
@@ -20682,7 +21054,27 @@
         if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
         if ($("createTableModal") && !$("createTableModal").hidden) return;
         if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
-        if (e.target.closest("[contenteditable=true]")) return;
+        if (isTypingTarget(e.target)) return;
+        const list = zoneList();
+        const cellBox = zoneCellRect(list);
+        if (cellBox && (cellClip || zoneSel)) {
+          const text =
+            (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
+          if (
+            (cellClip && cellClip.cells && cellClip.cells.length) ||
+            (text && String(text).trim())
+          ) {
+            e.preventDefault();
+            if (
+              pasteZoneCells({
+                event: e,
+                text: text,
+                announce: true,
+              })
+            )
+              return;
+          }
+        }
         const html =
           (e.clipboardData && e.clipboardData.getData("text/html")) || "";
         const text =
@@ -20699,6 +21091,14 @@
         ingestParsed([{ name: nextPasteName(), grid }]).catch((err) =>
           showError(err.message || String(err)),
         );
+      });
+
+      document.addEventListener("copy", (e) => {
+        if (isTypingTarget(e.target)) return;
+        if (!zoneSel || !zoneCellRect(zoneList())) return;
+        if (copyZoneCells({ event: e, announce: true })) {
+          e.preventDefault();
+        }
       });
 
       $("pasteBtn").addEventListener("click", () => {
@@ -22333,6 +22733,39 @@
           return;
         }
         const key = e.key.toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && (key === "c" || key === "v")) {
+          if (isTypingTarget(e.target)) return;
+          if ($("styleModal") && !$("styleModal").hidden) return;
+          if ($("pasteModal") && !$("pasteModal").hidden) return;
+          if ($("createTableModal") && !$("createTableModal").hidden) return;
+          if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
+          if ($("tpMatModal") && !$("tpMatModal").hidden) return;
+          if ($("colDelModal") && !$("colDelModal").hidden) return;
+          if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
+          if ($("replaceModal") && !$("replaceModal").hidden) return;
+          if ($("placeModal") && !$("placeModal").hidden) return;
+          if ($("dirtyModal") && !$("dirtyModal").hidden) return;
+          if (!zoneSel || !zoneCellRect(zoneList())) return;
+          if (key === "c") {
+            e.preventDefault();
+            copyZoneCells({ announce: true });
+            return;
+          }
+          e.preventDefault();
+          if (cellClip && cellClip.cells && cellClip.cells.length) {
+            pasteZoneCells({ announce: true });
+            return;
+          }
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            navigator.clipboard
+              .readText()
+              .then(function (t) {
+                pasteZoneCells({ text: t, announce: true });
+              })
+              .catch(function () {});
+          }
+          return;
+        }
         if (!(e.ctrlKey || e.metaKey) || (key !== "z" && key !== "y")) return;
         if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
         const tag = (e.target && e.target.tagName) || "";
