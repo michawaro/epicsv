@@ -6902,13 +6902,78 @@
                   class="field"
                   aria-label="Police des tableaux et feuilles"
                 >
-                  <option value="default">Par défaut</option>
-                  <option value="source-sans-3">Source Sans 3</option>
-                  <option value="literata">Literata</option>
-                  <option value="fraunces">Fraunces</option>
-                  <option value="atkinson">Atkinson Hyperlegible</option>
-                  <option value="nunito-sans">Nunito Sans</option>
-                  <option value="lora">Lora</option>
+                  <option
+                    value="default"
+                    style="font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                  >
+                    Par défaut
+                  </option>
+                  <option
+                    value="source-sans-3"
+                    style="font-family: 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                  >
+                    Source Sans 3
+                  </option>
+                  <option
+                    value="literata"
+                    style="font-family: Literata, Georgia, 'Times New Roman', serif"
+                  >
+                    Literata
+                  </option>
+                  <option
+                    value="fraunces"
+                    style="font-family: Fraunces, Georgia, 'Times New Roman', serif"
+                  >
+                    Fraunces
+                  </option>
+                  <option
+                    value="atkinson"
+                    style="font-family: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                  >
+                    Atkinson Hyperlegible
+                  </option>
+                  <option
+                    value="nunito-sans"
+                    style="font-family: 'Nunito Sans', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                  >
+                    Nunito Sans
+                  </option>
+                  <option
+                    value="lora"
+                    style="font-family: Lora, Georgia, 'Times New Roman', serif"
+                  >
+                    Lora
+                  </option>
+                  <option
+                    value="bebas-neue"
+                    style="font-family: 'Bebas Neue', 'Arial Narrow', sans-serif"
+                  >
+                    Bebas Neue
+                  </option>
+                  <option
+                    value="oswald"
+                    style="font-family: Oswald, 'Arial Narrow', sans-serif"
+                  >
+                    Oswald
+                  </option>
+                  <option
+                    value="anton"
+                    style="font-family: Anton, Impact, 'Arial Black', sans-serif"
+                  >
+                    Anton
+                  </option>
+                  <option
+                    value="archivo-black"
+                    style="font-family: 'Archivo Black', Impact, 'Arial Black', sans-serif"
+                  >
+                    Archivo Black
+                  </option>
+                  <option
+                    value="alfa-slab-one"
+                    style="font-family: 'Alfa Slab One', Georgia, serif"
+                  >
+                    Alfa Slab One
+                  </option>
                 </select>
                 <div class="font-pair">
                 <div class="font-col">
@@ -8023,6 +8088,36 @@
           label: "Lora",
           stack: 'Lora, Georgia, "Times New Roman", serif',
           google: "family=Lora:ital,wght@0,400;0,600;0,700;1,400",
+        },
+        "bebas-neue": {
+          id: "bebas-neue",
+          label: "Bebas Neue",
+          stack: '"Bebas Neue", "Arial Narrow", sans-serif',
+          google: "family=Bebas+Neue",
+        },
+        oswald: {
+          id: "oswald",
+          label: "Oswald",
+          stack: 'Oswald, "Arial Narrow", sans-serif',
+          google: "family=Oswald:wght@400;500;600;700",
+        },
+        anton: {
+          id: "anton",
+          label: "Anton",
+          stack: 'Anton, Impact, "Arial Black", sans-serif',
+          google: "family=Anton",
+        },
+        "archivo-black": {
+          id: "archivo-black",
+          label: "Archivo Black",
+          stack: '"Archivo Black", Impact, "Arial Black", sans-serif',
+          google: "family=Archivo+Black",
+        },
+        "alfa-slab-one": {
+          id: "alfa-slab-one",
+          label: "Alfa Slab One",
+          stack: '"Alfa Slab One", Georgia, serif',
+          google: "family=Alfa+Slab+One",
         },
       };
       const TITRES = ["fin", "moyen", "haut"];
@@ -14497,17 +14592,19 @@
         return SHEET_FONTS[key] ? key : "default";
       }
 
-      function ensureSheetFontsLoaded(id) {
-        const meta = SHEET_FONTS[normalizeSheetFont(id)];
+      function ensureSheetFontsLoaded() {
         const link = document.getElementById("epicsvSheetFonts");
         if (!link) return;
-        if (!meta || !meta.google) {
+        const parts = Object.values(SHEET_FONTS)
+          .map((meta) => meta.google)
+          .filter(Boolean);
+        if (!parts.length) {
           link.removeAttribute("href");
           return;
         }
         const href =
           "https://fonts.googleapis.com/css2?" +
-          meta.google +
+          parts.join("&") +
           "&display=swap";
         if (link.getAttribute("href") !== href) link.setAttribute("href", href);
       }
@@ -14523,7 +14620,7 @@
           "sheet-font-custom",
           state.sheetFont !== "default",
         );
-        ensureSheetFontsLoaded(state.sheetFont);
+        ensureSheetFontsLoaded();
         persistSheetFont();
         const sel = $("sheetFont");
         if (sel && sel.value !== state.sheetFont) sel.value = state.sheetFont;
