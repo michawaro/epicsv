@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr" class="palette-teal">
   <head>
     <meta charset="UTF-8" />
@@ -156,6 +156,9 @@
         height: 100svh;
         height: 100dvh;
         overflow: hidden;
+      }
+      .app.has-lists {
+        grid-template-columns: 340px minmax(0, 1fr) auto;
       }
 
       .panel {
@@ -330,6 +333,300 @@
       #modeFoldWrap[hidden],
       #infoBlock[hidden] {
         display: none !important;
+      }
+
+      /* —— Panneau Personnaliser (rail droit) —— */
+      :root {
+        --customize-rail: 48px;
+        --customize-panel-w: 300px;
+        --customize-anis: #c9e218;
+        --customize-anis-soft: #f4fb7a;
+      }
+      .customize-shell {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+        z-index: 3;
+        position: relative;
+      }
+      .customize-rail {
+        flex: none;
+        width: var(--customize-rail);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 0 max(10px, env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(
+          180deg,
+          #0e6e68 0%,
+          #0a4d52 55%,
+          #083e42 100%
+        );
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: -4px 0 18px rgba(0, 40, 38, 0.18);
+      }
+      .customize-rail-btn {
+        appearance: none;
+        width: 36px;
+        height: 36px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.88);
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease;
+      }
+      .customize-rail-btn svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+      .customize-rail-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+      .customize-rail-btn:focus-visible {
+        outline: 2px solid var(--seal);
+        outline-offset: 2px;
+      }
+      .customize-rail-btn.is-active {
+        background: linear-gradient(
+          180deg,
+          var(--customize-anis-soft),
+          var(--customize-anis)
+        );
+        color: #1a2808;
+        box-shadow: 0 4px 12px rgba(32, 48, 6, 0.28);
+      }
+      .customize-rail-toggle .customize-chevron {
+        transition: transform 0.2s ease;
+      }
+      .app:not(.customize-open) .customize-rail-toggle .customize-chevron {
+        transform: rotate(180deg);
+      }
+      .customize-panel {
+        flex: none;
+        width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        color: var(--cream);
+        background:
+          radial-gradient(
+            120% 75% at 0% 0%,
+            rgba(6, 72, 70, 0.5) 0%,
+            transparent 54%
+          ),
+          radial-gradient(
+            95% 58% at 108% 4%,
+            rgba(167, 255, 235, 0.48) 0%,
+            transparent 46%
+          ),
+          linear-gradient(
+            156deg,
+            #19d4c4 0%,
+            #11c3b6 26%,
+            #3aeee0 50%,
+            #14b8ae 74%,
+            #0b8a82 100%
+          );
+        transition: width 0.22s ease;
+        border-left: 0 solid transparent;
+      }
+      .app.customize-open .customize-panel {
+        width: var(--customize-panel-w);
+        border-left: 1px solid rgba(255, 255, 255, 0.14);
+      }
+      .customize-panel-head {
+        display: none;
+        flex: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        padding-top: max(14px, env(safe-area-inset-top, 0px));
+        background: rgba(8, 70, 66, 0.35);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      }
+      .customize-panel-title {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #fff;
+      }
+      .customize-panel-close {
+        appearance: none;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+      }
+      .customize-panel-close svg {
+        width: 22px;
+        height: 22px;
+      }
+      .customize-panel-close:focus-visible {
+        outline: 2px solid var(--seal);
+        outline-offset: 2px;
+      }
+      .customize-panel-body {
+        flex: 1;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 12px 16px 22px;
+        padding-bottom: max(22px, env(safe-area-inset-bottom, 0px));
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+      }
+      .customize-backdrop {
+        display: none;
+      }
+      .customize-fab {
+        display: none;
+      }
+
+      @media (max-width: 1199px) {
+        .app.has-lists {
+          grid-template-columns: 340px minmax(0, 1fr);
+        }
+        .customize-shell {
+          position: fixed;
+          inset: 0;
+          width: 0;
+          height: 0;
+          overflow: visible;
+          z-index: 60;
+          pointer-events: none;
+        }
+        .customize-shell > * {
+          pointer-events: auto;
+        }
+        .customize-rail {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 62;
+          transition: right 0.22s ease;
+        }
+        .app.customize-open .customize-rail {
+          right: min(360px, 92vw);
+        }
+        .customize-panel {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 63;
+          width: min(360px, 92vw);
+          max-width: 100%;
+          transform: translateX(100%);
+          transition: transform 0.22s ease;
+          box-shadow: -12px 0 40px rgba(0, 40, 38, 0.28);
+        }
+        .app.customize-open .customize-panel {
+          width: min(360px, 92vw);
+          transform: translateX(0);
+        }
+        .customize-backdrop {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 61;
+          margin: 0;
+          border: 0;
+          padding: 0;
+          background: rgba(8, 28, 30, 0.48);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+          cursor: pointer;
+        }
+        .app.customize-open .customize-backdrop {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .customize-backdrop[hidden] {
+          display: none !important;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .customize-rail {
+          display: none !important;
+        }
+        .customize-fab {
+          display: grid;
+          place-items: center;
+          position: fixed;
+          right: max(14px, env(safe-area-inset-right, 0px));
+          bottom: max(18px, env(safe-area-inset-bottom, 0px));
+          z-index: 58;
+          width: 52px;
+          height: 52px;
+          margin: 0;
+          padding: 0;
+          border: 0;
+          border-radius: 16px;
+          background: linear-gradient(
+            180deg,
+            var(--customize-anis-soft),
+            var(--customize-anis)
+          );
+          color: #1a2808;
+          box-shadow: 0 10px 28px rgba(32, 48, 6, 0.35);
+          cursor: pointer;
+        }
+        .customize-fab svg {
+          width: 24px;
+          height: 24px;
+        }
+        .customize-fab:focus-visible {
+          outline: 3px solid var(--teal-deep);
+          outline-offset: 3px;
+        }
+        .app.customize-open .customize-fab {
+          display: none;
+        }
+        .customize-panel {
+          inset: 0;
+          width: 100%;
+          max-width: none;
+          transform: translateY(100%);
+          border-left: 0;
+        }
+        .app.customize-open .customize-panel {
+          width: 100%;
+          transform: translateY(0);
+        }
+        .customize-panel-head {
+          display: flex;
+          position: sticky;
+          top: 0;
+          z-index: 2;
+        }
       }
 
       .brand {
@@ -2539,7 +2836,8 @@
         display: none !important;
       }
       .page-orient-toggle,
-      .page-send-toggle {
+      .page-send-toggle,
+      .page-combo-swap {
         flex: none;
         width: 36px;
         height: 36px;
@@ -2554,20 +2852,24 @@
         place-items: center;
       }
       .page-orient-toggle:hover,
-      .page-send-toggle:hover {
+      .page-send-toggle:hover,
+      .page-combo-swap:hover {
         background: #0a6561;
       }
       .page-orient-toggle:focus-visible,
-      .page-send-toggle:focus-visible {
+      .page-send-toggle:focus-visible,
+      .page-combo-swap:focus-visible {
         outline: 3px solid var(--seal);
         outline-offset: 2px;
       }
       .page-orient-toggle[hidden],
-      .page-send-toggle[hidden] {
+      .page-send-toggle[hidden],
+      .page-combo-swap[hidden] {
         display: none !important;
       }
       .page-orient-toggle svg,
-      .page-send-toggle svg {
+      .page-send-toggle svg,
+      .page-combo-swap svg {
         width: 22px;
         height: 22px;
         display: block;
@@ -2590,7 +2892,8 @@
         gap: 6px;
       }
       .sheet-caption .page-orient-toggle,
-      .sheet-caption .page-send-toggle {
+      .sheet-caption .page-send-toggle,
+      .sheet-caption .page-combo-swap {
         width: 34px;
         height: 34px;
         box-shadow: 0 6px 16px rgba(14, 143, 140, 0.28);
@@ -3328,9 +3631,6 @@
         td.is-tp-salles {
         border-left: var(--tp-inner);
         border-left-color: #111;
-      }
-      .list-block.is-tp-page .liste.has-tp-vlines {
-        --tp-vline: 2.75pt solid #111;
       }
       .list-block.is-tp-page
         .liste.has-tp-vlines
@@ -4324,6 +4624,29 @@
       }
       .liste.has-vlines thead tr > *:last-child {
         border-right-color: var(--d-vline-th, var(--rule));
+      }
+      .liste.has-tp-vlines {
+        --tp-vline: 2.75pt solid #111;
+      }
+      /* Filets épais hors fiches TP (le TP garde ses règles structurelles) */
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines th:not(.no-print) {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines td:not(.no-print) {
+        border-left: var(--tp-vline);
+        border-left-color: #111;
+      }
+      .list-block:not(.is-tp-page) .liste.has-tp-vlines tr > *:last-child {
+        border-right: var(--tp-vline);
+        border-right-color: #111;
+      }
+      .list-block:not(.is-tp-page)
+        .liste.has-tp-vlines
+        thead
+        tr
+        > *:last-child {
+        border-right-color: #111;
       }
       .liste thead th:last-child .col-resizer {
         width: 10px;
@@ -5669,15 +5992,15 @@
           </div>
           <div class="err" id="err" role="alert" aria-live="assertive"></div>
         </div>
-        <div id="customizeFoldWrap" hidden>
+        <div id="modeFoldWrap">
           <button
             class="fold-head"
-            id="customizeFoldBtn"
+            id="modeFoldBtn"
             type="button"
             aria-expanded="true"
-            aria-controls="customizeFold"
+            aria-controls="modeFold"
           >
-            Personnaliser
+            Modes
             <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -5685,7 +6008,487 @@
               />
             </svg>
           </button>
-          <div class="fold-panel" id="customizeFold">
+          <div class="fold-panel" id="modeFold">
+            <section class="block" id="modeBlock">
+              <div
+                class="seg mode-seg"
+                id="pageModeSeg"
+                role="radiogroup"
+                aria-label="Choisir un mode"
+              >
+                <label
+                  ><input
+                    type="radio"
+                    name="pageMode"
+                    value="liste"
+                    checked
+                  /><span>Liste</span></label
+                >
+                <label
+                  ><input type="radio" name="pageMode" value="tp" /><span
+                    >TP</span
+                  ></label
+                >
+                <label
+                  ><input type="radio" name="pageMode" value="prog" /><span
+                    >Progression</span
+                  ></label
+                >
+              </div>
+              <div id="tpForm" hidden>
+                <div
+                  class="import-row"
+                  style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px"
+                >
+                  <button
+                    class="btn btn-print btn-compact"
+                    id="tpCreateBtn"
+                    type="button"
+                    title="Créer une fiche TP"
+                  >
+                    Modèle
+                  </button>
+                  <button
+                    class="btn btn-ghost btn-compact"
+                    id="tpLoadBtn"
+                    type="button"
+                    title="Ouvre un tableau .json enregistré avec cette application"
+                  >
+                    Charger
+                  </button>
+                </div>
+                <p class="hint-note" style="margin: 0 0 10px">
+                  En-tête : matière, niveau, partie, titre. Double-cliquez la
+                  colonne <strong>Matériel</strong> pour le catalogue.
+                </p>
+                <button type="button" class="btn-mini" id="tpOpenCatalog">
+                  Catalogue matériel
+                </button>
+              </div>
+              <div id="progForm" hidden>
+                <div
+                  class="import-row"
+                  style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px"
+                >
+                  <button
+                    class="btn btn-print btn-compact"
+                    id="progCreateBtn"
+                    type="button"
+                    title="Créer une fiche progression"
+                  >
+                    Modèle
+                  </button>
+                  <button
+                    class="btn btn-ghost btn-compact"
+                    id="progLoadBtn"
+                    type="button"
+                    title="Ouvre un tableau .json enregistré avec cette application"
+                  >
+                    Charger
+                  </button>
+                </div>
+                <p class="hint-note" style="margin: 0 0 10px">
+                  Paysage A4 pleine page. Menus matière / niveau / partie /
+                  supports. Double-clic <strong>Matériel</strong> pour le
+                  catalogue.
+                </p>
+                <button type="button" class="btn-mini" id="progOpenCatalog">
+                  Catalogue matériel
+                </button>
+              </div>
+            </section>
+
+            <div id="listeModeOpts" class="mode-opts">
+              <div class="files-group mode-liste-import">
+                <p class="files-group-label">Créer</p>
+                <div class="import-row">
+                  <button
+                    class="btn btn-mode btn-compact"
+                    id="pasteBtn"
+                    type="button"
+                  >
+                    Coller le CSV
+                  </button>
+                  <button
+                    class="btn btn-print btn-compact"
+                    id="createTableBtn"
+                    type="button"
+                  >
+                    Créer un tableau
+                  </button>
+                  <button
+                    class="btn btn-ghost btn-compact"
+                    id="sampleBtn"
+                    type="button"
+                  >
+                    Exemple
+                  </button>
+                </div>
+              </div>
+              <div class="files-group mode-liste-import">
+                <p class="files-group-label">Déposer</p>
+                <div class="add-replace-row" id="addReplaceRow">
+                  <label class="drop" id="drop" for="file">
+                    <input
+                      type="file"
+                      id="file"
+                      multiple
+                      accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                      aria-label="Fichier à importer"
+                    />
+                    <div class="drop-title" id="dropTitle">
+                      Déposer un fichier
+                    </div>
+                    <div class="drop-sub" id="dropSub">
+                      CSV · TXT · Excel · tableau · modèle
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <section class="block" id="combineBlock" hidden>
+              <h2>Combiner les listes</h2>
+              <div class="seg duo">
+                <label
+                  ><input type="radio" name="combine" value="same" /><span
+                    >Même page</span
+                  ></label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="combine"
+                    value="sep"
+                    checked
+                  /><span>Pages séparées</span></label
+                >
+              </div>
+              <p class="hint-note" style="margin: 8px 0 0">
+                Même page : conserve le format de la feuille (paysage =
+                gauche/droite, portrait = haut/bas), jusqu’à 4 listes par
+                feuille.
+              </p>
+            </section>
+
+            <section class="block" id="colsBlock" hidden>
+              <h2>Colonnes à conserver</h2>
+              <p
+                class="hint-note page-apply-hint"
+                id="colsApplyHint"
+                hidden
+              ></p>
+              <div class="hint-callout">
+                <p>
+                  Glissez un en-tête pour réordonner, le bord d’une colonne
+                  pour sa largeur, les bords ou coins du tableau pour tout
+                  redimensionner.
+                </p>
+                <p>
+                  Dessinez une zone dans l’aperçu pour uniformiser les
+                  largeurs ou les hauteurs, ou supprimer des lignes et
+                  colonnes.
+                </p>
+              </div>
+              <div class="col-toolbar">
+                <button type="button" id="allOn">Tout cocher</button>
+                <button type="button" id="allOff">Tout décocher</button>
+                <button type="button" id="resetWidths">Largeurs auto</button>
+              </div>
+              <div class="cols" id="cols"></div>
+              <div class="add-line">
+                <input
+                  class="field"
+                  id="colInput"
+                  type="text"
+                  placeholder="Nouvelle colonne (ex. Visa)"
+                  aria-label="Nom de la nouvelle colonne"
+                />
+                <button class="btn-mini" id="addColBtn" type="button">
+                  Ajouter
+                </button>
+              </div>
+              <label class="check-row">
+                <input type="checkbox" id="colAll" />
+                Ajouter cette colonne à toutes les listes
+              </label>
+            </section>
+
+            <section class="block" id="numBlock">
+              <h2>Numérotation</h2>
+              <div class="num-row">
+                <div class="seg">
+                  <label
+                    ><input
+                      type="radio"
+                      name="num"
+                      value="off"
+                      checked
+                    /><span>Aucune</span></label
+                  >
+                  <label
+                    ><input type="radio" name="num" value="digits" /><span
+                      >1 2 3</span
+                    ></label
+                  >
+                  <label
+                    ><input type="radio" name="num" value="letters" /><span
+                      >A B C</span
+                    ></label
+                  >
+                </div>
+                <div class="opt-from" id="numFromWrap" hidden>
+                  <label for="numFrom">À partir de la ligne</label>
+                  <input
+                    class="field field-num"
+                    id="numFrom"
+                    type="number"
+                    min="1"
+                    value="1"
+                    aria-label="Numéroter à partir de la ligne"
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                class="linkish"
+                id="restoreRows"
+                hidden
+                style="margin-top: 8px"
+              ></button>
+            </section>
+
+          </div>
+        </div>
+        
+      </aside>
+
+      <main
+        class="workspace"
+        id="workspace"
+        tabindex="-1"
+        aria-label="Aperçu du tableau"
+      >
+        <div class="work-wave no-print" aria-hidden="true"></div>
+        <div class="mobile-bar no-print" id="mobileBar" hidden>
+          <button type="button" class="btn" id="backOptions">Options</button>
+          <strong>Aperçu du tableau</strong>
+        </div>
+        <div class="tab-bar no-print" id="tabBar" hidden>
+          <div
+            class="tab-list"
+            id="tabList"
+            role="tablist"
+            aria-label="Onglets"
+          ></div>
+          <button
+            type="button"
+            class="tab-add"
+            id="tabAddBtn"
+            title="Nouvel onglet"
+            aria-label="Nouvel onglet"
+          >
+            +
+          </button>
+        </div>
+        <div class="empty no-print" id="empty">
+          <p class="empty-name">
+            <span class="brand-epi">Epi</span><span class="brand-csv">cSV</span>
+          </p>
+          <p class="empty-lead">
+            <span class="brand-from">CSV</span>
+            <span class="brand-arrow" aria-hidden="true">→</span>
+            <span class="brand-to">Tableau design</span>
+          </p>
+          <p>
+            Déposez un export Pronote, chargez un tableau enregistré, collez un
+            CSV (Ctrl+V), ou utilisez l’exemple.
+          </p>
+        </div>
+        <div class="page-format-hud no-print" id="pageFormatHud" hidden>
+          <span id="pageFormatLabel"></span>
+          <button
+            type="button"
+            class="page-orient-toggle"
+            id="pageOrientToggle"
+            hidden
+            title="Passer en paysage"
+            aria-label="Passer en paysage"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                class="page-orient-sheet"
+                x="7"
+                y="3"
+                width="10"
+                height="14"
+                rx="1.6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"
+              />
+              <path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="page-send-toggle"
+            id="pageSendToggle"
+            hidden
+            title="Envoyer vers un autre onglet"
+            aria-label="Envoyer vers un autre onglet"
+            aria-haspopup="menu"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                x="3.2"
+                y="4.8"
+                width="10.2"
+                height="14.4"
+                rx="1.6"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"
+              />
+            </svg>
+          </button>
+        </div>
+        <div class="stage" id="stage">
+          <div class="sheets" id="sheets"></div>
+        </div>
+        <button
+          type="button"
+          class="page-plus no-print"
+          id="pageAddBtn"
+          title="Ajouter une page blanche"
+          aria-label="Ajouter une page blanche"
+        >
+          +
+        </button>
+      </main>
+      <div id="customizeFoldWrap" class="customize-shell no-print" hidden>
+        <button
+          type="button"
+          class="customize-fab"
+          id="customizeFab"
+          aria-label="Ouvrir Personnaliser"
+          title="Personnaliser"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M19.14 12.94c.04-.31.07-.63.07-.94s-.03-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.07 7.07 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54c-.58.23-1.13.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.07.63-.07.94s.03.63.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.23.4.32.64.22l2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54c.05.24.25.42.49.42h3.8c.24 0 .44-.18.49-.42l.36-2.54c.58-.23 1.13-.54 1.63-.94l2.39.96c.24.1.51 0 .64-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"
+            />
+          </svg>
+        </button>
+        <div
+          class="customize-backdrop"
+          id="customizeBackdrop"
+          hidden
+          aria-hidden="true"
+        ></div>
+        <aside
+          class="customize-rail"
+          id="customizeRail"
+          aria-label="Outils Personnaliser"
+        >
+          <button
+            type="button"
+            class="customize-rail-btn customize-rail-toggle"
+            id="customizeRailToggle"
+            aria-expanded="true"
+            aria-controls="customizePanel"
+            title="Réduire le panneau Personnaliser"
+          >
+            <svg class="customize-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M14.7 6.3a1 1 0 0 1 0 1.4L10.42 12l4.3 4.3a1 1 0 1 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0z"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="customize-rail-btn"
+            data-customize-sec="settings"
+            aria-label="Réglages"
+            title="Réglages"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M19.14 12.94c.04-.31.07-.63.07-.94s-.03-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.07 7.07 0 0 0-1.63-.94l-.36-2.54A.5.5 0 0 0 13.9 2h-3.8a.5.5 0 0 0-.49.42l-.36 2.54c-.58.23-1.13.54-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.48a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.07.63-.07.94s.03.63.07.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.13.23.4.32.64.22l2.39-.96c.5.4 1.05.72 1.63.94l.36 2.54c.05.24.25.42.49.42h3.8c.24 0 .44-.18.49-.42l.36-2.54c.58-.23 1.13-.54 1.63-.94l2.39.96c.24.1.51 0 .64-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5z"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="customize-rail-btn"
+            data-customize-sec="colors"
+            aria-label="Couleurs"
+            title="Couleurs"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.35-.59-.35-.95A2.25 2.25 0 0 1 15 14.25h1.75A5.25 5.25 0 0 0 22 9 9 9 0 0 0 12 3zm-5.25 9a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="customize-rail-btn"
+            data-customize-sec="typo"
+            aria-label="Typographie"
+            title="Typographie"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M5 4h14v3h-2.1l-.9 2H18v2h-3.2l-1.5 3.5H16V18H8v-1.5h2.7L12.2 13H9v-2h3.2l.9-2H5V4zm9.4 14.5L16 22h2.2l-1.7-3.5H14.4zM6 20.5 7.6 17h2.1L8 20.5H6z"
+              />
+            </svg>
+          </button>
+        </aside>
+        <aside
+          class="customize-panel"
+          id="customizePanel"
+          role="region"
+          aria-label="Personnaliser"
+        >
+          <header class="customize-panel-head">
+            <h2 class="customize-panel-title">Personnaliser</h2>
+            <button
+              type="button"
+              class="customize-panel-close"
+              id="customizeCloseBtn"
+              aria-label="Fermer Personnaliser"
+              title="Fermer"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M6.7 6.7a1 1 0 0 1 1.4 0L12 10.58l3.9-3.88a1 1 0 1 1 1.4 1.42L13.42 12l3.88 3.9a1 1 0 1 1-1.42 1.4L12 13.42l-3.9 3.88a1 1 0 1 1-1.4-1.42L10.58 12 6.7 8.1a1 1 0 0 1 0-1.4z"
+                />
+              </svg>
+            </button>
+          </header>
+          <div class="customize-panel-body fold-panel" id="customizeFold">
             <section class="block" id="filesBlock" hidden>
               <div
                 class="seg duo mode-seg"
@@ -5968,7 +6771,7 @@
                   ></label
                 >
               </div>
-              <div class="font-pair">
+              <div class="font-pair" id="customizeSecTypo">
                 <div class="font-col">
                   <div class="opt-label">Titre</div>
                   <div class="font-row">
@@ -6018,7 +6821,7 @@
                 id="displayApplyHint"
                 hidden
               ></p>
-              <div class="opt-label">Couleur</div>
+              <div class="opt-label" id="customizeSecColors">Couleur</div>
               <div class="seg tall">
                 <label
                   ><input
@@ -6116,394 +6919,8 @@
             </section>
             </div>
           </div>
-        </div>
-        <div id="modeFoldWrap">
-          <button
-            class="fold-head"
-            id="modeFoldBtn"
-            type="button"
-            aria-expanded="true"
-            aria-controls="modeFold"
-          >
-            Modes
-            <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"
-              />
-            </svg>
-          </button>
-          <div class="fold-panel" id="modeFold">
-            <section class="block" id="modeBlock">
-              <div
-                class="seg mode-seg"
-                id="pageModeSeg"
-                role="radiogroup"
-                aria-label="Choisir un mode"
-              >
-                <label
-                  ><input
-                    type="radio"
-                    name="pageMode"
-                    value="liste"
-                    checked
-                  /><span>Liste</span></label
-                >
-                <label
-                  ><input type="radio" name="pageMode" value="tp" /><span
-                    >TP</span
-                  ></label
-                >
-                <label
-                  ><input type="radio" name="pageMode" value="prog" /><span
-                    >Progression</span
-                  ></label
-                >
-              </div>
-              <div id="tpForm" hidden>
-                <div
-                  class="import-row"
-                  style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px"
-                >
-                  <button
-                    class="btn btn-print btn-compact"
-                    id="tpCreateBtn"
-                    type="button"
-                    title="Créer une fiche TP"
-                  >
-                    Modèle
-                  </button>
-                  <button
-                    class="btn btn-ghost btn-compact"
-                    id="tpLoadBtn"
-                    type="button"
-                    title="Ouvre un tableau .json enregistré avec cette application"
-                  >
-                    Charger
-                  </button>
-                </div>
-                <p class="hint-note" style="margin: 0 0 10px">
-                  En-tête : matière, niveau, partie, titre. Double-cliquez la
-                  colonne <strong>Matériel</strong> pour le catalogue.
-                </p>
-                <button type="button" class="btn-mini" id="tpOpenCatalog">
-                  Catalogue matériel
-                </button>
-              </div>
-              <div id="progForm" hidden>
-                <div
-                  class="import-row"
-                  style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px"
-                >
-                  <button
-                    class="btn btn-print btn-compact"
-                    id="progCreateBtn"
-                    type="button"
-                    title="Créer une fiche progression"
-                  >
-                    Modèle
-                  </button>
-                  <button
-                    class="btn btn-ghost btn-compact"
-                    id="progLoadBtn"
-                    type="button"
-                    title="Ouvre un tableau .json enregistré avec cette application"
-                  >
-                    Charger
-                  </button>
-                </div>
-                <p class="hint-note" style="margin: 0 0 10px">
-                  Paysage A4 pleine page. Menus matière / niveau / partie /
-                  supports. Double-clic <strong>Matériel</strong> pour le
-                  catalogue.
-                </p>
-                <button type="button" class="btn-mini" id="progOpenCatalog">
-                  Catalogue matériel
-                </button>
-              </div>
-            </section>
-
-            <div id="listeModeOpts" class="mode-opts">
-              <div class="files-group mode-liste-import">
-                <p class="files-group-label">Créer</p>
-                <div class="import-row">
-                  <button
-                    class="btn btn-mode btn-compact"
-                    id="pasteBtn"
-                    type="button"
-                  >
-                    Coller le CSV
-                  </button>
-                  <button
-                    class="btn btn-print btn-compact"
-                    id="createTableBtn"
-                    type="button"
-                  >
-                    Créer un tableau
-                  </button>
-                  <button
-                    class="btn btn-ghost btn-compact"
-                    id="sampleBtn"
-                    type="button"
-                  >
-                    Exemple
-                  </button>
-                </div>
-              </div>
-              <div class="files-group mode-liste-import">
-                <p class="files-group-label">Déposer</p>
-                <div class="add-replace-row" id="addReplaceRow">
-                  <label class="drop" id="drop" for="file">
-                    <input
-                      type="file"
-                      id="file"
-                      multiple
-                      accept=".csv,.txt,.tsv,.xlsx,.xls,.ods,.css,.json,.listes,text/csv,text/plain,application/json,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                      aria-label="Fichier à importer"
-                    />
-                    <div class="drop-title" id="dropTitle">
-                      Déposer un fichier
-                    </div>
-                    <div class="drop-sub" id="dropSub">
-                      CSV · TXT · Excel · tableau · modèle
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <section class="block" id="combineBlock" hidden>
-              <h2>Combiner les listes</h2>
-              <div class="seg duo">
-                <label
-                  ><input type="radio" name="combine" value="same" /><span
-                    >Même page</span
-                  ></label
-                >
-                <label
-                  ><input
-                    type="radio"
-                    name="combine"
-                    value="sep"
-                    checked
-                  /><span>Pages séparées</span></label
-                >
-              </div>
-              <p class="hint-note" style="margin: 8px 0 0">
-                Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
-              </p>
-            </section>
-
-            <section class="block" id="colsBlock" hidden>
-              <h2>Colonnes à conserver</h2>
-              <p
-                class="hint-note page-apply-hint"
-                id="colsApplyHint"
-                hidden
-              ></p>
-              <div class="hint-callout">
-                <p>
-                  Glissez un en-tête pour réordonner, le bord d’une colonne
-                  pour sa largeur, les bords ou coins du tableau pour tout
-                  redimensionner.
-                </p>
-                <p>
-                  Dessinez une zone dans l’aperçu pour uniformiser les
-                  largeurs ou les hauteurs, ou supprimer des lignes et
-                  colonnes.
-                </p>
-              </div>
-              <div class="col-toolbar">
-                <button type="button" id="allOn">Tout cocher</button>
-                <button type="button" id="allOff">Tout décocher</button>
-                <button type="button" id="resetWidths">Largeurs auto</button>
-              </div>
-              <div class="cols" id="cols"></div>
-              <div class="add-line">
-                <input
-                  class="field"
-                  id="colInput"
-                  type="text"
-                  placeholder="Nouvelle colonne (ex. Visa)"
-                  aria-label="Nom de la nouvelle colonne"
-                />
-                <button class="btn-mini" id="addColBtn" type="button">
-                  Ajouter
-                </button>
-              </div>
-              <label class="check-row">
-                <input type="checkbox" id="colAll" />
-                Ajouter cette colonne à toutes les listes
-              </label>
-            </section>
-
-            <section class="block" id="numBlock">
-              <h2>Numérotation</h2>
-              <div class="num-row">
-                <div class="seg">
-                  <label
-                    ><input
-                      type="radio"
-                      name="num"
-                      value="off"
-                      checked
-                    /><span>Aucune</span></label
-                  >
-                  <label
-                    ><input type="radio" name="num" value="digits" /><span
-                      >1 2 3</span
-                    ></label
-                  >
-                  <label
-                    ><input type="radio" name="num" value="letters" /><span
-                      >A B C</span
-                    ></label
-                  >
-                </div>
-                <div class="opt-from" id="numFromWrap" hidden>
-                  <label for="numFrom">À partir de la ligne</label>
-                  <input
-                    class="field field-num"
-                    id="numFrom"
-                    type="number"
-                    min="1"
-                    value="1"
-                    aria-label="Numéroter à partir de la ligne"
-                  />
-                </div>
-              </div>
-              <button
-                type="button"
-                class="linkish"
-                id="restoreRows"
-                hidden
-                style="margin-top: 8px"
-              ></button>
-            </section>
-
-          </div>
-        </div>
-        
-      </aside>
-
-      <main
-        class="workspace"
-        id="workspace"
-        tabindex="-1"
-        aria-label="Aperçu du tableau"
-      >
-        <div class="work-wave no-print" aria-hidden="true"></div>
-        <div class="mobile-bar no-print" id="mobileBar" hidden>
-          <button type="button" class="btn" id="backOptions">Options</button>
-          <strong>Aperçu du tableau</strong>
-        </div>
-        <div class="tab-bar no-print" id="tabBar" hidden>
-          <div
-            class="tab-list"
-            id="tabList"
-            role="tablist"
-            aria-label="Onglets"
-          ></div>
-          <button
-            type="button"
-            class="tab-add"
-            id="tabAddBtn"
-            title="Nouvel onglet"
-            aria-label="Nouvel onglet"
-          >
-            +
-          </button>
-        </div>
-        <div class="empty no-print" id="empty">
-          <p class="empty-name">
-            <span class="brand-epi">Epi</span><span class="brand-csv">cSV</span>
-          </p>
-          <p class="empty-lead">
-            <span class="brand-from">CSV</span>
-            <span class="brand-arrow" aria-hidden="true">→</span>
-            <span class="brand-to">Tableau design</span>
-          </p>
-          <p>
-            Déposez un export Pronote, chargez un tableau enregistré, collez un
-            CSV (Ctrl+V), ou utilisez l’exemple.
-          </p>
-        </div>
-        <div class="page-format-hud no-print" id="pageFormatHud" hidden>
-          <span id="pageFormatLabel"></span>
-          <button
-            type="button"
-            class="page-orient-toggle"
-            id="pageOrientToggle"
-            hidden
-            title="Passer en paysage"
-            aria-label="Passer en paysage"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect
-                class="page-orient-sheet"
-                x="7"
-                y="3"
-                width="10"
-                height="14"
-                rx="1.6"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"
-              />
-              <path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="page-send-toggle"
-            id="pageSendToggle"
-            hidden
-            title="Envoyer vers un autre onglet"
-            aria-label="Envoyer vers un autre onglet"
-            aria-haspopup="menu"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect
-                x="3.2"
-                y="4.8"
-                width="10.2"
-                height="14.4"
-                rx="1.6"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"
-              />
-            </svg>
-          </button>
-        </div>
-        <div class="stage" id="stage">
-          <div class="sheets" id="sheets"></div>
-        </div>
-        <button
-          type="button"
-          class="page-plus no-print"
-          id="pageAddBtn"
-          title="Ajouter une page blanche"
-          aria-label="Ajouter une page blanche"
-        >
-          +
-        </button>
-      </main>
+        </aside>
+      </div>
     </div>
 
     <nav class="yt-dock no-print" aria-label="Chaîne YouTube Michawaro">
@@ -7566,6 +7983,8 @@
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
       const PAGE_SEND_SVG =
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.8" width="10.2" height="14.4" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15.4 12h5.4M17.8 8.7L21.2 12l-3.4 3.3"/></svg>';
+      const COMBO_SWAP_SVG =
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7.2 8.2h9.2M14.2 5.4l2.8 2.8-2.8 2.8M16.8 15.8H7.6M9.8 13l-2.8 2.8 2.8 2.8"/></svg>';
       const MATERIEL_CATALOG = [
         {
           id: "1",
@@ -9250,6 +9669,36 @@
         return place === "same-first" ? at : at + 1;
       }
 
+      /** Orientation affichée de la feuille (sans forcer le paysage « combine »). */
+      function resolveDisplayOrient(list) {
+        if (!list) return "portrait";
+        let orient = listOrient(list);
+        if (orient === "auto") {
+          const cols = selectedCols(list).length;
+          orient = isSheetForm(list)
+            ? "paysage"
+            : cols >= 8
+              ? "paysage"
+              : "portrait";
+        }
+        return orient === "paysage" ? "paysage" : "portrait";
+      }
+
+      function pinListsOrient(lists, orient) {
+        const o = orient === "paysage" ? "paysage" : "portrait";
+        (lists || []).forEach((l) => {
+          if (l) l.orient = o;
+        });
+      }
+
+      function pinSamePageOrients(hostList, insertedLists) {
+        if (!hostList) return;
+        pinListsOrient(
+          [hostList].concat(insertedLists || []),
+          resolveDisplayOrient(hostList),
+        );
+      }
+
       function askPickPageHalf() {
         return new Promise((resolve) => {
           const list = activeList() || state.lists[0];
@@ -9273,8 +9722,7 @@
             resolve("second");
             return;
           }
-          const cols = list ? selectedCols(list).length : 1;
-          const orient = resolvedOrient(list, cols);
+          const orient = resolveDisplayOrient(list);
           const asRows = orient !== "paysage";
           const labelFirst = asRows ? "Moitié haute" : "Moitié gauche";
           const labelSecond = asRows ? "Moitié basse" : "Moitié droite";
@@ -9429,13 +9877,20 @@
       function resolvedOrient(list, colCount) {
         let orient = listOrient(list);
         if (orient === "auto") {
-          orient = combining()
-            ? "paysage"
-            : isSheetForm(list)
+          const group = combining()
+            ? previewGroups().find((g) =>
+                g.some((l) => l && list && l.id === list.id),
+              )
+            : null;
+          const nOn = group && group.length > 1 ? group.length : 1;
+          orient =
+            combining() && nOn > 2
               ? "paysage"
-              : colCount >= 8
+              : isSheetForm(list)
                 ? "paysage"
-                : "portrait";
+                : colCount >= 8
+                  ? "paysage"
+                  : "portrait";
         } else if (combining()) {
           const group = previewGroups().find((g) =>
             g.some((l) => l && list && l.id === list.id),
@@ -12713,12 +13168,16 @@
         }
         const list = makeBlankList(nextBlankName());
         list.orient = defaultListOrient();
+        const hostForSame = isSamePagePlace(place)
+          ? activeList() || state.lists[0]
+          : null;
         const at = intercalate
           ? Math.max(0, Math.min(state.lists.length, index))
           : isSamePagePlace(place)
             ? samePageInsertIndex(place)
             : state.lists.length;
         state.lists.splice(at, 0, list);
+        if (hostForSame) pinSamePageOrients(hostForSame, [list]);
         state.activeId = list.id;
         state.selectedIds = [list.id];
         renderAll();
@@ -13838,13 +14297,14 @@
       function layoutFor(colCount, nOnPage, list) {
         let orient = listOrient(list);
         if (orient === "auto") {
-          orient = combining()
-            ? "paysage"
-            : isSheetForm(list)
+          orient =
+            combining() && nOnPage > 2
               ? "paysage"
-              : colCount >= 8
+              : isSheetForm(list)
                 ? "paysage"
-                : "portrait";
+                : colCount >= 8
+                  ? "paysage"
+                  : "portrait";
         } else if (combining() && nOnPage > 2) {
           orient = "paysage";
         }
@@ -14398,7 +14858,7 @@
           (state.vlines ? " has-vlines" : "") +
           (isSheetForm(list) ? " is-tp" : "") +
           (isTpForm(list) && state.tpInner !== false ? " has-tp-inner" : "") +
-          (isTpForm(list) && state.tpVlines === true ? " has-tp-vlines" : "") +
+          (state.tpVlines === true ? " has-tp-vlines" : "") +
           '" style="font-size:' +
           clampFontPt(state.fontPt) +
           'pt">';
@@ -16774,12 +17234,18 @@
         const nOn =
           (group || []).filter((l) => !isBlankList(l) && !isSheetForm(l))
             .length || 1;
-        const cols = Math.max(
+        const ownCols = list ? selectedCols(list).length : 0;
+        const groupCols = Math.max(
           0,
-          maxCols || 0,
+          ownCols,
           ...(group || []).map((l) => selectedCols(l).length),
         );
-        return layoutFor(cols || 1, nOn, list);
+        // 1–2 blocs : orientation de la page d’accueil (pas le max global d’autres feuilles).
+        const cols =
+          nOn <= 2
+            ? ownCols || groupCols || 1
+            : Math.max(groupCols, maxCols || 0) || 1;
+        return layoutFor(cols, nOn, list);
       }
 
       function makeSheetOrientToggle(list, orient) {
@@ -16799,6 +17265,41 @@
         wrap.appendChild(btn);
         wrap.appendChild(makePageSendBtn(list));
         return wrap;
+      }
+
+      function makeComboSwapCaption(group, orient) {
+        const wrap = document.createElement("div");
+        wrap.className = "sheet-caption no-print";
+        const a = group && group[0];
+        const b = group && group[1];
+        if (!a || !b) return wrap;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "page-combo-swap";
+        btn.setAttribute("data-combo-swap-a", String(a.id));
+        btn.setAttribute("data-combo-swap-b", String(b.id));
+        btn.innerHTML = COMBO_SWAP_SVG;
+        const asRows = orient !== "paysage";
+        const lab = asRows
+          ? "Intervertir haut et bas"
+          : "Intervertir gauche et droite";
+        btn.title = lab;
+        btn.setAttribute("aria-label", lab);
+        wrap.appendChild(btn);
+        wrap.appendChild(makePageSendBtn(a));
+        return wrap;
+      }
+
+      function swapComboPair(idA, idB) {
+        const i0 = state.lists.findIndex((l) => l && l.id === idA);
+        const i1 = state.lists.findIndex((l) => l && l.id === idB);
+        if (i0 < 0 || i1 < 0 || i0 === i1) return;
+        pushHist();
+        const tmp = state.lists[i0];
+        state.lists[i0] = state.lists[i1];
+        state.lists[i1] = tmp;
+        renderAll();
+        announce("Moitiés interverties.");
       }
 
       function previewGroups() {
@@ -16882,6 +17383,8 @@
           limit.innerHTML = "<span>Limite A4</span>";
           if (!combining() && group.length === 1 && group[0]) {
             hold.appendChild(makeSheetOrientToggle(group[0], lay.orient));
+          } else if (group.length === 2) {
+            hold.appendChild(makeComboSwapCaption(group, lay.orient));
           }
           const sheet = document.createElement("div");
           sheet.className =
@@ -17953,7 +18456,7 @@
         const hasTp = state.lists.some(isTpList);
         const tpVlinesWrap = $("optTpVlinesWrap");
         const tpVlinesEl = $("optTpVlines");
-        if (tpVlinesWrap) tpVlinesWrap.hidden = !hasTp;
+        if (tpVlinesWrap) tpVlinesWrap.hidden = false;
         if (tpVlinesEl) tpVlinesEl.checked = state.tpVlines === true;
         const tpInnerWrap = $("optTpInnerWrap");
         const tpInnerEl = $("optTpInner");
@@ -18497,6 +19000,9 @@
           activateFreshTab();
         }
         const sheetOpts = { hist: !skipHist };
+        const hostForSame = isSamePagePlace(place)
+          ? activeList() || state.lists[0]
+          : null;
         if (isSamePagePlace(place)) {
           enableSamePageCombine();
           sheetOpts.at = samePageInsertIndex(place);
@@ -18504,6 +19010,11 @@
         if (kind === "prog") createProgSheet(cols, rows, sheetOpts);
         else if (kind === "tp") createTpSheet(cols, rows, sheetOpts);
         else createEmptyTable(cols, rows, sheetOpts);
+        if (hostForSame && isSamePagePlace(place)) {
+          const created = activeList();
+          if (created && created !== hostForSame)
+            pinSamePageOrients(hostForSame, [created]);
+        }
       }
 
       async function createPresetModel(kind) {
@@ -18737,7 +19248,11 @@
           state.selectedIds = [];
           state.combineAsked = false;
         }
+        const hostForSame = isSamePagePlace(place)
+          ? activeList() || state.lists[0]
+          : null;
         let insertAt = isSamePagePlace(place) ? samePageInsertIndex(place) : null;
+        const inserted = [];
         items.forEach((item, i) => {
           const blank = replaceableBlankPage();
           const list = blank
@@ -18748,7 +19263,9 @@
                 insertAt == null ? null : { at: insertAt + i },
               );
           if (item.sample) list.sample = true;
+          if (!blank) inserted.push(list);
         });
+        if (hostForSame && inserted.length) pinSamePageOrients(hostForSame, inserted);
         if (heldStyle && state.lists.length) {
           applyStyle(heldStyle, { hist: false, render: false });
           heldStyle = null;
@@ -18901,12 +19418,15 @@
             incoming.forEach((t) => state.tabs.push(t));
             switchToTab(incoming[0].id, { hist: false });
           } else if (isSamePagePlace(place)) {
+            const hostForSame = activeList() || state.lists[0];
             enableSamePageCombine();
             const at = samePageInsertIndex(place);
             const firstLists = incoming[0].lists || [];
             firstLists.forEach((l, i) => {
               state.lists.splice(at + i, 0, l);
             });
+            if (hostForSame && firstLists.length)
+              pinSamePageOrients(hostForSame, firstLists);
             incoming.slice(1).forEach((t) => state.tabs.push(t));
             if (firstLists[0]) state.activeId = firstLists[0].id;
             else if (!state.activeId && state.lists[0])
@@ -20174,7 +20694,7 @@
               : e.target && e.target.parentElement;
           if (!el || !el.closest) return false;
           return el.closest(
-            "button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-send-menu, .sheet-caption, .block-move, .tp-meta-bar, .tp-chip, .tp-struct, .tp-struct-lab, .tp-mat-open, .tp-choice-menu, .tp-ngroups, .is-tp-mat, [data-tp-mat], [data-tp-field], [data-move-block]",
+            "button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-menu, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-combo-swap, .page-send-menu, .sheet-caption, .block-move, .tp-meta-bar, .tp-chip, .tp-struct, .tp-struct-lab, .tp-mat-open, .tp-choice-menu, .tp-ngroups, .is-tp-mat, [data-tp-mat], [data-tp-field], [data-move-block]",
           );
         };
         const editing = (el) =>
@@ -20456,7 +20976,7 @@
             if (!el || !el.closest) return;
             if (
               el.closest(
-                "button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-send-menu, .block-move, .tp-choice-menu",
+                "button, a, input, select, textarea, .col-resizer, .row-resizer, .table-frame, .table-frame-h, .row-handle, .row-del, .col-del, .sel-bar, .sel-shield, .page-sheet-del, .page-plus, .page-insert, .page-orient-toggle, .page-send-toggle, .page-combo-swap, .page-send-menu, .block-move, .tp-choice-menu",
               )
             )
               return;
@@ -20715,6 +21235,15 @@
           const id = Number(orientBtn.getAttribute("data-orient-lid"));
           const list = state.lists.find((l) => l.id === id);
           if (list) toggleListOrient(list);
+          return;
+        }
+        const swapBtn = e.target.closest("[data-combo-swap-a]");
+        if (swapBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const idA = Number(swapBtn.getAttribute("data-combo-swap-a"));
+          const idB = Number(swapBtn.getAttribute("data-combo-swap-b"));
+          if (idA && idB) swapComboPair(idA, idB);
           return;
         }
         const sendBtn = e.target.closest("[data-send-lid]");
