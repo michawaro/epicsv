@@ -840,6 +840,12 @@
       .files-export .files-group-label {
         color: #f7ffc4;
       }
+      .files-typo {
+        padding: 10px 10px 12px;
+        border-radius: 18px;
+        background: rgba(186, 164, 232, 0.32);
+        box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+      }
       .autosave-hint {
         margin: 8px 2px 0;
         font-size: 11px;
@@ -2162,7 +2168,8 @@
         grid-column: 1 / -1;
       }
       .sel-group-fusion,
-      .sel-group-insert {
+      .sel-group-insert,
+      .sel-group-fmt {
         min-width: 0;
       }
       .sel-dim-row {
@@ -5126,8 +5133,54 @@
         gap: 8px 12px;
         align-items: end;
       }
-      #customizeSecTypo > select.field {
+      #customizeSecTypo select.field {
         margin-bottom: 2px;
+      }
+      .fmt-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+      }
+      .fmt-btn {
+        min-width: 36px;
+        height: 32px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.22);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+      }
+      .fmt-btn em {
+        font-style: italic;
+        font-weight: 600;
+      }
+      .fmt-btn[aria-pressed="true"] {
+        outline: 2px solid var(--seal);
+        outline-offset: 1px;
+        background: rgba(255, 255, 255, 0.38);
+      }
+      .fmt-btn:hover {
+        background: rgba(255, 255, 255, 0.34);
+      }
+      .files-typo .fluo-row {
+        margin-top: 2px;
+      }
+      .cell-edit b,
+      .cell-edit strong,
+      .rq-note b,
+      .rq-note strong {
+        font-weight: 700;
+      }
+      .cell-edit i,
+      .cell-edit em,
+      .rq-note i,
+      .rq-note em {
+        font-style: italic;
       }
       .font-col {
         display: flex;
@@ -6917,20 +6970,11 @@
                 <button
                   type="button"
                   class="fluo"
-                  data-fluo="vert"
-                  aria-label="Surligneur vert"
+                  data-fluo="rouge"
+                  aria-label="Surligneur rouge"
                   aria-pressed="false"
-                  title="Fluo vert. Clic : case. Double-clic : texte."
-                  style="background: #c9ebc4"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="rose"
-                  aria-label="Surligneur rose"
-                  aria-pressed="false"
-                  title="Fluo rose. Clic : case. Double-clic : texte."
-                  style="background: #f5c9d6"
+                  title="Fluo rouge. Clic : case. Double-clic : texte."
+                  style="background: #f5c4c0"
                 ></button>
                 <button
                   type="button"
@@ -6944,20 +6988,11 @@
                 <button
                   type="button"
                   class="fluo"
-                  data-fluo="rouge"
-                  aria-label="Surligneur rouge"
+                  data-fluo="vert"
+                  aria-label="Surligneur vert"
                   aria-pressed="false"
-                  title="Fluo rouge. Clic : case. Double-clic : texte."
-                  style="background: #f5c4c0"
-                ></button>
-                <button
-                  type="button"
-                  class="fluo"
-                  data-fluo="bleu"
-                  aria-label="Surligneur bleu"
-                  aria-pressed="false"
-                  title="Fluo bleu. Clic : case. Double-clic : texte."
-                  style="background: #B3D9FF"
+                  title="Fluo vert. Clic : case. Double-clic : texte."
+                  style="background: #c9ebc4"
                 ></button>
                 <button
                   type="button"
@@ -6967,6 +7002,15 @@
                   aria-pressed="false"
                   title="Fluo turquoise. Clic : case. Double-clic : texte."
                   style="background: #A7E8D8"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="bleu"
+                  aria-label="Surligneur bleu"
+                  aria-pressed="false"
+                  title="Fluo bleu. Clic : case. Double-clic : texte."
+                  style="background: #B3D9FF"
                 ></button>
                 <button
                   type="button"
@@ -6985,6 +7029,15 @@
                   aria-pressed="false"
                   title="Fluo lavande. Clic : case. Double-clic : texte."
                   style="background: #C5CAE9"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="rose"
+                  aria-label="Surligneur rose"
+                  aria-pressed="false"
+                  title="Fluo rose. Clic : case. Double-clic : texte."
+                  style="background: #f5c9d6"
                 ></button>
               </div>
               <label class="check-row" style="margin-top: 10px">
@@ -7113,132 +7166,6 @@
                   ></label
                 >
               </div>
-              <div id="customizeSecTypo">
-                <div class="opt-label">Police</div>
-                <select
-                  id="sheetFont"
-                  class="field"
-                  aria-label="Police des tableaux et feuilles"
-                >
-                  <option
-                    value="default"
-                    style="font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', sans-serif"
-                  >
-                    Par défaut
-                  </option>
-                  <option
-                    value="source-sans-3"
-                    style="font-family: 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', sans-serif"
-                  >
-                    Source Sans 3
-                  </option>
-                  <option
-                    value="literata"
-                    style="font-family: Literata, Georgia, 'Times New Roman', serif"
-                  >
-                    Literata
-                  </option>
-                  <option
-                    value="fraunces"
-                    style="font-family: Fraunces, Georgia, 'Times New Roman', serif"
-                  >
-                    Fraunces
-                  </option>
-                  <option
-                    value="atkinson"
-                    style="font-family: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', sans-serif"
-                  >
-                    Atkinson Hyperlegible
-                  </option>
-                  <option
-                    value="nunito-sans"
-                    style="font-family: 'Nunito Sans', 'Segoe UI', 'Helvetica Neue', sans-serif"
-                  >
-                    Nunito Sans
-                  </option>
-                  <option
-                    value="lora"
-                    style="font-family: Lora, Georgia, 'Times New Roman', serif"
-                  >
-                    Lora
-                  </option>
-                  <option
-                    value="bebas-neue"
-                    style="font-family: 'Bebas Neue', 'Arial Narrow', sans-serif"
-                  >
-                    Bebas Neue
-                  </option>
-                  <option
-                    value="oswald"
-                    style="font-family: Oswald, 'Arial Narrow', sans-serif"
-                  >
-                    Oswald
-                  </option>
-                  <option
-                    value="anton"
-                    style="font-family: Anton, Impact, 'Arial Black', sans-serif"
-                  >
-                    Anton
-                  </option>
-                  <option
-                    value="archivo-black"
-                    style="font-family: 'Archivo Black', Impact, 'Arial Black', sans-serif"
-                  >
-                    Archivo Black
-                  </option>
-                  <option
-                    value="alfa-slab-one"
-                    style="font-family: 'Alfa Slab One', Georgia, serif"
-                  >
-                    Alfa Slab One
-                  </option>
-                </select>
-                <div class="font-pair">
-                <div class="font-col">
-                  <div class="opt-label">Titre</div>
-                  <div class="font-row">
-                    <input
-                      type="range"
-                      id="titlePt"
-                      min="8"
-                      max="24"
-                      step="0.5"
-                      value="14"
-                      aria-label="Taille du titre"
-                    />
-                    <strong id="titlePtVal">14 pt</strong>
-                  </div>
-                </div>
-                <div class="font-col">
-                  <div class="opt-label">Titres colonnes</div>
-                  <div class="font-row">
-                    <input
-                      type="range"
-                      id="thPt"
-                      min="5"
-                      max="12"
-                      step="0.5"
-                      value="7.5"
-                      aria-label="Taille des titres de colonnes"
-                    />
-                    <strong id="thPtVal">7,5 pt</strong>
-                  </div>
-                </div>
-              </div>
-              <div class="opt-label">Texte du tableau</div>
-              <div class="font-row">
-                <input
-                  type="range"
-                  id="fontPt"
-                  min="6.5"
-                  max="14"
-                  step="0.5"
-                  value="9.5"
-                  aria-label="Taille du texte du tableau"
-                />
-                <strong id="fontPtVal">9,5 pt</strong>
-              </div>
-              </div>
               <p
                 class="hint-note page-apply-hint"
                 id="displayApplyHint"
@@ -7351,6 +7278,258 @@
               </div>
               <p class="hint-note" style="margin: 8px 0 0">
                 Autour du tableau de la page active. Suit largeur et hauteur.
+              </p>
+            </section>
+            </div>
+            <div class="files-group files-typo" id="customizeSecTypo">
+            <section class="block" id="typoBlock">
+              <div class="opt-label" style="margin-top: 0">Typographie</div>
+              <div class="opt-label">Police</div>
+              <select
+                id="sheetFont"
+                class="field"
+                aria-label="Police des tableaux et feuilles"
+              >
+                <option
+                  value="default"
+                  style="font-family: 'Nunito', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                >
+                  Par défaut
+                </option>
+                <option
+                  value="comic-sans"
+                  style="font-family: 'Comic Sans MS', 'Comic Sans', cursive"
+                >
+                  Sans MS
+                </option>
+                <option
+                  value="arial"
+                  style="font-family: Arial, Helvetica, sans-serif"
+                >
+                  Arial
+                </option>
+                <option
+                  value="source-sans-3"
+                  style="font-family: 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                >
+                  Source Sans 3
+                </option>
+                <option
+                  value="literata"
+                  style="font-family: Literata, Georgia, 'Times New Roman', serif"
+                >
+                  Literata
+                </option>
+                <option
+                  value="fraunces"
+                  style="font-family: Fraunces, Georgia, 'Times New Roman', serif"
+                >
+                  Fraunces
+                </option>
+                <option
+                  value="atkinson"
+                  style="font-family: 'Atkinson Hyperlegible', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                >
+                  Atkinson Hyperlegible
+                </option>
+                <option
+                  value="nunito-sans"
+                  style="font-family: 'Nunito Sans', 'Segoe UI', 'Helvetica Neue', sans-serif"
+                >
+                  Nunito Sans
+                </option>
+                <option
+                  value="lora"
+                  style="font-family: Lora, Georgia, 'Times New Roman', serif"
+                >
+                  Lora
+                </option>
+                <option
+                  value="bebas-neue"
+                  style="font-family: 'Bebas Neue', 'Arial Narrow', sans-serif"
+                >
+                  Bebas Neue
+                </option>
+                <option
+                  value="oswald"
+                  style="font-family: Oswald, 'Arial Narrow', sans-serif"
+                >
+                  Oswald
+                </option>
+                <option
+                  value="anton"
+                  style="font-family: Anton, Impact, 'Arial Black', sans-serif"
+                >
+                  Anton
+                </option>
+                <option
+                  value="archivo-black"
+                  style="font-family: 'Archivo Black', Impact, 'Arial Black', sans-serif"
+                >
+                  Archivo Black
+                </option>
+                <option
+                  value="alfa-slab-one"
+                  style="font-family: 'Alfa Slab One', Georgia, serif"
+                >
+                  Alfa Slab One
+                </option>
+              </select>
+              <div class="font-pair">
+              <div class="font-col">
+                <div class="opt-label">Titre</div>
+                <div class="font-row">
+                  <input
+                    type="range"
+                    id="titlePt"
+                    min="8"
+                    max="24"
+                    step="0.5"
+                    value="14"
+                    aria-label="Taille du titre"
+                  />
+                  <strong id="titlePtVal">14 pt</strong>
+                </div>
+              </div>
+              <div class="font-col">
+                <div class="opt-label">Titres colonnes</div>
+                <div class="font-row">
+                  <input
+                    type="range"
+                    id="thPt"
+                    min="5"
+                    max="12"
+                    step="0.5"
+                    value="7.5"
+                    aria-label="Taille des titres de colonnes"
+                  />
+                  <strong id="thPtVal">7,5 pt</strong>
+                </div>
+              </div>
+            </div>
+              <div class="opt-label">Texte du tableau</div>
+              <div class="font-row">
+                <input
+                  type="range"
+                  id="fontPt"
+                  min="6.5"
+                  max="14"
+                  step="0.5"
+                  value="9.5"
+                  aria-label="Taille du texte du tableau"
+                />
+                <strong id="fontPtVal">9,5 pt</strong>
+              </div>
+              <div class="opt-label">Mise en forme</div>
+              <div class="fmt-tools" role="group" aria-label="Gras et italique">
+                <button
+                  type="button"
+                  class="fmt-btn"
+                  id="typoBold"
+                  data-fmt="bold"
+                  aria-pressed="false"
+                  title="Gras (sélection dans une cellule)"
+                  aria-label="Gras"
+                >
+                  <strong>G</strong>
+                </button>
+                <button
+                  type="button"
+                  class="fmt-btn"
+                  id="typoItalic"
+                  data-fmt="italic"
+                  aria-pressed="false"
+                  title="Italique (sélection dans une cellule)"
+                  aria-label="Italique"
+                >
+                  <em>I</em>
+                </button>
+              </div>
+              <div class="opt-label">Surligner</div>
+              <div
+                class="fluo-row"
+                id="fluoRowTypo"
+                role="group"
+                aria-label="Surligneurs"
+                title="Clic : toute la case. Double-clic sur le texte : fluo du texte seulement."
+              >
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="rouge"
+                  aria-label="Surligneur rouge"
+                  aria-pressed="false"
+                  title="Fluo rouge. Clic : case. Double-clic : texte."
+                  style="background: #f5c4c0"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="jaune"
+                  aria-label="Surligneur jaune"
+                  aria-pressed="false"
+                  title="Fluo jaune. Clic : case. Double-clic : texte."
+                  style="background: #ffe9a3"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="vert"
+                  aria-label="Surligneur vert"
+                  aria-pressed="false"
+                  title="Fluo vert. Clic : case. Double-clic : texte."
+                  style="background: #c9ebc4"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="turquoise"
+                  aria-label="Surligneur turquoise"
+                  aria-pressed="false"
+                  title="Fluo turquoise. Clic : case. Double-clic : texte."
+                  style="background: #A7E8D8"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="bleu"
+                  aria-label="Surligneur bleu"
+                  aria-pressed="false"
+                  title="Fluo bleu. Clic : case. Double-clic : texte."
+                  style="background: #B3D9FF"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="violet"
+                  aria-label="Surligneur violet"
+                  aria-pressed="false"
+                  title="Fluo violet. Clic : case. Double-clic : texte."
+                  style="background: #D1C4E9"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="lavande"
+                  aria-label="Surligneur lavande"
+                  aria-pressed="false"
+                  title="Fluo lavande. Clic : case. Double-clic : texte."
+                  style="background: #C5CAE9"
+                ></button>
+                <button
+                  type="button"
+                  class="fluo"
+                  data-fluo="rose"
+                  aria-label="Surligneur rose"
+                  aria-pressed="false"
+                  title="Fluo rose. Clic : case. Double-clic : texte."
+                  style="background: #f5c9d6"
+                ></button>
+              </div>
+              <p class="hint-note" style="margin: 8px 0 0">
+                Gras et italique s’appliquent au texte sélectionné dans une
+                cellule. Les pastilles fluo activent le surligneur (comme dans
+                Infos).
               </p>
             </section>
             </div>
@@ -7808,6 +7987,35 @@
               />
               <path fill="currentColor" d="M8.2 14.4h7.6v3.1H8.2z" />
             </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="sel-group sel-group-fmt"
+        role="group"
+        aria-label="Mise en forme"
+      >
+        <span class="sel-group-lab">Style</span>
+        <div class="sel-dim" role="group" aria-label="Gras et italique">
+          <button
+            type="button"
+            id="selBold"
+            data-fmt="bold"
+            aria-pressed="false"
+            title="Gras"
+            aria-label="Gras"
+          >
+            <strong>G</strong>
+          </button>
+          <button
+            type="button"
+            id="selItalic"
+            data-fmt="italic"
+            aria-pressed="false"
+            title="Italique"
+            aria-label="Italique"
+          >
+            <em>I</em>
           </button>
         </div>
       </div>
@@ -8300,6 +8508,18 @@
           stack: SHEET_FONT_DEFAULT,
           google: "",
         },
+        "comic-sans": {
+          id: "comic-sans",
+          label: "Sans MS",
+          stack: '"Comic Sans MS", "Comic Sans", cursive',
+          google: "",
+        },
+        arial: {
+          id: "arial",
+          label: "Arial",
+          stack: "Arial, Helvetica, sans-serif",
+          google: "",
+        },
         "source-sans-3": {
           id: "source-sans-3",
           label: "Source Sans 3",
@@ -8373,14 +8593,14 @@
       };
       const TITRES = ["fin", "moyen", "haut"];
       const FLUOS = [
-        { id: "vert", color: "#c9ebc4", label: "Fluo vert" },
-        { id: "rose", color: "#f5c9d6", label: "Fluo rose" },
-        { id: "jaune", color: "#ffe9a3", label: "Fluo jaune" },
         { id: "rouge", color: "#f5c4c0", label: "Fluo rouge" },
-        { id: "bleu", color: "#B3D9FF", label: "Fluo bleu" },
+        { id: "jaune", color: "#ffe9a3", label: "Fluo jaune" },
+        { id: "vert", color: "#c9ebc4", label: "Fluo vert" },
         { id: "turquoise", color: "#A7E8D8", label: "Fluo turquoise" },
+        { id: "bleu", color: "#B3D9FF", label: "Fluo bleu" },
         { id: "violet", color: "#D1C4E9", label: "Fluo violet" },
         { id: "lavande", color: "#C5CAE9", label: "Fluo lavande" },
+        { id: "rose", color: "#f5c9d6", label: "Fluo rose" },
       ];
       const EMPTY_COLS_MAX = 40;
       const EMPTY_ROWS_MAX = 80;
@@ -14991,6 +15211,116 @@
           .replace(/"/g, "&quot;");
       }
 
+      const CELL_FMT_TAGS = {
+        B: true,
+        STRONG: true,
+        I: true,
+        EM: true,
+        U: true,
+      };
+
+      function sanitizeCellHtml(html) {
+        const root = document.createElement("div");
+        root.innerHTML = String(html || "");
+        const walk = (node) => {
+          [...node.childNodes].forEach((child) => {
+            if (child.nodeType === 3) return;
+            if (child.nodeType !== 1) {
+              child.remove();
+              return;
+            }
+            walk(child);
+            if (!CELL_FMT_TAGS[child.tagName]) {
+              while (child.firstChild) node.insertBefore(child.firstChild, child);
+              child.remove();
+              return;
+            }
+            while (child.attributes.length)
+              child.removeAttribute(child.attributes[0].name);
+          });
+        };
+        walk(root);
+        return root.innerHTML;
+      }
+
+      function cellInnerHtml(text) {
+        const s = String(text || "");
+        if (/<(b|strong|i|em|u)\b/i.test(s)) return sanitizeCellHtml(s);
+        return escapeHtml(s);
+      }
+
+      function readEditableValue(el, trim) {
+        const html = sanitizeCellHtml(el.innerHTML || "");
+        const hasFmt = /<(b|strong|i|em|u)\b/i.test(html);
+        if (hasFmt) return html;
+        let v = el.textContent || "";
+        if (trim) v = v.replace(/\s+/g, " ").trim();
+        return v;
+      }
+
+      function editableFocusEl() {
+        const ae = document.activeElement;
+        if (
+          ae &&
+          ae.isContentEditable &&
+          ae.closest &&
+          ae.closest(".cell-edit, .rq-note, .th-edit")
+        )
+          return ae;
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return null;
+        let n = sel.anchorNode;
+        if (n && n.nodeType !== 1) n = n.parentElement;
+        return n && n.closest
+          ? n.closest(".cell-edit, .rq-note, .th-edit")
+          : null;
+      }
+
+      function wrapCellFmt(value, tag) {
+        const open = "<" + tag + ">";
+        const close = "</" + tag + ">";
+        const cur = String(value || "");
+        const re = new RegExp(
+          "^<" + tag + ">([\\s\\S]*)</" + tag + ">$",
+          "i",
+        );
+        const m = cur.match(re);
+        if (m) return m[1];
+        return open + cur + close;
+      }
+
+      function applyInlineFmt(cmd) {
+        const tag = cmd === "italic" ? "i" : "b";
+        const el = editableFocusEl();
+        if (el && el.isContentEditable) {
+          try {
+            document.execCommand("styleWithCSS", false, false);
+          } catch (_) {}
+          document.execCommand(cmd, false, null);
+          applyPreviewEdit(el, false);
+          return true;
+        }
+        const src = zoneList();
+        if (!src || !zoneSel) return false;
+        const samples = zoneAlignSamples();
+        if (!samples.length) return false;
+        pushHist();
+        samples.forEach((cell) => {
+          if (cell.ci === "rq") {
+            if (!src.notes) src.notes = {};
+            src.notes[cell.ri] = wrapCellFmt(src.notes[cell.ri] || "", tag);
+            return;
+          }
+          if (!src.rows[cell.ri]) return;
+          src.rows[cell.ri][cell.ci] = wrapCellFmt(
+            src.rows[cell.ri][cell.ci],
+            tag,
+          );
+        });
+        renderPreview();
+        return true;
+      }
+
       function toLetter(n) {
         let s = "";
         let x = n;
@@ -15358,7 +15688,7 @@
           '" data-ci="' +
           ci +
           '">' +
-          escapeHtml(text || "") +
+          cellInnerHtml(text) +
           "</span>"
         );
       }
@@ -15440,7 +15770,7 @@
           '" data-ri="' +
           ri +
           '">' +
-          escapeHtml(note) +
+          cellInnerHtml(note) +
           "</span>" +
           (extras.del ? rowDelHtml(list, ri) : "") +
           (extras.resize ? rowResizerHtml() : "") +
@@ -15887,9 +16217,9 @@
         if (el.classList.contains("rq-note")) {
           if (!list.notes) list.notes = {};
           const ri = Number(el.dataset.ri);
+          v = readEditableValue(el, trim);
           if (v) list.notes[ri] = v;
           else delete list.notes[ri];
-          if (trim && el.textContent !== v) el.textContent = v;
           return "note";
         }
         if (
@@ -15916,8 +16246,7 @@
           if (isTpForm(list)) {
             while (list.rows[ri].length <= ci) list.rows[ri].push("");
             if (tpFormTotalCell(list, ri, ci)) return "cell";
-            list.rows[ri][ci] = v;
-            if (trim && el.textContent !== v) el.textContent = v;
+            list.rows[ri][ci] = readEditableValue(el, trim);
             const tp = tpOf(list);
             if (ri === 0 && ci === 1) {
               if (!Array.isArray(list.titles) || !list.titles.length)
@@ -15938,8 +16267,7 @@
           }
           if (isProgList(list)) {
             while (list.rows[ri].length <= ci) list.rows[ri].push("");
-            list.rows[ri][ci] = v;
-            if (trim && el.textContent !== v) el.textContent = v;
+            list.rows[ri][ci] = readEditableValue(el, trim);
             if (ri === 0 && ci === PROG_BANNER_TITLE_CI) {
               if (!Array.isArray(list.titles) || !list.titles.length)
                 list.titles = [""];
@@ -15968,8 +16296,7 @@
               list.rows[ri][ci] = shown;
               if (trim) el.textContent = shown;
             } else {
-              list.rows[ri][ci] = v;
-              if (trim && el.textContent !== v) el.textContent = v;
+              list.rows[ri][ci] = readEditableValue(el, trim);
             }
             if (
               trim &&
@@ -15982,8 +16309,7 @@
             }
             return "cell";
           }
-          list.rows[ri][ci] = v;
-          if (trim && el.textContent !== v) el.textContent = v;
+          list.rows[ri][ci] = readEditableValue(el, trim);
           return "cell";
         }
         return null;
@@ -20752,6 +21078,20 @@
           applySheetFont(sheetFontSel.value);
         });
       }
+      ["typoBold", "typoItalic", "selBold", "selItalic"].forEach((id) => {
+        const btn = $(id);
+        if (!btn) return;
+        btn.addEventListener("mousedown", (e) => e.preventDefault());
+        btn.addEventListener("click", () => {
+          const cmd = btn.getAttribute("data-fmt");
+          if (!cmd) return;
+          applyInlineFmt(cmd);
+          try {
+            const on = document.queryCommandState(cmd);
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+          } catch (_) {}
+        });
+      });
       $("optLegend").addEventListener("change", () => {
         pushHist();
         state.legend = $("optLegend").checked;
@@ -20774,16 +21114,18 @@
         else state.activeStamp = null;
         renderAll();
       });
-      $("fluoRow").addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-fluo]");
-        if (!btn) return;
-        const id = btn.getAttribute("data-fluo");
-        if (!FLUOS.some((f) => f.id === id)) return;
-        state.activeFluo = state.activeFluo === id ? null : id;
-        if (state.activeFluo) state.activeStamp = null;
-        renderFluos();
-        renderBadgeTypes();
-        renderPreview();
+      document.querySelectorAll(".fluo-row").forEach((row) => {
+        row.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-fluo]");
+          if (!btn) return;
+          const id = btn.getAttribute("data-fluo");
+          if (!FLUOS.some((f) => f.id === id)) return;
+          state.activeFluo = state.activeFluo === id ? null : id;
+          if (state.activeFluo) state.activeStamp = null;
+          renderFluos();
+          renderBadgeTypes();
+          renderPreview();
+        });
       });
       $("optNotes").addEventListener("change", () => {
         pushHist();
@@ -22327,7 +22669,7 @@
         const _savedVis = {};
 
         const scrollToSec = (sec) => {
-          if (sec === "colors") {
+          if (sec === "colors" || sec === "typo") {
             _collapseIds.forEach((id) => {
               const el = $(id);
               if (el) { _savedVis[id] = el.hidden; el.hidden = true; }
