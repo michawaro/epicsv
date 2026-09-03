@@ -2135,8 +2135,16 @@
       }
       .sel-group-fusion,
       .sel-group-insert,
+      .sel-group-clip,
       .sel-group-fmt {
         min-width: 0;
+      }
+      .sel-clip-btns button {
+        padding: 5px 9px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
       }
       .sel-dim-row {
         display: flex;
@@ -5025,6 +5033,24 @@
         font-variant-numeric: tabular-nums;
         color: var(--ink-soft);
         white-space: nowrap;
+        cursor: pointer;
+      }
+      .liste th.col-num {
+        cursor: pointer;
+      }
+      .liste thead:not(.is-tp-ghost) th[data-ci],
+      .liste thead:not(.is-tp-ghost) th.col-rq,
+      .liste thead:not(.is-tp-ghost) th.col-marks {
+        cursor: pointer;
+      }
+      .liste thead:not(.is-tp-ghost) th .th-edit {
+        cursor: text;
+      }
+      .liste td.col-num.is-zone,
+      .liste th[data-ci].is-zone,
+      .liste th.col-rq.is-zone,
+      .liste th.col-marks.is-zone {
+        cursor: pointer;
       }
       .liste td.col-marks,
       .liste th.col-marks {
@@ -7732,6 +7758,31 @@
         </div>
       </div>
       <div class="sel-row-tools">
+      <div class="sel-group sel-group-clip" role="group" aria-label="Presse-papiers">
+        <span class="sel-group-lab">Presse-papiers</span>
+        <div
+          class="sel-dim sel-clip-btns"
+          role="group"
+          aria-label="Copier ou coller la sélection"
+        >
+          <button
+            type="button"
+            id="selCopy"
+            title="Copier la sélection (Ctrl+C)"
+            aria-label="Copier la sélection"
+          >
+            Copier
+          </button>
+          <button
+            type="button"
+            id="selPaste"
+            title="Coller (Ctrl+V)"
+            aria-label="Coller"
+          >
+            Coller
+          </button>
+        </div>
+      </div>
       <div class="sel-group sel-group-fusion" role="group" aria-label="Fusionner ou fractionner">
         <span class="sel-group-lab">Fusion</span>
         <div
@@ -8768,6 +8819,9 @@
       let zoneDim = "w";
       let zoneSuppressClick = false;
       let cellClip = null;
+      const ZONE_CLIP_MIME = "application/x-epicsv-zone";
+      const ZONE_SCROLL_EDGE = 52;
+      const ZONE_SCROLL_MAX = 9;
       let selBarUserPos = null;
       let heldStyle = null;
       let styleDlgRestore = null;
@@ -11656,7 +11710,7 @@
         );
       }
 
-      function zoneMergeRect(list) {
+      function zoneTightRect(list) {
         if (!list || !zoneSel || String(zoneSel.lid) !== String(list.id))
           return null;
         const ris = (zoneSel.ris || []).filter(
@@ -11688,6 +11742,13 @@
         if (rect.r0 < 0 || rect.c0 < 0) return null;
         if (rect.r1 >= (list.rows || []).length) return null;
         if (rect.c1 >= (list.headers || []).length) return null;
+        return rect;
+      }
+
+      function zoneMergeRect(list) {
+        const rect = zoneTightRect(list);
+        if (!rect) return null;
+        if (zoneSel && zoneSel.axis) return rect;
         return expandRectToMerges(list, rect);
       }
 
@@ -11700,7 +11761,7 @@
       function eachMergeCell(list, ri, ci, fn) {
         if (ri !== "h" && typeof ci === "number") {
           const m = mergeAt(list, ri, ci);
-          if (m) {
+          if (m && !(zoneSel && zoneSel.axis)) {
             for (let dr = 0; dr < m.rs; dr++) {
               for (let dc = 0; dc < m.cs; dc++) fn(m.r + dr, m.c + dc);
             }
@@ -14962,11 +15023,14 @@
           (!sheetHasFixedCols(list) || partialCol) &&
           (list.headers || []).length < EMPTY_COLS_MAX;
         const ids = {
+          selCopy: rowOk,
           selInsertRowAbove: rowOk,
           selInsertRowBelow: rowOk,
           selInsertColLeft: colOk,
           selInsertColRight: colOk,
         };
+        const pasteEl = $("selPaste");
+        if (pasteEl) pasteEl.disabled = !rowOk;
         Object.keys(ids).forEach((id) => {
           const el = $(id);
           if (el) el.disabled = !ids[id];
@@ -15910,7 +15974,7 @@
         };
         if (ri !== "h" && typeof ci === "number") {
           const m = mergeAt(list, ri, ci);
-          if (m) {
+          if (m && !(zoneSel && zoneSel.axis)) {
             for (let dr = 0; dr < m.rs; dr++) {
               for (let dc = 0; dc < m.cs; dc++) apply(m.r + dr, m.c + dc);
             }
@@ -15986,7 +16050,7 @@
           list.id +
           '" data-ri="' +
           ri +
-          '" title="Déplacer la ligne" aria-hidden="true">⠿</span>'
+          '" title="Sélectionner la ligne · glisser pour déplacer" aria-hidden="true">⠿</span>'
         );
       }
 
@@ -16183,7 +16247,7 @@
             col.i +
             '" data-ck="' +
             col.i +
-            '">';
+            '" title="Sélectionner la colonne">';
           if (!tpForm && isTpList(list) && tpColRole(list, col.i) === "item") {
             html +=
               '<span class="tp-col-stack"><span class="th-edit" contenteditable="' +
@@ -16294,7 +16358,7 @@
           };
           if (showNum)
             html +=
-              '<td class="col-num" data-ck="num">' +
+              '<td class="col-num" data-ck="num" title="Sélectionner la ligne">' +
               handle() +
               escapeHtml(rowNumber(visIdx)) +
               rowResizerHtml() +
@@ -17294,6 +17358,53 @@
         };
       }
 
+      function colKeyFromTh(th) {
+        if (!th) return null;
+        if (th.dataset.slot === "rq") return "rq";
+        if (th.dataset.slot === "marks") return "marks";
+        if (th.dataset.slot === "num") return "num";
+        const n = Number(th.dataset.ci);
+        return Number.isInteger(n) ? n : null;
+      }
+
+      function selectZoneRow(lid, ri, opts) {
+        const list = state.lists.find((l) => String(l.id) === String(lid));
+        if (!list || !Number.isInteger(ri) || ri < 0) return false;
+        if (String(state.activeId) !== String(lid))
+          setActiveList(lid, { scroll: false });
+        hideSelMenu();
+        setZone(
+          {
+            lid: String(lid),
+            keys: colKeysOf(list).slice(),
+            ris: [ri],
+            axis: "row",
+          },
+          opts,
+        );
+        return true;
+      }
+
+      function selectZoneCol(lid, ck, opts) {
+        const list = state.lists.find((l) => String(l.id) === String(lid));
+        if (!list || ck == null) return false;
+        const keys = colKeysOf(list);
+        if (keys.indexOf(ck) < 0) return false;
+        if (String(state.activeId) !== String(lid))
+          setActiveList(lid, { scroll: false });
+        hideSelMenu();
+        setZone(
+          {
+            lid: String(lid),
+            keys: [ck],
+            ris: visibleRowIndices(list).slice(),
+            axis: "col",
+          },
+          opts,
+        );
+        return true;
+      }
+
       function hideSelMenu() {
         const m = $("selMenu");
         if (m) m.hidden = true;
@@ -17437,7 +17548,9 @@
 
       function setZone(next, opts) {
         zoneSel = next;
-        if (next && (!opts || opts.bar !== false)) zoneDim = pickZoneDim("w");
+        if (next && next.axis === "row") zoneDim = "h";
+        else if (next && next.axis === "col") zoneDim = "w";
+        else if (next && (!opts || opts.bar !== false)) zoneDim = pickZoneDim("w");
         else if (!next) zoneDim = "w";
         paintZone(opts);
       }
@@ -20173,24 +20286,165 @@
         return false;
       }
 
+      function zoneClipboardReady() {
+        return Boolean(zoneSel && zoneCellRect(zoneList()));
+      }
+
+      function zoneClipboardBlockedByModal() {
+        return [
+          "styleModal",
+          "pasteModal",
+          "createTableModal",
+          "splitCellsModal",
+          "tpMatModal",
+          "colDelModal",
+          "zoneDelModal",
+          "replaceModal",
+          "placeModal",
+          "dirtyModal",
+        ].some((id) => {
+          const el = $(id);
+          return el && !el.hidden;
+        });
+      }
+
+      function shouldRouteZoneClipboard(e) {
+        if (!zoneClipboardReady()) return false;
+        if (zoneClipboardBlockedByModal()) return false;
+        const el = e && e.target;
+        if (el && el.closest && el.closest("#selBar")) return true;
+        if (
+          el &&
+          el.isContentEditable &&
+          el.closest &&
+          el.closest("#sheets")
+        )
+          return false;
+        if (isTypingTarget(el)) return false;
+        return true;
+      }
+
+      function parseZoneClipPayload(raw) {
+        if (!raw) return null;
+        try {
+          const o = JSON.parse(raw);
+          if (o && Array.isArray(o.cells) && o.cells.length) return o;
+        } catch (_) {}
+        return null;
+      }
+
+      function encodeZoneClipPayload(cells, merges) {
+        return JSON.stringify({ v: 1, cells: cells, merges: merges || [] });
+      }
+
+      function writeZoneClipToDataTransfer(dataTransfer, clip) {
+        if (!dataTransfer || !clip) return;
+        dataTransfer.setData("text/plain", clip.plain);
+        try {
+          dataTransfer.setData(
+            ZONE_CLIP_MIME,
+            encodeZoneClipPayload(clip.cells, clip.merges),
+          );
+        } catch (_) {}
+      }
+
+      async function readZoneClipFromSystem() {
+        if (!navigator.clipboard || !navigator.clipboard.read) return null;
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            if (item.types.includes(ZONE_CLIP_MIME)) {
+              const blob = await item.getType(ZONE_CLIP_MIME);
+              const parsed = parseZoneClipPayload(await blob.text());
+              if (parsed) return parsed;
+            }
+          }
+        } catch (_) {}
+        return null;
+      }
+
+      async function writeZoneClipToSystem(clip) {
+        if (!clip || !navigator.clipboard) return false;
+        const rich = encodeZoneClipPayload(clip.cells, clip.merges);
+        if (navigator.clipboard.write && window.ClipboardItem) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                "text/plain": new Blob([clip.plain], { type: "text/plain" }),
+                [ZONE_CLIP_MIME]: new Blob([rich], { type: ZONE_CLIP_MIME }),
+              }),
+            ]);
+            return true;
+          } catch (_) {}
+        }
+        if (navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(clip.plain);
+            return true;
+          } catch (_) {}
+        }
+        return false;
+      }
+
+      function zoneClipFromEvent(ev) {
+        if (!ev || !ev.clipboardData) return null;
+        let raw = "";
+        try {
+          raw = ev.clipboardData.getData(ZONE_CLIP_MIME);
+        } catch (_) {}
+        return parseZoneClipPayload(raw);
+      }
+
+      function readZoneCellLooks(list, ri, ci) {
+        const m = mergeAt(list, ri, ci);
+        const srcR = m ? m.r : ri;
+        const srcC = m ? m.c : ci;
+        const looks = readCellLooks(list, srcR, srcC);
+        if (!m || !zoneSel || !zoneSel.axis) return looks;
+        const k = fluoKey(ri, ci);
+        if (list.hl && list.hl[k] != null) looks.hl = list.hl[k];
+        else if (list.hl && list.hl[k] === undefined) delete looks.hl;
+        if (list.hlText && list.hlText[k] != null) looks.hlText = list.hlText[k];
+        else if (list.hlText && list.hlText[k] === undefined) delete looks.hlText;
+        if (list.alignH && list.alignH[k]) looks.alignH = list.alignH[k];
+        else if (list.alignH && list.alignH[k] === undefined) delete looks.alignH;
+        if (list.alignV && list.alignV[k]) looks.alignV = list.alignV[k];
+        else if (list.alignV && list.alignV[k] === undefined) delete looks.alignV;
+        return looks;
+      }
+
       function buildCellClipFromRect(list, box) {
         if (!list || !box) return null;
         const cells = [];
+        const read = (r, c) =>
+          zoneSel && zoneSel.axis
+            ? readZoneCellLooks(list, r, c)
+            : readCellLooks(list, r, c);
         for (let r = box.r0; r <= box.r1; r++) {
           const row = [];
           for (let c = box.c0; c <= box.c1; c++) {
-            row.push(readCellLooks(list, r, c));
+            row.push(read(r, c));
           }
           cells.push(row);
         }
         const merges = ((list && list.merges) || [])
-          .filter(
-            (m) =>
+          .filter((m) => {
+            const mr = mergeToRect(m);
+            if (zoneSel && zoneSel.axis) {
+              return (
+                mr.r0 >= box.r0 &&
+                mr.r1 <= box.r1 &&
+                mr.c0 >= box.c0 &&
+                mr.c1 <= box.c1
+              );
+            }
+            return (
               m.r >= box.r0 &&
               m.r + m.rs - 1 <= box.r1 &&
               m.c >= box.c0 &&
-              m.c + m.cs - 1 <= box.c1,
-          )
+              m.c + m.cs - 1 <= box.c1
+            );
+          })
           .map((m) => ({
             r: m.r - box.r0,
             c: m.c - box.c0,
@@ -20214,9 +20468,9 @@
         cellClip = clip;
         const ev = opts && opts.event;
         if (ev && ev.clipboardData) {
-          ev.clipboardData.setData("text/plain", clip.plain);
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(clip.plain).catch(function () {});
+          writeZoneClipToDataTransfer(ev.clipboardData, clip);
+        } else {
+          writeZoneClipToSystem(clip);
         }
         if (!opts || opts.announce !== false) {
           announce(
@@ -20278,7 +20532,7 @@
         return wrote;
       }
 
-      function pasteZoneCells(opts) {
+      async function pasteZoneCells(opts) {
         const list = zoneList();
         const anchorBox = zoneCellRect(list);
         if (!list || !anchorBox) return false;
@@ -20287,7 +20541,20 @@
         if (cellClip && cellClip.cells && cellClip.cells.length) {
           cells = cellClip.cells;
           merges = cellClip.merges || [];
-        } else {
+        } else if (opts && opts.event) {
+          const rich = zoneClipFromEvent(opts.event);
+          if (rich) {
+            cells = rich.cells;
+            merges = rich.merges || [];
+          }
+        } else if (!opts || !opts.text) {
+          const rich = await readZoneClipFromSystem();
+          if (rich) {
+            cells = rich.cells;
+            merges = rich.merges || [];
+          }
+        }
+        if (!cells || !cells.length) {
           const text =
             (opts && opts.text) ||
             (opts &&
@@ -21388,27 +21655,28 @@
         if (!$("pasteModal").hidden && e.target === $("pasteArea")) return;
         if ($("createTableModal") && !$("createTableModal").hidden) return;
         if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
-        if (isTypingTarget(e.target)) return;
         const list = zoneList();
         const cellBox = zoneCellRect(list);
-        if (cellBox && (cellClip || zoneSel)) {
+        if (cellBox && zoneSel) {
+          if (!shouldRouteZoneClipboard(e) && isTypingTarget(e.target)) return;
+          const rich = zoneClipFromEvent(e);
           const text =
             (e.clipboardData && e.clipboardData.getData("text/plain")) || "";
           if (
             (cellClip && cellClip.cells && cellClip.cells.length) ||
+            rich ||
             (text && String(text).trim())
           ) {
             e.preventDefault();
-            if (
-              pasteZoneCells({
-                event: e,
-                text: text,
-                announce: true,
-              })
-            )
-              return;
+            void pasteZoneCells({
+              event: e,
+              text: text,
+              announce: true,
+            });
+            return;
           }
         }
+        if (isTypingTarget(e.target)) return;
         const html =
           (e.clipboardData && e.clipboardData.getData("text/html")) || "";
         const text =
@@ -21428,8 +21696,8 @@
       });
 
       document.addEventListener("copy", (e) => {
-        if (isTypingTarget(e.target)) return;
-        if (!zoneSel || !zoneCellRect(zoneList())) return;
+        if (!zoneClipboardReady()) return;
+        if (!shouldRouteZoneClipboard(e)) return;
         if (copyZoneCells({ event: e, announce: true })) {
           e.preventDefault();
         }
@@ -21473,6 +21741,16 @@
         $("selMerge").addEventListener("click", applyMergeDirect);
       if ($("selSplit"))
         $("selSplit").addEventListener("click", openSplitCellsModal);
+      if ($("selCopy"))
+        $("selCopy").addEventListener("click", () => {
+          hideSelMenu();
+          copyZoneCells({ announce: true });
+        });
+      if ($("selPaste"))
+        $("selPaste").addEventListener("click", () => {
+          hideSelMenu();
+          void pasteZoneCells({ announce: true });
+        });
       [
         ["selInsertRowAbove", "row", "before"],
         ["selInsertRowBelow", "row", "after"],
@@ -22240,6 +22518,46 @@
         const ZONE_DRAG_PX = 16;
         let drag = null;
         let liveRaf = 0;
+        let scrollRaf = 0;
+        const stopScrollLoop = () => {
+          if (!scrollRaf) return;
+          cancelAnimationFrame(scrollRaf);
+          scrollRaf = 0;
+        };
+        const zoneDragAutoScroll = (clientX, clientY) => {
+          if (!drag || !drag.moved || !workspace) return;
+          const r = workspace.getBoundingClientRect();
+          let dy = 0;
+          if (clientY < r.top + ZONE_SCROLL_EDGE) {
+            const k = Math.min(
+              1,
+              (r.top + ZONE_SCROLL_EDGE - clientY) / ZONE_SCROLL_EDGE,
+            );
+            dy = -ZONE_SCROLL_MAX * k;
+          } else if (clientY > r.bottom - ZONE_SCROLL_EDGE) {
+            const k = Math.min(
+              1,
+              (clientY - (r.bottom - ZONE_SCROLL_EDGE)) / ZONE_SCROLL_EDGE,
+            );
+            dy = ZONE_SCROLL_MAX * k;
+          }
+          if (!dy) return;
+          const prev = workspace.scrollTop;
+          workspace.scrollTop = prev + dy;
+          if (workspace.scrollTop !== prev) paintLive(drag.x1, drag.y1);
+        };
+        const tickZoneScroll = () => {
+          if (!drag || !drag.moved) {
+            scrollRaf = 0;
+            return;
+          }
+          zoneDragAutoScroll(drag.x1, drag.y1);
+          scrollRaf = requestAnimationFrame(tickZoneScroll);
+        };
+        const startScrollLoop = () => {
+          if (scrollRaf) return;
+          scrollRaf = requestAnimationFrame(tickZoneScroll);
+        };
         const skip = (e) => {
           const el =
             e.target && e.target.nodeType === 1
@@ -22322,6 +22640,7 @@
             cancelAnimationFrame(liveRaf);
             liveRaf = 0;
           }
+          stopScrollLoop();
           if (shield) {
             if (drag && drag.pointerId != null) {
               try {
@@ -22441,6 +22760,8 @@
           e.preventDefault();
           drag.x1 = e.clientX;
           drag.y1 = e.clientY;
+          zoneDragAutoScroll(e.clientX, e.clientY);
+          startScrollLoop();
           if (liveRaf) return;
           liveRaf = requestAnimationFrame(() => {
             liveRaf = 0;
@@ -22543,6 +22864,107 @@
             if (!el.closest(".sheet, table.liste")) return;
             e.preventDefault();
             openSelBarFromEvent(e);
+          },
+          true,
+        );
+      })();
+      (function bindAxisPick() {
+        const sheets = $("sheets");
+        if (!sheets) return;
+        const PICK_PX = 6;
+        let arm = null;
+        sheets.addEventListener(
+          "pointerdown",
+          (e) => {
+            if (e.button != null && e.button !== 0) return;
+            if (state.activeFluo || state.activeStamp) return;
+            const handle = e.target.closest(".row-handle");
+            const num = e.target.closest("td.col-num");
+            const th =
+              !e.target.closest(".th-edit, .col-resizer, .col-del") &&
+              e.target.closest(
+                "thead:not(.is-tp-ghost) th[data-ci], thead:not(.is-tp-ghost) th.col-rq, thead:not(.is-tp-ghost) th.col-marks",
+              );
+            if (!handle && !num && !th) {
+              arm = null;
+              return;
+            }
+            if (e.target.closest(".row-resizer, .col-resizer, .col-del"))
+              return;
+            arm = {
+              x: e.clientX,
+              y: e.clientY,
+              handle: handle,
+              num: num,
+              th: th,
+            };
+          },
+          true,
+        );
+        sheets.addEventListener(
+          "pointerup",
+          (e) => {
+            if (!arm || e.button != null && e.button !== 0) return;
+            if (
+              document.body.classList.contains("is-zone-dragging") ||
+              zoneSuppressClick
+            ) {
+              arm = null;
+              return;
+            }
+            const moved = Math.hypot(e.clientX - arm.x, e.clientY - arm.y);
+            if (moved > PICK_PX) {
+              arm = null;
+              return;
+            }
+            if (arm.num) {
+              const tr = arm.num.closest("tr[data-ri]");
+              const block = arm.num.closest(".list-block[data-lid]");
+              if (tr && block) {
+                e.preventDefault();
+                e.stopPropagation();
+                selectZoneRow(block.dataset.lid, Number(tr.dataset.ri));
+              }
+              arm = null;
+              return;
+            }
+            if (arm.handle) {
+              if (!e.target.closest(".row-handle")) {
+                arm = null;
+                return;
+              }
+              e.preventDefault();
+              e.stopPropagation();
+              selectZoneRow(arm.handle.dataset.lid, Number(arm.handle.dataset.ri));
+              arm = null;
+              return;
+            }
+            if (arm.th) {
+              const ck = colKeyFromTh(arm.th);
+              const lid = arm.th.dataset.lid || arm.th.closest(".list-block")?.dataset.lid;
+              if (ck != null && lid) {
+                e.preventDefault();
+                e.stopPropagation();
+                selectZoneCol(lid, ck);
+              }
+            }
+            arm = null;
+          },
+          true,
+        );
+        sheets.addEventListener(
+          "dragstart",
+          (e) => {
+            const handle = e.target.closest(".row-handle");
+            if (!handle || !arm || !arm.handle) return;
+            if (
+              Math.hypot(
+                (e.clientX || arm.x) - arm.x,
+                (e.clientY || arm.y) - arm.y,
+              ) <= PICK_PX
+            ) {
+              e.preventDefault();
+            }
           },
           true,
         );
@@ -23069,36 +23491,13 @@
         }
         const key = e.key.toLowerCase();
         if ((e.ctrlKey || e.metaKey) && (key === "c" || key === "v")) {
-          if (isTypingTarget(e.target)) return;
-          if ($("styleModal") && !$("styleModal").hidden) return;
-          if ($("pasteModal") && !$("pasteModal").hidden) return;
-          if ($("createTableModal") && !$("createTableModal").hidden) return;
-          if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
-          if ($("tpMatModal") && !$("tpMatModal").hidden) return;
-          if ($("colDelModal") && !$("colDelModal").hidden) return;
-          if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
-          if ($("replaceModal") && !$("replaceModal").hidden) return;
-          if ($("placeModal") && !$("placeModal").hidden) return;
-          if ($("dirtyModal") && !$("dirtyModal").hidden) return;
-          if (!zoneSel || !zoneCellRect(zoneList())) return;
+          if (!shouldRouteZoneClipboard(e)) return;
+          e.preventDefault();
           if (key === "c") {
-            e.preventDefault();
             copyZoneCells({ announce: true });
             return;
           }
-          e.preventDefault();
-          if (cellClip && cellClip.cells && cellClip.cells.length) {
-            pasteZoneCells({ announce: true });
-            return;
-          }
-          if (navigator.clipboard && navigator.clipboard.readText) {
-            navigator.clipboard
-              .readText()
-              .then(function (t) {
-                pasteZoneCells({ text: t, announce: true });
-              })
-              .catch(function () {});
-          }
+          void pasteZoneCells({ announce: true });
           return;
         }
         if (!(e.ctrlKey || e.metaKey) || (key !== "z" && key !== "y")) return;
