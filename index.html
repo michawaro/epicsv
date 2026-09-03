@@ -4768,6 +4768,9 @@
       body.is-table-resizing {
         user-select: none;
       }
+      body.is-table-resizing .table-resize-shield {
+        cursor: inherit;
+      }
       body.is-table-resizing-ew {
         cursor: ew-resize;
       }
@@ -7803,6 +7806,11 @@
       </button>
     </div>
     <div class="sel-shield no-print" id="selShield" hidden></div>
+    <div
+      class="sel-shield table-resize-shield no-print"
+      id="tableResizeShield"
+      hidden
+    ></div>
     <div class="sel-rect no-print" id="selRect" hidden></div>
     <div class="sel-bar no-print" id="selBar" hidden>
       <div class="sel-bar-head">
@@ -19179,6 +19187,7 @@
 
       function syncTableFrameHandles(block) {
         if (!block) return;
+        if (document.body.classList.contains("is-table-resizing")) return;
         const wrap = block.querySelector(".liste-wrap");
         if (!wrap) return;
         const south = wrap.querySelector('.table-frame-h[data-dir="s"]');
@@ -22697,12 +22706,19 @@
       });
       (function bindTableFramePointer() {
         const sheets = $("sheets");
+        const shield = $("tableResizeShield");
         let drag = null;
         const cursorFor = (dir) => {
           if (dir === "e" || dir === "w") return "ew";
           if (dir === "n" || dir === "s") return "ns";
           if (dir === "nw" || dir === "se") return "nwse";
           return "nesw";
+        };
+        const cursorCss = (kind) => {
+          if (kind === "ew") return "ew-resize";
+          if (kind === "ns") return "ns-resize";
+          if (kind === "nwse") return "nwse-resize";
+          return "nesw-resize";
         };
         const clearBody = () => {
           document.body.classList.remove(
@@ -22712,6 +22728,36 @@
             "is-table-resizing-nwse",
             "is-table-resizing-nesw",
           );
+        };
+        const showShield = (pointerId, kind) => {
+          if (!shield) return;
+          shield.hidden = false;
+          shield.style.cursor = cursorCss(kind);
+          try {
+            shield.setPointerCapture(pointerId);
+          } catch (_) {}
+        };
+        const hideShield = (pointerId) => {
+          if (!shield) return;
+          if (pointerId != null) {
+            try {
+              shield.releasePointerCapture(pointerId);
+            } catch (_) {}
+          }
+          shield.hidden = true;
+          shield.style.removeProperty("cursor");
+        };
+        const attachDragListeners = () => {
+          const el = shield || document;
+          el.addEventListener("pointermove", onMove);
+          el.addEventListener("pointerup", stop);
+          el.addEventListener("pointercancel", stop);
+        };
+        const detachDragListeners = () => {
+          const el = shield || document;
+          el.removeEventListener("pointermove", onMove);
+          el.removeEventListener("pointerup", stop);
+          el.removeEventListener("pointercancel", stop);
         };
         const applyLive = (d, fx, fy) => {
           if (d.scaleW)
@@ -22758,22 +22804,13 @@
         };
         const heightRatioFrom = (e, d) => {
           const scale = stageScale() || 1;
-          const tr = d.table.getBoundingClientRect();
-          let targetH = d.layoutH0;
           const hasN = d.dir.indexOf("n") >= 0;
           const hasS = d.dir.indexOf("s") >= 0;
-          if (hasN && !hasS) targetH = (tr.bottom - e.clientY) / scale;
-          else if (hasS && !hasN) targetH = (e.clientY - tr.top) / scale;
-          else if (hasN && hasS) {
-            const sign = hasN && !hasS ? -1 : 1;
-            targetH =
-              d.layoutH0 *
-              Math.max(
-                0.08,
-                Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
-              );
+          let targetH = d.layoutH0;
+          if (hasN || hasS) {
+            targetH = d.layoutH0 + (e.clientY - d.y0) / scale;
           } else {
-            const sign = hasN ? -1 : 1;
+            const sign = d.dir.indexOf("n") >= 0 ? -1 : 1;
             targetH =
               d.layoutH0 *
               Math.max(
@@ -22797,7 +22834,7 @@
           return { fx: fx, fy: fy };
         };
         const onMove = (e) => {
-          if (!drag) return;
+          if (!drag || e.pointerId !== drag.pointerId) return;
           const next = ratiosFrom(e, drag);
           drag.fx = next.fx;
           drag.fy = next.fy;
@@ -22808,24 +22845,21 @@
             if (drag) drag.fitPending = false;
             syncStageHeight();
             markSheetOverflow();
-            if (drag && drag.wrap) {
-              const block = drag.wrap.closest(".list-block[data-lid]");
-              if (block) syncTableFrameHandles(block);
-            }
           });
         };
         const stop = (e) => {
           if (!drag) return;
+          if (e && e.pointerId != null && e.pointerId !== drag.pointerId) return;
           const d = drag;
+          const pid = d.pointerId;
           if (e && e.clientX != null) {
             const next = ratiosFrom(e, d);
             d.fx = next.fx;
             d.fy = next.fy;
           }
           drag = null;
-          document.removeEventListener("pointermove", onMove);
-          document.removeEventListener("pointerup", stop);
-          document.removeEventListener("pointercancel", stop);
+          detachDragListeners();
+          hideShield(pid);
           clearBody();
           if (d.wrap) {
             d.wrap.style.removeProperty("height");
@@ -22933,16 +22967,13 @@
                 })
               : [],
           };
-          try {
-            handle.setPointerCapture(e.pointerId);
-          } catch (_) {}
+          const cur = cursorFor(dir);
+          showShield(e.pointerId, cur);
           document.body.classList.add(
             "is-table-resizing",
-            "is-table-resizing-" + cursorFor(dir),
+            "is-table-resizing-" + cur,
           );
-          document.addEventListener("pointermove", onMove);
-          document.addEventListener("pointerup", stop);
-          document.addEventListener("pointercancel", stop);
+          attachDragListeners();
         });
       })();
       (function bindBlockMovePointer() {
