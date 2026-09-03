@@ -19102,15 +19102,6 @@
           .forEach(syncTableFrameHandles);
       }
 
-      function resetListeWrapResizeStyle(wrap) {
-        if (!wrap) return;
-        wrap.style.removeProperty("height");
-        wrap.style.removeProperty("overflow");
-        syncListeFrameSize(wrap);
-        const block = wrap.closest(".list-block[data-lid]");
-        if (block) syncTableFrameHandles(block);
-      }
-
       function fitListHeightToPage(list) {
         if (!list || isBlankList(list)) return false;
         const block = $("sheets").querySelector(
@@ -22631,11 +22622,37 @@
                 }
               });
             }
-            const targetH = Math.max(20, (d.layoutH0 || 1) * fy);
-            d.wrap.style.height = targetH + "px";
-            d.wrap.style.minHeight = targetH + "px";
-            d.wrap.style.overflow = "hidden";
+            d.wrap.style.removeProperty("height");
+            d.wrap.style.removeProperty("overflow");
+            syncListeFrameSize(d.wrap);
           }
+        };
+        const heightRatioFrom = (e, d) => {
+          const scale = stageScale() || 1;
+          const tr = d.table.getBoundingClientRect();
+          let targetH = d.layoutH0;
+          const hasN = d.dir.indexOf("n") >= 0;
+          const hasS = d.dir.indexOf("s") >= 0;
+          if (hasN && !hasS) targetH = (tr.bottom - e.clientY) / scale;
+          else if (hasS && !hasN) targetH = (e.clientY - tr.top) / scale;
+          else if (hasN && hasS) {
+            const sign = hasN && !hasS ? -1 : 1;
+            targetH =
+              d.layoutH0 *
+              Math.max(
+                0.08,
+                Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
+              );
+          } else {
+            const sign = hasN ? -1 : 1;
+            targetH =
+              d.layoutH0 *
+              Math.max(
+                0.08,
+                Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
+              );
+          }
+          return Math.max(0.08, Math.min(6, targetH / d.layoutH0));
         };
         const ratiosFrom = (e, d) => {
           let fx = 1;
@@ -22647,13 +22664,7 @@
               Math.min(6, (d.w0 + sign * (e.clientX - d.x0)) / d.w0),
             );
           }
-          if (d.scaleH) {
-            const sign = d.dir.indexOf("n") >= 0 ? -1 : 1;
-            fy = Math.max(
-              0.08,
-              Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
-            );
-          }
+          if (d.scaleH) fy = heightRatioFrom(e, d);
           return { fx: fx, fy: fy };
         };
         const onMove = (e) => {
@@ -22687,13 +22698,30 @@
           document.removeEventListener("pointerup", stop);
           document.removeEventListener("pointercancel", stop);
           clearBody();
-          resetListeWrapResizeStyle(d.wrap);
+          if (d.wrap) {
+            d.wrap.style.removeProperty("height");
+            d.wrap.style.removeProperty("overflow");
+          }
           const fx = d.fx != null ? d.fx : 1;
           const fy = d.fy != null ? d.fy : 1;
           const useW = d.scaleW && Math.abs(fx - 1) > 0.004;
           const useH = d.scaleH && Math.abs(fy - 1) > 0.004;
           if (!useW && !useH) {
             discardLastHist();
+            d.rows.forEach((r) => {
+              if (!r.el) return;
+              r.el.style.removeProperty("--row-y");
+              r.el.style.removeProperty("--row-h");
+              r.el.style.removeProperty("height");
+            });
+            if (d.spans) {
+              d.spans.forEach((sp) => {
+                if (!sp.el) return;
+                sp.el.style.removeProperty("--span-h");
+                sp.el.style.removeProperty("height");
+              });
+            }
+            if (d.wrap) syncListeFrameSize(d.wrap);
             return;
           }
           tableScaleTargets(d.list).forEach((lst) => {
@@ -22703,6 +22731,7 @@
             });
           });
           markTpSized(d.list);
+          dirty = true;
           renderPreview();
         };
         sheets.addEventListener("pointerdown", (e) => {
