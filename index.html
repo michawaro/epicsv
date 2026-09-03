@@ -342,6 +342,8 @@
       :root {
         --customize-rail: 48px;
         --customize-panel-w: 300px;
+        /* Décalage bas-droite pour hist-dock (mis à jour par JS Personnaliser) */
+        --customize-offset: 48px;
         --customize-anis: #c9e218;
         --customize-anis-soft: #f4fb7a;
       }
@@ -620,14 +622,6 @@
         .customize-backdrop[hidden] {
           display: none !important;
         }
-        /* hist-dock est frère de .app (pas descendant) → ~ */
-        .app.customize-open ~ .hist-dock {
-          right: min(
-            calc(100vw - 148px),
-            calc(min(360px, 92vw) + var(--customize-rail) + 14px)
-          );
-          z-index: 64;
-        }
       }
 
       @media (max-width: 767px) {
@@ -683,12 +677,6 @@
         }
         .customize-panel-body {
           padding-top: max(16px, env(safe-area-inset-top, 0px));
-        }
-        /* À gauche du FAB Personnaliser */
-        .hist-dock,
-        .app.customize-open ~ .hist-dock {
-          right: max(74px, calc(52px + 22px + env(safe-area-inset-right, 0px)));
-          z-index: 57;
         }
       }
 
@@ -2006,10 +1994,14 @@
       }
       .hist-dock {
         position: fixed;
-        /* Décalage rail Personnaliser (frère de .app, hors flux grille) */
-        right: calc(var(--customize-rail) + 14px);
+        /* --customize-offset : rail (+ panneau si ouvert), tenu à jour par JS */
+        right: max(
+          16px,
+          calc(var(--customize-offset, 48px) + 14px)
+        );
         bottom: max(14px, env(safe-area-inset-bottom, 0px));
-        z-index: 55;
+        /* Au-dessus du shell / rail / panneau / backdrop Personnaliser (≤65) */
+        z-index: 10050;
         display: flex;
         transition: right 0.22s ease;
         gap: 2px;
@@ -2018,14 +2010,9 @@
         background: rgba(255, 255, 255, 0.94);
         box-shadow: 0 10px 28px rgba(14, 143, 140, 0.22);
         backdrop-filter: blur(10px);
-      }
-      /* hist-dock est frère de .app — ~ obligatoire, sinon right reste trop petit
-         et le dock disparaît sous le panneau / backdrop Personnaliser. */
-      .app.customize-open ~ .hist-dock {
-        right: min(
-          calc(100vw - 148px),
-          calc(var(--customize-rail) + var(--customize-panel-w) + 14px)
-        );
+        pointer-events: auto;
+        visibility: visible;
+        opacity: 1;
       }
       .hist-dock[hidden] {
         display: none !important;
@@ -22969,6 +22956,27 @@
           el.setAttribute("aria-label", label);
         };
 
+        const syncHistDockOffset = () => {
+          const root = document.documentElement;
+          const phone = window.matchMedia("(max-width: 767px)").matches;
+          const open = isOpen();
+          const railPx = 48;
+          const panelDesktop = 300;
+          let offset = railPx;
+          if (wrap.hidden) {
+            offset = phone ? 74 : 14;
+          } else if (phone) {
+            /* FAB 52px + marge ; panneau plein écran → coin bas-droit libre */
+            offset = open ? 14 : 74;
+          } else if (isOverlay()) {
+            const panelW = Math.min(360, window.innerWidth * 0.92);
+            offset = open ? panelW + railPx : railPx;
+          } else {
+            offset = open ? panelDesktop + railPx : railPx;
+          }
+          root.style.setProperty("--customize-offset", offset + "px");
+        };
+
         const syncChrome = () => {
           const open = isOpen();
           syncToggleChrome(toggle, open);
@@ -23003,6 +23011,7 @@
           }
           if (open && isOverlay()) installTrap();
           else clearTrap();
+          syncHistDockOffset();
         };
 
         const setOpen = (open, trigger, opts) => {
@@ -23107,11 +23116,19 @@
           true,
         );
 
-        const onViewportChange = () => applyDefaultOpen();
+        const onViewportChange = () => {
+          applyDefaultOpen();
+          syncHistDockOffset();
+        };
         window.matchMedia(DESKTOP_MQ).addEventListener("change", onViewportChange);
         window.matchMedia(OVERLAY_MQ).addEventListener("change", onViewportChange);
+        window
+          .matchMedia("(max-width: 767px)")
+          .addEventListener("change", onViewportChange);
+        window.addEventListener("resize", syncHistDockOffset);
         applyDefaultOpen();
         setActiveRail("settings");
+        syncHistDockOffset();
 
         let wasHidden = wrap.hidden;
         const prevRenderDisplay = renderDisplay;
@@ -23125,6 +23142,7 @@
               clearTrap();
               syncChrome();
             } else applyDefaultOpen();
+            syncHistDockOffset();
             return;
           }
           /* Rattrapage : listes présentes mais panneau desktop jamais ouvert. */
@@ -23135,6 +23153,7 @@
             } catch (_) {}
             if (stored !== "0") applyDefaultOpen();
           }
+          syncHistDockOffset();
         };
       })();
 
