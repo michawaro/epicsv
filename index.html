@@ -2427,10 +2427,12 @@
           #054842 100%
         );
       }
-      #listeModeOpts .mode-liste-import {
+      #listeModeOpts .mode-liste-import,
+      #tableauModeOpts .mode-liste-import {
         margin-bottom: 4px;
       }
-      #listeModeOpts .mode-liste-import + .mode-liste-import {
+      #listeModeOpts .mode-liste-import + .mode-liste-import,
+      #tableauModeOpts .mode-liste-import + .mode-liste-import {
         margin-bottom: 8px;
       }
       .btn-print:disabled,
@@ -6121,6 +6123,13 @@
                   ><input
                     type="radio"
                     name="pageMode"
+                    value="tableau"
+                  /><span>Tableau</span></label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="pageMode"
                     value="liste"
                     checked
                   /><span>Liste</span></label
@@ -6199,17 +6208,10 @@
               </div>
             </section>
 
-            <div id="listeModeOpts" class="mode-opts">
+            <div id="tableauModeOpts" class="mode-opts" hidden>
               <div class="files-group mode-liste-import">
                 <p class="files-group-label">Créer</p>
                 <div class="import-row">
-                  <button
-                    class="btn btn-mode btn-compact"
-                    id="pasteBtn"
-                    type="button"
-                  >
-                    Coller le CSV
-                  </button>
                   <button
                     class="btn btn-print btn-compact"
                     id="createTableBtn"
@@ -6223,6 +6225,21 @@
                     type="button"
                   >
                     Exemple
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="listeModeOpts" class="mode-opts">
+              <div class="files-group mode-liste-import">
+                <p class="files-group-label">Créer</p>
+                <div class="import-row">
+                  <button
+                    class="btn btn-mode btn-compact"
+                    id="pasteBtn"
+                    type="button"
+                  >
+                    Coller le CSV
                   </button>
                 </div>
               </div>
@@ -18768,8 +18785,9 @@
         const form = $("tpForm");
         const progForm = $("progForm");
         const listeOpts = $("listeModeOpts");
+        const tableauOpts = $("tableauModeOpts");
         const mode =
-          state.panelMode === "tp" || state.panelMode === "prog"
+          state.panelMode === "tp" || state.panelMode === "prog" || state.panelMode === "tableau"
             ? state.panelMode
             : "liste";
         state.panelMode = mode;
@@ -18779,6 +18797,7 @@
         if (form) form.hidden = mode !== "tp";
         if (progForm) progForm.hidden = mode !== "prog";
         if (listeOpts) listeOpts.hidden = mode !== "liste";
+        if (tableauOpts) tableauOpts.hidden = mode !== "tableau";
       }
 
       function renderListeNum() {
@@ -22477,6 +22496,8 @@
             announce("Mode TP : cliquez sur Créer pour une fiche");
           else if (el.value === "prog")
             announce("Mode progression : cliquez sur Créer pour une fiche");
+          else if (el.value === "tableau")
+            announce("Mode tableau : cliquez sur Créer un tableau");
           else announce("Mode liste");
         });
       });
