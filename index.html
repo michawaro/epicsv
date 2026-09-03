@@ -2319,21 +2319,25 @@
       .tab-item {
         display: flex;
         align-items: center;
-        gap: 2px;
+        gap: 4px;
         max-width: 180px;
-        padding: 5px 6px 5px 12px;
+        padding: 4px 2px 5px;
         border: 0;
-        border-radius: 999px;
-        background: rgba(14, 143, 140, 0.12);
+        border-bottom: 3px solid transparent;
+        border-radius: 0;
+        background: transparent;
         color: var(--teal-deep);
         font: inherit;
         font-size: 13px;
-        font-weight: 800;
+        font-weight: 700;
         cursor: pointer;
+        opacity: 0.55;
       }
       .tab-item.is-on {
-        background: var(--teal-deep);
-        color: #fff;
+        background: transparent;
+        color: var(--teal-deep);
+        opacity: 1;
+        border-bottom-color: var(--teal-deep);
       }
       .tab-item .tab-name {
         min-width: 1.2em;
@@ -2352,7 +2356,7 @@
         background: transparent;
         color: inherit;
         font: inherit;
-        font-weight: 800;
+        font-weight: 700;
       }
       .tab-item .tab-name-field:focus {
         outline: none;
@@ -2360,22 +2364,23 @@
       }
       .tab-item .tab-x {
         appearance: none;
-        width: 22px;
-        height: 22px;
+        width: 14px;
+        height: 14px;
         padding: 0;
         border: 0;
-        border-radius: 999px;
+        border-radius: 0;
         background: transparent;
         color: inherit;
         font: inherit;
-        font-size: 16px;
+        font-size: 12px;
+        font-weight: 400;
         line-height: 1;
         cursor: pointer;
-        opacity: 0.7;
+        opacity: 0.55;
       }
       .tab-item .tab-x:hover {
         opacity: 1;
-        background: rgba(0, 0, 0, 0.12);
+        background: transparent;
       }
       .tab-add {
         appearance: none;
@@ -3140,11 +3145,25 @@
         border-top: var(--tp-inner);
         border-top-color: #111;
       }
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
-        border-bottom: var(--tp-inner);
-        border-bottom-color: #111;
+      /* Pas de filet horizontal Dates|Nb groupes|Salles entre enseignant / commander */
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-dates,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-salles {
+        border-top: 0;
       }
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td {
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
@@ -3161,11 +3180,14 @@
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
+      /* Pas de filet vertical Matériel|Total dans la rangée d’en-tête teal */
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
         tr.is-tp-mat-head
-        td.is-tp-dates,
+        td.is-tp-dates {
+        border-left: 0;
+      }
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
@@ -5044,8 +5066,24 @@
           td {
           border-top: 1.65pt solid #111 !important;
         }
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-dates,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-salles {
+          border-top: 0 !important;
+        }
         .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td,
-        .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td,
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
@@ -5062,7 +5100,9 @@
           .liste.has-tp-inner
           tbody
           tr.is-tp-mat-head
-          td.is-tp-dates,
+          td.is-tp-dates {
+          border-left: 0 !important;
+        }
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
@@ -7238,7 +7278,7 @@
         sharedCols: [],
         editFrame: "tirets",
         tpInner: true,
-        tabs: [{ id: 1, name: "1" }],
+        tabs: [{ id: 1, name: "Onglet 1" }],
         activeTabId: 1,
         panelMode: "liste",
       };
@@ -8554,7 +8594,7 @@
 
       function ensureTabs() {
         if (!Array.isArray(state.tabs) || !state.tabs.length) {
-          state.tabs = [{ id: 1, name: "1" }];
+          state.tabs = [{ id: 1, name: "Onglet 1" }];
           state.activeTabId = 1;
         }
         if (!state.tabs.some((t) => t.id === state.activeTabId))
@@ -8566,8 +8606,8 @@
           (state.tabs || []).map((t) => String(t.name || "")),
         );
         let n = 1;
-        while (used.has(String(n))) n++;
-        return String(n);
+        while (used.has("Onglet " + n)) n++;
+        return "Onglet " + n;
       }
 
       function pageTypeOf(list) {
@@ -8770,9 +8810,10 @@
         activateFreshTab();
         renderAll();
         announce(
-          "Onglet " +
-            (state.tabs.find((t) => t.id === state.activeTabId) || {}).name +
-            " créé.",
+          (
+            (state.tabs.find((t) => t.id === state.activeTabId) || {}).name ||
+            "Onglet"
+          ) + " créé.",
         );
       }
 
@@ -8837,7 +8878,7 @@
           el.dataset.tabId = String(tab.id);
           const name = document.createElement("span");
           name.className = "tab-name";
-          name.textContent = tab.name || "1";
+          name.textContent = tab.name || "Onglet 1";
           name.title = "Double-clic pour renommer";
           el.appendChild(name);
           el.addEventListener("click", (e) => {
@@ -9177,7 +9218,7 @@
         state.tabs =
           Array.isArray(s.tabs) && s.tabs.length
             ? s.tabs
-            : [{ id: 1, name: "1" }];
+            : [{ id: 1, name: "Onglet 1" }];
         state.activeTabId =
           s.activeTabId != null
             ? s.activeTabId
@@ -14755,7 +14796,7 @@
             target.selectedIds = [page.id];
           }
         }
-        const destName = target.name || "1";
+        const destName = target.name || "Onglet 1";
         if (!state.lists.length) switchToTab(target.id, { hist: false });
         else renderAll();
         announce("Page envoyée vers l’onglet " + destName + ".");
@@ -14793,7 +14834,7 @@
           );
         } else {
           others.forEach((tab) => {
-            addItem("Onglet « " + (tab.name || "1") + " »", () =>
+            addItem("Onglet « " + (tab.name || "Onglet 1") + " »", () =>
               movePageToTab(list.id, tab.id),
             );
           });
@@ -18295,7 +18336,7 @@
             ? data.tabs.map((t) => hydrateIncomingTab(t, s))
             : [
                 hydrateIncomingTab(
-                  { name: "1", lists: data.lists || [], settings: s },
+                  { name: "Onglet 1", lists: data.lists || [], settings: s },
                   s,
                 ),
               ];
