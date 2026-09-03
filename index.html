@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr" class="palette-teal">
   <head>
     <meta charset="UTF-8" />
@@ -349,8 +349,76 @@
         height: 100%;
         min-height: 0;
         min-width: 0;
-        z-index: 3;
+        z-index: 20;
         position: relative;
+      }
+      .customize-edge-handle {
+        appearance: none;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        z-index: 6;
+        width: 22px;
+        height: 76px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        color: #14301a;
+        background:
+          linear-gradient(
+            180deg,
+            var(--customize-anis-soft) 0%,
+            var(--customize-anis) 55%,
+            #b5d40f 100%
+          );
+        box-shadow:
+          0 0 0 1px rgba(8, 70, 66, 0.22),
+          0 8px 18px rgba(20, 48, 12, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease,
+          background 0.18s ease;
+      }
+      .customize-edge-handle:hover {
+        transform: translate(-50%, -50%) scale(1.04);
+        box-shadow:
+          0 0 0 1px rgba(8, 70, 66, 0.28),
+          0 10px 22px rgba(20, 48, 12, 0.34),
+          inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      }
+      .customize-edge-handle:focus-visible {
+        outline: 3px solid var(--teal-deep);
+        outline-offset: 2px;
+      }
+      .customize-edge-grip {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        width: 10px;
+      }
+      .customize-edge-grip i {
+        display: block;
+        height: 2px;
+        border-radius: 99px;
+        background: rgba(26, 40, 8, 0.55);
+      }
+      .customize-edge-chevron {
+        width: 12px;
+        height: 12px;
+        display: block;
+        transition: transform 0.2s ease;
+      }
+      .app:not(.customize-open) .customize-edge-chevron {
+        transform: rotate(180deg);
       }
       .customize-rail {
         flex: none;
@@ -368,6 +436,8 @@
         );
         border-left: 1px solid rgba(255, 255, 255, 0.12);
         box-shadow: -4px 0 18px rgba(0, 40, 38, 0.18);
+        position: relative;
+        z-index: 2;
       }
       .customize-rail-btn {
         appearance: none;
@@ -507,7 +577,9 @@
         display: none;
       }
 
-      @media (max-width: 1199px) {
+      /* Overlay : <1200px, ou tablette tactile ≤1366 (évite le flex compact qui
+         enterrait le shell hors écran entre 1200 et 1366). */
+      @media (max-width: 1199px), (max-width: 1366px) and (pointer: coarse) {
         .app.has-lists {
           grid-template-columns: 340px minmax(0, 1fr);
         }
@@ -522,6 +594,20 @@
         }
         .customize-shell > * {
           pointer-events: auto;
+        }
+        .customize-edge-handle {
+          position: fixed;
+          left: auto;
+          right: calc(var(--customize-rail) - 11px);
+          top: 50%;
+          z-index: 64;
+          transform: translate(0, -50%);
+        }
+        .app.customize-open .customize-edge-handle {
+          right: calc(min(360px, 92vw) + var(--customize-rail) - 11px);
+        }
+        .customize-edge-handle:hover {
+          transform: translate(0, -50%) scale(1.04);
         }
         .customize-rail {
           position: fixed;
@@ -575,6 +661,9 @@
 
       @media (max-width: 767px) {
         .customize-rail {
+          display: none !important;
+        }
+        .customize-edge-handle {
           display: none !important;
         }
         .customize-fab {
@@ -796,8 +885,13 @@
       }
       .yt-dock {
         position: fixed;
-        top: max(10px, env(safe-area-inset-top, 0px));
-        right: max(36px, calc(env(safe-area-inset-right, 0px) + 24px));
+        top: auto;
+        right: auto;
+        left: max(
+          12px,
+          calc(340px + 14px + env(safe-area-inset-left, 0px))
+        );
+        bottom: max(14px, env(safe-area-inset-bottom, 0px));
         z-index: 11;
         display: flex;
         align-items: center;
@@ -934,8 +1028,10 @@
       .yt-dock-bell::after {
         content: attr(data-tip);
         position: absolute;
-        right: 0;
-        top: calc(100% + 8px);
+        left: 0;
+        right: auto;
+        bottom: calc(100% + 8px);
+        top: auto;
         z-index: 12;
         width: max-content;
         max-width: min(340px, calc(100vw - 24px));
@@ -952,7 +1048,7 @@
         box-shadow: 0 10px 24px rgba(14, 143, 140, 0.22);
         opacity: 0;
         pointer-events: none;
-        transform: translateY(-4px);
+        transform: translateY(4px);
         transition:
           opacity 0.12s ease,
           transform 0.12s ease;
@@ -988,8 +1084,10 @@
       }
       .yt-dock-pop {
         position: absolute;
-        right: 0;
-        top: calc(100% + 6px);
+        left: 0;
+        right: auto;
+        bottom: calc(100% + 6px);
+        top: auto;
         min-width: 168px;
         padding: 8px 10px;
         border-radius: 12px;
@@ -5072,6 +5170,12 @@
         .app.has-lists {
           grid-template-columns: 300px minmax(0, 1fr);
         }
+        .yt-dock {
+          left: max(
+            12px,
+            calc(300px + 12px + env(safe-area-inset-left, 0px))
+          );
+        }
       }
 
       /* Téléphones + tablettes courantes (iPad, Galaxy Tab, iPad Pro 12,9" portrait / paysage tactile) */
@@ -5189,8 +5293,10 @@
           padding-left: max(12px, env(safe-area-inset-left, 0px));
         }
         .yt-dock {
-          top: max(8px, env(safe-area-inset-top, 0px));
-          right: max(22px, calc(env(safe-area-inset-right, 0px) + 14px));
+          top: auto;
+          right: auto;
+          left: max(10px, env(safe-area-inset-left, 0px));
+          bottom: max(12px, env(safe-area-inset-bottom, 0px));
           padding: 3px 4px;
           gap: 0;
         }
@@ -6414,6 +6520,29 @@
           hidden
           aria-hidden="true"
         ></div>
+        <button
+          type="button"
+          class="customize-edge-handle"
+          id="customizeEdgeHandle"
+          aria-expanded="true"
+          aria-controls="customizePanel"
+          title="Réduire le panneau Personnaliser"
+          aria-label="Réduire le panneau Personnaliser"
+        >
+          <span class="customize-edge-grip" aria-hidden="true"
+            ><i></i><i></i><i></i
+          ></span>
+          <svg
+            class="customize-edge-chevron"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M14.7 6.3a1 1 0 0 1 0 1.4L10.42 12l4.3 4.3a1 1 0 1 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.4 0z"
+            />
+          </svg>
+        </button>
         <aside
           class="customize-rail"
           id="customizeRail"
@@ -21588,12 +21717,16 @@
 
       (function bindCustomizePanel() {
         const DESKTOP_MQ = "(min-width: 1200px)";
-        const OVERLAY_MQ = "(max-width: 1199px)";
+        /* Aligné sur COMPACT_MQ : tablette tactile ≤1366 utilise le tiroir,
+           sinon le shell flex « order:3 » se retrouvait hors écran. */
+        const OVERLAY_MQ =
+          "(max-width: 1199px), (max-width: 1366px) and (pointer: coarse)";
         const app = $("app");
         const wrap = $("customizeFoldWrap");
         const panel = $("customizePanel");
         const body = $("customizeFold");
         const toggle = $("customizeRailToggle");
+        const edgeHandle = $("customizeEdgeHandle");
         const fab = $("customizeFab");
         const closeBtn = $("customizeCloseBtn");
         const backdrop = $("customizeBackdrop");
@@ -21603,8 +21736,9 @@
         let activeSec = "settings";
         let trapHandler = null;
 
-        const isDesktop = () => window.matchMedia(DESKTOP_MQ).matches;
         const isOverlay = () => window.matchMedia(OVERLAY_MQ).matches;
+        const isDesktop = () =>
+          window.matchMedia(DESKTOP_MQ).matches && !isOverlay();
         const isOpen = () => app.classList.contains("customize-open");
 
         const focusables = (root) =>
@@ -21687,23 +21821,20 @@
           });
         };
 
+        const syncToggleChrome = (el, open) => {
+          if (!el) return;
+          el.setAttribute("aria-expanded", open ? "true" : "false");
+          const label = open
+            ? "Réduire le panneau Personnaliser"
+            : "Afficher le panneau Personnaliser";
+          el.setAttribute("title", label);
+          el.setAttribute("aria-label", label);
+        };
+
         const syncChrome = () => {
           const open = isOpen();
-          if (toggle) {
-            toggle.setAttribute("aria-expanded", open ? "true" : "false");
-            toggle.setAttribute(
-              "title",
-              open
-                ? "Réduire le panneau Personnaliser"
-                : "Afficher le panneau Personnaliser",
-            );
-            toggle.setAttribute(
-              "aria-label",
-              open
-                ? "Réduire le panneau Personnaliser"
-                : "Afficher le panneau Personnaliser",
-            );
-          }
+          syncToggleChrome(toggle, open);
+          syncToggleChrome(edgeHandle, open);
           if (fab) fab.setAttribute("aria-expanded", open ? "true" : "false");
           if (backdrop) {
             backdrop.hidden = !open || !isOverlay();
@@ -21786,16 +21917,18 @@
           }
         };
 
-        if (toggle)
-          toggle.addEventListener("click", () => setOpen(!isOpen(), toggle));
+        const onToggleClick = (el) => () => setOpen(!isOpen(), el);
+        if (toggle) toggle.addEventListener("click", onToggleClick(toggle));
+        if (edgeHandle)
+          edgeHandle.addEventListener("click", onToggleClick(edgeHandle));
         if (fab) fab.addEventListener("click", () => setOpen(true, fab));
         if (closeBtn)
           closeBtn.addEventListener("click", () =>
-            setOpen(false, lastTrigger || fab || toggle),
+            setOpen(false, lastTrigger || fab || edgeHandle || toggle),
           );
         if (backdrop)
           backdrop.addEventListener("click", () =>
-            setOpen(false, lastTrigger || fab || toggle),
+            setOpen(false, lastTrigger || fab || edgeHandle || toggle),
           );
 
         wrap.querySelectorAll("[data-customize-sec]").forEach((btn) => {
@@ -21821,14 +21954,14 @@
             if ($("placeModal") && !$("placeModal").hidden) return;
             if ($("dirtyModal") && !$("dirtyModal").hidden) return;
             e.preventDefault();
-            setOpen(false, lastTrigger || fab || toggle);
+            setOpen(false, lastTrigger || fab || edgeHandle || toggle);
           },
           true,
         );
 
-        window
-          .matchMedia(DESKTOP_MQ)
-          .addEventListener("change", applyDefaultOpen);
+        const onViewportChange = () => applyDefaultOpen();
+        window.matchMedia(DESKTOP_MQ).addEventListener("change", onViewportChange);
+        window.matchMedia(OVERLAY_MQ).addEventListener("change", onViewportChange);
         applyDefaultOpen();
         setActiveRail("settings");
 
@@ -21836,13 +21969,24 @@
         const prevRenderDisplay = renderDisplay;
         renderDisplay = function () {
           prevRenderDisplay.apply(this, arguments);
-          if (wasHidden === wrap.hidden) return;
-          wasHidden = wrap.hidden;
-          if (wrap.hidden) {
-            app.classList.remove("customize-open");
-            clearTrap();
-            syncChrome();
-          } else applyDefaultOpen();
+          const nowHidden = wrap.hidden;
+          if (wasHidden !== nowHidden) {
+            wasHidden = nowHidden;
+            if (nowHidden) {
+              app.classList.remove("customize-open");
+              clearTrap();
+              syncChrome();
+            } else applyDefaultOpen();
+            return;
+          }
+          /* Rattrapage : listes présentes mais panneau desktop jamais ouvert. */
+          if (!nowHidden && isDesktop() && !isOpen()) {
+            let stored = null;
+            try {
+              stored = localStorage.getItem("epicsv-customize-open");
+            } catch (_) {}
+            if (stored !== "0") applyDefaultOpen();
+          }
         };
       })();
 
