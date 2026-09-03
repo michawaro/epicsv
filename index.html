@@ -1902,6 +1902,35 @@
       .hint-callout p + p {
         margin-top: 0.4em;
       }
+      .btn-hint-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        margin-left: 7px;
+        padding: 0;
+        border-radius: 50%;
+        border: none;
+        background: var(--teal-deep);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(12, 125, 120, 0.45);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        vertical-align: middle;
+        flex-shrink: 0;
+      }
+      .btn-hint-toggle:hover,
+      .btn-hint-toggle:focus-visible {
+        background: var(--seal);
+        color: var(--teal-deep);
+        transform: scale(1.15);
+        box-shadow: 0 3px 10px rgba(12, 125, 120, 0.55);
+        outline: none;
+      }
 
       .actions,
       .toolbar {
@@ -7079,7 +7108,7 @@
                   ></label
                 >
               </div>
-              <div class="opt-label" style="margin-top:8px">TABLEAU <button type="button" id="colsAdjustToggle" class="btn-hint-toggle" aria-label="Afficher/masquer les conseils d'ajustement" title="Conseils d'ajustement" style="margin-left:6px;font-size:11px;line-height:1;padding:1px 5px;border-radius:50%;cursor:pointer;border:1px solid var(--border,#ccc);background:transparent;">?</button></div>
+              <div class="opt-label" style="margin-top:8px">TABLEAU <button type="button" id="colsAdjustToggle" class="btn-hint-toggle" aria-label="Afficher/masquer les conseils d'ajustement" title="Conseils d'ajustement">?</button></div>
               <div class="hint-callout" id="colsAdjustCallout" hidden>
                 <p>
                   Glissez un en-tête pour réordonner, le bord d’une colonne
