@@ -10260,6 +10260,7 @@
       }
 
       function stashActiveTab() {
+        flushPreviewEditsFromDom();
         ensureTabs();
         const tab = state.tabs.find((t) => t.id === state.activeTabId);
         if (!tab) return;
@@ -10796,6 +10797,7 @@
       }
 
       function snapshot() {
+        flushPreviewEditsFromDom();
         stashActiveTab();
         return JSON.parse(
           JSON.stringify({
@@ -12945,8 +12947,32 @@
         return "item-share";
       }
 
+      function tpIsFormLayout(list) {
+        if (!isTpList(list) || !(list.headers && list.headers.length >= 2))
+          return false;
+        const def = tpDefaultHeaders().map(foldHeader);
+        return (
+          foldHeader(list.headers[0] || "") === def[0] &&
+          foldHeader(list.headers[1] || "") === def[1]
+        );
+      }
+
+      function tpLayoutExtended(list) {
+        if (!isTpList(list)) return false;
+        const defN = tpDefaultHeaders().length;
+        const n = (list.headers || []).length;
+        if (n > defN) return true;
+        if (Object.keys(list.custom || {}).some((k) => list.custom[k])) return true;
+        const rows = list.rows || [];
+        return rows.some((r) => Array.isArray(r) && r.length > defN);
+      }
+
       function tpLayoutStale(list) {
-        if (!list || !list.headers || list.headers.length < 5) return true;
+        if (!list || !isTpList(list)) return false;
+        if (!list.headers || !list.headers.length) return true;
+        if (tpLayoutExtended(list)) return false;
+        if (!tpIsFormLayout(list)) return false;
+        if (list.headers.length < 5) return true;
         const rows = list.rows || [];
         if (
           rows.length <
@@ -13486,7 +13512,7 @@
           return;
         }
         const n = Number(tpOf(list).nGroupes) || 0;
-        if (tpLayoutStale(list)) {
+        if (tpLayoutStale(list) && !tpLayoutExtended(list)) {
           pullTpItemsFromRows(list);
           applyTpSheetFrame(list, {
             rowsFromItems: true,
@@ -13757,7 +13783,7 @@
         if (!list.orient || list.orient === "auto") list.orient = "paysage";
         ensureAlign(list);
         migrateTpFormNgroups(list);
-        if (tpLayoutStale(list)) {
+        if (tpLayoutStale(list) && !tpLayoutExtended(list)) {
           if ((list.rows || []).length) pullTpItemsFromRows(list);
           applyTpSheetFrame(list, { rowsFromItems: true, keepPos: !fill });
         } else {
@@ -14538,7 +14564,11 @@
           list.tp = hydrateTp(raw.tp);
           list.blank = false;
           ensureTpTable(list, { fillGroups: !headers.length || !rows.length });
-          if (savedMerges.length && isTpForm(list) && !tpLayoutStale(list))
+          if (
+            savedMerges.length &&
+            isTpForm(list) &&
+            (tpLayoutExtended(list) || !tpLayoutStale(list))
+          )
             list.merges = savedMerges;
           if (isTpForm(list)) ensureTpHeadingMerges(list);
         } else if (raw.mode === "prog") {
@@ -15523,7 +15553,9 @@
           ae &&
           ae.isContentEditable &&
           ae.closest &&
-          ae.closest(".cell-edit, .rq-note, .th-edit")
+          ae.closest(
+            ".cell-edit, .rq-note, .th-edit, .list-title, .list-sub, .tp-ngroups",
+          )
         )
           return ae;
         const sel = window.getSelection();
@@ -15531,8 +15563,30 @@
         let n = sel.anchorNode;
         if (n && n.nodeType !== 1) n = n.parentElement;
         return n && n.closest
-          ? n.closest(".cell-edit, .rq-note, .th-edit")
+          ? n.closest(
+              ".cell-edit, .rq-note, .th-edit, .list-title, .list-sub, .tp-ngroups",
+            )
           : null;
+      }
+
+      function flushPreviewEditsFromDom() {
+        const sheets = $("sheets");
+        if (!sheets) return;
+        sheets
+          .querySelectorAll(
+            '[contenteditable="true"][data-lid], [contenteditable="true"][data-tp-ngroups]',
+          )
+          .forEach((el) => applyPreviewEdit(el, true));
+        const ae = document.activeElement;
+        if (
+          ae &&
+          ae.isContentEditable &&
+          sheets.contains(ae) &&
+          ae.dataset &&
+          ae.dataset.lid != null
+        ) {
+          applyPreviewEdit(ae, true);
+        }
       }
 
       function wrapCellFmt(value, tag) {
@@ -16515,10 +16569,11 @@
             list.rows[ri][ci] = readEditableValue(el, trim);
             const tp = tpOf(list);
             if (ri === 0 && ci === 1) {
+              const titleVal = readEditableValue(el, trim);
               if (!Array.isArray(list.titles) || !list.titles.length)
                 list.titles = [""];
-              list.titles[0] = v;
-              tp.titre = v;
+              list.titles[0] = titleVal;
+              tp.titre = titleVal;
             }
             if (ri === 0 && ci === 2) tp.niveau = v || tp.niveau;
             if (ri === 1 && ci === 2) tp.partie = v === "Partie" ? "" : v;
@@ -16535,10 +16590,11 @@
             while (list.rows[ri].length <= ci) list.rows[ri].push("");
             list.rows[ri][ci] = readEditableValue(el, trim);
             if (ri === 0 && ci === PROG_BANNER_TITLE_CI) {
+              const titleVal = readEditableValue(el, trim);
               if (!Array.isArray(list.titles) || !list.titles.length)
                 list.titles = [""];
-              list.titles[0] = v;
-              tpOf(list).titre = v;
+              list.titles[0] = titleVal;
+              tpOf(list).titre = titleVal;
             }
             return "cell";
           }
@@ -18563,6 +18619,7 @@
 
       function renderPreview() {
         if (typeof closeDateCalModal === "function") closeDateCalModal();
+        flushPreviewEditsFromDom();
         applyRootTheme();
         const sheetsEl = $("sheets");
         sheetsEl.innerHTML = "";
@@ -18585,7 +18642,11 @@
         $("saveBtn").disabled = false;
 
         state.lists.forEach((l) => {
-          if (isTpList(l) && tpLayoutStale(l))
+          if (
+            isTpList(l) &&
+            tpLayoutStale(l) &&
+            !tpLayoutExtended(l)
+          )
             ensureTpTable(l, { fillGroups: true });
           else if (isTpForm(l)) ensureTpHeadingMerges(l);
           else if (isProgList(l) && !progLayoutOk(l))
@@ -20924,6 +20985,7 @@
       }
 
       function projectPayload() {
+        flushPreviewEditsFromDom();
         stashActiveTab();
         return {
           app: "listes-pronote",
