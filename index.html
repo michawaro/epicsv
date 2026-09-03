@@ -334,6 +334,7 @@
       .fold-panel[hidden],
       #customizeFoldWrap[hidden],
       #modeFoldWrap[hidden],
+      #selFoldWrap[hidden],
       #infoBlock[hidden] {
         display: none !important;
       }
@@ -6360,7 +6361,56 @@
 
           </div>
         </div>
-        
+        <div id="selFoldWrap" hidden>
+          <button
+            class="fold-head"
+            id="selFoldBtn"
+            type="button"
+            aria-expanded="true"
+            aria-controls="selFold"
+          >
+            Sélection
+            <svg class="fold-chevron" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z"
+              />
+            </svg>
+          </button>
+          <div class="menu-fold" id="selFold">
+            <section class="block" id="filesBlock" hidden>
+              <div
+                class="seg duo mode-seg"
+                id="pageScopeSeg"
+                role="radiogroup"
+                aria-label="Pages concernées"
+              >
+                <label
+                  ><input
+                    type="radio"
+                    name="pageScope"
+                    value="selection"
+                    checked
+                  /><span>Sélectionner page</span></label
+                >
+                <label
+                  ><input type="radio" name="pageScope" value="all" /><span
+                    >Toutes les pages</span
+                  ></label
+                >
+              </div>
+              <p class="hint-note" id="pagesHint" style="margin: 8px 0 0">
+                Cochez les pages auxquelles s’appliquent titre, couleurs et
+                pastilles.
+              </p>
+              <label class="page-all-check" id="pageAllWrap" hidden>
+                <input type="checkbox" id="selAllLists" />
+                <span>Toutes les pages de cet onglet</span>
+              </label>
+              <div class="page-list" id="chips"></div>
+            </section>
+          </div>
+        </div>
       </aside>
 
       <main
@@ -6595,38 +6645,6 @@
           aria-label="Personnaliser"
         >
           <div class="customize-panel-body fold-panel" id="customizeFold">
-            <section class="block" id="filesBlock" hidden>
-              <div
-                class="seg duo mode-seg"
-                id="pageScopeSeg"
-                role="radiogroup"
-                aria-label="Pages concernées"
-              >
-                <label
-                  ><input
-                    type="radio"
-                    name="pageScope"
-                    value="selection"
-                    checked
-                  /><span>Sélectionner page</span></label
-                >
-                <label
-                  ><input type="radio" name="pageScope" value="all" /><span
-                    >Toutes les pages</span
-                  ></label
-                >
-              </div>
-              <p class="hint-note" id="pagesHint" style="margin: 8px 0 0">
-                Cochez les pages auxquelles s’appliquent titre, couleurs et
-                pastilles.
-              </p>
-              <label class="page-all-check" id="pageAllWrap" hidden>
-                <input type="checkbox" id="selAllLists" />
-                <span>Toutes les pages de cet onglet</span>
-              </label>
-              <div class="page-list" id="chips"></div>
-            </section>
-
             <section class="block" id="orientBlock" hidden>
               <h2>Orientation feuilles</h2>
               <div class="seg" id="orients">
@@ -17928,14 +17946,17 @@
 
       function renderChips() {
         const block = $("filesBlock");
+        const selWrap = $("selFoldWrap");
         const wrap = $("chips");
         wrap.innerHTML = "";
         if (!state.lists.length) {
           block.hidden = true;
+          if (selWrap) selWrap.hidden = true;
           syncPagesHint();
           return;
         }
         block.hidden = false;
+        if (selWrap) selWrap.hidden = false;
         prunePageSelection();
         const many = state.lists.length > 1;
         state.lists.forEach((list, i) => {
@@ -21820,6 +21841,10 @@
           open: "Afficher les modes",
           close: "Réduire les modes",
         });
+        bind("selFoldBtn", "selFold", "epicsv-fold-sel", {
+          open: "Afficher la sélection",
+          close: "Réduire la sélection",
+        });
       })();
 
       (function bindCustomizePanel() {
@@ -21898,10 +21923,7 @@
 
         const scrollToSec = (sec) => {
           const map = {
-            settings:
-              ($("filesBlock") && !$("filesBlock").hidden && $("filesBlock")) ||
-              $("marginsBlock") ||
-              body,
+            settings: $("marginsBlock") || body,
             colors: $("customizeSecColors") || $("displayBlock"),
             typo: $("customizeSecTypo") || $("displayBlock"),
           };
