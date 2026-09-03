@@ -4702,7 +4702,9 @@
         padding: var(--row-y) var(--row-x);
         border-bottom: 0.35pt solid var(--d-rule, var(--rule));
         vertical-align: top;
+        overflow: hidden;
         overflow-wrap: anywhere;
+        word-break: break-word;
         position: relative;
         text-align: center;
       }
@@ -4866,7 +4868,7 @@
         display: block;
         box-sizing: border-box;
         width: calc(100% + 2 * var(--row-x));
-        max-width: none;
+        max-width: calc(100% + 2 * var(--row-x));
         min-width: 0;
         min-height: calc(1em + 2 * var(--row-y));
         margin: calc(-1 * var(--row-y)) calc(-1 * var(--row-x));
@@ -15021,6 +15023,7 @@
           discardLastHist();
           return false;
         }
+        if (kind === "row") list.keepEmptyRows = true;
         growBefore.forEach((g) =>
           growMergeAfterInsert(list, g, at, kind, side),
         );
@@ -15569,14 +15572,10 @@
           : null;
       }
 
-      function flushPreviewEditsFromDom() {
+      function flushPreviewEditsFromDom(opts) {
+        const onlyActive = Boolean(opts && opts.onlyActive);
         const sheets = $("sheets");
         if (!sheets) return;
-        sheets
-          .querySelectorAll(
-            '[contenteditable="true"][data-lid], [contenteditable="true"][data-tp-ngroups]',
-          )
-          .forEach((el) => applyPreviewEdit(el, true));
         const ae = document.activeElement;
         if (
           ae &&
@@ -15586,7 +15585,16 @@
           ae.dataset.lid != null
         ) {
           applyPreviewEdit(ae, true);
+          if (onlyActive) return;
         }
+        if (onlyActive) return;
+        sheets
+          .querySelectorAll(
+            '[contenteditable="true"][data-lid], [contenteditable="true"][data-tp-ngroups]',
+          )
+          .forEach((el) => {
+            if (el !== ae) applyPreviewEdit(el, true);
+          });
       }
 
       function wrapCellFmt(value, tag) {
@@ -18619,7 +18627,7 @@
 
       function renderPreview() {
         if (typeof closeDateCalModal === "function") closeDateCalModal();
-        flushPreviewEditsFromDom();
+        flushPreviewEditsFromDom({ onlyActive: true });
         applyRootTheme();
         const sheetsEl = $("sheets");
         sheetsEl.innerHTML = "";
