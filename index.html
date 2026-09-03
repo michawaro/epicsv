@@ -11724,7 +11724,7 @@
           if (k0 < 0) k0 = i;
           k1 = i;
         }
-        if (!ris.length || k0 < 0) return null;
+        if (k0 < 0) return null;
         const cols = [];
         for (let i = k0; i <= k1; i++) {
           if (typeof keys[i] !== "number") return null;
@@ -11732,6 +11732,16 @@
         }
         for (let i = 1; i < cols.length; i++) {
           if (cols[i] !== cols[i - 1] + 1) return null;
+        }
+        if (!ris.length) {
+          if (!zoneSel.includeHeader) return null;
+          return {
+            r0: -1,
+            r1: -1,
+            c0: cols[0],
+            c1: cols[cols.length - 1],
+            headerOnly: true,
+          };
         }
         const rect = {
           r0: Math.min.apply(null, ris),
@@ -11748,6 +11758,7 @@
       function zoneMergeRect(list) {
         const rect = zoneTightRect(list);
         if (!rect) return null;
+        if (rect.headerOnly) return rect;
         if (zoneSel && zoneSel.axis) return rect;
         return expandRectToMerges(list, rect);
       }
@@ -11803,6 +11814,40 @@
           alignH: list.alignH[k],
           alignV: list.alignV[k],
         };
+      }
+
+      function readHeaderLooks(list, ci) {
+        ensureAlign(list);
+        if (!list.hl) list.hl = {};
+        if (!list.hlText) list.hlText = {};
+        const k = fluoKey("h", ci);
+        return {
+          text:
+            list.headers && list.headers[ci] != null ? list.headers[ci] : "",
+          hl: list.hl[k],
+          hlText: list.hlText[k],
+          alignH: list.alignH[k],
+          alignV: list.alignV[k],
+        };
+      }
+
+      function writeHeaderLooksFull(list, ci, looks) {
+        if (!list || looks == null) return;
+        ensureAlign(list);
+        if (!list.headers) list.headers = [];
+        if (!list.hl) list.hl = {};
+        if (!list.hlText) list.hlText = {};
+        while (list.headers.length <= ci) list.headers.push("");
+        list.headers[ci] = looks.text != null ? looks.text : "";
+        const k = fluoKey("h", ci);
+        if (looks.hl) list.hl[k] = looks.hl;
+        else delete list.hl[k];
+        if (looks.hlText) list.hlText[k] = looks.hlText;
+        else delete list.hlText[k];
+        if (looks.alignH) list.alignH[k] = looks.alignH;
+        else delete list.alignH[k];
+        if (looks.alignV) list.alignV[k] = looks.alignV;
+        else delete list.alignV[k];
       }
 
       function writeCellLooks(list, ri, ci, looks, fillEmptyText) {
@@ -17328,6 +17373,7 @@
         let p0 = Infinity;
         let p1 = -1;
         let anyBody = false;
+        let anyHeader = false;
         hits.forEach((h) => {
           const cs = Math.max(1, Number(h.cs) || 1);
           const rs = Math.max(1, Number(h.rs) || 1);
@@ -17339,7 +17385,8 @@
               if (ki > k1) k1 = ki;
             }
           }
-          if (h.ri >= 0) {
+          if (h.ri < 0) anyHeader = true;
+          else if (h.ri >= 0) {
             anyBody = true;
             for (let d = 0; d < rs; d++) {
               const p = vis.indexOf(h.ri + d);
@@ -17355,6 +17402,7 @@
           lid: lid,
           keys: keys.slice(k0, k1 + 1),
           ris: anyBody && p1 >= 0 ? vis.slice(p0, p1 + 1) : [],
+          includeHeader: anyHeader,
         };
       }
 
@@ -17399,6 +17447,7 @@
             keys: [ck],
             ris: visibleRowIndices(list).slice(),
             axis: "col",
+            includeHeader: true,
           },
           opts,
         );
@@ -17673,6 +17722,9 @@
         const cols = zoneAlignCols(list);
         if (!list || !cols.length) return [];
         const out = [];
+        if (zoneSel && zoneSel.includeHeader) {
+          cols.forEach((ci) => out.push({ ri: "h", ci: ci }));
+        }
         if (zoneSel.ris && zoneSel.ris.length) {
           zoneSel.ris.forEach((ri) => {
             cols.forEach((ci) => out.push({ ri: ri, ci: ci }));
@@ -17686,7 +17738,8 @@
           });
           return out;
         }
-        cols.forEach((ci) => out.push({ ri: "h", ci: ci }));
+        if (!out.length)
+          cols.forEach((ci) => out.push({ ri: "h", ci: ci }));
         return out;
       }
 
@@ -20246,9 +20299,20 @@
         if (!list || !box) return;
         const keys = [];
         for (let c = box.c0; c <= box.c1; c++) keys.push(c);
+        if (box.headerOnly || box.r0 < 0) {
+          setZone({
+            lid: String(list.id),
+            keys: keys,
+            ris: [],
+            includeHeader: true,
+          });
+          return;
+        }
         const ris = [];
         for (let r = box.r0; r <= box.r1; r++) ris.push(r);
-        setZone({ lid: String(list.id), keys: keys, ris: ris });
+        const next = { lid: String(list.id), keys: keys, ris: ris };
+        if (zoneSel && zoneSel.includeHeader) next.includeHeader = true;
+        setZone(next);
       }
 
       function zoneCellRect(list) {
@@ -20264,10 +20328,20 @@
         const cols = (zoneSel.keys || []).filter(
           (k) => Number.isInteger(k) && k >= 0 && k < nC,
         );
-        if (!ris.length || !cols.length) return null;
+        if (!cols.length) return null;
         const sorted = cols.slice().sort((a, b) => a - b);
         for (let i = 1; i < sorted.length; i++) {
           if (sorted[i] !== sorted[i - 1] + 1) return null;
+        }
+        if (!ris.length) {
+          if (!zoneSel.includeHeader) return null;
+          return {
+            r0: -1,
+            r1: -1,
+            c0: sorted[0],
+            c1: sorted[sorted.length - 1],
+            headerOnly: true,
+          };
         }
         return {
           r0: Math.min.apply(null, ris),
@@ -20333,8 +20407,10 @@
         return null;
       }
 
-      function encodeZoneClipPayload(cells, merges) {
-        return JSON.stringify({ v: 1, cells: cells, merges: merges || [] });
+      function encodeZoneClipPayload(cells, merges, includeHeader) {
+        const o = { v: 1, cells: cells, merges: merges || [] };
+        if (includeHeader) o.includeHeader = true;
+        return JSON.stringify(o);
       }
 
       function writeZoneClipToDataTransfer(dataTransfer, clip) {
@@ -20343,7 +20419,11 @@
         try {
           dataTransfer.setData(
             ZONE_CLIP_MIME,
-            encodeZoneClipPayload(clip.cells, clip.merges),
+            encodeZoneClipPayload(
+              clip.cells,
+              clip.merges,
+              clip.includeHeader,
+            ),
           );
         } catch (_) {}
       }
@@ -20365,7 +20445,11 @@
 
       async function writeZoneClipToSystem(clip) {
         if (!clip || !navigator.clipboard) return false;
-        const rich = encodeZoneClipPayload(clip.cells, clip.merges);
+        const rich = encodeZoneClipPayload(
+          clip.cells,
+          clip.merges,
+          clip.includeHeader,
+        );
         if (navigator.clipboard.write && window.ClipboardItem) {
           try {
             await navigator.clipboard.write([
@@ -20415,48 +20499,72 @@
 
       function buildCellClipFromRect(list, box) {
         if (!list || !box) return null;
+        const headerOnly = Boolean(box.headerOnly || box.r0 < 0);
+        const includeHeader = Boolean(
+          headerOnly ||
+            (zoneSel && zoneSel.includeHeader && box.r0 >= 0 && !headerOnly),
+        );
+        const hdrOffset = includeHeader && !headerOnly ? 1 : 0;
         const cells = [];
         const read = (r, c) =>
           zoneSel && zoneSel.axis
             ? readZoneCellLooks(list, r, c)
             : readCellLooks(list, r, c);
-        for (let r = box.r0; r <= box.r1; r++) {
+        const pushHeaderRow = () => {
           const row = [];
           for (let c = box.c0; c <= box.c1; c++) {
-            row.push(read(r, c));
+            row.push(readHeaderLooks(list, c));
           }
           cells.push(row);
-        }
-        const merges = ((list && list.merges) || [])
-          .filter((m) => {
-            const mr = mergeToRect(m);
-            if (zoneSel && zoneSel.axis) {
-              return (
-                mr.r0 >= box.r0 &&
-                mr.r1 <= box.r1 &&
-                mr.c0 >= box.c0 &&
-                mr.c1 <= box.c1
-              );
+        };
+        if (headerOnly) pushHeaderRow();
+        else {
+          if (includeHeader) pushHeaderRow();
+          for (let r = box.r0; r <= box.r1; r++) {
+            const row = [];
+            for (let c = box.c0; c <= box.c1; c++) {
+              row.push(read(r, c));
             }
-            return (
-              m.r >= box.r0 &&
-              m.r + m.rs - 1 <= box.r1 &&
-              m.c >= box.c0 &&
-              m.c + m.cs - 1 <= box.c1
-            );
-          })
-          .map((m) => ({
-            r: m.r - box.r0,
-            c: m.c - box.c0,
-            rs: m.rs,
-            cs: m.cs,
-          }));
+            cells.push(row);
+          }
+        }
+        const merges = headerOnly
+          ? []
+          : ((list && list.merges) || [])
+              .filter((m) => {
+                const mr = mergeToRect(m);
+                if (zoneSel && zoneSel.axis) {
+                  return (
+                    mr.r0 >= box.r0 &&
+                    mr.r1 <= box.r1 &&
+                    mr.c0 >= box.c0 &&
+                    mr.c1 <= box.c1
+                  );
+                }
+                return (
+                  m.r >= box.r0 &&
+                  m.r + m.rs - 1 <= box.r1 &&
+                  m.c >= box.c0 &&
+                  m.c + m.cs - 1 <= box.c1
+                );
+              })
+              .map((m) => ({
+                r: m.r - box.r0 + hdrOffset,
+                c: m.c - box.c0,
+                rs: m.rs,
+                cs: m.cs,
+              }));
         const plain = cells
           .map((row) =>
             row.map((cell) => plainTextFromCell(cell.text)).join("\t"),
           )
           .join("\n");
-        return { cells: cells, merges: merges, plain: plain };
+        return {
+          cells: cells,
+          merges: merges,
+          plain: plain,
+          includeHeader: includeHeader,
+        };
       }
 
       function copyZoneCells(opts) {
@@ -20482,6 +20590,20 @@
           );
         }
         return true;
+      }
+
+      function pasteHeaderRowAt(list, c0, row) {
+        if (!list || !row || !row.length) return false;
+        const nC = (list.headers || []).length;
+        if (!nC) return false;
+        let wrote = false;
+        for (let dc = 0; dc < row.length; dc++) {
+          const ci = c0 + dc;
+          if (ci < 0 || ci >= nC) continue;
+          writeHeaderLooksFull(list, ci, row[dc]);
+          wrote = true;
+        }
+        return wrote;
       }
 
       function pasteLooksGridAt(list, r0, c0, cells, merges) {
@@ -20598,14 +20720,39 @@
           merges = [];
         }
         if (!cells || !cells.length) return false;
+        let clipIncludeHeader = false;
+        if (cellClip && cellClip.cells && cellClip.cells.length) {
+          clipIncludeHeader = Boolean(cellClip.includeHeader);
+        } else if (opts && opts.event) {
+          const rich = zoneClipFromEvent(opts.event);
+          if (rich) clipIncludeHeader = Boolean(rich.includeHeader);
+        } else if (!opts || !opts.text) {
+          const rich = await readZoneClipFromSystem();
+          if (rich) clipIncludeHeader = Boolean(rich.includeHeader);
+        }
         pushHist();
-        const ok = pasteLooksGridAt(
-          list,
-          anchorBox.r0,
-          anchorBox.c0,
-          cells,
-          merges,
-        );
+        let ok = false;
+        if (anchorBox.headerOnly) {
+          ok = pasteHeaderRowAt(list, anchorBox.c0, cells[0]);
+        } else {
+          const pasteHeader =
+            clipIncludeHeader && zoneSel && zoneSel.includeHeader;
+          let bodyCells = cells;
+          if (pasteHeader && cells.length) {
+            ok = pasteHeaderRowAt(list, anchorBox.c0, cells[0]);
+            bodyCells = cells.slice(1);
+          }
+          if (bodyCells.length) {
+            ok =
+              pasteLooksGridAt(
+                list,
+                anchorBox.r0,
+                anchorBox.c0,
+                bodyCells,
+                merges,
+              ) || ok;
+          }
+        }
         if (!ok) {
           discardLastHist();
           return false;
@@ -20613,10 +20760,18 @@
         if (isTpList(list)) writeTpComputed(list);
         dirty = true;
         renderPreview();
-        const endR = Math.min(
-          (list.rows || []).length - 1,
-          anchorBox.r0 + cells.length - 1,
-        );
+        const bodyRowCount =
+          anchorBox.headerOnly
+            ? 0
+            : clipIncludeHeader && zoneSel && zoneSel.includeHeader
+              ? Math.max(0, cells.length - 1)
+              : cells.length;
+        const endR = anchorBox.headerOnly
+          ? -1
+          : Math.min(
+              (list.rows || []).length - 1,
+              anchorBox.r0 + bodyRowCount - 1,
+            );
         const endC = Math.min(
           (list.headers || []).length - 1,
           anchorBox.c0 +
