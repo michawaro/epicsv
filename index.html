@@ -2995,7 +2995,14 @@
         letter-spacing: 0.02em;
         box-shadow: 0 8px 20px rgba(14, 143, 140, 0.14);
       }
+      .list-block.is-table-over-page.is-editing .table-frame-h[data-dir="s"]::after,
+      .list-block.is-table-over-page.is-editing .table-frame-h[data-dir="se"]::after,
+      .list-block.is-table-over-page.is-editing .table-frame-h[data-dir="sw"]::after {
+        background: #c45c4a;
+        box-shadow: 0 0 0 2px #fff, 0 2px 8px rgba(196, 92, 74, 0.45);
+      }
       .page-format-hud.is-overflow {
+        cursor: pointer;
         color: #9a3328;
         background: #fff4f1;
       }
@@ -17035,8 +17042,13 @@
           ? "A4 mixte · portrait et paysage · marges " + lay.marge + " mm"
           : sheetCaption(lay.orient, lay.marge);
         if (label)
-          label.textContent = over ? cap + " · dépasse la feuille" : cap;
-        else hud.textContent = over ? cap + " · dépasse la feuille" : cap;
+          label.textContent = over
+            ? cap + " · dépasse la feuille · clic pour ajuster"
+            : cap;
+        else
+          hud.textContent = over
+            ? cap + " · dépasse la feuille · clic pour ajuster"
+            : cap;
         syncPageOrientToggle(lay.orient);
         syncPageSendToggle();
       }
@@ -17300,7 +17312,7 @@
             visibleRowIndices(list).forEach((ri) => {
               const cur = rowEmOf(list, ri);
               list.rowH[ri] =
-                Math.round(Math.max(0.06, Math.min(2.4, cur * fy)) * 1000) /
+                Math.round(Math.max(0.04, Math.min(2.4, cur * fy)) * 1000) /
                 1000;
             });
           }
@@ -18916,8 +18928,88 @@
         if (frame) frame.style.removeProperty("min-height");
       }
 
+      function listBlockOverflowPx(block) {
+        if (!block) return 0;
+        const wrap = block.querySelector(".liste-wrap");
+        const sheet = block.closest(".sheet");
+        if (!wrap || !sheet) return 0;
+        const scale = stageScale() || 1;
+        const sheetRect = sheet.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        const cs = getComputedStyle(sheet);
+        const innerBottom =
+          sheetRect.bottom - (parseFloat(cs.paddingBottom) || 0) * scale;
+        return Math.max(0, wrapRect.bottom - innerBottom);
+      }
+
+      function syncTableFrameHandles(block) {
+        if (!block) return;
+        const wrap = block.querySelector(".liste-wrap");
+        if (!wrap) return;
+        const south = wrap.querySelector('.table-frame-h[data-dir="s"]');
+        const se = wrap.querySelector('.table-frame-h[data-dir="se"]');
+        const sw = wrap.querySelector('.table-frame-h[data-dir="sw"]');
+        const e = wrap.querySelector('.table-frame-h[data-dir="e"]');
+        const w = wrap.querySelector('.table-frame-h[data-dir="w"]');
+        const overflow = listBlockOverflowPx(block);
+        const pin = overflow > 3;
+        block.classList.toggle("is-table-over-page", pin);
+        const lift = pin ? Math.round(overflow) + "px" : "";
+        [
+          [south, "-16px"],
+          [se, "-12px"],
+          [sw, "-12px"],
+        ].forEach(([el, base]) => {
+          if (!el) return;
+          if (pin) el.style.bottom = "calc(" + base + " + " + lift + ")";
+          else el.style.removeProperty("bottom");
+        });
+        if (e) {
+          if (pin) e.style.bottom = "calc(12px + " + lift + ")";
+          else e.style.removeProperty("bottom");
+        }
+        if (w) {
+          if (pin) w.style.bottom = "calc(12px + " + lift + ")";
+          else w.style.removeProperty("bottom");
+        }
+      }
+
       function syncAllListeFrames() {
         $("sheets").querySelectorAll(".liste-wrap").forEach(syncListeFrameSize);
+        $("sheets")
+          .querySelectorAll(".list-block[data-lid]")
+          .forEach(syncTableFrameHandles);
+      }
+
+      function resetListeWrapResizeStyle(wrap) {
+        if (!wrap) return;
+        wrap.style.removeProperty("height");
+        wrap.style.removeProperty("overflow");
+        syncListeFrameSize(wrap);
+        const block = wrap.closest(".list-block[data-lid]");
+        if (block) syncTableFrameHandles(block);
+      }
+
+      function fitListHeightToPage(list) {
+        if (!list || isBlankList(list)) return false;
+        const block = $("sheets").querySelector(
+          '.list-block[data-lid="' + list.id + '"]',
+        );
+        const wrap = block && block.querySelector(".liste-wrap");
+        const table = wrap && wrap.querySelector("table.liste");
+        if (!block || !wrap || !table) return false;
+        const overflow = listBlockOverflowPx(block);
+        if (overflow < 4) return false;
+        const tableH = Math.max(table.offsetHeight, table.scrollHeight, 1);
+        const fy = Math.max(0.12, (tableH - overflow - 2) / tableH);
+        if (Math.abs(fy - 1) < 0.004) return false;
+        pushHist();
+        tableScaleTargets(list).forEach((lst) => {
+          scaleListFrame(lst, 1, fy, { scaleH: true });
+        });
+        markTpSized(list);
+        renderPreview();
+        return true;
       }
 
       function fillTpToPage(list) {
@@ -20009,6 +20101,7 @@
         stage.style.transform = "scale(" + scale + ")";
         markSheetOverflow();
         syncStageHeight();
+        syncAllListeFrames();
       }
 
       function syncStageHeight() {
@@ -22386,7 +22479,7 @@
                   r.el.style.height = next + "mm";
                 }
               } else {
-                const next = Math.max(0.06, Math.min(2.4, r.em * fy));
+                const next = Math.max(0.04, Math.min(2.4, r.em * fy));
                 if (r.el) r.el.style.setProperty("--row-y", next + "em");
               }
             });
@@ -22403,12 +22496,10 @@
                 }
               });
             }
-            const liveH = Math.max(
-              d.table.scrollHeight,
-              d.table.offsetHeight,
-              (d.layoutH0 || 0) * fy,
-            );
-            if (liveH > 1) d.wrap.style.minHeight = liveH + "px";
+            const targetH = Math.max(20, (d.layoutH0 || 1) * fy);
+            d.wrap.style.height = targetH + "px";
+            d.wrap.style.minHeight = targetH + "px";
+            d.wrap.style.overflow = "hidden";
           }
         };
         const ratiosFrom = (e, d) => {
@@ -22424,7 +22515,7 @@
           if (d.scaleH) {
             const sign = d.dir.indexOf("n") >= 0 ? -1 : 1;
             fy = Math.max(
-              0.15,
+              0.08,
               Math.min(6, (d.h0 + sign * (e.clientY - d.y0)) / d.h0),
             );
           }
@@ -22442,6 +22533,10 @@
             if (drag) drag.fitPending = false;
             syncStageHeight();
             markSheetOverflow();
+            if (drag && drag.wrap) {
+              const block = drag.wrap.closest(".list-block[data-lid]");
+              if (block) syncTableFrameHandles(block);
+            }
           });
         };
         const stop = (e) => {
@@ -22457,6 +22552,7 @@
           document.removeEventListener("pointerup", stop);
           document.removeEventListener("pointercancel", stop);
           clearBody();
+          resetListeWrapResizeStyle(d.wrap);
           const fx = d.fx != null ? d.fx : 1;
           const fy = d.fy != null ? d.fy : 1;
           const useW = d.scaleW && Math.abs(fx - 1) > 0.004;
@@ -24894,6 +24990,17 @@
       }
       printBtn.addEventListener("click", printLists);
       if (dockPrintBtn) dockPrintBtn.addEventListener("click", printLists);
+
+      const pageFormatHud = $("pageFormatHud");
+      if (pageFormatHud) {
+        pageFormatHud.addEventListener("click", () => {
+          if (!pageFormatHud.classList.contains("is-overflow")) return;
+          const list = activeList();
+          if (!list || isBlankList(list)) return;
+          if (fitListHeightToPage(list))
+            announce("Hauteur ajustée pour tenir sur la feuille.");
+        });
+      }
 
       $("sampleBtn").addEventListener("click", () => {
         const used = new Set(state.lists.map((l) => l.name));
