@@ -3043,6 +3043,22 @@
         letter-spacing: 0.03em;
         white-space: nowrap;
       }
+      .list-block.is-prog-page .tp-struct-prog-title {
+        justify-content: center;
+        gap: 0.2em 0.45em;
+        font-weight: 800;
+      }
+      .list-block.is-prog-page .tp-struct-prog-title .cell-edit {
+        font-weight: 800;
+      }
+      .list-block.is-prog-page .prog-col-lab {
+        display: block;
+        font-size: 0.78em;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-align: center;
+        white-space: nowrap;
+      }
       .list-block.is-prog-page td.is-tp-mat .cell-edit {
         min-height: 1.05em;
       }
@@ -3145,11 +3161,41 @@
         border-top: var(--tp-inner);
         border-top-color: #111;
       }
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
-        border-bottom: var(--tp-inner);
-        border-bottom-color: #111;
+      /* Filet horizontal enseignant/commander : pas sur Dates|Nb groupes|Salles */
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-dates,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-order-start
+        td.is-tp-salles,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-prof-end
+        td.is-tp-dates,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-prof-end
+        td.is-tp-ngroups,
+      .list-block.is-tp-page
+        .liste.has-tp-inner
+        tbody
+        tr.is-tp-prof-end
+        td.is-tp-salles {
+        border-top: 0;
+        border-bottom: 0;
       }
-      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td {
+      .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td {
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
@@ -3166,11 +3212,14 @@
         border-bottom: var(--tp-inner);
         border-bottom-color: #111;
       }
+      /* Pas de filet vertical Matériel|Total dans la rangée d’en-tête teal */
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
         tr.is-tp-mat-head
-        td.is-tp-dates,
+        td.is-tp-dates {
+        border-left: 0;
+      }
       .list-block.is-tp-page
         .liste.has-tp-inner
         tbody
@@ -5049,8 +5098,40 @@
           td {
           border-top: 1.65pt solid #111 !important;
         }
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-dates,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-order-start
+          td.is-tp-salles,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-prof-end
+          td.is-tp-dates,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-prof-end
+          td.is-tp-ngroups,
+        .list-block.is-tp-page
+          .liste.has-tp-inner
+          tbody
+          tr.is-tp-prof-end
+          td.is-tp-salles {
+          border-top: 0 !important;
+          border-bottom: 0 !important;
+        }
         .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-share-end td,
-        .list-block.is-tp-page .liste.has-tp-inner tbody tr.is-tp-prof-end td,
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
@@ -5067,7 +5148,9 @@
           .liste.has-tp-inner
           tbody
           tr.is-tp-mat-head
-          td.is-tp-dates,
+          td.is-tp-dates {
+          border-left: 0 !important;
+        }
         .list-block.is-tp-page
           .liste.has-tp-inner
           tbody
@@ -5453,6 +5536,30 @@
                 hidden
                 style="margin: 8px 0 0"
               ></p>
+            </section>
+
+            <section class="block" id="marginsBlock">
+              <h2>Marges</h2>
+              <div class="seg" id="margins">
+                <label
+                  ><input type="radio" name="marge" value="etroites" /><span
+                    >Étroites</span
+                  ></label
+                >
+                <label
+                  ><input
+                    type="radio"
+                    name="marge"
+                    value="moyennes"
+                    checked
+                  /><span>Moyennes</span></label
+                >
+                <label
+                  ><input type="radio" name="marge" value="larges" /><span
+                    >Larges</span
+                  ></label
+                >
+              </div>
             </section>
 
             <section class="block" id="titlesBlock" hidden>
@@ -5950,29 +6057,6 @@
                 </div>
               </div>
               <p class="mode-opts-lead">Mise en page liste</p>
-              <section class="block" id="marginsBlock">
-                <h2>Marges</h2>
-                <div class="seg" id="margins">
-                  <label
-                    ><input type="radio" name="marge" value="etroites" /><span
-                      >Étroites</span
-                    ></label
-                  >
-                  <label
-                    ><input
-                      type="radio"
-                      name="marge"
-                      value="moyennes"
-                      checked
-                    /><span>Moyennes</span></label
-                  >
-                  <label
-                    ><input type="radio" name="marge" value="larges" /><span
-                      >Larges</span
-                    ></label
-                  >
-                </div>
-              </section>
 
               <section class="block" id="combineBlock" hidden>
                 <h2>Combiner les listes</h2>
@@ -5994,49 +6078,6 @@
                 <p class="hint-note" style="margin: 8px 0 0">
                   Même page : paysage, jusqu’à 4 listes en colonnes par feuille.
                 </p>
-              </section>
-
-              <section class="block" id="colsBlock" hidden>
-                <h2>Colonnes à conserver</h2>
-                <p
-                  class="hint-note page-apply-hint"
-                  id="colsApplyHint"
-                  hidden
-                ></p>
-                <div class="hint-callout">
-                  <p>
-                    Glissez un en-tête pour réordonner, le bord d’une colonne
-                    pour sa largeur, les bords ou coins du tableau pour tout
-                    redimensionner.
-                  </p>
-                  <p>
-                    Dessinez une zone dans l’aperçu pour uniformiser les
-                    largeurs ou les hauteurs, ou supprimer des lignes et
-                    colonnes.
-                  </p>
-                </div>
-                <div class="col-toolbar">
-                  <button type="button" id="allOn">Tout cocher</button>
-                  <button type="button" id="allOff">Tout décocher</button>
-                  <button type="button" id="resetWidths">Largeurs auto</button>
-                </div>
-                <div class="cols" id="cols"></div>
-                <div class="add-line">
-                  <input
-                    class="field"
-                    id="colInput"
-                    type="text"
-                    placeholder="Nouvelle colonne (ex. Visa)"
-                    aria-label="Nom de la nouvelle colonne"
-                  />
-                  <button class="btn-mini" id="addColBtn" type="button">
-                    Ajouter
-                  </button>
-                </div>
-                <label class="check-row">
-                  <input type="checkbox" id="colAll" />
-                  Ajouter cette colonne à toutes les listes
-                </label>
               </section>
 
               <section class="block" id="numBlock">
@@ -6083,6 +6124,50 @@
                 ></button>
               </section>
             </div>
+
+            <section class="block" id="colsBlock" hidden>
+              <h2>Colonnes à conserver</h2>
+              <p
+                class="hint-note page-apply-hint"
+                id="colsApplyHint"
+                hidden
+              ></p>
+              <div class="hint-callout">
+                <p>
+                  Glissez un en-tête pour réordonner, le bord d’une colonne
+                  pour sa largeur, les bords ou coins du tableau pour tout
+                  redimensionner.
+                </p>
+                <p>
+                  Dessinez une zone dans l’aperçu pour uniformiser les
+                  largeurs ou les hauteurs, ou supprimer des lignes et
+                  colonnes.
+                </p>
+              </div>
+              <div class="col-toolbar">
+                <button type="button" id="allOn">Tout cocher</button>
+                <button type="button" id="allOff">Tout décocher</button>
+                <button type="button" id="resetWidths">Largeurs auto</button>
+              </div>
+              <div class="cols" id="cols"></div>
+              <div class="add-line">
+                <input
+                  class="field"
+                  id="colInput"
+                  type="text"
+                  placeholder="Nouvelle colonne (ex. Visa)"
+                  aria-label="Nom de la nouvelle colonne"
+                />
+                <button class="btn-mini" id="addColBtn" type="button">
+                  Ajouter
+                </button>
+              </div>
+              <label class="check-row">
+                <input type="checkbox" id="colAll" />
+                Ajouter cette colonne à toutes les listes
+              </label>
+            </section>
+
           </div>
         </div>
         
@@ -8237,7 +8322,6 @@
         "Supports",
         "Activités",
         "Matériel",
-        "Éval",
         "Obs.",
       ];
       const PROG_WIDTHS = {
@@ -8247,11 +8331,12 @@
         3: 14,
         4: 14,
         5: 9,
-        6: 16,
+        6: 23,
         7: 12.5,
         8: 7,
-        9: 7,
       };
+      const PROG_BANNER_META_CS = 2;
+      const PROG_BANNER_TITLE_CI = PROG_BANNER_META_CS;
       const PROG_PERIODS = [
         { id: "P1", n: 4 },
         { id: "P2", n: 3 },
