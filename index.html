@@ -3208,6 +3208,7 @@
         display: grid;
         gap: 5mm;
         align-items: start;
+        overflow: visible;
       }
       .sheet-grid[data-n="1"] {
         grid-template-columns: 1fr;
@@ -4306,6 +4307,10 @@
         max-width: none;
         box-sizing: border-box;
         overflow: visible;
+      }
+      .sheet.is-combo .liste-wrap {
+        margin-left: auto;
+        margin-right: auto;
       }
       .liste-wrap > .liste {
         width: 100%;
@@ -6291,24 +6296,7 @@
 
             <section class="block" id="colsBlock" hidden>
               <h2>Colonnes à conserver</h2>
-              <p
-                class="hint-note page-apply-hint"
-                id="colsApplyHint"
-                hidden
-              ></p>
-              <div class="hint-callout">
-                <p>
-                  Glissez un en-tête pour réordonner, le bord d’une colonne
-                  pour sa largeur, les bords ou coins du tableau pour tout
-                  redimensionner.
-                </p>
-                <p>
-                  Dessinez une zone dans l’aperçu pour uniformiser les
-                  largeurs ou les hauteurs, ou supprimer des lignes et
-                  colonnes.
-                </p>
-              </div>
-              <div class="col-toolbar">
+                            <div class="col-toolbar">
                 <button type="button" id="allOn">Tout cocher</button>
                 <button type="button" id="allOff">Tout décocher</button>
                 <button type="button" id="resetWidths">Largeurs auto</button>
@@ -7079,7 +7067,20 @@
                   ></label
                 >
               </div>
-              <div class="opt-label">Contour</div>
+              <div class="opt-label" style="margin-top:8px">TABLEAU <button type="button" id="colsAdjustToggle" class="btn-hint-toggle" aria-label="Afficher/masquer les conseils d'ajustement" title="Conseils d'ajustement" style="margin-left:6px;font-size:11px;line-height:1;padding:1px 5px;border-radius:50%;cursor:pointer;border:1px solid var(--border,#ccc);background:transparent;">?</button></div>
+              <div class="hint-callout" id="colsAdjustCallout" hidden>
+                <p>
+                  Glissez un en-tête pour réordonner, le bord d’une colonne
+                  pour sa largeur, les bords ou coins du tableau pour tout
+                  redimensionner.
+                </p>
+                <p>
+                  Dessinez une zone dans l’aperçu pour uniformiser les
+                  largeurs ou les hauteurs, ou supprimer des lignes et
+                  colonnes.
+                </p>
+              </div>
+<div class="opt-label">Contour</div>
               <div class="seg">
                 <label
                   ><input type="radio" name="forme" value="arrondis" /><span
@@ -17957,7 +17958,7 @@
 
       function syncPageApplyHints() {
         const text = pageApplyLabel();
-        ["titlesApplyHint", "colsApplyHint", "displayApplyHint"].forEach(
+        ["titlesApplyHint", "displayApplyHint"].forEach(
           (id) => {
             const el = $(id);
             if (!el) return;
@@ -21789,6 +21790,11 @@
           list.tableW = 100;
         });
         renderPreview();
+      });
+
+      $("colsAdjustToggle").addEventListener("click", () => {
+        const c = $("colsAdjustCallout");
+        if (c) c.hidden = !c.hidden;
       });
 
       $("addColBtn").addEventListener("click", addColumn);
