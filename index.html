@@ -6948,7 +6948,6 @@
                     type="radio"
                     name="design"
                     value="registre"
-                    checked
                   /><span>Registre</span></label
                 >
                 <label
@@ -6957,9 +6956,12 @@
                   ></label
                 >
                 <label
-                  ><input type="radio" name="design" value="bandeau" /><span
-                    >Bandeau</span
-                  ></label
+                  ><input
+                    type="radio"
+                    name="design"
+                    value="bandeau"
+                    checked
+                  /><span>Bandeau</span></label
                 >
               </div>
               <div class="opt-label" id="customizeSecColors">Couleur</div>
@@ -8543,7 +8545,7 @@
         showBadges: false,
         showNotes: false,
         notesPos: "right",
-        design: "registre",
+        design: "bandeau",
         palette: "teal",
         forme: "rectiligne",
         titre: "moyen",
@@ -11143,7 +11145,7 @@
           blank: false,
           keepEmptyRows: false,
           orient: "auto",
-          design: state.design || "registre",
+          design: state.design || "bandeau",
           palette: state.palette || "teal",
           forme: state.forme || "rectiligne",
           mode: "",
@@ -16279,23 +16281,23 @@
       }
 
       function applyTheme(design, palette, forme, titre) {
-        let d = design || "registre";
+        let d = design || "bandeau";
         let p = palette || "teal";
         let f = forme || "rectiligne";
         let t = titre || "moyen";
         if (PALETTES.includes(d) && d !== "teal") {
           p = d;
-          d = "registre";
+          d = "bandeau";
         }
         if (FORMES.includes(d)) {
           f = d;
-          d = "registre";
+          d = "bandeau";
         }
         if (TITRES.includes(d)) {
           t = d;
-          d = "registre";
+          d = "bandeau";
         }
-        if (!DESIGNS.includes(d)) d = "registre";
+        if (!DESIGNS.includes(d)) d = "bandeau";
         if (!PALETTES.includes(p)) p = "teal";
         if (!FORMES.includes(f)) f = "rectiligne";
         if (!TITRES.includes(t)) t = "moyen";
@@ -16309,7 +16311,7 @@
         return {
           design: DESIGNS.includes(list && list.design)
             ? list.design
-            : state.design || "registre",
+            : state.design || "bandeau",
           palette: PALETTES.includes(list && list.palette)
             ? list.palette
             : state.palette || "teal",
