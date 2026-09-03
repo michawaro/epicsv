@@ -18,9 +18,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      id="epicsvUiFont"
       href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
       rel="stylesheet"
     />
+    <link id="epicsvSheetFonts" rel="stylesheet" />
     <style>
       :root {
         --ink: #2b3d42;
@@ -49,6 +51,7 @@
         --row-y: 0.38em;
         --row-x: 0.7em;
         --ui-font: "Nunito", "Segoe UI", "Helvetica Neue", sans-serif;
+        --sheet-font: "Nunito", "Segoe UI", "Helvetica Neue", sans-serif;
       }
 
       * {
@@ -1488,6 +1491,20 @@
       }
       .field::placeholder {
         color: rgba(255, 255, 255, 0.72);
+      }
+      select.field {
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        padding-right: 36px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M7.4 10.05 12 14.66l4.6-4.61a1 1 0 1 1 1.4 1.42l-5.3 5.3a1 1 0 0 1-1.4 0l-5.3-5.3a1 1 0 1 1 1.4-1.42z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px 16px;
+      }
+      select.field option {
+        color: #2b3d42;
+        background: #fff;
       }
 
       .title-row {
@@ -3064,6 +3081,7 @@
         min-height: var(--page-h);
         background: transparent;
         color: var(--ink);
+        font-family: var(--sheet-font);
         padding: var(--page-margin);
         border-radius: 0;
         box-shadow: none;
@@ -4157,6 +4175,10 @@
         font-family: Georgia, "Times New Roman", serif;
         font-style: italic;
       }
+      html.sheet-font-custom .sheet.design-classique .list-title,
+      html.sheet-font-custom .sheet.design-classique .list-sub {
+        font-family: var(--sheet-font);
+      }
       .sheet.design-classique .liste thead th {
         border-top: 1.15pt solid var(--d-line);
         border-bottom: 0.45pt solid var(--d-line);
@@ -4419,7 +4441,7 @@
         width: 100%;
         border-collapse: collapse;
         table-layout: fixed;
-        font-family: var(--ui-font);
+        font-family: var(--sheet-font);
         font-size: var(--font-pt);
         line-height: 1.28;
         color: var(--ink);
@@ -4962,6 +4984,9 @@
         grid-template-columns: 1fr 1fr;
         gap: 8px 12px;
         align-items: end;
+      }
+      #customizeSecTypo > select.field {
+        margin-bottom: 2px;
       }
       .font-col {
         display: flex;
@@ -6852,7 +6877,22 @@
                   ></label
                 >
               </div>
-              <div class="font-pair" id="customizeSecTypo">
+              <div id="customizeSecTypo">
+                <div class="opt-label">Police</div>
+                <select
+                  id="sheetFont"
+                  class="field"
+                  aria-label="Police des tableaux et feuilles"
+                >
+                  <option value="default">Par défaut</option>
+                  <option value="source-sans-3">Source Sans 3</option>
+                  <option value="literata">Literata</option>
+                  <option value="fraunces">Fraunces</option>
+                  <option value="atkinson">Atkinson Hyperlegible</option>
+                  <option value="nunito-sans">Nunito Sans</option>
+                  <option value="lora">Lora</option>
+                </select>
+                <div class="font-pair">
                 <div class="font-col">
                   <div class="opt-label">Titre</div>
                   <div class="font-row">
@@ -6896,6 +6936,7 @@
                   aria-label="Taille du texte du tableau"
                 />
                 <strong id="fontPtVal">9,5 pt</strong>
+              </div>
               </div>
               <p
                 class="hint-note page-apply-hint"
@@ -7916,6 +7957,56 @@
       const DESIGNS = ["registre", "classique", "bandeau"];
       const PALETTES = ["teal", "marine", "carmin", "safran", "foret", "prune"];
       const FORMES = ["arrondis", "rectiligne", "encadre"];
+      const SHEET_FONT_DEFAULT =
+        '"Nunito", "Segoe UI", "Helvetica Neue", sans-serif';
+      const SHEET_FONTS = {
+        default: {
+          id: "default",
+          label: "Par défaut",
+          stack: SHEET_FONT_DEFAULT,
+          google: "",
+        },
+        "source-sans-3": {
+          id: "source-sans-3",
+          label: "Source Sans 3",
+          stack: '"Source Sans 3", "Segoe UI", "Helvetica Neue", sans-serif',
+          google: "family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400",
+        },
+        literata: {
+          id: "literata",
+          label: "Literata",
+          stack: 'Literata, Georgia, "Times New Roman", serif',
+          google:
+            "family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400",
+        },
+        fraunces: {
+          id: "fraunces",
+          label: "Fraunces",
+          stack: 'Fraunces, Georgia, "Times New Roman", serif',
+          google: "family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700",
+        },
+        atkinson: {
+          id: "atkinson",
+          label: "Atkinson Hyperlegible",
+          stack:
+            '"Atkinson Hyperlegible", "Segoe UI", "Helvetica Neue", sans-serif',
+          google:
+            "family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400",
+        },
+        "nunito-sans": {
+          id: "nunito-sans",
+          label: "Nunito Sans",
+          stack: '"Nunito Sans", "Segoe UI", "Helvetica Neue", sans-serif',
+          google:
+            "family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400",
+        },
+        lora: {
+          id: "lora",
+          label: "Lora",
+          stack: 'Lora, Georgia, "Times New Roman", serif',
+          google: "family=Lora:ital,wght@0,400;0,600;0,700;1,400",
+        },
+      };
       const TITRES = ["fin", "moyen", "haut"];
       const FLUOS = [
         { id: "vert", color: "#c9ebc4", label: "Fluo vert" },
@@ -8008,6 +8099,7 @@
         fontPt: 9.5,
         titlePt: 14,
         thPt: 7.5,
+        sheetFont: "default",
         rowY: null,
         activeStamp: null,
         activeFluo: null,
@@ -9260,6 +9352,15 @@
         } catch (_) {}
       }
 
+      function persistSheetFont() {
+        try {
+          localStorage.setItem(
+            "epicsv-sheet-font",
+            normalizeSheetFont(state.sheetFont),
+          );
+        } catch (_) {}
+      }
+
       function readStoredTpInner() {
         try {
           const v = localStorage.getItem("epicsv-tp-inner");
@@ -9278,8 +9379,16 @@
         return false;
       }
 
+      function readStoredSheetFont() {
+        try {
+          return normalizeSheetFont(localStorage.getItem("epicsv-sheet-font"));
+        } catch (_) {}
+        return "default";
+      }
+
       state.tpInner = readStoredTpInner();
       state.tpVlines = readStoredTpVlines();
+      state.sheetFont = readStoredSheetFont();
 
       function syncEditFrame() {
         const v = normalizeEditFrame(state.editFrame);
@@ -9454,6 +9563,7 @@
           fontPt: state.fontPt,
           titlePt: state.titlePt,
           thPt: state.thPt,
+          sheetFont: state.sheetFont,
           rowY: state.rowY,
           badges: state.badges,
           badgeShape: state.badgeShape,
@@ -9505,6 +9615,8 @@
         if (pack.fontPt != null) state.fontPt = clampFontPt(pack.fontPt);
         if (pack.titlePt != null) state.titlePt = clampTitlePt(pack.titlePt);
         if (pack.thPt != null) state.thPt = clampThPt(pack.thPt);
+        if (pack.sheetFont != null)
+          state.sheetFont = normalizeSheetFont(pack.sheetFont);
         if (pack.rowY != null) state.rowY = pack.rowY;
         applyTheme(
           pack.design || state.design,
@@ -10092,6 +10204,7 @@
             fontPt: state.fontPt,
             titlePt: state.titlePt,
             thPt: state.thPt,
+            sheetFont: state.sheetFont,
             rowY: state.rowY,
             activeStamp: state.activeStamp,
             activeFluo: state.activeFluo,
@@ -10234,6 +10347,9 @@
         state.titlePt =
           s.titlePt != null ? clampTitlePt(s.titlePt) : preset.title;
         state.thPt = s.thPt != null ? clampThPt(s.thPt) : preset.th;
+        state.sheetFont = normalizeSheetFont(
+          s.sheetFont != null ? s.sheetFont : state.sheetFont,
+        );
         state.rowY = s.rowY > 0 ? Number(s.rowY) : null;
         state.activeStamp = s.activeStamp;
         state.activeFluo = s.activeFluo || null;
@@ -14358,6 +14474,44 @@
         requestAnimationFrame(fitStage);
       }
 
+      function normalizeSheetFont(id) {
+        const key = String(id || "default");
+        return SHEET_FONTS[key] ? key : "default";
+      }
+
+      function ensureSheetFontsLoaded(id) {
+        const meta = SHEET_FONTS[normalizeSheetFont(id)];
+        const link = document.getElementById("epicsvSheetFonts");
+        if (!link) return;
+        if (!meta || !meta.google) {
+          link.removeAttribute("href");
+          return;
+        }
+        const href =
+          "https://fonts.googleapis.com/css2?" +
+          meta.google +
+          "&display=swap";
+        if (link.getAttribute("href") !== href) link.setAttribute("href", href);
+      }
+
+      function applySheetFont(id) {
+        state.sheetFont = normalizeSheetFont(id);
+        const meta = SHEET_FONTS[state.sheetFont] || SHEET_FONTS.default;
+        document.documentElement.style.setProperty(
+          "--sheet-font",
+          meta.stack || SHEET_FONT_DEFAULT,
+        );
+        document.documentElement.classList.toggle(
+          "sheet-font-custom",
+          state.sheetFont !== "default",
+        );
+        ensureSheetFontsLoaded(state.sheetFont);
+        persistSheetFont();
+        const sel = $("sheetFont");
+        if (sel && sel.value !== state.sheetFont) sel.value = state.sheetFont;
+        requestAnimationFrame(fitStage);
+      }
+
       function bindPtSlider(id, apply) {
         $(id).addEventListener("input", () => {
           if (sizeDrag !== id) {
@@ -16903,6 +17057,7 @@
           out.settings.fontPt = state.fontPt;
           out.settings.titlePt = state.titlePt;
           out.settings.thPt = state.thPt;
+          out.settings.sheetFont = normalizeSheetFont(state.sheetFont);
           out.settings.rowY = state.rowY;
         }
         if (parts.page) {
@@ -17220,6 +17375,8 @@
           else if (parts.design) state.titlePt = preset.title;
           if (s.thPt != null) state.thPt = clampThPt(s.thPt);
           else if (parts.design) state.thPt = preset.th;
+          if (s.sheetFont != null)
+            state.sheetFont = normalizeSheetFont(s.sheetFont);
           if (s.rowY > 0) state.rowY = Number(s.rowY);
         }
         if (parts.page) {
@@ -18532,6 +18689,7 @@
         if (customizeWrap) customizeWrap.hidden = !on;
         const infoBlock = $("infoBlock");
         if (infoBlock) infoBlock.hidden = !on;
+        applySheetFont(state.sheetFont);
         if (!on) return;
         $("optVlines").checked = state.vlines;
         const hasTp = state.lists.some(isTpList);
@@ -19421,6 +19579,7 @@
           fontPt: src.fontPt,
           titlePt: src.titlePt,
           thPt: src.thPt,
+          sheetFont: src.sheetFont,
           rowY: src.rowY,
           badges: src.badges,
           badgeShape: src.badgeShape,
@@ -19584,6 +19743,7 @@
             fontPt: state.fontPt,
             titlePt: state.titlePt,
             thPt: state.thPt,
+            sheetFont: state.sheetFont,
             rowY: state.rowY,
             badges: state.badges,
             sharedCols: state.sharedCols,
@@ -20174,6 +20334,13 @@
       bindPtSlider("titlePt", applyTitleNow);
       bindPtSlider("thPt", applyThNow);
       bindPtSlider("fontPt", applyFontNow);
+      const sheetFontSel = $("sheetFont");
+      if (sheetFontSel) {
+        sheetFontSel.addEventListener("change", () => {
+          pushHist();
+          applySheetFont(sheetFontSel.value);
+        });
+      }
       $("optLegend").addEventListener("change", () => {
         pushHist();
         state.legend = $("optLegend").checked;
@@ -22498,6 +22665,7 @@
       startAutosave();
       syncAutosaveHint();
       syncHistBtns();
+      applySheetFont(state.sheetFont);
     </script>
   </body>
 </html>
