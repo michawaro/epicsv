@@ -2085,7 +2085,7 @@
         gap: 4px;
         width: max-content;
         min-width: min(232px, calc(100vw - 24px));
-        max-width: min(300px, calc(100vw - 24px));
+        max-width: min(340px, calc(100vw - 24px));
         padding: 6px;
         border-radius: 14px;
         background: rgba(255, 255, 255, 0.97);
@@ -2104,7 +2104,21 @@
         align-items: center;
         justify-content: space-between;
         gap: 6px;
-        padding: 0 1px 1px 4px;
+        padding: 2px 1px 4px 4px;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+      }
+      .sel-bar.is-dragging .sel-bar-head {
+        cursor: grabbing;
+      }
+      .sel-row-tools {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: stretch;
+        gap: 4px;
+        min-width: 0;
       }
       .sel-bar-title {
         font-size: 10px;
@@ -2143,10 +2157,13 @@
         opacity: 0.68;
       }
       .sel-group-dim,
-      .sel-group-insert,
       .sel-group-align,
       .sel-group-foot {
         grid-column: 1 / -1;
+      }
+      .sel-group-fusion,
+      .sel-group-insert {
+        min-width: 0;
       }
       .sel-dim-row {
         display: flex;
@@ -4728,6 +4745,27 @@
         border-radius: 2px;
         cursor: text;
       }
+      .liste td > .cell-edit,
+      .liste td > .rq-note {
+        display: block;
+        box-sizing: border-box;
+        width: calc(100% + 2 * var(--row-x));
+        max-width: none;
+        min-width: 0;
+        min-height: calc(1em + 2 * var(--row-y));
+        margin: calc(-1 * var(--row-y)) calc(-1 * var(--row-x));
+        padding: var(--row-y) var(--row-x);
+      }
+      .liste thead th > .th-edit {
+        display: block;
+        box-sizing: border-box;
+        width: calc(100% + 2 * var(--row-x));
+        max-width: none;
+        min-width: 0;
+        min-height: 1.1em;
+        margin: calc(-1 * var(--th-pad, 0.4em)) calc(-1 * var(--row-x));
+        padding: var(--th-pad, 0.4em) var(--row-x);
+      }
       .cell-edit.is-locked,
       .th-edit[contenteditable="false"] {
         cursor: inherit;
@@ -4925,8 +4963,9 @@
       .list-block.is-tp-page td.is-align-left .cell-edit,
       .list-block.is-tp-page td.is-align-center .cell-edit,
       .list-block.is-tp-page td.is-align-right .cell-edit {
-        display: inline-block;
-        max-width: 100%;
+        display: block;
+        width: 100%;
+        max-width: none;
       }
       .dots {
         display: inline-flex;
@@ -7504,7 +7543,8 @@
           </label>
         </div>
       </div>
-      <div class="sel-group" role="group" aria-label="Fusionner ou fractionner">
+      <div class="sel-row-tools">
+      <div class="sel-group sel-group-fusion" role="group" aria-label="Fusionner ou fractionner">
         <span class="sel-group-lab">Fusion</span>
         <div
           class="sel-dim sel-insert"
@@ -7651,6 +7691,7 @@
             </svg>
           </button>
         </div>
+      </div>
       </div>
       <div
         class="sel-group sel-group-align"
@@ -8474,6 +8515,7 @@
       let zoneSel = null;
       let zoneDim = "w";
       let zoneSuppressClick = false;
+      let selBarUserPos = null;
       let heldStyle = null;
       let styleDlgRestore = null;
       const HIST_MAX = 80;
@@ -14065,6 +14107,13 @@
         return list.headers.some((h, i) => h === name && list.custom[i]);
       }
 
+      function preserveListOrient(list) {
+        if (!list) return;
+        const cur = listOrient(list);
+        if (cur === "portrait" || cur === "paysage") return;
+        list.orient = resolveDisplayOrient(list);
+      }
+
       function insertCustomCol(list, name) {
         name = String(name || "");
         const folded = foldHeader(name);
@@ -14073,6 +14122,7 @@
           list.headers.some((h) => foldHeader(h) === folded || h === name)
         )
           return;
+        preserveListOrient(list);
         list.headers.push(name);
         list.rows.forEach((r) => r.push(""));
         const i = list.headers.length - 1;
@@ -14234,6 +14284,7 @@
 
       function insertColAt(list, at) {
         if (!list || !Array.isArray(list.headers)) return -1;
+        preserveListOrient(list);
         const i = Math.max(0, Math.min(list.headers.length, Number(at)));
         list.headers.splice(i, 0, "");
         (list.rows || []).forEach((row) => {
@@ -16605,6 +16656,22 @@
         return true;
       }
 
+      function clampSelBarPos(bar, left, top) {
+        const w = bar.offsetWidth || 232;
+        const h = bar.offsetHeight || 160;
+        return {
+          left: Math.min(window.innerWidth - w - 8, Math.max(8, left)),
+          top: Math.min(window.innerHeight - h - 8, Math.max(8, top)),
+        };
+      }
+
+      function saveSelBarPos(pos) {
+        selBarUserPos = pos;
+        try {
+          sessionStorage.setItem("epicsv-selbar-pos", JSON.stringify(pos));
+        } catch (_) {}
+      }
+
       function placeSelBar() {
         const bar = $("selBar");
         if (!bar) return;
@@ -16623,6 +16690,16 @@
         $("selAllWrap").hidden = state.lists.length < 2;
         syncSelBarDim();
         syncSelAlign();
+        if (selBarUserPos) {
+          const pinned = clampSelBarPos(
+            bar,
+            selBarUserPos.left,
+            selBarUserPos.top,
+          );
+          bar.style.left = pinned.left + "px";
+          bar.style.top = pinned.top + "px";
+          return;
+        }
         const h = bar.offsetHeight || 160;
         const w = bar.offsetWidth;
         let top = last.bottom + 8;
@@ -21266,8 +21343,8 @@
         const sheets = $("sheets");
         const rectEl = $("selRect");
         const shield = $("selShield");
+        const ZONE_DRAG_PX = 16;
         let drag = null;
-        let holdT = null;
         let liveRaf = 0;
         const skip = (e) => {
           const el =
@@ -21378,16 +21455,48 @@
           rectEl.style.height = r.bottom - r.top + "px";
           setZone(zoneFromHits(hitsInRect(drag.lid, r)), { bar: false });
         };
-        document.addEventListener(
-          "mousedown",
-          (e) => {
-            if (!sheets.contains(e.target)) return;
-            if (!canStart(e)) return;
-            if (e.target.closest("thead")) return;
-            e.preventDefault();
-          },
-          true,
-        );
+        const editElFromTarget = (el) => {
+          if (!el || !el.closest) return null;
+          const direct = el.closest("[contenteditable=true]");
+          if (direct) return direct;
+          const cell = el.closest("td, th");
+          return (cell && cell.querySelector("[contenteditable=true]")) || null;
+        };
+        const focusEditEl = (el, x, y) => {
+          if (!el || !canWriteCells() || !el.isContentEditable) return;
+          try {
+            el.focus({ preventScroll: true });
+          } catch (_) {
+            el.focus();
+          }
+          try {
+            const sel = window.getSelection();
+            if (!sel) return;
+            let node = null;
+            let offset = 0;
+            if (document.caretPositionFromPoint) {
+              const pos = document.caretPositionFromPoint(x, y);
+              if (pos) {
+                node = pos.offsetNode;
+                offset = pos.offset;
+              }
+            } else if (document.caretRangeFromPoint) {
+              const rangeAt = document.caretRangeFromPoint(x, y);
+              if (rangeAt) {
+                node = rangeAt.startContainer;
+                offset = rangeAt.startOffset;
+              }
+            }
+            const host =
+              node && (node.nodeType === 1 ? node : node.parentNode);
+            if (!node || !host || !el.contains(host)) return;
+            const range = document.createRange();
+            range.setStart(node, offset);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } catch (_) {}
+        };
         sheets.addEventListener(
           "pointerdown",
           (e) => {
@@ -21395,12 +21504,7 @@
             const lid = lidFromTarget(e.target, e.clientX, e.clientY);
             if (!lid) return;
             hideSelMenu();
-            clearSel();
             const fromHead = Boolean(e.target.closest("thead"));
-            if (!fromHead && e.pointerType !== "touch") {
-              e.preventDefault();
-              showShield(e.pointerId);
-            }
             drag = {
               x0: e.clientX,
               y0: e.clientY,
@@ -21411,14 +21515,8 @@
               fromHead: fromHead,
               zoneLocked: !fromHead,
               pointerId: e.pointerId,
-              editEl: e.target.closest("[contenteditable=true]"),
+              editEl: editElFromTarget(e.target),
             };
-            if (zoneSel && e.target.closest(".is-zone")) {
-              holdT = setTimeout(() => {
-                holdT = null;
-                stopDrag();
-              }, 520);
-            }
           },
           true,
         );
@@ -21426,7 +21524,7 @@
           if (!drag) return;
           const dx = e.clientX - drag.x0;
           const dy = e.clientY - drag.y0;
-          if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+          if (!drag.moved && Math.hypot(dx, dy) < ZONE_DRAG_PX) return;
           if (drag.fromHead && !drag.zoneLocked) {
             const over = document.elementFromPoint(e.clientX, e.clientY);
             const stillHead =
@@ -21446,10 +21544,6 @@
             if (document.activeElement && document.activeElement.blur)
               document.activeElement.blur();
           }
-          if (holdT) {
-            clearTimeout(holdT);
-            holdT = null;
-          }
           e.preventDefault();
           drag.x1 = e.clientX;
           drag.y1 = e.clientY;
@@ -21461,23 +21555,13 @@
           });
         };
         const endDrag = (e) => {
-          if (holdT) {
-            clearTimeout(holdT);
-            holdT = null;
-          }
           if (!drag) return;
           const was = drag;
           const x1 = e && e.clientX != null ? e.clientX : was.x1;
           const y1 = e && e.clientY != null ? e.clientY : was.y1;
           stopDrag();
           if (!was.moved) {
-            if (was.editEl && canWriteCells() && was.editEl.isContentEditable) {
-              try {
-                was.editEl.focus({ preventScroll: true });
-              } catch (_) {
-                was.editEl.focus();
-              }
-            }
+            focusEditEl(was.editEl, x1, y1);
             return;
           }
           zoneSuppressClick = true;
@@ -21500,10 +21584,6 @@
         document.addEventListener(
           "pointercancel",
           () => {
-            if (holdT) {
-              clearTimeout(holdT);
-              holdT = null;
-            }
             stopDrag();
           },
           true,
@@ -21511,12 +21591,20 @@
         document.addEventListener(
           "selectstart",
           (e) => {
-            if (drag || document.body.classList.contains("is-zone-dragging")) {
+            if (
+              (drag && drag.moved) ||
+              document.body.classList.contains("is-zone-dragging")
+            ) {
               e.preventDefault();
               return;
             }
             const inListe = e.target.closest && e.target.closest(".liste");
-            if (inListe && !editing(e.target)) e.preventDefault();
+            if (
+              inListe &&
+              !editing(e.target) &&
+              !e.target.closest("[contenteditable=true]")
+            )
+              e.preventDefault();
           },
           true,
         );
@@ -21534,10 +21622,6 @@
           shield.addEventListener("pointermove", onMove, { passive: false });
           shield.addEventListener("pointerup", endDrag);
           shield.addEventListener("pointercancel", () => {
-            if (holdT) {
-              clearTimeout(holdT);
-              holdT = null;
-            }
             stopDrag();
           });
         }
@@ -22877,6 +22961,59 @@
           requestZoneDelete();
         });
       $("selClear").addEventListener("click", clearZone);
+      (function bindSelBarDrag() {
+        const bar = $("selBar");
+        if (!bar) return;
+        try {
+          const raw = sessionStorage.getItem("epicsv-selbar-pos");
+          if (raw) {
+            const p = JSON.parse(raw);
+            if (
+              p &&
+              Number.isFinite(Number(p.left)) &&
+              Number.isFinite(Number(p.top))
+            )
+              selBarUserPos = { left: Number(p.left), top: Number(p.top) };
+          }
+        } catch (_) {}
+        const head = bar.querySelector(".sel-bar-head");
+        if (!head) return;
+        let drag = null;
+        head.addEventListener("pointerdown", (e) => {
+          if (e.button != null && e.button !== 0) return;
+          if (e.target.closest("button, a, input, select, textarea, .sel-x"))
+            return;
+          e.preventDefault();
+          e.stopPropagation();
+          const box = bar.getBoundingClientRect();
+          drag = {
+            dx: e.clientX - box.left,
+            dy: e.clientY - box.top,
+          };
+          bar.classList.add("is-dragging");
+          try {
+            head.setPointerCapture(e.pointerId);
+          } catch (_) {}
+        });
+        head.addEventListener("pointermove", (e) => {
+          if (!drag) return;
+          const next = clampSelBarPos(
+            bar,
+            e.clientX - drag.dx,
+            e.clientY - drag.dy,
+          );
+          bar.style.left = next.left + "px";
+          bar.style.top = next.top + "px";
+          saveSelBarPos(next);
+        });
+        const stop = () => {
+          if (!drag) return;
+          drag = null;
+          bar.classList.remove("is-dragging");
+        };
+        head.addEventListener("pointerup", stop);
+        head.addEventListener("pointercancel", stop);
+      })();
       (function bindSelSize() {
         const input = $("selSizeVal");
         const unitEl = $("selSizeUnit");
