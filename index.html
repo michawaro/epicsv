@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="fr" class="palette-teal">
   <head>
     <meta charset="UTF-8" />
@@ -5068,7 +5068,8 @@
       }
 
       @media (max-width: 1100px) {
-        .app {
+        .app,
+        .app.has-lists {
           grid-template-columns: 300px minmax(0, 1fr);
         }
       }
@@ -5090,6 +5091,10 @@
           height: auto;
           max-width: 100%;
           overflow: visible;
+        }
+        .app > .customize-shell {
+          flex: none;
+          order: 3;
         }
         .panel {
           position: relative;
@@ -21575,14 +21580,270 @@
           },
           liftMenuTo,
         );
-        bind("customizeFoldBtn", "customizeFold", "epicsv-fold-customize", {
-          open: "Afficher le panneau Personnaliser",
-          close: "Réduire le panneau Personnaliser",
-        });
         bind("modeFoldBtn", "modeFold", "epicsv-fold-mode", {
           open: "Afficher les modes",
           close: "Réduire les modes",
         });
+      })();
+
+      (function bindCustomizePanel() {
+        const DESKTOP_MQ = "(min-width: 1200px)";
+        const OVERLAY_MQ = "(max-width: 1199px)";
+        const app = $("app");
+        const wrap = $("customizeFoldWrap");
+        const panel = $("customizePanel");
+        const body = $("customizeFold");
+        const toggle = $("customizeRailToggle");
+        const fab = $("customizeFab");
+        const closeBtn = $("customizeCloseBtn");
+        const backdrop = $("customizeBackdrop");
+        if (!app || !wrap || !panel || !body) return;
+
+        let lastTrigger = null;
+        let activeSec = "settings";
+        let trapHandler = null;
+
+        const isDesktop = () => window.matchMedia(DESKTOP_MQ).matches;
+        const isOverlay = () => window.matchMedia(OVERLAY_MQ).matches;
+        const isOpen = () => app.classList.contains("customize-open");
+
+        const focusables = (root) =>
+          Array.from(
+            root.querySelectorAll(
+              'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ),
+          ).filter((el) => {
+            if (el.closest("[hidden]")) return false;
+            const style = window.getComputedStyle(el);
+            return style.display !== "none" && style.visibility !== "hidden";
+          });
+
+        const clearTrap = () => {
+          if (trapHandler) {
+            document.removeEventListener("keydown", trapHandler, true);
+            trapHandler = null;
+          }
+        };
+
+        const installTrap = () => {
+          clearTrap();
+          if (!isOverlay() || !isOpen()) return;
+          trapHandler = (e) => {
+            if (e.key !== "Tab" || !isOpen()) return;
+            const list = focusables(panel);
+            if (!list.length) return;
+            const first = list[0];
+            const last = list[list.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          };
+          document.addEventListener("keydown", trapHandler, true);
+        };
+
+        const setActiveRail = (sec) => {
+          activeSec = sec || activeSec;
+          wrap.querySelectorAll("[data-customize-sec]").forEach((btn) => {
+            btn.classList.toggle(
+              "is-active",
+              btn.getAttribute("data-customize-sec") === activeSec,
+            );
+          });
+        };
+
+        const scrollToSec = (sec) => {
+          const map = {
+            settings:
+              ($("filesBlock") && !$("filesBlock").hidden && $("filesBlock")) ||
+              $("marginsBlock") ||
+              body,
+            colors: $("customizeSecColors") || $("displayBlock"),
+            typo: $("customizeSecTypo") || $("displayBlock"),
+          };
+          const target = map[sec] || body;
+          if (!target || !body) return;
+          requestAnimationFrame(() => {
+            const top =
+              target === body ? 0 : Math.max(0, target.offsetTop - 8);
+            body.scrollTo({ top, behavior: "smooth" });
+            try {
+              if (target !== body && typeof target.focus === "function") {
+                const prev = target.getAttribute("tabindex");
+                if (prev === null) target.setAttribute("tabindex", "-1");
+                target.focus({ preventScroll: true });
+                if (prev === null) {
+                  target.addEventListener(
+                    "blur",
+                    () => target.removeAttribute("tabindex"),
+                    { once: true },
+                  );
+                }
+              }
+            } catch (_) {}
+          });
+        };
+
+        const syncChrome = () => {
+          const open = isOpen();
+          if (toggle) {
+            toggle.setAttribute("aria-expanded", open ? "true" : "false");
+            toggle.setAttribute(
+              "title",
+              open
+                ? "Réduire le panneau Personnaliser"
+                : "Afficher le panneau Personnaliser",
+            );
+            toggle.setAttribute(
+              "aria-label",
+              open
+                ? "Réduire le panneau Personnaliser"
+                : "Afficher le panneau Personnaliser",
+            );
+          }
+          if (fab) fab.setAttribute("aria-expanded", open ? "true" : "false");
+          if (backdrop) {
+            backdrop.hidden = !open || !isOverlay();
+            backdrop.setAttribute(
+              "aria-hidden",
+              open && isOverlay() ? "false" : "true",
+            );
+          }
+          if (open) panel.removeAttribute("inert");
+          else panel.setAttribute("inert", "");
+          panel.setAttribute("aria-hidden", open ? "false" : "true");
+          if (isOverlay()) {
+            panel.setAttribute("role", "dialog");
+            panel.setAttribute("aria-modal", open ? "true" : "false");
+          } else {
+            panel.setAttribute("role", "region");
+            panel.removeAttribute("aria-modal");
+          }
+          if (open && isOverlay()) installTrap();
+          else clearTrap();
+        };
+
+        const setOpen = (open, trigger, opts) => {
+          const next = Boolean(open);
+          const was = isOpen();
+          if (trigger) lastTrigger = trigger;
+          app.classList.toggle("customize-open", next);
+          try {
+            if (isDesktop())
+              localStorage.setItem(
+                "epicsv-customize-open",
+                next ? "1" : "0",
+              );
+          } catch (_) {}
+          syncChrome();
+          if (next && opts && opts.sec) {
+            setActiveRail(opts.sec);
+            scrollToSec(opts.sec);
+          } else if (next) setActiveRail(activeSec);
+          if (next && isOverlay()) {
+            requestAnimationFrame(() => {
+              const list = focusables(panel);
+              const prefer = closeBtn || list[0];
+              if (prefer) prefer.focus();
+            });
+          }
+          if (
+            !next &&
+            was &&
+            lastTrigger &&
+            typeof lastTrigger.focus === "function"
+          ) {
+            try {
+              lastTrigger.focus();
+            } catch (_) {}
+          }
+          if (was !== next) {
+            requestAnimationFrame(() => {
+              try {
+                fitStage();
+              } catch (_) {}
+            });
+          }
+        };
+
+        const applyDefaultOpen = () => {
+          if (wrap.hidden) {
+            app.classList.remove("customize-open");
+            syncChrome();
+            return;
+          }
+          if (isDesktop()) {
+            let stored = null;
+            try {
+              stored = localStorage.getItem("epicsv-customize-open");
+            } catch (_) {}
+            setOpen(stored !== "0", null);
+          } else {
+            setOpen(false, null);
+          }
+        };
+
+        if (toggle)
+          toggle.addEventListener("click", () => setOpen(!isOpen(), toggle));
+        if (fab) fab.addEventListener("click", () => setOpen(true, fab));
+        if (closeBtn)
+          closeBtn.addEventListener("click", () =>
+            setOpen(false, lastTrigger || fab || toggle),
+          );
+        if (backdrop)
+          backdrop.addEventListener("click", () =>
+            setOpen(false, lastTrigger || fab || toggle),
+          );
+
+        wrap.querySelectorAll("[data-customize-sec]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const sec = btn.getAttribute("data-customize-sec");
+            setOpen(true, btn, { sec });
+          });
+        });
+
+        document.addEventListener(
+          "keydown",
+          (e) => {
+            if (e.key !== "Escape") return;
+            if (!isOpen() || wrap.hidden) return;
+            if ($("styleModal") && !$("styleModal").hidden) return;
+            if ($("pasteModal") && !$("pasteModal").hidden) return;
+            if ($("createTableModal") && !$("createTableModal").hidden) return;
+            if ($("splitCellsModal") && !$("splitCellsModal").hidden) return;
+            if ($("tpMatModal") && !$("tpMatModal").hidden) return;
+            if ($("colDelModal") && !$("colDelModal").hidden) return;
+            if ($("zoneDelModal") && !$("zoneDelModal").hidden) return;
+            if ($("replaceModal") && !$("replaceModal").hidden) return;
+            if ($("placeModal") && !$("placeModal").hidden) return;
+            if ($("dirtyModal") && !$("dirtyModal").hidden) return;
+            e.preventDefault();
+            setOpen(false, lastTrigger || fab || toggle);
+          },
+          true,
+        );
+
+        window
+          .matchMedia(DESKTOP_MQ)
+          .addEventListener("change", applyDefaultOpen);
+        applyDefaultOpen();
+        setActiveRail("settings");
+
+        let wasHidden = wrap.hidden;
+        const prevRenderDisplay = renderDisplay;
+        renderDisplay = function () {
+          prevRenderDisplay.apply(this, arguments);
+          if (wasHidden === wrap.hidden) return;
+          wasHidden = wrap.hidden;
+          if (wrap.hidden) {
+            app.classList.remove("customize-open");
+            clearTrap();
+            syncChrome();
+          } else applyDefaultOpen();
+        };
       })();
 
       document.querySelectorAll(".seg").forEach((seg) => {
