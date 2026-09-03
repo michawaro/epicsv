@@ -14913,6 +14913,8 @@
         const fs = Number(raw.fontScale);
         if (fs > 0) list.fontScale = fs;
         if (raw.pageBreakBefore) list.pageBreakBefore = true;
+        const ns = Number(raw.numberSkip);
+        if (ns > 0) list.numberSkip = ns;
         return list;
       }
 
@@ -15995,13 +15997,18 @@
         return out;
       }
 
-      function rowNumber(visIdx) {
+      function rowNumber(visIdx, skip) {
         const start = Math.max(1, Number(state.numberFrom) || 1);
-        if (visIdx + 1 < start) return "";
-        const n = visIdx + 2 - start;
+        const idx = visIdx + Math.max(0, Number(skip) || 0);
+        if (idx + 1 < start) return "";
+        const n = idx + 2 - start;
         if (state.numbering === "digits") return String(n);
         if (state.numbering === "letters") return toLetter(n);
         return "";
+      }
+
+      function rowNumberForList(list, visIdx) {
+        return rowNumber(visIdx, list && list.numberSkip);
       }
 
       function badgeById(id) {
@@ -16627,7 +16634,7 @@
             html +=
               '<td class="col-num" data-ck="num" title="Sélectionner la ligne">' +
               handle() +
-              escapeHtml(rowNumber(visIdx)) +
+              escapeHtml(rowNumberForList(list, visIdx)) +
               rowResizerHtml() +
               "</td>";
           layout.forEach((col, k) => {
@@ -19587,6 +19594,7 @@
           isProgList(list) && cutRow >= 2
             ? list.rows.slice(0, 2).map((r) => r.slice())
             : null;
+        const headVis = visibleRowIndices(list).filter((ri) => ri < cutRow);
         const tailList = hydrateList(serializeList(list));
         tailList.id = nextId++;
         tailList.rows = list.rows.slice(cutRow);
@@ -19612,6 +19620,9 @@
         tailList.name = splitPageName(list.name);
         tailList.pageBreakBefore = true;
         tailList.orient = listOrient(list);
+        if (state.numbering !== "off" && !isSheetForm(list) && headVis.length)
+          tailList.numberSkip =
+            (Number(list.numberSkip) || 0) + headVis.length;
         return tailList;
       }
 
@@ -21995,6 +22006,8 @@
           tpFitted: Boolean(l.tpFitted),
           tpAlignReady: Boolean(l.tpAlignReady),
           pageBreakBefore: Boolean(l.pageBreakBefore),
+          numberSkip:
+            Number(l.numberSkip) > 0 ? Number(l.numberSkip) : undefined,
         };
       }
 
