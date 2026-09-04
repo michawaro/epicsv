@@ -3720,6 +3720,11 @@
       .list-block.is-prog-page td.is-tp-mat .cell-edit {
         min-height: 1.05em;
       }
+      .list-block.is-prog-page td.is-prog-dates .cell-edit {
+        white-space: pre-wrap;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
       .list-block.is-prog-page .tp-chip-support,
       .list-block.is-prog-page .tp-chip-periode {
         font-size: 0.92em;
@@ -14600,6 +14605,15 @@
           const match = String(row[0] || "").match(/^P([1-5])$/i);
           if (match) row[0] = "Sqce " + match[1];
         });
+        const datesCi = list.headers
+          ? list.headers.findIndex((header) => /^date/.test(foldHeader(header)))
+          : -1;
+        if (datesCi >= 0) {
+          (list.rows || []).forEach((row, ri) => {
+            if (ri >= 2 && Array.isArray(row) && row[datesCi])
+              row[datesCi] = formatFrDates(row[datesCi]);
+          });
+        }
         if (!progLayoutOk(list) || fill) {
           applyProgSheetFrame(list, {
             keepPos: !fill,
@@ -16999,6 +17013,11 @@
             }
             if (shareTotal) cls.push("is-tp-total");
             if (matCell) cls.push("is-tp-mat");
+            if (
+              isProgList(list) &&
+              /^date/.test(foldHeader(list.headers[contentCi] || ""))
+            )
+              cls.push("is-prog-dates");
             if (isProgList(list) && contentRi <= 1) cls.push("is-tp-label");
             if (
               isProgList(list) &&
@@ -17216,7 +17235,13 @@
           }
           if (isProgList(list)) {
             while (list.rows[ri].length <= ci) list.rows[ri].push("");
-            list.rows[ri][ci] = readEditableValue(el, trim);
+            const next = readEditableValue(el, trim);
+            list.rows[ri][ci] =
+              trim && isDateEditableCell(list, ri, ci)
+                ? formatFrDates(next)
+                : next;
+            if (trim && isDateEditableCell(list, ri, ci))
+              el.textContent = list.rows[ri][ci];
             if (ri === 0 && ci === PROG_BANNER_TITLE_CI) {
               const titleVal = readEditableValue(el, trim);
               if (!Array.isArray(list.titles) || !list.titles.length)
@@ -25443,7 +25468,7 @@
           "/" +
           pad2Date(d.getMonth() + 1) +
           "/" +
-          d.getFullYear()
+          String(d.getFullYear()).slice(-2)
         );
       }
 
@@ -25484,10 +25509,14 @@
       }
 
       function parseFrDates(raw) {
-        return String(raw || "")
-          .split(/\s*(?:;|,|\||\n|\s+et\s+)\s*/i)
-          .map((part) => parseFrDate(part))
-          .filter(Boolean);
+        const text = String(raw || "");
+        const matches = text.match(/\d{1,2}[\/\-.]\d{1,2}[\/\-.]\d{2,4}/g);
+        return (matches || []).map((part) => parseFrDate(part)).filter(Boolean);
+      }
+
+      function formatFrDates(raw) {
+        const dates = parseFrDates(raw);
+        return dates.length ? dates.map(formatFrDate).join(" ") + " " : "";
       }
 
       function closeDateCalModal(opts) {
@@ -25528,7 +25557,7 @@
         const next = parseFrDate(fr);
         if (next && !dates.some((date) => date.getTime() === next.getTime()))
           dates.push(next);
-        el.textContent = dates.map(formatFrDate).join(" ; ");
+        el.textContent = formatFrDates(dates.map(formatFrDate).join(" "));
         applyPreviewEdit(el, true);
         closeDateCalModal({ refocus: true });
       }
