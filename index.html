@@ -3697,7 +3697,7 @@
         );
       }
       .list-block.is-prog-page thead th {
-        font-size: 0.78em;
+        font-size: var(--list-th-pt, var(--th-pt, var(--th-size, 7.4pt)));
         letter-spacing: 0.03em;
         white-space: nowrap;
       }
@@ -3711,7 +3711,7 @@
       }
       .list-block.is-prog-page .prog-col-lab {
         display: block;
-        font-size: 0.78em;
+        font-size: var(--list-th-pt, var(--th-pt, var(--th-size, 7.4pt)));
         font-weight: 800;
         letter-spacing: 0.03em;
         text-align: center;
@@ -16135,6 +16135,13 @@
           state.thPt + "pt",
         );
         syncPtControl("thPt", "thPtVal", state.thPt, formatPt);
+        $("sheets").querySelectorAll("table.liste").forEach((table) => {
+          const block = table.closest(".list-block[data-lid]");
+          const list = block && state.lists.find(
+            (item) => String(item.id) === String(block.dataset.lid),
+          );
+          if (list) table.style.setProperty("--list-th-pt", listThPt(list) + "pt");
+        });
         requestAnimationFrame(fitStage);
       }
 
