@@ -15947,6 +15947,7 @@
           .forEach((t) => {
             t.style.fontSize = state.fontPt + "pt";
           });
+          if (clearAutoFitFrames()) renderPreview();
         requestAnimationFrame(fitStage);
       }
 
@@ -16012,6 +16013,7 @@
         persistSheetFont();
         const sel = $("sheetFont");
         if (sel && sel.value !== state.sheetFont) sel.value = state.sheetFont;
+        if (clearAutoFitFrames()) renderPreview();
         requestAnimationFrame(fitStage);
       }
 
@@ -17793,6 +17795,22 @@
 
       function listThPt(list) {
         return clampThPt(state.thPt * listFontScale(list));
+      }
+
+      function clearAutoFitFrames() {
+        let changed = false;
+        state.lists.forEach((list) => {
+          const base = list && list.autoFitBase;
+          if (!base) return;
+          list.rowH = Object.assign({}, base.rows);
+          setListFontScale(list, base.fontScale);
+          delete list.autoFitBase;
+          delete list.autoFitSourcePt;
+          list.tpFitted = false;
+          list.tpFitPending = false;
+          changed = true;
+        });
+        return changed;
       }
 
       function heightScaleBaseFromList(list) {
@@ -19654,6 +19672,10 @@
         if (Math.abs(fy - 1) < 0.004) return false;
         pushHist();
         tableScaleTargets(list).forEach((lst) => {
+          if (!lst.autoFitBase) {
+            lst.autoFitBase = heightScaleBaseFromList(lst);
+            lst.autoFitSourcePt = state.fontPt;
+          }
           scaleListFrame(lst, 1, fy, {
             scaleH: true,
             heightBase: heightScaleBaseFromList(lst),
