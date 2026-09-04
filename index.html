@@ -20624,6 +20624,60 @@
         setTpMatQty(readTpMatQty() + delta);
       }
 
+      function tpMatCellParts(value) {
+        return String(value || "")
+          .split(/\s*(?:;|\||\n)\s*/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+      }
+
+      function tpMatPartKey(value) {
+        return stripTpLineQty(
+          String(value || "").replace(/^[•\-–—]\s*/, ""),
+        ).toLocaleLowerCase();
+      }
+
+      function tpMatTargetCell(list) {
+        if (!list || !tpMatTarget || tpMatTarget.lid !== list.id) return null;
+        const ri = Number(tpMatTarget.ri);
+        if (!Number.isInteger(ri) || !list.rows[ri]) return null;
+        const ci = isProgList(list)
+          ? progMatCol(list)
+          : isTpForm(list)
+            ? tpFormMaterielCol(list)
+            : tpColIndex(list, "item");
+        return ci >= 0 ? { ri: ri, ci: ci } : null;
+      }
+
+      function tpMatCellHas(list, name) {
+        const target = tpMatTargetCell(list);
+        if (!target) return false;
+        const parts = tpMatCellParts(list.rows[target.ri][target.ci]);
+        return parts.some((part) => tpMatPartKey(part) === tpMatPartKey(name));
+      }
+
+      function toggleTpMatInTarget(name, qty) {
+        const list = activeList();
+        const target = tpMatTargetCell(list);
+        if (!list || !target) return false;
+        const row = list.rows[target.ri];
+        const parts = tpMatCellParts(row[target.ci]);
+        const index = parts.findIndex(
+          (part) => tpMatPartKey(part) === tpMatPartKey(name),
+        );
+        if (index >= 0) parts.splice(index, 1);
+        else
+          parts.push(
+            isTpForm(list) ? formatTpItemLine(name, clampTpQty(qty, 1)) : name,
+          );
+        row[target.ci] = parts.join("\n");
+        if (isTpForm(list)) {
+          pullTpItemsFromRows(list);
+          writeTpComputed(list);
+        }
+        return true;
+      }
+
       function addTpItem(name, qty) {
         const list = activeList();
         if (!isSheetForm(list)) return;
@@ -20652,10 +20706,11 @@
           if (!list.rows[at])
             list.rows[at] = (list.headers || []).map(() => "");
           while (list.rows[at].length <= matI) list.rows[at].push("");
-          const cur = String(list.rows[at][matI] || "").trim();
-          list.rows[at][matI] =
-            cur && cur !== "-" && cur !== label ? label : label;
-          tpMatTarget.ri = at + 1;
+          const parts = tpMatCellParts(list.rows[at][matI]);
+          if (!parts.some((part) => tpMatPartKey(part) === tpMatPartKey(label)))
+            parts.push(label);
+          list.rows[at][matI] = parts.join("\n");
+          tpMatTarget = { lid: list.id, ri: at };
           return;
         }
         pullTpItemsFromRows(list);
@@ -20793,14 +20848,22 @@
         rows.slice(0, 80).forEach((item) => {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.textContent = materielLabel(item);
+          const label = materielLabel(item);
+          const list = activeList();
+          const selected = isSheetForm(list) && tpMatCellHas(list, label);
+          btn.textContent = label;
+          btn.classList.toggle("is-on", selected);
+          btn.setAttribute("aria-pressed", selected ? "true" : "false");
           btn.addEventListener("click", () => {
             const list = activeList();
             if (!isSheetForm(list)) return;
             pushHist();
-            addTpItem(materielLabel(item), readTpMatQty());
+            if (tpMatTargetCell(list))
+              toggleTpMatInTarget(label, readTpMatQty());
+            else addTpItem(label, readTpMatQty());
             renderTpMatPicked();
             renderPreview();
+            renderTpCatalog();
           });
           itemsEl.appendChild(btn);
         });
