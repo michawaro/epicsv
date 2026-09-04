@@ -10060,7 +10060,7 @@
       const TP_TITLE_DEFAULT = "Installation de TP";
       const PROG_TITLE_DEFAULT = "Progression annuelle";
       const PROG_HEADERS = [
-        "Période",
+        "Séquences",
         "Séance",
         "Dates",
         "Thème",
@@ -10082,11 +10082,11 @@
       const PROG_BANNER_META_CS = 2;
       const PROG_BANNER_TITLE_CI = PROG_BANNER_META_CS;
       const PROG_PERIODS = [
-        { id: "P1", n: 4 },
-        { id: "P2", n: 3 },
-        { id: "P3", n: 3 },
-        { id: "P4", n: 3 },
-        { id: "P5", n: 3 },
+        { id: "Sqce 1", n: 4 },
+        { id: "Sqce 2", n: 3 },
+        { id: "Sqce 3", n: 3 },
+        { id: "Sqce 4", n: 3 },
+        { id: "Sqce 5", n: 3 },
       ];
       const PROG_SUPPORTS = [
         "Cours",
@@ -14503,6 +14503,13 @@
         }
         if (list.headers && foldHeader(list.headers[5]) === "supports")
           list.headers[5] = "Séances";
+        if (list.headers && foldHeader(list.headers[0]) === "periode")
+          list.headers[0] = "Séquences";
+        (list.rows || []).forEach((row) => {
+          if (!Array.isArray(row)) return;
+          const match = String(row[0] || "").match(/^P([1-5])$/i);
+          if (match) row[0] = "Sqce " + match[1];
+        });
         if (!progLayoutOk(list) || fill) {
           applyProgSheetFrame(list, {
             keepPos: !fill,
@@ -14625,9 +14632,9 @@
           return tpChipHtml(
             list,
             "periode",
-            "Période",
-            text || "P1",
-            "Période",
+            "Séquences",
+            text || "Sqce 1",
+            "Séquences",
             { ri: ri, ci: ci },
           );
         }
@@ -25301,6 +25308,13 @@
         return null;
       }
 
+      function parseFrDates(raw) {
+        return String(raw || "")
+          .split(/\s*(?:;|,|\||\n|\s+et\s+)\s*/i)
+          .map((part) => parseFrDate(part))
+          .filter(Boolean);
+      }
+
       function closeDateCalModal(opts) {
         const back = $("dateCalModal");
         if (back) {
@@ -25329,7 +25343,17 @@
           return;
         }
         pushHist();
-        el.textContent = fr || "";
+        if (!fr) {
+          el.textContent = "";
+          applyPreviewEdit(el, true);
+          closeDateCalModal({ refocus: true });
+          return;
+        }
+        const dates = parseFrDates(el.textContent || "");
+        const next = parseFrDate(fr);
+        if (next && !dates.some((date) => date.getTime() === next.getTime()))
+          dates.push(next);
+        el.textContent = dates.map(formatFrDate).join(" ; ");
         applyPreviewEdit(el, true);
         closeDateCalModal({ refocus: true });
       }
@@ -25357,8 +25381,8 @@
         const root = $("dateCalRoot");
         if (!root || !dateCalView) return;
         const selected = dateCalTarget
-          ? parseFrDate(dateCalTarget.textContent || "")
-          : null;
+          ? parseFrDates(dateCalTarget.textContent || "")
+          : [];
         const view = new Date(
           dateCalView.getFullYear(),
           dateCalView.getMonth(),
@@ -25442,10 +25466,12 @@
           )
             btn.classList.add("is-today");
           if (
-            selected &&
-            cellDate.getFullYear() === selected.getFullYear() &&
-            cellDate.getMonth() === selected.getMonth() &&
-            cellDate.getDate() === selected.getDate()
+            selected.some(
+              (date) =>
+                cellDate.getFullYear() === date.getFullYear() &&
+                cellDate.getMonth() === date.getMonth() &&
+                cellDate.getDate() === date.getDate(),
+            )
           )
             btn.classList.add("is-on");
           btn.setAttribute("aria-label", formatFrDate(cellDate));
