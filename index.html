@@ -3725,6 +3725,15 @@
         overflow-wrap: normal;
         word-break: normal;
       }
+      .list-block.is-prog-page td.is-prog-theme .cell-edit {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        line-height: 1.2;
+      }
+      .list-block.is-prog-page td.is-prog-theme .cell-edit strong {
+        display: block;
+        font-weight: 800;
+      }
       .list-block.is-prog-page .tp-chip-support,
       .list-block.is-prog-page .tp-chip-periode {
         font-size: 0.92em;
@@ -14883,14 +14892,7 @@
           );
         }
         if (kind === "theme") {
-          return tpChipHtml(
-            list,
-            "theme",
-            "Thème / Chapitre",
-            text,
-            "Thème / Chapitre",
-            { ri: ri, ci: ci },
-          );
+          return cellEditHtml(text, list.id, ri, ci, list, freeze);
         }
         if (kind === "support") {
           return tpChipHtml(list, "support", "Séances", text, "Séances", {
@@ -17163,6 +17165,8 @@
             }
             if (shareTotal) cls.push("is-tp-total");
             if (matCell) cls.push("is-tp-mat");
+            if (isProgList(list) && labelKind === "theme")
+              cls.push("is-prog-theme");
             if (
               isProgList(list) &&
               /^date/.test(foldHeader(list.headers[contentCi] || ""))
@@ -26020,6 +26024,21 @@
         renderPreview();
       }
 
+      function progThemeChoiceValue(entry, subtheme, chapter) {
+        const lines = [];
+        if (entry && entry.theme) lines.push("<strong>" + entry.theme + "</strong>");
+        if (subtheme) lines.push("<strong>" + subtheme + "</strong>");
+        if (chapter) lines.push(chapter);
+        return lines.join("\n");
+      }
+
+      function progThemePlainText(value) {
+        return String(value || "")
+          .replace(/<[^>]*>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
       function renderProgThemeModal() {
         const themesEl = $("progThemeThemes");
         const subsEl = $("progThemeSubthemes");
@@ -26030,12 +26049,20 @@
         const current = String(
           progThemeTarget.list.rows[progThemeTarget.ri][progThemeTarget.ci] || "",
         ).trim();
+        const currentPlain = progThemePlainText(current);
         const selectedTheme = progThemeTarget.theme || entries.find((item) =>
-          [item.theme].concat(item.subthemes || [], item.chapters || []).includes(current),
+          [item.theme].concat(item.subthemes || [], item.chapters || []).some(
+            (label) => currentPlain.indexOf(label) >= 0,
+          ),
         );
         const selectedEntry = selectedTheme && selectedTheme.theme
           ? selectedTheme
           : entries[0];
+        if (!progThemeTarget.subtheme && selectedEntry) {
+          progThemeTarget.subtheme = (selectedEntry.subthemes || []).find(
+            (subtheme) => currentPlain.indexOf(subtheme) >= 0,
+          ) || null;
+        }
         themesEl.innerHTML = "";
         subsEl.innerHTML = "";
         chaptersEl.innerHTML = "";
@@ -26052,6 +26079,7 @@
             selectedEntry && entry.theme === selectedEntry.theme,
             () => {
               progThemeTarget.theme = entry;
+              progThemeTarget.subtheme = null;
               renderProgThemeModal();
             },
           );
@@ -26060,8 +26088,12 @@
         const subthemes = (selectedEntry && selectedEntry.subthemes) || [];
         subthemes.forEach((subtheme) => {
           subsEl.appendChild(
-            progThemeButton(subtheme, current === subtheme, () =>
-              chooseProgThemeValue(subtheme),
+            progThemeButton(subtheme, currentPlain.indexOf(subtheme) >= 0, () => {
+              progThemeTarget.subtheme = subtheme;
+              chooseProgThemeValue(
+                progThemeChoiceValue(selectedEntry, subtheme, ""),
+              );
+            },
             ),
           );
         });
@@ -26069,8 +26101,14 @@
           subsEl.innerHTML = '<div class="empty">Pas de sous-thème indiqué.</div>';
         (selectedEntry && selectedEntry.chapters || []).forEach((chapter) => {
           chaptersEl.appendChild(
-            progThemeButton(chapter, current === chapter, () =>
-              chooseProgThemeValue(chapter),
+            progThemeButton(chapter, currentPlain.indexOf(chapter) >= 0, () =>
+              chooseProgThemeValue(
+                progThemeChoiceValue(
+                  selectedEntry,
+                  progThemeTarget.subtheme || subthemes[0] || "",
+                  chapter,
+                ),
+              ),
             ),
           );
         });
@@ -26091,15 +26129,22 @@
       }
 
       async function loadProgThemeData() {
-        try {
-          const response = await fetch("progression-themes.json", { cache: "no-store" });
-          if (!response.ok) throw new Error("HTTP " + response.status);
-          progThemeData = await response.json();
-        } catch (error) {
-          progThemeData = null;
-        } finally {
-          progThemeDataLoaded = true;
+        const urls = [
+          "https://michawaro.github.io/epicsv/progression-themes.json",
+          new URL("progression-themes.json", document.baseURI).href,
+        ];
+        for (const url of urls) {
+          try {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) continue;
+            const data = await response.json();
+            if (data && data.subjects) {
+              progThemeData = data;
+              break;
+            }
+          } catch (error) {}
         }
+        progThemeDataLoaded = true;
       }
 
       async function openProgThemeModal(anchor, list) {
