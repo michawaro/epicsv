@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "source": "Programmes officiels de l'Education nationale, complements BO et propositions pedagogiques a verifier selon le niveau choisi.",
+  "subjects": {
+    "SVT": {
+      "6e": [
+        {"theme":"La planete Terre, les etres vivants dans leur environnement","subthemes":["La Terre, une planete singuliere","Le vivant et son evolution"],"chapters":["La Terre dans le systeme solaire","Les conditions de la vie sur Terre","La biodiversite et ses changements"]},
+        {"theme":"Le vivant, sa diversite et les fonctions qui le caracterisent","subthemes":["Organisation du vivant","Diversite et classification"],"chapters":["Observer et decrire le vivant","Classer les etres vivants"]},
+        {"theme":"Les enjeux de l'environnement","subthemes":["Peuplement des milieux","Ressources et impacts humains"],"chapters":["Le peuplement d'un milieu au cours des saisons","L'eau et les ressources naturelles"]}
+      ],
+      "5e": [
+        {"theme":"Le vivant et son evolution","subthemes":["Nutrition et organisation","Reproduction et peuplement"],"chapters":["La nutrition des organismes","La reproduction des etres vivants"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Fonctionnement de l'organisme","Risques et prevention"],"chapters":["La respiration et les echanges gazeux","La circulation du sang","Le fonctionnement du systeme nerveux"]},
+        {"theme":"La planete Terre et les phenomenes geologiques","subthemes":["Risques naturels","Ressources geologiques"],"chapters":["L'erosion des paysages","Les risques sismiques et volcaniques"]}
+      ],
+      "4e": [
+        {"theme":"La planete Terre, l'environnement et l'action humaine","subthemes":["Activite interne du globe","Ressources et risques"],"chapters":["L'activite interne de la Terre","Seismes et volcanisme","La tectonique des plaques"]},
+        {"theme":"Le vivant et son evolution","subthemes":["Reproduction","Diversite genetique"],"chapters":["La reproduction humaine","La reproduction des plantes","La diversite genetique au sein des especes"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Communication nerveuse","Reproduction et sexualite"],"chapters":["Le cerveau et le mouvement","La regulation de la reproduction"]}
+      ],
+      "3e": [
+        {"theme":"Le vivant et son evolution","subthemes":["Genetique","Evolution"],"chapters":["L'heredite et la transmission des caracteres","Les mutations et la diversite genetique","L'evolution des especes"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Immunite","Monde microbien"],"chapters":["Le systeme immunitaire","Vaccination et prevention","Microorganismes et sante"]},
+        {"theme":"La planete Terre et l'environnement","subthemes":["Climat","Ressources et risques"],"chapters":["Le changement climatique","Les ressources de la planete"]}
+      ],
+      "2nde": [
+        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["La Terre dans l'Univers","La cellule","Le vivant et son evolution"],"chapters":["La Terre dans le systeme solaire","La cellule, unite du vivant","La biodiversite et son evolution"]},
+        {"theme":"Les enjeux contemporains de la planete","subthemes":["Geosciences et ressources","Ecosystemes et services"],"chapters":["Atmosphere, climat et ressources","Les ecosystemes : fonctionnement et services"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Procreation","Corps et sante"],"chapters":["La procreation humaine","Les microorganismes et la sante"]}
+      ],
+      "1re": [
+        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["Transmission, variation et expression du patrimoine genetique","La dynamique interne de la Terre"],"chapters":["La mitose et la transmission du patrimoine genetique","L'expression du patrimoine genetique","La tectonique des plaques"]},
+        {"theme":"Les enjeux contemporains de la planete","subthemes":["Ecosystemes et services environnementaux","Agrosystemes et developpement durable"],"chapters":["La dynamique des ecosystemes","Les agrosystemes et leurs impacts"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Variation genetique et sante","Procreation et sexualite humaine"],"chapters":["Mutations et maladies genetiques","La regulation de la reproduction"]}
+      ],
+      "Tle": [
+        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["Genetique et evolution","A la recherche du passe geologique"],"chapters":["L'origine du patrimoine genetique","L'evolution comme processus historique","Le temps geologique et les fossiles"]},
+        {"theme":"Les enjeux contemporains de la planete","subthemes":["De la plante sauvage a la plante domestique","Les climats de la Terre"],"chapters":["La plante domestiquee","La plante, productrice de matiere organique","Les climats passes et futurs"]},
+        {"theme":"Le corps humain et la sante","subthemes":["Comportements et stress","Procreation"],"chapters":["Le stress aigu et chronique","Le cerveau et les comportements","La reproduction humaine"]}
+      ]
+    },
+    "SPC": {
+      "6e": [{"theme":"Matiere, mouvement, energie, information","subthemes":["Etats et changements d'etat","Mouvements"],"chapters":["Etats de la matiere","Melanges et solutions","Decrire un mouvement"]},{"theme":"La Terre, les etres vivants dans leur environnement","subthemes":["Lumiere et observation"],"chapters":["Sources de lumiere et ombres"]}],
+      "5e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Corps purs et melanges","Transformations chimiques"],"chapters":["Masse et volume","Les combustions","Les transformations chimiques"]},{"theme":"Mouvements et interactions","subthemes":["Forces","Signaux"],"chapters":["Actions de contact et a distance","Signaux lumineux et sonores"]},{"theme":"L'energie et ses conversions","subthemes":["Circuits electriques"],"chapters":["Circuit electrique et securite","Conversions d'energie"]}],
+      "4e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Transformations chimiques","Structure de la matiere"],"chapters":["Les ions et les solutions","La combustion du methane","Masse volumique et caracterisation"]},{"theme":"Mouvements et interactions","subthemes":["Actions et modelisation"],"chapters":["Relativite du mouvement","Poids et gravitation"]},{"theme":"L'energie et ses conversions","subthemes":["Electricite","Lumiere"],"chapters":["Tension et intensite","Propagation de la lumiere"]}],
+      "3e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Atomes et molecules","Transformations chimiques"],"chapters":["Structure de l'atome","Reactions chimiques et conservation"]},{"theme":"Mouvements et interactions","subthemes":["Mouvement et vitesse","Gravitation"],"chapters":["Vitesse et trajectoire","Systeme solaire et gravitation"]},{"theme":"L'energie et ses conversions","subthemes":["Energie electrique","Energie et puissance"],"chapters":["Puissance et consommation electrique","Sources et conversions d'energie"]}],
+      "2nde": [{"theme":"Constitution et transformations de la matiere","subthemes":["Description microscopique","Proprietes physiques"],"chapters":["Corps purs et melanges","Solutions aqueuses","Quantite de matiere et masse volumique"]},{"theme":"Mouvement et interactions","subthemes":["Interactions","Mouvement"],"chapters":["Forces et modelisation","Mouvements et vitesse"]},{"theme":"Ondes et signaux","subthemes":["Ondes mecaniques","Lumiere et optique"],"chapters":["Son et propagation","Couleurs et spectres"]}],
+      "1re": [{"theme":"Constitution et transformations de la matiere","subthemes":["Suivi et modelisation","Synthese et extraction"],"chapters":["Dosage par titrage","Equilibres et transformations","Synthese d'une espece chimique"]},{"theme":"Mouvement et interactions","subthemes":["Dynamique","Energie"],"chapters":["Deuxieme loi de Newton","Travail et energie mecanique"]},{"theme":"Ondes et signaux","subthemes":["Ondes","Electricite"],"chapters":["Caracteristiques des ondes","Circuit RC et signaux"]}],
+      "Tle": [{"theme":"L'energie : conversions et transferts","subthemes":["Bilan energetique","Thermodynamique"],"chapters":["Bilan energetique et rendement","Transferts thermiques"]},{"theme":"Mouvement et interactions","subthemes":["Mecanique","Fluides"],"chapters":["Mouvement dans un champ uniforme","Ecoulement des fluides"]},{"theme":"Ondes et signaux","subthemes":["Ondes et particules","Numerique"],"chapters":["Effet Doppler","Interferences et diffraction","Transmission de l'information"]}]
+    },
+    "BPH": {
+      "1re": [{"theme":"L'organisme humain et son fonctionnement","subthemes":["Organisation et homeostasie","Communication"],"chapters":["Organisation du corps humain","Homeostasie et regulation","Communication nerveuse et hormonale"]},{"theme":"Alimentation et sante","subthemes":["Nutriments","Besoins nutritionnels"],"chapters":["Digestion et absorption","Equilibre alimentaire"]}],
+      "Tle": [{"theme":"Physiologie et physiopathologie","subthemes":["Fonctions de nutrition","Systeme nerveux"],"chapters":["Fonction cardiovasculaire","Fonction respiratoire","Fonction renale","Communication nerveuse"]},{"theme":"Biologie cellulaire et moleculaire","subthemes":["Cellule","Information genetique"],"chapters":["Membrane et transports","Expression du patrimoine genetique"]},{"theme":"Microbiologie, immunologie et sante","subthemes":["Agents infectieux","Defense de l'organisme"],"chapters":["Bacteries et virus","Reponse immunitaire","Prevention et vaccination"]}]
+    }
+  }
+}
