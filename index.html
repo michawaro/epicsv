@@ -26102,13 +26102,7 @@
         (selectedEntry && selectedEntry.chapters || []).forEach((chapter) => {
           chaptersEl.appendChild(
             progThemeButton(chapter, currentPlain.indexOf(chapter) >= 0, () =>
-              chooseProgThemeValue(
-                progThemeChoiceValue(
-                  selectedEntry,
-                  progThemeTarget.subtheme || subthemes[0] || "",
-                  chapter,
-                ),
-              ),
+              chooseProgThemeValue(chapter),
             ),
           );
         });
