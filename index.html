@@ -9335,6 +9335,7 @@
       let tpUi = { cat: "", q: "", qty: 1 };
       let tpMatTarget = { lid: null, ri: null };
       let progThemeData = null;
+      let progThemeDataLoaded = false;
       let progThemeTarget = null;
       let progThemeDlgRestore = null;
       const ORIENT_TOGGLE_SVG =
@@ -14881,6 +14882,16 @@
             { ri: ri, ci: ci },
           );
         }
+        if (kind === "theme") {
+          return tpChipHtml(
+            list,
+            "theme",
+            "Thème / Chapitre",
+            text,
+            "Thème / Chapitre",
+            { ri: ri, ci: ci },
+          );
+        }
         if (kind === "support") {
           return tpChipHtml(list, "support", "Séances", text, "Séances", {
             ri: ri,
@@ -17234,7 +17245,15 @@
               spanAttr += ' colspan="' + cs + '" data-cs="' + cs + '"';
             if (fieldAt)
               spanAttr +=
-                ' data-tp-field="' + fieldAt + '" data-lid="' + list.id + '"';
+                ' data-tp-field="' +
+                fieldAt +
+                '" data-lid="' +
+                list.id +
+                '" data-ri="' +
+                contentRi +
+                '" data-ci="' +
+                contentCi +
+                '"';
             if (matCell)
               spanAttr +=
                 ' data-tp-mat="1" title="Double-clic pour choisir dans la liste de matériel"';
@@ -26078,12 +26097,18 @@
           progThemeData = await response.json();
         } catch (error) {
           progThemeData = null;
+        } finally {
+          progThemeDataLoaded = true;
         }
       }
 
-      function openProgThemeModal(anchor, list) {
+      async function openProgThemeModal(anchor, list) {
         const modal = $("progThemeModal");
-        if (!modal || !list || !progThemeData) return;
+        if (!modal || !list) return;
+        if (!progThemeDataLoaded) {
+          await loadProgThemeData();
+        }
+        if (!progThemeData) return;
         const ri = Number(anchor.dataset.ri);
         const ci = Number(anchor.dataset.ci);
         if (!Number.isInteger(ri) || !Number.isInteger(ci)) return;
