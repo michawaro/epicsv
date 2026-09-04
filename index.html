@@ -26105,22 +26105,31 @@
       async function openProgThemeModal(anchor, list) {
         const modal = $("progThemeModal");
         if (!modal || !list) return;
-        if (!progThemeDataLoaded) {
-          await loadProgThemeData();
-        }
-        if (!progThemeData) return;
         const ri = Number(anchor.dataset.ri);
         const ci = Number(anchor.dataset.ci);
         if (!Number.isInteger(ri) || !Number.isInteger(ci)) return;
+        if (
+          !modal.hidden &&
+          progThemeTarget &&
+          progThemeTarget.list === list &&
+          progThemeTarget.ri === ri &&
+          progThemeTarget.ci === ci
+        )
+          return;
         progThemeTarget = { list: list, ri: ri, ci: ci, theme: null };
         const title = $("progThemeTitle");
         const source = $("progThemeSource");
         if (title) title.textContent = "Choisir un thème / chapitre · " + (tpOf(list).matiere || "SVT") + " " + (tpOf(list).niveau || "");
-        if (source) source.textContent = progThemeData.source || "Programmes officiels et compléments pédagogiques.";
-        renderProgThemeModal();
+        if (source) source.textContent = "Chargement des thèmes et chapitres…";
         modal.hidden = false;
         if (progThemeDlgRestore) progThemeDlgRestore();
         progThemeDlgRestore = attachDialog(modal, closeProgThemeModal);
+        if (!progThemeDataLoaded) await loadProgThemeData();
+        if (!progThemeTarget || progThemeTarget.list !== list || progThemeTarget.ri !== ri || progThemeTarget.ci !== ci) return;
+        if (source) source.textContent = progThemeData
+          ? progThemeData.source || "Programmes officiels et compléments pédagogiques."
+          : "Données indisponibles. Vous pouvez saisir un thème ou un chapitre personnalisé.";
+        renderProgThemeModal();
       }
 
       document.addEventListener("keydown", (e) => {
@@ -26152,6 +26161,19 @@
       });
 
       $("sheets").addEventListener("click", (e) => {
+        const themeCell = e.target.closest('td[data-tp-field="theme"]');
+        if (themeCell) {
+          const block = themeCell.closest(".list-block[data-lid]");
+          const list = block && state.lists.find(
+            (item) => String(item.id) === String(block.dataset.lid),
+          );
+          if (list && isProgList(list)) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProgThemeModal(themeCell, list);
+            return;
+          }
+        }
         if (e.target.closest(".tp-mat-open")) {
           e.preventDefault();
           const hit = tpMatHitFromEvent(e);
