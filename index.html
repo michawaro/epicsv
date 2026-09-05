@@ -3590,7 +3590,7 @@
       .list-block.is-tp-page thead.is-tp-ghost th {
         padding: 0;
         border: 0;
-        height: 0;
+        height: 6px;
         line-height: 0;
         font-size: 0;
         overflow: visible;
@@ -3725,7 +3725,8 @@
         overflow-wrap: normal;
         word-break: normal;
       }
-      .list-block.is-prog-page td.is-prog-theme .cell-edit {
+      .list-block.is-prog-page td.is-prog-theme .cell-edit,
+      .list-block.is-prog-page td.is-prog-activite .cell-edit {
         white-space: pre-wrap;
         overflow-wrap: anywhere;
         line-height: 1.2;
@@ -4188,6 +4189,10 @@
         grid-template-columns: minmax(150px, 0.7fr) minmax(220px, 1fr) minmax(220px, 1fr);
         gap: 10px;
         min-height: 270px;
+      }
+      .prog-theme-grid.prog-theme-grid-single {
+        grid-template-columns: 1fr;
+        min-height: 220px;
       }
       .prog-theme-pane {
         min-width: 0;
@@ -6089,6 +6094,9 @@
 
         .no-print {
           display: none !important;
+        }
+        .list-block.is-tp-page thead.is-tp-ghost th {
+          height: 0 !important;
         }
         .view-switch,
         .mobile-bar,
@@ -9061,6 +9069,43 @@
       </div>
     </div>
 
+    <div class="modal-back no-print" id="progActiviteModal" hidden>
+      <div
+        class="modal modal-prog-theme"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="progActiviteTitle"
+      >
+        <h3 id="progActiviteTitle">Choisir une activité</h3>
+        <p class="prog-theme-source" id="progActiviteSource">
+          Activités classiques, proposées selon la matière et le niveau.
+        </p>
+        <div class="prog-theme-grid prog-theme-grid-single">
+          <section class="prog-theme-pane">
+            <h4>Activités proposées</h4>
+            <div class="prog-theme-list" id="progActiviteList"></div>
+          </section>
+        </div>
+        <div class="add-line">
+          <input
+            class="field"
+            id="progActiviteCustom"
+            type="text"
+            placeholder="Écrire une activité personnalisée"
+            aria-label="Activité personnalisée"
+          />
+          <button class="btn-mini" id="progActiviteCustomBtn" type="button">
+            Utiliser
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="progActiviteCancel" type="button">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div
       class="date-cal-pop no-print"
       id="dateCalModal"
@@ -9343,6 +9388,8 @@
       let progThemeDataLoaded = false;
       let progThemeTarget = null;
       let progThemeDlgRestore = null;
+      let progActiviteTarget = null;
+      let progActiviteDlgRestore = null;
       const ORIENT_TOGGLE_SVG =
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
       const PAGE_SEND_SVG =
@@ -10336,6 +10383,21 @@
         "Sortie",
         "AP",
       ];
+      const PROG_ACTIVITIES_FALLBACK = (() => {
+        const svtCollegeDebut = ["Observation à l’œil nu ou à la loupe","Observation microscopique simple","Manipulation ou expérience simple","Dessin d’observation scientifique","Sortie nature ou étude de terrain","Activité documentaire (textes, photos)","Élevage ou culture en classe","Jeu, maquette ou modèle réduit","Débat argumenté","Recherche documentaire (CDI)","Bilan ou évaluation formative"];
+        const svtCollegeFin = ["Observation microscopique (lames, préparations)","Dissection","Manipulation ou expérience (TP)","Activité documentaire (données, graphiques)","Modélisation (maquette, schéma fonctionnel)","Sortie de terrain ou étude de risque","Extraction d’ADN","Étude de cas","Débat argumenté (enjeux environnementaux, santé)","Recherche documentaire","Tâche complexe","Bilan ou évaluation formative"];
+        const svtLycee = ["Manipulation ou expérience (TP)","Dissection ou observation anatomique","ExAO (expérimentation assistée par ordinateur)","Modélisation numérique (logiciel dédié)","Extraction et analyse d’ADN","Chromatographie ou électrophorèse","Activité documentaire (articles, données)","Exploitation de données chiffrées ou graphiques","Sortie de terrain ou étude géologique","Construction d’un arbre de parenté","Étude de cas","Démarche d’investigation","Débat argumenté ou question socialement vive","Recherche documentaire","Tâche complexe","Évaluation formative ou bilan"];
+        const spcCollegeDebut = ["Expérience simple ou manipulation","Observation d’un phénomène","Mesure (masse, volume, température)","Construction d’un circuit électrique","Activité documentaire","Résolution de problème simple","Sécurité au laboratoire","Jeu ou maquette","Bilan ou évaluation formative"];
+        const spcCollegeFin = ["Expérience ou manipulation (TP)","Mesure et exploitation de données","Modélisation (schéma, maquette)","Démarche d’investigation","Activité documentaire","Construction et lecture de graphiques","Résolution de problème scientifique","Sécurité et prévention des risques","Débat argumenté","Recherche documentaire","Bilan ou évaluation formative"];
+        const spcLycee = ["Expérience ou manipulation (TP)","Dosage ou titrage","Synthèse chimique","Mesure avec capteurs ou ExAO","Modélisation ou simulation numérique","Démarche d’investigation","Résolution de problème scientifique","Activité documentaire","Exploitation et construction de graphiques","Étude de cas","Sécurité et prévention des risques","Débat scientifique ou argumentation","Recherche documentaire","Exercices d’application","Évaluation formative"];
+        const bph1re = ["Étude de cas clinique","TP ou manipulation (analyses biologiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents médicaux ou statistiques","Modélisation d’un mécanisme physiologique","Enquête ou étude épidémiologique simple","Débat argumenté (santé, éthique)","Recherche documentaire institutionnelle","Évaluation formative"];
+        const bphTle = ["Étude de cas clinique","TP ou manipulation (analyses biologiques, biochimiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents médicaux ou statistiques","Étude épidémiologique","Modélisation d’un mécanisme physiopathologique","Démarche de soins ou parcours de santé","Enquête santé publique","Débat éthique ou argumentation","Recherche documentaire institutionnelle","Tâche complexe","Évaluation formative ou bilan"];
+        return {
+          SVT: { "6e": svtCollegeDebut, "5e": svtCollegeDebut, "4e": svtCollegeFin, "3e": svtCollegeFin, "2nde": svtLycee, "1re": svtLycee, Tle: svtLycee },
+          SPC: { "6e": spcCollegeDebut, "5e": spcCollegeDebut, "4e": spcCollegeFin, "3e": spcCollegeFin, "2nde": spcLycee, "1re": spcLycee, Tle: spcLycee },
+          BPH: { "2nde": [], "1re": bph1re, Tle: bphTle },
+        };
+      })();
       const TP_PARTIES = {
         SVT: {
           "6e": [
@@ -14815,6 +14877,7 @@
         if (ri >= 2 && ci === 0) return "periode";
         if (ri >= 2 && ci === 3) return "theme";
         if (ri >= 2 && ci === 5) return "support";
+        if (ri >= 2 && ci === 6) return "activite";
         return "";
       }
 
@@ -14824,6 +14887,7 @@
         if (kind === "periode") return "periode";
         if (kind === "theme") return "theme";
         if (kind === "support") return "support";
+        if (kind === "activite") return "activite";
         return "";
       }
 
@@ -17170,6 +17234,8 @@
             if (matCell) cls.push("is-tp-mat");
             if (isProgList(list) && labelKind === "theme")
               cls.push("is-prog-theme");
+            if (isProgList(list) && labelKind === "activite")
+              cls.push("is-prog-activite");
             if (
               isProgList(list) &&
               /^date/.test(foldHeader(list.headers[contentCi] || ""))
@@ -26137,6 +26203,8 @@
             }
           } catch (error) {}
         }
+        if (progThemeData && !progThemeData.activities)
+          progThemeData.activities = PROG_ACTIVITIES_FALLBACK;
         progThemeDataLoaded = true;
       }
 
@@ -26170,10 +26238,90 @@
         renderProgThemeModal();
       }
 
+      function progActiviteEntries(list) {
+        const subject = tpOf(list).matiere || "SVT";
+        const level = tpOf(list).niveau || "";
+        const activities =
+          (progThemeData && progThemeData.activities) || PROG_ACTIVITIES_FALLBACK;
+        return (activities && activities[subject] && activities[subject][level]) || [];
+      }
+
+      function closeProgActiviteModal() {
+        const modal = $("progActiviteModal");
+        if (modal) modal.hidden = true;
+        if (progActiviteDlgRestore) {
+          progActiviteDlgRestore();
+          progActiviteDlgRestore = null;
+        }
+        progActiviteTarget = null;
+      }
+
+      function chooseProgActiviteValue(value) {
+        const target = progActiviteTarget;
+        if (!target || !target.list || !target.list.rows[target.ri]) return;
+        pushHist();
+        target.list.rows[target.ri][target.ci] = String(value || "").trim();
+        closeProgActiviteModal();
+        renderPreview();
+      }
+
+      function renderProgActiviteModal() {
+        const listEl = $("progActiviteList");
+        if (!listEl || !progActiviteTarget) return;
+        const entries = progActiviteEntries(progActiviteTarget.list);
+        const current = progThemePlainText(
+          progActiviteTarget.list.rows[progActiviteTarget.ri][progActiviteTarget.ci] || "",
+        );
+        listEl.innerHTML = "";
+        if (!entries.length) {
+          listEl.innerHTML = '<div class="empty">Aucune proposition pour cette matière et ce niveau. Vous pouvez utiliser le champ libre.</div>';
+          return;
+        }
+        entries.forEach((activite) => {
+          listEl.appendChild(
+            progThemeButton(
+              activite,
+              current.indexOf(activite) >= 0,
+              () => {},
+              () => chooseProgActiviteValue(activite),
+            ),
+          );
+        });
+      }
+
+      async function openProgActiviteModal(anchor, list) {
+        const modal = $("progActiviteModal");
+        if (!modal || !list) return;
+        const ri = Number(anchor.dataset.ri);
+        const ci = Number(anchor.dataset.ci);
+        if (!Number.isInteger(ri) || !Number.isInteger(ci)) return;
+        if (
+          !modal.hidden &&
+          progActiviteTarget &&
+          progActiviteTarget.list === list &&
+          progActiviteTarget.ri === ri &&
+          progActiviteTarget.ci === ci
+        )
+          return;
+        progActiviteTarget = { list: list, ri: ri, ci: ci };
+        const title = $("progActiviteTitle");
+        const source = $("progActiviteSource");
+        if (title) title.textContent = "Choisir une activité · " + (tpOf(list).matiere || "SVT") + " " + (tpOf(list).niveau || "");
+        if (source) source.textContent = "Chargement des activités…";
+        modal.hidden = false;
+        if (progActiviteDlgRestore) progActiviteDlgRestore();
+        progActiviteDlgRestore = attachDialog(modal, closeProgActiviteModal);
+        if (!progThemeDataLoaded) await loadProgThemeData();
+        if (!progActiviteTarget || progActiviteTarget.list !== list || progActiviteTarget.ri !== ri || progActiviteTarget.ci !== ci) return;
+        if (source) source.textContent = "Activités classiques, proposées selon la matière et le niveau.";
+        renderProgActiviteModal();
+      }
+
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           closeTpChoiceMenu();
           closeProgThemeModal();
+          closeProgActiviteModal();
           closePageSendMenu();
           if ($("dateCalModal") && !$("dateCalModal").hidden) {
             e.preventDefault();
@@ -26209,6 +26357,19 @@
             e.preventDefault();
             e.stopPropagation();
             openProgThemeModal(themeCell, list);
+            return;
+          }
+        }
+        const activiteCell = e.target.closest('td[data-tp-field="activite"]');
+        if (activiteCell) {
+          const block = activiteCell.closest(".list-block[data-lid]");
+          const list = block && state.lists.find(
+            (item) => String(item.id) === String(block.dataset.lid),
+          );
+          if (list && isProgList(list)) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProgActiviteModal(activiteCell, list);
             return;
           }
         }
@@ -26268,6 +26429,10 @@
           if (!field) return;
           if (field === "theme" && isProgList(list)) {
             openProgThemeModal(fieldEl, list);
+            return;
+          }
+          if (field === "activite" && isProgList(list)) {
+            openProgActiviteModal(fieldEl, list);
             return;
           }
           const menu = $("tpChoiceMenu");
@@ -26372,6 +26537,24 @@
           if (e.key === "Enter") {
             e.preventDefault();
             useProgThemeCustom();
+          }
+        });
+      const progActiviteCancel = $("progActiviteCancel");
+      if (progActiviteCancel)
+        progActiviteCancel.addEventListener("click", closeProgActiviteModal);
+      const progActiviteCustomBtn = $("progActiviteCustomBtn");
+      const progActiviteCustom = $("progActiviteCustom");
+      const useProgActiviteCustom = () => {
+        if (progActiviteCustom && progActiviteCustom.value.trim())
+          chooseProgActiviteValue(progActiviteCustom.value);
+      };
+      if (progActiviteCustomBtn)
+        progActiviteCustomBtn.addEventListener("click", useProgActiviteCustom);
+      if (progActiviteCustom)
+        progActiviteCustom.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            useProgActiviteCustom();
           }
         });
       const tpMatDone = $("tpMatDone");
