@@ -3713,19 +3713,13 @@
         border-left: 0;
         border-right: 0;
       }
-      .list-block.is-prog-page .liste tbody td.is-prog-activite,
-      .list-block.is-prog-page .liste tbody td.is-tp-label.is-prog-activite {
+      .list-block.is-prog-page .liste tbody td.is-prog-activite {
         font-weight: 400;
         letter-spacing: normal;
         color: var(--ink);
         border-color: var(--d-rule, var(--rule));
       }
-      .list-block.is-prog-page .liste tbody td.is-prog-activite .cell-edit,
-      .list-block.is-prog-page
-        .liste
-        tbody
-        td.is-tp-label.is-prog-activite
-        .cell-edit {
+      .list-block.is-prog-page .liste tbody td.is-prog-activite .cell-edit {
         font-weight: 400;
         letter-spacing: normal;
         color: inherit;
@@ -3761,7 +3755,8 @@
         word-break: normal;
       }
       .list-block.is-prog-page td.is-prog-theme .cell-edit,
-      .list-block.is-prog-page td.is-prog-activite .cell-edit {
+      .list-block.is-prog-page td.is-prog-activite .cell-edit,
+      .list-block.is-prog-page td.is-prog-competences .cell-edit {
         white-space: pre-wrap;
         overflow-wrap: anywhere;
         line-height: 1.2;
@@ -4310,6 +4305,18 @@
         font-size: 12px;
         line-height: 1.4;
       }
+      .prog-add-flash {
+        margin: 0 0 10px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        background: #e3f7ef;
+        color: #1c7a4d;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .prog-add-flash::before {
+        content: "✓ ";
+      }
       .prog-theme-preview strong {
         display: block;
         margin-bottom: 3px;
@@ -4471,7 +4478,7 @@
         color: #fff;
       }
       .modal.modal-tp-mat {
-        width: min(560px, 100%);
+        width: min(820px, 100%);
       }
       .modal .tp-picks {
         margin-top: 8px;
@@ -5230,9 +5237,26 @@
         cursor: col-resize;
         z-index: 3;
       }
+      .col-resizer::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -7px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(14, 143, 140, 0.55);
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
       .col-resizer:hover,
       body.is-col-resizing .col-resizer {
         background: rgba(14, 143, 140, 0.28);
+      }
+      .col-resizer:hover::before,
+      body.is-col-resizing .col-resizer::before {
+        background: var(--teal-deep);
+        transform: translateX(-50%) scale(1.4);
       }
       body.is-col-resizing {
         cursor: col-resize;
@@ -9054,6 +9078,7 @@
           aria-label="Rechercher un matériel"
           autocomplete="off"
         />
+        <div class="prog-add-flash" id="tpMatFlash" hidden></div>
         <div class="tp-picks" id="tpMatCats"></div>
         <div class="tp-picks tp-cat-items" id="tpMatItems"></div>
         <div class="add-line">
@@ -9092,9 +9117,14 @@
         aria-labelledby="progThemeTitle"
       >
         <h3 id="progThemeTitle">Choisir un thème / chapitre</h3>
+        <p class="hint-note" style="margin: 0 0 8px">
+          Double-cliquez sur un thème, un sous-thème ou un chapitre pour
+          l'ajouter à la case sélectionnée. Plusieurs ajouts sont possibles.
+        </p>
         <p class="prog-theme-source" id="progThemeSource">
           Programmes officiels, compléments et propositions pédagogiques.
         </p>
+        <div class="prog-add-flash" id="progThemeFlash" hidden></div>
         <div class="prog-theme-grid">
           <section class="prog-theme-pane">
             <h4>Thèmes</h4>
@@ -9124,7 +9154,7 @@
         </div>
         <div class="modal-actions">
           <button class="btn btn-ghost" id="progThemeCancel" type="button">
-            Annuler
+            Fermer
           </button>
         </div>
       </div>
@@ -9142,6 +9172,7 @@
           Double-cliquez sur une proposition pour l'ajouter à la case
           sélectionnée. Plusieurs ajouts sont possibles.
         </p>
+        <div class="prog-add-flash" id="progActiviteFlash" hidden></div>
         <div class="prog-theme-grid prog-theme-grid-single">
           <section class="prog-theme-pane">
             <h4>Activités proposées</h4>
@@ -9162,7 +9193,46 @@
         </div>
         <div class="modal-actions">
           <button class="btn btn-ghost" id="progActiviteCancel" type="button">
-            Annuler
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-back no-print" id="progCompetModal" hidden>
+      <div
+        class="modal modal-prog-theme"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="progCompetTitle"
+      >
+        <h3 id="progCompetTitle">Choisir des compétences</h3>
+        <p class="prog-theme-source" id="progCompetSource">
+          Cliquez sur une ou plusieurs compétences pour les ajouter à la case
+          sélectionnée ; cliquez à nouveau pour la retirer.
+        </p>
+        <div class="prog-add-flash" id="progCompetFlash" hidden></div>
+        <div class="prog-theme-grid prog-theme-grid-single">
+          <section class="prog-theme-pane">
+            <h4>Compétences</h4>
+            <div class="prog-theme-list" id="progCompetList"></div>
+          </section>
+        </div>
+        <div class="add-line">
+          <input
+            class="field"
+            id="progCompetCustom"
+            type="text"
+            placeholder="Écrire une compétence personnalisée"
+            aria-label="Compétence personnalisée"
+          />
+          <button class="btn-mini" id="progCompetCustomBtn" type="button">
+            Utiliser
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="progCompetCancel" type="button">
+            Fermer
           </button>
         </div>
       </div>
@@ -9187,8 +9257,10 @@
         </button>
       </div>
       <p class="date-cal-pop-hint">
-        Format JJ/MM/AAAA — saisie manuelle possible dans la cellule.
+        Cliquez un ou plusieurs jours pour les ajouter à la case. Format
+        JJ/MM/AAAA — saisie manuelle possible dans la cellule.
       </p>
+      <div class="prog-add-flash" id="dateCalFlash" hidden></div>
       <div class="date-cal" id="dateCalRoot"></div>
       <div class="date-cal-pop-actions">
         <button type="button" id="dateCalToday">Aujourd’hui</button>
@@ -9452,6 +9524,8 @@
       let progThemeDlgRestore = null;
       let progActiviteTarget = null;
       let progActiviteDlgRestore = null;
+      let progCompetTarget = null;
+      let progCompetDlgRestore = null;
       const ORIENT_TOGGLE_SVG =
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect class="page-orient-sheet" x="7" y="3" width="10" height="14" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.2 17.2a5.2 5.2 0 1 1-1.4-7.2"/><path fill="currentColor" d="M18.4 12.1l-2.5 2.1.2-3.2z"/></svg>';
       const PAGE_SEND_SVG =
@@ -10428,6 +10502,15 @@
       };
       const PROG_BANNER_META_CS = 2;
       const PROG_BANNER_TITLE_CI = PROG_BANNER_META_CS;
+      const PROG_COMPETENCES = [
+        "Apprendre",
+        "S'informer",
+        "Raisonner",
+        "Réaliser",
+        "Manipuler",
+        "Communiquer à l'oral",
+        "Communiquer à l'écrit",
+      ];
       const PROG_PERIODS = [
         { id: "Sqce 1", n: 4 },
         { id: "Sqce 2", n: 3 },
@@ -12946,6 +13029,7 @@
           wantC = Math.min(wantC, EMPTY_COLS_MAX);
           wantR = Math.min(wantR, EMPTY_ROWS_MAX);
         }
+        if (sheetHasFixedCols(list)) wantC = Math.min(wantC, cs);
         const hadMerge = rectHasMerge(list, box);
         const extraR = grow ? Math.max(0, wantR - rs) : 0;
         const extraC = grow ? Math.max(0, wantC - cs) : 0;
@@ -15057,6 +15141,7 @@
         if (ri === 1) return "colnames";
         if (ri >= 2 && ci === 0) return "periode";
         if (ri >= 2 && ci === 3) return "theme";
+        if (ri >= 2 && ci === 4) return "competences";
         if (ri >= 2 && ci === 5) return "support";
         if (ri >= 2 && ci === 6) return "activite";
         return "";
@@ -15067,6 +15152,7 @@
         if (kind === "banner") return "matiere";
         if (kind === "periode") return "periode";
         if (kind === "theme") return "theme";
+        if (kind === "competences") return "competences";
         if (kind === "support") return "support";
         if (kind === "activite") return "activite";
         return "";
@@ -15954,7 +16040,9 @@
         const box = zoneInsertAnchor(list);
         const rowOk = Boolean(box) && (list.rows || []).length < EMPTY_ROWS_MAX;
         const partialCol =
-          Boolean(box) && !isFullAxisSelection(list, box, "col");
+          Boolean(box) &&
+          !isFullAxisSelection(list, box, "col") &&
+          !isProgList(list);
         const colOk =
           Boolean(box) &&
           (!sheetHasFixedCols(list) || partialCol) &&
@@ -15984,7 +16072,7 @@
         if (
           kind === "col" &&
           sheetHasFixedCols(list) &&
-          isFullAxisSelection(list, box, "col")
+          (isProgList(list) || isFullAxisSelection(list, box, "col"))
         ) {
           announce("Les colonnes de cette fiche sont fixes.");
           return false;
@@ -17404,8 +17492,12 @@
                 : "";
             const shareTotal =
               tpForm && tpFormTotalCell(list, contentRi, contentCi);
+            const isProgContentKind =
+              isProgList(list) &&
+              (labelKind === "activite" || labelKind === "competences");
             if (
               !shareTotal &&
+              !isProgContentKind &&
               (labelKind || (tpForm && isTpHeadingText(contentRow[contentCi])))
             )
               cls.push("is-tp-label");
@@ -17422,6 +17514,8 @@
               cls.push("is-prog-theme");
             if (isProgList(list) && labelKind === "activite")
               cls.push("is-prog-activite");
+            if (isProgList(list) && labelKind === "competences")
+              cls.push("is-prog-competences");
             if (
               isProgList(list) &&
               /^date/.test(foldHeader(list.headers[contentCi] || ""))
@@ -21322,9 +21416,18 @@
             const list = activeList();
             if (!isSheetForm(list)) return;
             pushHist();
-            if (tpMatTargetCell(list))
+            const targetCell = tpMatTargetCell(list);
+            if (targetCell) {
               toggleTpMatInTarget(label, readTpMatQty());
-            else addTpItem(label, readTpMatQty());
+              flashModalAdd(
+                "tpMatFlash",
+                (tpMatCellHas(list, label) ? "Ajouté : " : "Retiré : ") +
+                  label,
+              );
+            } else {
+              addTpItem(label, readTpMatQty());
+              flashModalAdd("tpMatFlash", "Ajouté : " + label);
+            }
             renderTpMatPicked();
             renderPreview();
             renderTpCatalog();
@@ -21393,6 +21496,7 @@
         if (!back) return;
         closeTpChoiceMenu();
         back.hidden = false;
+        if ($("tpMatFlash")) $("tpMatFlash").hidden = true;
         setTpMatQty(tpUi.qty > 0 ? tpUi.qty : 1);
         const search = $("tpMatSearch");
         if (search && document.activeElement !== search)
@@ -25972,11 +26076,21 @@
         }
         const dates = parseFrDates(el.textContent || "");
         const next = parseFrDate(fr);
-        if (next && !dates.some((date) => date.getTime() === next.getTime()))
-          dates.push(next);
+        if (next) {
+          const index = dates.findIndex(
+            (date) => date.getTime() === next.getTime(),
+          );
+          if (index >= 0) {
+            dates.splice(index, 1);
+            flashModalAdd("dateCalFlash", "Retirée : " + fr);
+          } else {
+            dates.push(next);
+            flashModalAdd("dateCalFlash", "Ajoutée : " + fr);
+          }
+        }
         el.textContent = formatFrDates(dates.map(formatFrDate).join(" "));
         applyPreviewEdit(el, true);
-        closeDateCalModal({ refocus: true });
+        paintDateCal();
       }
 
       function positionDateCalPop(anchor) {
@@ -26124,6 +26238,7 @@
           : new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         paintDateCal();
         back.hidden = false;
+        if ($("dateCalFlash")) $("dateCalFlash").hidden = true;
         positionDateCalPop(el);
         if (!same) {
           try {
@@ -26268,6 +26383,18 @@
         return button;
       }
 
+      let progAddFlashTimer = null;
+      function flashModalAdd(elId, text) {
+        const el = $(elId);
+        if (!el) return;
+        el.textContent = text;
+        el.hidden = false;
+        clearTimeout(progAddFlashTimer);
+        progAddFlashTimer = setTimeout(() => {
+          el.hidden = true;
+        }, 1400);
+      }
+
       function closeProgThemeModal() {
         const modal = $("progThemeModal");
         if (modal) modal.hidden = true;
@@ -26281,9 +26408,18 @@
       function chooseProgThemeValue(value) {
         const target = progThemeTarget;
         if (!target || !target.list || !target.list.rows[target.ri]) return;
+        const nextValue = String(value || "").trim();
+        if (!nextValue) return;
+        const currentEntries = progMultiEntries(
+          target.list.rows[target.ri][target.ci],
+        );
+        if (currentEntries.includes(nextValue)) return;
         pushHist();
-        target.list.rows[target.ri][target.ci] = String(value || "").trim();
-        closeProgThemeModal();
+        target.list.rows[target.ri][target.ci] = currentEntries.length
+          ? currentEntries.concat(nextValue).join("\n")
+          : nextValue;
+        flashModalAdd("progThemeFlash", "Ajouté : " + nextValue);
+        renderProgThemeModal();
         renderPreview();
       }
 
@@ -26292,6 +26428,13 @@
           .replace(/<[^>]*>/g, " ")
           .replace(/\s+/g, " ")
           .trim();
+      }
+
+      function progMultiEntries(raw) {
+        return String(raw || "")
+          .split(/\n+/)
+          .map((entry) => progThemePlainText(entry))
+          .filter(Boolean);
       }
 
       function renderProgThemeModal() {
@@ -26438,6 +26581,7 @@
             (tpOf(list).niveau || "");
         if (source) source.textContent = "Chargement des thèmes et chapitres…";
         modal.hidden = false;
+        if ($("progThemeFlash")) $("progThemeFlash").hidden = true;
         if (progThemeDlgRestore) progThemeDlgRestore();
         progThemeDlgRestore = attachDialog(modal, closeProgThemeModal);
         if (!progThemeDataLoaded) await loadProgThemeData();
@@ -26487,20 +26631,15 @@
         if (!target || !target.list || !target.list.rows[target.ri]) return;
         const nextValue = String(value || "").trim();
         if (!nextValue) return;
-        const currentValue = progThemePlainText(
-          target.list.rows[target.ri][target.ci] || "",
-        ).trim();
-        const currentEntries = currentValue
-          ? currentValue
-              .split(/\n+/)
-              .map((entry) => entry.trim())
-              .filter(Boolean)
-          : [];
+        const currentEntries = progMultiEntries(
+          target.list.rows[target.ri][target.ci],
+        );
         if (currentEntries.includes(nextValue)) return;
         pushHist();
         target.list.rows[target.ri][target.ci] = currentEntries.length
           ? currentEntries.concat(nextValue).join("\n")
           : nextValue;
+        flashModalAdd("progActiviteFlash", "Ajouté : " + nextValue);
         renderProgActiviteModal();
         renderPreview();
       }
@@ -26574,6 +26713,7 @@
             (tpOf(list).niveau || "");
         if (source) source.textContent = "Chargement des activités…";
         modal.hidden = false;
+        if ($("progActiviteFlash")) $("progActiviteFlash").hidden = true;
         if (progActiviteDlgRestore) progActiviteDlgRestore();
         progActiviteDlgRestore = attachDialog(modal, closeProgActiviteModal);
         if (!progThemeDataLoaded) await loadProgThemeData();
@@ -26590,11 +26730,86 @@
         renderProgActiviteModal();
       }
 
+      function closeProgCompetModal() {
+        const modal = $("progCompetModal");
+        if (modal) modal.hidden = true;
+        if (progCompetDlgRestore) {
+          progCompetDlgRestore();
+          progCompetDlgRestore = null;
+        }
+        progCompetTarget = null;
+      }
+
+      function chooseProgCompetValue(value) {
+        const target = progCompetTarget;
+        if (!target || !target.list || !target.list.rows[target.ri]) return;
+        const nextValue = String(value || "").trim();
+        if (!nextValue) return;
+        const currentEntries = progMultiEntries(
+          target.list.rows[target.ri][target.ci],
+        );
+        pushHist();
+        const index = currentEntries.indexOf(nextValue);
+        if (index >= 0) {
+          currentEntries.splice(index, 1);
+          flashModalAdd("progCompetFlash", "Retiré : " + nextValue);
+        } else {
+          currentEntries.push(nextValue);
+          flashModalAdd("progCompetFlash", "Ajouté : " + nextValue);
+        }
+        target.list.rows[target.ri][target.ci] = currentEntries.join("\n");
+        renderProgCompetModal();
+        renderPreview();
+      }
+
+      function renderProgCompetModal() {
+        const listEl = $("progCompetList");
+        if (!listEl || !progCompetTarget) return;
+        const current = progMultiEntries(
+          progCompetTarget.list.rows[progCompetTarget.ri][
+            progCompetTarget.ci
+          ],
+        );
+        listEl.innerHTML = "";
+        PROG_COMPETENCES.forEach((competence) => {
+          listEl.appendChild(
+            progThemeButton(
+              competence,
+              current.includes(competence),
+              chooseProgCompetValue,
+            ),
+          );
+        });
+      }
+
+      function openProgCompetModal(anchor, list) {
+        const modal = $("progCompetModal");
+        if (!modal || !list) return;
+        const ri = Number(anchor.dataset.ri);
+        const ci = Number(anchor.dataset.ci);
+        if (!Number.isInteger(ri) || !Number.isInteger(ci)) return;
+        if (
+          !modal.hidden &&
+          progCompetTarget &&
+          progCompetTarget.list === list &&
+          progCompetTarget.ri === ri &&
+          progCompetTarget.ci === ci
+        )
+          return;
+        progCompetTarget = { list: list, ri: ri, ci: ci };
+        modal.hidden = false;
+        if ($("progCompetFlash")) $("progCompetFlash").hidden = true;
+        if (progCompetDlgRestore) progCompetDlgRestore();
+        progCompetDlgRestore = attachDialog(modal, closeProgCompetModal);
+        renderProgCompetModal();
+      }
+
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           closeTpChoiceMenu();
           closeProgThemeModal();
           closeProgActiviteModal();
+          closeProgCompetModal();
           closePageSendMenu();
           if ($("dateCalModal") && !$("dateCalModal").hidden) {
             e.preventDefault();
@@ -26620,6 +26835,40 @@
       });
 
       $("sheets").addEventListener("click", (e) => {
+        const competCell = e.target.closest(
+          'td[data-tp-field="competences"]',
+        );
+        if (competCell) {
+          const block = competCell.closest(".list-block[data-lid]");
+          const list =
+            block &&
+            state.lists.find(
+              (item) => String(item.id) === String(block.dataset.lid),
+            );
+          if (list && isProgList(list)) {
+            e.preventDefault();
+            e.stopPropagation();
+            openProgCompetModal(competCell, list);
+            return;
+          }
+        }
+        if (e.target.closest(".tp-mat-open")) {
+          e.preventDefault();
+          const hit = tpMatHitFromEvent(e);
+          if (hit) openTpMatFromHit(hit);
+          else openTpMatModal();
+          return;
+        }
+        const dateEl = e.target.closest(".cell-edit[data-date-cell]");
+        if (
+          dateEl &&
+          dateEl.closest("#sheets") &&
+          !dateEl.classList.contains("is-locked")
+        ) {
+          openDateCalModal(dateEl);
+        }
+      });
+      $("sheets").addEventListener("dblclick", (e) => {
         const themeCell = e.target.closest('td[data-tp-field="theme"]');
         if (themeCell) {
           const block = themeCell.closest(".list-block[data-lid]");
@@ -26650,23 +26899,6 @@
             return;
           }
         }
-        if (e.target.closest(".tp-mat-open")) {
-          e.preventDefault();
-          const hit = tpMatHitFromEvent(e);
-          if (hit) openTpMatFromHit(hit);
-          else openTpMatModal();
-          return;
-        }
-        const dateEl = e.target.closest(".cell-edit[data-date-cell]");
-        if (
-          dateEl &&
-          dateEl.closest("#sheets") &&
-          !dateEl.classList.contains("is-locked")
-        ) {
-          openDateCalModal(dateEl);
-        }
-      });
-      $("sheets").addEventListener("dblclick", (e) => {
         const dateEl = e.target.closest(".cell-edit[data-date-cell]");
         if (
           dateEl &&
@@ -26694,6 +26926,8 @@
             return;
           const fieldEl = fieldHost.closest("[data-tp-field], .tp-chip");
           if (!fieldEl || !fieldEl.closest("#sheets")) return;
+          const field = fieldEl.dataset.tpField;
+          if (field === "theme" || field === "activite") return;
           const block = fieldEl.closest(".list-block[data-lid]");
           const lid = fieldEl.dataset.lid || (block && block.dataset.lid);
           const list = state.lists.find((l) => String(l.id) === String(lid));
@@ -26702,14 +26936,9 @@
           e.stopPropagation();
           if (list.id !== state.activeId)
             setActiveList(list.id, { scroll: false });
-          const field = fieldEl.dataset.tpField;
           if (!field) return;
-          if (field === "theme" && isProgList(list)) {
-            openProgThemeModal(fieldEl, list);
-            return;
-          }
-          if (field === "activite" && isProgList(list)) {
-            openProgActiviteModal(fieldEl, list);
+          if (field === "competences" && isProgList(list)) {
+            openProgCompetModal(fieldEl, list);
             return;
           }
           const menu = $("tpChoiceMenu");
@@ -26834,6 +27063,26 @@
             useProgActiviteCustom();
           }
         });
+      const progCompetCancel = $("progCompetCancel");
+      if (progCompetCancel)
+        progCompetCancel.addEventListener("click", closeProgCompetModal);
+      const progCompetCustomBtn = $("progCompetCustomBtn");
+      const progCompetCustom = $("progCompetCustom");
+      const useProgCompetCustom = () => {
+        if (progCompetCustom && progCompetCustom.value.trim()) {
+          chooseProgCompetValue(progCompetCustom.value);
+          progCompetCustom.value = "";
+        }
+      };
+      if (progCompetCustomBtn)
+        progCompetCustomBtn.addEventListener("click", useProgCompetCustom);
+      if (progCompetCustom)
+        progCompetCustom.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            useProgCompetCustom();
+          }
+        });
       const tpMatDone = $("tpMatDone");
       if (tpMatDone) tpMatDone.addEventListener("click", closeTpMatModal);
       const tpMatBack = $("tpMatModal");
@@ -26873,6 +27122,7 @@
         pushHist();
         addTpItem(name, readTpMatQty());
         input.value = "";
+        flashModalAdd("tpMatFlash", "Ajouté : " + name);
         renderTpMatPicked();
         renderPreview();
       }
