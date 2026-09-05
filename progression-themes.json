@@ -4,78 +4,1063 @@
   "subjects": {
     "SVT": {
       "6e": [
-        {"theme":"La planete Terre, les etres vivants dans leur environnement","subthemes":["La Terre, une planete singuliere","Le vivant et son evolution"],"chapters":["La Terre dans le systeme solaire","Les conditions de la vie sur Terre","La biodiversite et ses changements"]},
-        {"theme":"Le vivant, sa diversite et les fonctions qui le caracterisent","subthemes":["Organisation du vivant","Diversite et classification"],"chapters":["Observer et decrire le vivant","Classer les etres vivants"]},
-        {"theme":"Les enjeux de l'environnement","subthemes":["Peuplement des milieux","Ressources et impacts humains"],"chapters":["Le peuplement d'un milieu au cours des saisons","L'eau et les ressources naturelles"]}
+        {
+          "theme": "La planete Terre, les etres vivants dans leur environnement",
+          "subthemes": [
+            "La Terre, une planete singuliere",
+            "Le vivant et son evolution"
+          ],
+          "chapters": [
+            "La Terre dans le systeme solaire",
+            "Les conditions de la vie sur Terre",
+            "La biodiversite et ses changements"
+          ]
+        },
+        {
+          "theme": "Le vivant, sa diversite et les fonctions qui le caracterisent",
+          "subthemes": [
+            "Organisation du vivant",
+            "Diversite et classification"
+          ],
+          "chapters": [
+            "Observer et decrire le vivant",
+            "Classer les etres vivants"
+          ]
+        },
+        {
+          "theme": "Les enjeux de l'environnement",
+          "subthemes": [
+            "Peuplement des milieux",
+            "Ressources et impacts humains"
+          ],
+          "chapters": [
+            "Le peuplement d'un milieu au cours des saisons",
+            "L'eau et les ressources naturelles"
+          ]
+        }
       ],
       "5e": [
-        {"theme":"Le vivant et son evolution","subthemes":["Nutrition et organisation","Reproduction et peuplement"],"chapters":["La nutrition des organismes","La reproduction des etres vivants"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Fonctionnement de l'organisme","Risques et prevention"],"chapters":["La respiration et les echanges gazeux","La circulation du sang","Le fonctionnement du systeme nerveux"]},
-        {"theme":"La planete Terre et les phenomenes geologiques","subthemes":["Risques naturels","Ressources geologiques"],"chapters":["L'erosion des paysages","Les risques sismiques et volcaniques"]}
+        {
+          "theme": "Le vivant et son evolution",
+          "subthemes": [
+            "Nutrition et organisation",
+            "Reproduction et peuplement"
+          ],
+          "chapters": [
+            "La nutrition des organismes",
+            "La reproduction des etres vivants"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": [
+            "Fonctionnement de l'organisme",
+            "Risques et prevention"
+          ],
+          "chapters": [
+            "La respiration et les echanges gazeux",
+            "La circulation du sang",
+            "Le fonctionnement du systeme nerveux"
+          ]
+        },
+        {
+          "theme": "La planete Terre et les phenomenes geologiques",
+          "subthemes": ["Risques naturels", "Ressources geologiques"],
+          "chapters": [
+            "L'erosion des paysages",
+            "Les risques sismiques et volcaniques"
+          ]
+        }
       ],
       "4e": [
-        {"theme":"La planete Terre, l'environnement et l'action humaine","subthemes":["Activite interne du globe","Ressources et risques"],"chapters":["L'activite interne de la Terre","Seismes et volcanisme","La tectonique des plaques"]},
-        {"theme":"Le vivant et son evolution","subthemes":["Reproduction","Diversite genetique"],"chapters":["La reproduction humaine","La reproduction des plantes","La diversite genetique au sein des especes"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Communication nerveuse","Reproduction et sexualite"],"chapters":["Le cerveau et le mouvement","La regulation de la reproduction"]}
+        {
+          "theme": "La planete Terre, l'environnement et l'action humaine",
+          "subthemes": ["Activite interne du globe", "Ressources et risques"],
+          "chapters": [
+            "L'activite interne de la Terre",
+            "Seismes et volcanisme",
+            "La tectonique des plaques"
+          ]
+        },
+        {
+          "theme": "Le vivant et son evolution",
+          "subthemes": ["Reproduction", "Diversite genetique"],
+          "chapters": [
+            "La reproduction humaine",
+            "La reproduction des plantes",
+            "La diversite genetique au sein des especes"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": ["Communication nerveuse", "Reproduction et sexualite"],
+          "chapters": [
+            "Le cerveau et le mouvement",
+            "La regulation de la reproduction"
+          ]
+        }
       ],
       "3e": [
-        {"theme":"Le vivant et son evolution","subthemes":["Genetique","Evolution"],"chapters":["L'heredite et la transmission des caracteres","Les mutations et la diversite genetique","L'evolution des especes"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Immunite","Monde microbien"],"chapters":["Le systeme immunitaire","Vaccination et prevention","Microorganismes et sante"]},
-        {"theme":"La planete Terre et l'environnement","subthemes":["Climat","Ressources et risques"],"chapters":["Le changement climatique","Les ressources de la planete"]}
+        {
+          "theme": "Le vivant et son evolution",
+          "subthemes": ["Genetique", "Evolution"],
+          "chapters": [
+            "L'heredite et la transmission des caracteres",
+            "Les mutations et la diversite genetique",
+            "L'evolution des especes"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": ["Immunite", "Monde microbien"],
+          "chapters": [
+            "Le systeme immunitaire",
+            "Vaccination et prevention",
+            "Microorganismes et sante"
+          ]
+        },
+        {
+          "theme": "La planete Terre et l'environnement",
+          "subthemes": ["Climat", "Ressources et risques"],
+          "chapters": [
+            "Le changement climatique",
+            "Les ressources de la planete"
+          ]
+        }
       ],
       "2nde": [
-        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["La Terre dans l'Univers","La cellule","Le vivant et son evolution"],"chapters":["La Terre dans le systeme solaire","La cellule, unite du vivant","La biodiversite et son evolution"]},
-        {"theme":"Les enjeux contemporains de la planete","subthemes":["Geosciences et ressources","Ecosystemes et services"],"chapters":["Atmosphere, climat et ressources","Les ecosystemes : fonctionnement et services"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Procreation","Corps et sante"],"chapters":["La procreation humaine","Les microorganismes et la sante"]}
+        {
+          "theme": "La Terre, la vie et l'organisation du vivant",
+          "subthemes": [
+            "La Terre dans l'Univers",
+            "La cellule",
+            "Le vivant et son evolution"
+          ],
+          "chapters": [
+            "La Terre dans le systeme solaire",
+            "La cellule, unite du vivant",
+            "La biodiversite et son evolution"
+          ]
+        },
+        {
+          "theme": "Les enjeux contemporains de la planete",
+          "subthemes": ["Geosciences et ressources", "Ecosystemes et services"],
+          "chapters": [
+            "Atmosphere, climat et ressources",
+            "Les ecosystemes : fonctionnement et services"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": ["Procreation", "Corps et sante"],
+          "chapters": [
+            "La procreation humaine",
+            "Les microorganismes et la sante"
+          ]
+        }
       ],
       "1re": [
-        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["Transmission, variation et expression du patrimoine genetique","La dynamique interne de la Terre"],"chapters":["La mitose et la transmission du patrimoine genetique","L'expression du patrimoine genetique","La tectonique des plaques"]},
-        {"theme":"Les enjeux contemporains de la planete","subthemes":["Ecosystemes et services environnementaux","Agrosystemes et developpement durable"],"chapters":["La dynamique des ecosystemes","Les agrosystemes et leurs impacts"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Variation genetique et sante","Procreation et sexualite humaine"],"chapters":["Mutations et maladies genetiques","La regulation de la reproduction"]}
+        {
+          "theme": "La Terre, la vie et l'organisation du vivant",
+          "subthemes": [
+            "Transmission, variation et expression du patrimoine genetique",
+            "La dynamique interne de la Terre"
+          ],
+          "chapters": [
+            "La mitose et la transmission du patrimoine genetique",
+            "L'expression du patrimoine genetique",
+            "La tectonique des plaques"
+          ]
+        },
+        {
+          "theme": "Les enjeux contemporains de la planete",
+          "subthemes": [
+            "Ecosystemes et services environnementaux",
+            "Agrosystemes et developpement durable"
+          ],
+          "chapters": [
+            "La dynamique des ecosystemes",
+            "Les agrosystemes et leurs impacts"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": [
+            "Variation genetique et sante",
+            "Procreation et sexualite humaine"
+          ],
+          "chapters": [
+            "Mutations et maladies genetiques",
+            "La regulation de la reproduction"
+          ]
+        }
       ],
       "Tle": [
-        {"theme":"La Terre, la vie et l'organisation du vivant","subthemes":["Genetique et evolution","A la recherche du passe geologique"],"chapters":["L'origine du patrimoine genetique","L'evolution comme processus historique","Le temps geologique et les fossiles"]},
-        {"theme":"Les enjeux contemporains de la planete","subthemes":["De la plante sauvage a la plante domestique","Les climats de la Terre"],"chapters":["La plante domestiquee","La plante, productrice de matiere organique","Les climats passes et futurs"]},
-        {"theme":"Le corps humain et la sante","subthemes":["Comportements et stress","Procreation"],"chapters":["Le stress aigu et chronique","Le cerveau et les comportements","La reproduction humaine"]}
+        {
+          "theme": "La Terre, la vie et l'organisation du vivant",
+          "subthemes": [
+            "Genetique et evolution",
+            "A la recherche du passe geologique"
+          ],
+          "chapters": [
+            "L'origine du patrimoine genetique",
+            "L'evolution comme processus historique",
+            "Le temps geologique et les fossiles"
+          ]
+        },
+        {
+          "theme": "Les enjeux contemporains de la planete",
+          "subthemes": [
+            "De la plante sauvage a la plante domestique",
+            "Les climats de la Terre"
+          ],
+          "chapters": [
+            "La plante domestiquee",
+            "La plante, productrice de matiere organique",
+            "Les climats passes et futurs"
+          ]
+        },
+        {
+          "theme": "Le corps humain et la sante",
+          "subthemes": ["Comportements et stress", "Procreation"],
+          "chapters": [
+            "Le stress aigu et chronique",
+            "Le cerveau et les comportements",
+            "La reproduction humaine"
+          ]
+        }
       ]
     },
     "SPC": {
-      "6e": [{"theme":"Matiere, mouvement, energie, information","subthemes":["Etats et changements d'etat","Mouvements"],"chapters":["Etats de la matiere","Melanges et solutions","Decrire un mouvement"]},{"theme":"La Terre, les etres vivants dans leur environnement","subthemes":["Lumiere et observation"],"chapters":["Sources de lumiere et ombres"]}],
-      "5e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Corps purs et melanges","Transformations chimiques"],"chapters":["Masse et volume","Les combustions","Les transformations chimiques"]},{"theme":"Mouvements et interactions","subthemes":["Forces","Signaux"],"chapters":["Actions de contact et a distance","Signaux lumineux et sonores"]},{"theme":"L'energie et ses conversions","subthemes":["Circuits electriques"],"chapters":["Circuit electrique et securite","Conversions d'energie"]}],
-      "4e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Transformations chimiques","Structure de la matiere"],"chapters":["Les ions et les solutions","La combustion du methane","Masse volumique et caracterisation"]},{"theme":"Mouvements et interactions","subthemes":["Actions et modelisation"],"chapters":["Relativite du mouvement","Poids et gravitation"]},{"theme":"L'energie et ses conversions","subthemes":["Electricite","Lumiere"],"chapters":["Tension et intensite","Propagation de la lumiere"]}],
-      "3e": [{"theme":"Organisation et transformations de la matiere","subthemes":["Atomes et molecules","Transformations chimiques"],"chapters":["Structure de l'atome","Reactions chimiques et conservation"]},{"theme":"Mouvements et interactions","subthemes":["Mouvement et vitesse","Gravitation"],"chapters":["Vitesse et trajectoire","Systeme solaire et gravitation"]},{"theme":"L'energie et ses conversions","subthemes":["Energie electrique","Energie et puissance"],"chapters":["Puissance et consommation electrique","Sources et conversions d'energie"]}],
-      "2nde": [{"theme":"Constitution et transformations de la matiere","subthemes":["Description microscopique","Proprietes physiques"],"chapters":["Corps purs et melanges","Solutions aqueuses","Quantite de matiere et masse volumique"]},{"theme":"Mouvement et interactions","subthemes":["Interactions","Mouvement"],"chapters":["Forces et modelisation","Mouvements et vitesse"]},{"theme":"Ondes et signaux","subthemes":["Ondes mecaniques","Lumiere et optique"],"chapters":["Son et propagation","Couleurs et spectres"]}],
-      "1re": [{"theme":"Constitution et transformations de la matiere","subthemes":["Suivi et modelisation","Synthese et extraction"],"chapters":["Dosage par titrage","Equilibres et transformations","Synthese d'une espece chimique"]},{"theme":"Mouvement et interactions","subthemes":["Dynamique","Energie"],"chapters":["Deuxieme loi de Newton","Travail et energie mecanique"]},{"theme":"Ondes et signaux","subthemes":["Ondes","Electricite"],"chapters":["Caracteristiques des ondes","Circuit RC et signaux"]}],
-      "Tle": [{"theme":"L'energie : conversions et transferts","subthemes":["Bilan energetique","Thermodynamique"],"chapters":["Bilan energetique et rendement","Transferts thermiques"]},{"theme":"Mouvement et interactions","subthemes":["Mecanique","Fluides"],"chapters":["Mouvement dans un champ uniforme","Ecoulement des fluides"]},{"theme":"Ondes et signaux","subthemes":["Ondes et particules","Numerique"],"chapters":["Effet Doppler","Interferences et diffraction","Transmission de l'information"]}]
+      "6e": [
+        {
+          "theme": "Matiere, mouvement, energie, information",
+          "subthemes": ["Etats et changements d'etat", "Mouvements"],
+          "chapters": [
+            "Etats de la matiere",
+            "Melanges et solutions",
+            "Decrire un mouvement"
+          ]
+        },
+        {
+          "theme": "La Terre, les etres vivants dans leur environnement",
+          "subthemes": ["Lumiere et observation"],
+          "chapters": ["Sources de lumiere et ombres"]
+        }
+      ],
+      "5e": [
+        {
+          "theme": "Organisation et transformations de la matiere",
+          "subthemes": ["Corps purs et melanges", "Transformations chimiques"],
+          "chapters": [
+            "Masse et volume",
+            "Les combustions",
+            "Les transformations chimiques"
+          ]
+        },
+        {
+          "theme": "Mouvements et interactions",
+          "subthemes": ["Forces", "Signaux"],
+          "chapters": [
+            "Actions de contact et a distance",
+            "Signaux lumineux et sonores"
+          ]
+        },
+        {
+          "theme": "L'energie et ses conversions",
+          "subthemes": ["Circuits electriques"],
+          "chapters": [
+            "Circuit electrique et securite",
+            "Conversions d'energie"
+          ]
+        }
+      ],
+      "4e": [
+        {
+          "theme": "Organisation et transformations de la matiere",
+          "subthemes": ["Transformations chimiques", "Structure de la matiere"],
+          "chapters": [
+            "Les ions et les solutions",
+            "La combustion du methane",
+            "Masse volumique et caracterisation"
+          ]
+        },
+        {
+          "theme": "Mouvements et interactions",
+          "subthemes": ["Actions et modelisation"],
+          "chapters": ["Relativite du mouvement", "Poids et gravitation"]
+        },
+        {
+          "theme": "L'energie et ses conversions",
+          "subthemes": ["Electricite", "Lumiere"],
+          "chapters": ["Tension et intensite", "Propagation de la lumiere"]
+        }
+      ],
+      "3e": [
+        {
+          "theme": "Organisation et transformations de la matiere",
+          "subthemes": ["Atomes et molecules", "Transformations chimiques"],
+          "chapters": [
+            "Structure de l'atome",
+            "Reactions chimiques et conservation"
+          ]
+        },
+        {
+          "theme": "Mouvements et interactions",
+          "subthemes": ["Mouvement et vitesse", "Gravitation"],
+          "chapters": [
+            "Vitesse et trajectoire",
+            "Systeme solaire et gravitation"
+          ]
+        },
+        {
+          "theme": "L'energie et ses conversions",
+          "subthemes": ["Energie electrique", "Energie et puissance"],
+          "chapters": [
+            "Puissance et consommation electrique",
+            "Sources et conversions d'energie"
+          ]
+        }
+      ],
+      "2nde": [
+        {
+          "theme": "Constitution et transformations de la matiere",
+          "subthemes": ["Description microscopique", "Proprietes physiques"],
+          "chapters": [
+            "Corps purs et melanges",
+            "Solutions aqueuses",
+            "Quantite de matiere et masse volumique"
+          ]
+        },
+        {
+          "theme": "Mouvement et interactions",
+          "subthemes": ["Interactions", "Mouvement"],
+          "chapters": ["Forces et modelisation", "Mouvements et vitesse"]
+        },
+        {
+          "theme": "Ondes et signaux",
+          "subthemes": ["Ondes mecaniques", "Lumiere et optique"],
+          "chapters": ["Son et propagation", "Couleurs et spectres"]
+        }
+      ],
+      "1re": [
+        {
+          "theme": "Constitution et transformations de la matiere",
+          "subthemes": ["Suivi et modelisation", "Synthese et extraction"],
+          "chapters": [
+            "Dosage par titrage",
+            "Equilibres et transformations",
+            "Synthese d'une espece chimique"
+          ]
+        },
+        {
+          "theme": "Mouvement et interactions",
+          "subthemes": ["Dynamique", "Energie"],
+          "chapters": ["Deuxieme loi de Newton", "Travail et energie mecanique"]
+        },
+        {
+          "theme": "Ondes et signaux",
+          "subthemes": ["Ondes", "Electricite"],
+          "chapters": ["Caracteristiques des ondes", "Circuit RC et signaux"]
+        }
+      ],
+      "Tle": [
+        {
+          "theme": "L'energie : conversions et transferts",
+          "subthemes": ["Bilan energetique", "Thermodynamique"],
+          "chapters": [
+            "Bilan energetique et rendement",
+            "Transferts thermiques"
+          ]
+        },
+        {
+          "theme": "Mouvement et interactions",
+          "subthemes": ["Mecanique", "Fluides"],
+          "chapters": [
+            "Mouvement dans un champ uniforme",
+            "Ecoulement des fluides"
+          ]
+        },
+        {
+          "theme": "Ondes et signaux",
+          "subthemes": ["Ondes et particules", "Numerique"],
+          "chapters": [
+            "Effet Doppler",
+            "Interferences et diffraction",
+            "Transmission de l'information"
+          ]
+        }
+      ]
     },
     "BPH": {
-      "1re": [{"theme":"L'organisme humain et son fonctionnement","subthemes":["Organisation et homeostasie","Communication"],"chapters":["Organisation du corps humain","Homeostasie et regulation","Communication nerveuse et hormonale"]},{"theme":"Alimentation et sante","subthemes":["Nutriments","Besoins nutritionnels"],"chapters":["Digestion et absorption","Equilibre alimentaire"]}],
-      "Tle": [{"theme":"Physiologie et physiopathologie","subthemes":["Fonctions de nutrition","Systeme nerveux"],"chapters":["Fonction cardiovasculaire","Fonction respiratoire","Fonction renale","Communication nerveuse"]},{"theme":"Biologie cellulaire et moleculaire","subthemes":["Cellule","Information genetique"],"chapters":["Membrane et transports","Expression du patrimoine genetique"]},{"theme":"Microbiologie, immunologie et sante","subthemes":["Agents infectieux","Defense de l'organisme"],"chapters":["Bacteries et virus","Reponse immunitaire","Prevention et vaccination"]}]
+      "1re": [
+        {
+          "theme": "L'organisme humain et son fonctionnement",
+          "subthemes": ["Organisation et homeostasie", "Communication"],
+          "chapters": [
+            "Organisation du corps humain",
+            "Homeostasie et regulation",
+            "Communication nerveuse et hormonale"
+          ]
+        },
+        {
+          "theme": "Alimentation et sante",
+          "subthemes": ["Nutriments", "Besoins nutritionnels"],
+          "chapters": ["Digestion et absorption", "Equilibre alimentaire"]
+        }
+      ],
+      "Tle": [
+        {
+          "theme": "Physiologie et physiopathologie",
+          "subthemes": ["Fonctions de nutrition", "Systeme nerveux"],
+          "chapters": [
+            "Fonction cardiovasculaire",
+            "Fonction respiratoire",
+            "Fonction renale",
+            "Communication nerveuse"
+          ]
+        },
+        {
+          "theme": "Biologie cellulaire et moleculaire",
+          "subthemes": ["Cellule", "Information genetique"],
+          "chapters": [
+            "Membrane et transports",
+            "Expression du patrimoine genetique"
+          ]
+        },
+        {
+          "theme": "Microbiologie, immunologie et sante",
+          "subthemes": ["Agents infectieux", "Defense de l'organisme"],
+          "chapters": [
+            "Bacteries et virus",
+            "Reponse immunitaire",
+            "Prevention et vaccination"
+          ]
+        }
+      ]
     }
   },
   "activities": {
     "SVT": {
-      "6e": ["Observation a l'oeil nu ou a la loupe","Observation microscopique simple","Manipulation ou experience simple","Dessin d'observation scientifique","Sortie nature ou etude de terrain","Activite documentaire (textes, photos)","Elevage ou culture en classe","Jeu, maquette ou modele reduit","Debat argumente","Recherche documentaire (CDI)","Bilan ou evaluation formative"],
-      "5e": ["Observation a l'oeil nu ou a la loupe","Observation microscopique simple","Manipulation ou experience simple","Dessin d'observation scientifique","Sortie nature ou etude de terrain","Activite documentaire (textes, photos)","Elevage ou culture en classe","Jeu, maquette ou modele reduit","Debat argumente","Recherche documentaire (CDI)","Bilan ou evaluation formative"],
-      "4e": ["Observation microscopique (lames, preparations)","Dissection","Manipulation ou experience (TP)","Activite documentaire (donnees, graphiques)","Modelisation (maquette, schema fonctionnel)","Sortie de terrain ou etude de risque","Extraction d'ADN","Etude de cas","Debat argumente (enjeux environnementaux, sante)","Recherche documentaire","Tache complexe","Bilan ou evaluation formative"],
-      "3e": ["Observation microscopique (lames, preparations)","Dissection","Manipulation ou experience (TP)","Activite documentaire (donnees, graphiques)","Modelisation (maquette, schema fonctionnel)","Sortie de terrain ou etude de risque","Extraction d'ADN","Etude de cas","Debat argumente (enjeux environnementaux, sante)","Recherche documentaire","Tache complexe","Bilan ou evaluation formative"],
-      "2nde": ["Manipulation ou experience (TP)","Dissection ou observation anatomique","ExAO (experimentation assistee par ordinateur)","Modelisation numerique (logiciel dedie)","Extraction et analyse d'ADN","Chromatographie ou electrophorese","Activite documentaire (articles, donnees)","Exploitation de donnees chiffrees ou graphiques","Sortie de terrain ou etude geologique","Construction d'un arbre de parente","Etude de cas","Demarche d'investigation","Debat argumente ou question socialement vive","Recherche documentaire","Tache complexe","Evaluation formative ou bilan"],
-      "1re": ["Manipulation ou experience (TP)","Dissection ou observation anatomique","ExAO (experimentation assistee par ordinateur)","Modelisation numerique (logiciel dedie)","Extraction et analyse d'ADN","Chromatographie ou electrophorese","Activite documentaire (articles, donnees)","Exploitation de donnees chiffrees ou graphiques","Sortie de terrain ou etude geologique","Construction d'un arbre de parente","Etude de cas","Demarche d'investigation","Debat argumente ou question socialement vive","Recherche documentaire","Tache complexe","Evaluation formative ou bilan"],
-      "Tle": ["Manipulation ou experience (TP)","Dissection ou observation anatomique","ExAO (experimentation assistee par ordinateur)","Modelisation numerique (logiciel dedie)","Extraction et analyse d'ADN","Chromatographie ou electrophorese","Activite documentaire (articles, donnees)","Exploitation de donnees chiffrees ou graphiques","Sortie de terrain ou etude geologique","Construction d'un arbre de parente","Etude de cas","Demarche d'investigation","Debat argumente ou question socialement vive","Recherche documentaire","Tache complexe","Evaluation formative ou bilan"]
+      "6e": [
+        "Observation a l'oeil nu ou a la loupe",
+        "Observation microscopique simple",
+        "Manipulation ou experience simple",
+        "Dessin d'observation scientifique",
+        "Sortie nature ou etude de terrain",
+        "Activite documentaire (textes, photos)",
+        "Elevage ou culture en classe",
+        "Jeu, maquette ou modele reduit",
+        "Debat argumente",
+        "Recherche documentaire (CDI)",
+        "Bilan ou evaluation formative"
+      ],
+      "5e": [
+        "Observation a l'oeil nu ou a la loupe",
+        "Observation microscopique simple",
+        "Manipulation ou experience simple",
+        "Dessin d'observation scientifique",
+        "Sortie nature ou etude de terrain",
+        "Activite documentaire (textes, photos)",
+        "Elevage ou culture en classe",
+        "Jeu, maquette ou modele reduit",
+        "Debat argumente",
+        "Recherche documentaire (CDI)",
+        "Bilan ou evaluation formative"
+      ],
+      "4e": [
+        "Observation microscopique (lames, preparations)",
+        "Dissection",
+        "Manipulation ou experience (TP)",
+        "Activite documentaire (donnees, graphiques)",
+        "Modelisation (maquette, schema fonctionnel)",
+        "Sortie de terrain ou etude de risque",
+        "Extraction d'ADN",
+        "Etude de cas",
+        "Debat argumente (enjeux environnementaux, sante)",
+        "Recherche documentaire",
+        "Tache complexe",
+        "Bilan ou evaluation formative"
+      ],
+      "3e": [
+        "Observation microscopique (lames, preparations)",
+        "Dissection",
+        "Manipulation ou experience (TP)",
+        "Activite documentaire (donnees, graphiques)",
+        "Modelisation (maquette, schema fonctionnel)",
+        "Sortie de terrain ou etude de risque",
+        "Extraction d'ADN",
+        "Etude de cas",
+        "Debat argumente (enjeux environnementaux, sante)",
+        "Recherche documentaire",
+        "Tache complexe",
+        "Bilan ou evaluation formative"
+      ],
+      "2nde": [
+        "Manipulation ou experience (TP)",
+        "Dissection ou observation anatomique",
+        "ExAO (experimentation assistee par ordinateur)",
+        "Modelisation numerique (logiciel dedie)",
+        "Extraction et analyse d'ADN",
+        "Chromatographie ou electrophorese",
+        "Activite documentaire (articles, donnees)",
+        "Exploitation de donnees chiffrees ou graphiques",
+        "Sortie de terrain ou etude geologique",
+        "Construction d'un arbre de parente",
+        "Etude de cas",
+        "Demarche d'investigation",
+        "Debat argumente ou question socialement vive",
+        "Recherche documentaire",
+        "Tache complexe",
+        "Evaluation formative ou bilan"
+      ],
+      "1re": [
+        "Manipulation ou experience (TP)",
+        "Dissection ou observation anatomique",
+        "ExAO (experimentation assistee par ordinateur)",
+        "Modelisation numerique (logiciel dedie)",
+        "Extraction et analyse d'ADN",
+        "Chromatographie ou electrophorese",
+        "Activite documentaire (articles, donnees)",
+        "Exploitation de donnees chiffrees ou graphiques",
+        "Sortie de terrain ou etude geologique",
+        "Construction d'un arbre de parente",
+        "Etude de cas",
+        "Demarche d'investigation",
+        "Debat argumente ou question socialement vive",
+        "Recherche documentaire",
+        "Tache complexe",
+        "Evaluation formative ou bilan"
+      ],
+      "Tle": [
+        "Manipulation ou experience (TP)",
+        "Dissection ou observation anatomique",
+        "ExAO (experimentation assistee par ordinateur)",
+        "Modelisation numerique (logiciel dedie)",
+        "Extraction et analyse d'ADN",
+        "Chromatographie ou electrophorese",
+        "Activite documentaire (articles, donnees)",
+        "Exploitation de donnees chiffrees ou graphiques",
+        "Sortie de terrain ou etude geologique",
+        "Construction d'un arbre de parente",
+        "Etude de cas",
+        "Demarche d'investigation",
+        "Debat argumente ou question socialement vive",
+        "Recherche documentaire",
+        "Tache complexe",
+        "Evaluation formative ou bilan"
+      ]
     },
     "SPC": {
-      "6e": ["Experience simple ou manipulation","Observation d'un phenomene","Mesure (masse, volume, temperature)","Construction d'un circuit electrique","Activite documentaire","Resolution de probleme simple","Securite au laboratoire","Jeu ou maquette","Bilan ou evaluation formative"],
-      "5e": ["Experience simple ou manipulation","Observation d'un phenomene","Mesure (masse, volume, temperature)","Construction d'un circuit electrique","Activite documentaire","Resolution de probleme simple","Securite au laboratoire","Jeu ou maquette","Bilan ou evaluation formative"],
-      "4e": ["Experience ou manipulation (TP)","Mesure et exploitation de donnees","Modelisation (schema, maquette)","Demarche d'investigation","Activite documentaire","Construction et lecture de graphiques","Resolution de probleme scientifique","Securite et prevention des risques","Debat argumente","Recherche documentaire","Bilan ou evaluation formative"],
-      "3e": ["Experience ou manipulation (TP)","Mesure et exploitation de donnees","Modelisation (schema, maquette)","Demarche d'investigation","Activite documentaire","Construction et lecture de graphiques","Resolution de probleme scientifique","Securite et prevention des risques","Debat argumente","Recherche documentaire","Bilan ou evaluation formative"],
-      "2nde": ["Experience ou manipulation (TP)","Dosage ou titrage","Synthese chimique","Mesure avec capteurs ou ExAO","Modelisation ou simulation numerique","Demarche d'investigation","Resolution de probleme scientifique","Activite documentaire","Exploitation et construction de graphiques","Etude de cas","Securite et prevention des risques","Debat scientifique ou argumentation","Recherche documentaire","Exercices d'application","Evaluation formative"],
-      "1re": ["Experience ou manipulation (TP)","Dosage ou titrage","Synthese chimique","Mesure avec capteurs ou ExAO","Modelisation ou simulation numerique","Demarche d'investigation","Resolution de probleme scientifique","Activite documentaire","Exploitation et construction de graphiques","Etude de cas","Securite et prevention des risques","Debat scientifique ou argumentation","Recherche documentaire","Exercices d'application","Evaluation formative"],
-      "Tle": ["Experience ou manipulation (TP)","Dosage ou titrage","Synthese chimique","Mesure avec capteurs ou ExAO","Modelisation ou simulation numerique","Demarche d'investigation","Resolution de probleme scientifique","Activite documentaire","Exploitation et construction de graphiques","Etude de cas","Securite et prevention des risques","Debat scientifique ou argumentation","Recherche documentaire","Exercices d'application","Evaluation formative"]
+      "6e": [
+        "Experience simple ou manipulation",
+        "Observation d'un phenomene",
+        "Mesure (masse, volume, temperature)",
+        "Construction d'un circuit electrique",
+        "Activite documentaire",
+        "Resolution de probleme simple",
+        "Securite au laboratoire",
+        "Jeu ou maquette",
+        "Bilan ou evaluation formative"
+      ],
+      "5e": [
+        "Experience simple ou manipulation",
+        "Observation d'un phenomene",
+        "Mesure (masse, volume, temperature)",
+        "Construction d'un circuit electrique",
+        "Activite documentaire",
+        "Resolution de probleme simple",
+        "Securite au laboratoire",
+        "Jeu ou maquette",
+        "Bilan ou evaluation formative"
+      ],
+      "4e": [
+        "Experience ou manipulation (TP)",
+        "Mesure et exploitation de donnees",
+        "Modelisation (schema, maquette)",
+        "Demarche d'investigation",
+        "Activite documentaire",
+        "Construction et lecture de graphiques",
+        "Resolution de probleme scientifique",
+        "Securite et prevention des risques",
+        "Debat argumente",
+        "Recherche documentaire",
+        "Bilan ou evaluation formative"
+      ],
+      "3e": [
+        "Experience ou manipulation (TP)",
+        "Mesure et exploitation de donnees",
+        "Modelisation (schema, maquette)",
+        "Demarche d'investigation",
+        "Activite documentaire",
+        "Construction et lecture de graphiques",
+        "Resolution de probleme scientifique",
+        "Securite et prevention des risques",
+        "Debat argumente",
+        "Recherche documentaire",
+        "Bilan ou evaluation formative"
+      ],
+      "2nde": [
+        "Experience ou manipulation (TP)",
+        "Dosage ou titrage",
+        "Synthese chimique",
+        "Mesure avec capteurs ou ExAO",
+        "Modelisation ou simulation numerique",
+        "Demarche d'investigation",
+        "Resolution de probleme scientifique",
+        "Activite documentaire",
+        "Exploitation et construction de graphiques",
+        "Etude de cas",
+        "Securite et prevention des risques",
+        "Debat scientifique ou argumentation",
+        "Recherche documentaire",
+        "Exercices d'application",
+        "Evaluation formative"
+      ],
+      "1re": [
+        "Experience ou manipulation (TP)",
+        "Dosage ou titrage",
+        "Synthese chimique",
+        "Mesure avec capteurs ou ExAO",
+        "Modelisation ou simulation numerique",
+        "Demarche d'investigation",
+        "Resolution de probleme scientifique",
+        "Activite documentaire",
+        "Exploitation et construction de graphiques",
+        "Etude de cas",
+        "Securite et prevention des risques",
+        "Debat scientifique ou argumentation",
+        "Recherche documentaire",
+        "Exercices d'application",
+        "Evaluation formative"
+      ],
+      "Tle": [
+        "Experience ou manipulation (TP)",
+        "Dosage ou titrage",
+        "Synthese chimique",
+        "Mesure avec capteurs ou ExAO",
+        "Modelisation ou simulation numerique",
+        "Demarche d'investigation",
+        "Resolution de probleme scientifique",
+        "Activite documentaire",
+        "Exploitation et construction de graphiques",
+        "Etude de cas",
+        "Securite et prevention des risques",
+        "Debat scientifique ou argumentation",
+        "Recherche documentaire",
+        "Exercices d'application",
+        "Evaluation formative"
+      ]
     },
     "BPH": {
       "2nde": [],
-      "1re": ["Etude de cas clinique","TP ou manipulation (analyses biologiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents medicaux ou statistiques","Modelisation d'un mecanisme physiologique","Enquete ou etude epidemiologique simple","Debat argumente (sante, ethique)","Recherche documentaire institutionnelle","Evaluation formative"],
-      "Tle": ["Etude de cas clinique","TP ou manipulation (analyses biologiques, biochimiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents medicaux ou statistiques","Etude epidemiologique","Modelisation d'un mecanisme physiopathologique","Demarche de soins ou parcours de sante","Enquete sante publique","Debat ethique ou argumentation","Recherche documentaire institutionnelle","Tache complexe","Evaluation formative ou bilan"]
+      "1re": [
+        "Etude de cas clinique",
+        "TP ou manipulation (analyses biologiques)",
+        "Observation microscopique (lames, coupes histologiques)",
+        "Analyse de documents medicaux ou statistiques",
+        "Modelisation d'un mecanisme physiologique",
+        "Enquete ou etude epidemiologique simple",
+        "Debat argumente (sante, ethique)",
+        "Recherche documentaire institutionnelle",
+        "Evaluation formative"
+      ],
+      "Tle": [
+        "Etude de cas clinique",
+        "TP ou manipulation (analyses biologiques, biochimiques)",
+        "Observation microscopique (lames, coupes histologiques)",
+        "Analyse de documents medicaux ou statistiques",
+        "Etude epidemiologique",
+        "Modelisation d'un mecanisme physiopathologique",
+        "Demarche de soins ou parcours de sante",
+        "Enquete sante publique",
+        "Debat ethique ou argumentation",
+        "Recherche documentaire institutionnelle",
+        "Tache complexe",
+        "Evaluation formative ou bilan"
+      ]
+    }
+  },
+  "tpActivities": {
+    "SVT": {
+      "6e": [
+        {
+          "partie": "La planete Terre et son environnement",
+          "items": [
+            "TP Mesurer les conditions de vie sur Terre",
+            "TP Modeliser les phases de la Lune"
+          ]
+        },
+        {
+          "partie": "Le vivant et sa diversite",
+          "items": [
+            "TP Observation microscopique de cellules vegetales",
+            "TP Classer des etres vivants a partir d'une cle de determination"
+          ]
+        },
+        {
+          "partie": "Les enjeux de l'environnement",
+          "items": [
+            "TP Suivre le peuplement d'un milieu au cours des saisons",
+            "TP Mettre en evidence la presence d'eau dans un aliment"
+          ]
+        }
+      ],
+      "5e": [
+        {
+          "partie": "Le vivant et son evolution",
+          "items": [
+            "TP Digestion de l'amidon",
+            "TP Modeliser les besoins nutritifs d'une plante"
+          ]
+        },
+        {
+          "partie": "Le corps humain et la sante",
+          "items": [
+            "TP EXAO Mesurer les mouvements respiratoires",
+            "TP Modeliser la circulation du sang"
+          ]
+        },
+        {
+          "partie": "La planete Terre et les phenomenes geologiques",
+          "items": [
+            "TP Modeliser l'erosion d'un paysage",
+            "TP Simuler un seisme et ses effets"
+          ]
+        }
+      ],
+      "4e": [
+        {
+          "partie": "La planete Terre, l'environnement et l'action humaine",
+          "items": [
+            "TP Modeliser la tectonique des plaques",
+            "TP Reconstituer l'histoire d'une roche volcanique"
+          ]
+        },
+        {
+          "partie": "Le vivant et son evolution",
+          "items": [
+            "TP Observer la reproduction d'une plante a fleurs",
+            "TP Comparer la diversite genetique au sein d'une espece"
+          ]
+        },
+        {
+          "partie": "Le corps humain et la sante",
+          "items": [
+            "TP EXAO Etudier la commande du mouvement",
+            "TP Modeliser la regulation de la reproduction"
+          ]
+        }
+      ],
+      "3e": [
+        {
+          "partie": "Le vivant et son evolution",
+          "items": [
+            "TP Extraire et visualiser l'ADN",
+            "TP Simuler la transmission d'un caractere genetique",
+            "TP Construire un arbre de parente"
+          ]
+        },
+        {
+          "partie": "Le corps humain et la sante",
+          "items": [
+            "TP Mettre en evidence une reaction immunitaire",
+            "TP Etudier l'efficacite d'une vaccination"
+          ]
+        },
+        {
+          "partie": "La planete Terre et l'environnement",
+          "items": [
+            "TP Exploiter des donnees sur le changement climatique",
+            "TP Diagnostiquer l'impact d'une activite humaine"
+          ]
+        }
+      ],
+      "2nde": [
+        {
+          "partie": "La Terre, la vie et l'organisation du vivant",
+          "items": [
+            "TP Observation microscopique de cellules et tissus",
+            "TP Extraire et analyser l'ADN d'une banane",
+            "TP Construire un arbre de parenteles"
+          ]
+        },
+        {
+          "partie": "Les enjeux contemporains de la planete",
+          "items": [
+            "TP EXAO Mesurer la photosynthese d'une plante",
+            "TP Etudier le fonctionnement d'un ecosysteme",
+            "TP Chromatographie des pigments chlorophylliens"
+          ]
+        },
+        {
+          "partie": "Le corps humain et la sante",
+          "items": [
+            "TP Etudier la digestion et l'absorption",
+            "TP Modeliser la transmission d'un agent infectieux"
+          ]
+        }
+      ],
+      "1re": [
+        {
+          "partie": "Transmission, variation et expression du patrimoine genetique",
+          "items": [
+            "TP Extraire et visualiser l'ADN",
+            "TP Etudier l'expression d'un gene",
+            "TP Simuler la mitose et la transmission du patrimoine genetique"
+          ]
+        },
+        {
+          "partie": "La dynamique interne de la Terre",
+          "items": [
+            "TP Modeliser la subduction",
+            "TP Exploiter des donnees sismologiques"
+          ]
+        },
+        {
+          "partie": "Les ecosystemes et les agrosystemes",
+          "items": [
+            "TP EXAO Mesurer la photosynthese",
+            "TP Etudier la dynamique d'une population",
+            "TP Comparer un ecosysteme et un agrosysteme"
+          ]
+        },
+        {
+          "partie": "Variation genetique et sante",
+          "items": [
+            "TP Diagnostiquer une mutation par electrophorese",
+            "TP Exploiter un arbre genealogique"
+          ]
+        }
+      ],
+      "Tle": [
+        {
+          "partie": "Genetique et evolution",
+          "items": [
+            "TP Comparer des sequences pour retracer une parente",
+            "TP Construire un arbre phylogenetique",
+            "TP Etudier la selection naturelle par simulation"
+          ]
+        },
+        {
+          "partie": "A la recherche du passe geologique",
+          "items": [
+            "TP Reconstituer une histoire geologique",
+            "TP Exploiter une coupe geologique et des fossiles"
+          ]
+        },
+        {
+          "partie": "De la plante sauvage a la plante domestique",
+          "items": [
+            "TP EXAO Mesurer la production de matiere organique",
+            "TP Etudier la domestication du mais"
+          ]
+        },
+        {
+          "partie": "Les climats de la Terre",
+          "items": [
+            "TP Exploiter des archives climatiques",
+            "TP Modeliser l'evolution du climat"
+          ]
+        },
+        {
+          "partie": "Comportements et stress",
+          "items": ["TP EXAO Etudier la reponse de l'organisme au stress"]
+        }
+      ]
+    },
+    "SPC": {
+      "6e": [
+        {
+          "partie": "Matiere, mouvement, energie, information",
+          "items": [
+            "TP Identifier des materiaux par leurs proprietes",
+            "TP Mesurer une masse et un volume"
+          ]
+        },
+        {
+          "partie": "Lumiere et observation",
+          "items": ["TP Former une ombre et expliquer sa taille"]
+        }
+      ],
+      "5e": [
+        {
+          "partie": "Organisation et transformations de la matiere",
+          "items": [
+            "TP Mesurer la masse lors d'une transformation",
+            "TP Identifier les produits d'une combustion"
+          ]
+        },
+        {
+          "partie": "Mouvements et interactions",
+          "items": [
+            "TP Cartographier un signal sonore",
+            "TP Construire un circuit electrique simple"
+          ]
+        },
+        {
+          "partie": "L'energie et ses conversions",
+          "items": ["TP Etudier les conversions d'energie d'un circuit"]
+        }
+      ],
+      "4e": [
+        {
+          "partie": "Organisation et transformations de la matiere",
+          "items": [
+            "TP Identifier des ions en solution",
+            "TP Mesurer une masse volumique"
+          ]
+        },
+        {
+          "partie": "Mouvements et interactions",
+          "items": [
+            "TP Etudier le poids d'un objet",
+            "TP Modeliser les actions mecaniques"
+          ]
+        },
+        {
+          "partie": "L'energie et ses conversions",
+          "items": [
+            "TP Mesurer tension et intensite",
+            "TP Etudier la propagation de la lumiere"
+          ]
+        }
+      ],
+      "3e": [
+        {
+          "partie": "Organisation et transformations de la matiere",
+          "items": [
+            "TP Mettre en evidence une transformation chimique",
+            "TP Modeliser la conservation des atomes"
+          ]
+        },
+        {
+          "partie": "Mouvements et interactions",
+          "items": [
+            "TP EXAO Mesurer une vitesse",
+            "TP Modeliser la gravitation"
+          ]
+        },
+        {
+          "partie": "L'energie et ses conversions",
+          "items": ["TP Mesurer la puissance et la consommation d'un appareil"]
+        }
+      ],
+      "2nde": [
+        {
+          "partie": "Constitution et transformations de la matiere",
+          "items": [
+            "TP Chromatographie des colorants",
+            "TP Preparer une solution par dissolution",
+            "TP Mesurer une masse volumique"
+          ]
+        },
+        {
+          "partie": "Mouvement et interactions",
+          "items": ["TP EXAO Etudier un mouvement", "TP Determiner une vitesse"]
+        },
+        {
+          "partie": "Ondes et signaux",
+          "items": [
+            "TP Mesurer la vitesse du son",
+            "TP Observer et exploiter un spectre"
+          ]
+        }
+      ],
+      "1re": [
+        {
+          "partie": "Constitution et transformations de la matiere",
+          "items": [
+            "TP Dosage par titrage colorimetrique",
+            "TP Dosage par titrage conductimetrique",
+            "TP Synthese d'un ester"
+          ]
+        },
+        {
+          "partie": "Mouvement et interactions",
+          "items": [
+            "TP EXAO Verifier la deuxieme loi de Newton",
+            "TP Etudier les transferts d'energie mecanique"
+          ]
+        },
+        {
+          "partie": "Ondes et signaux",
+          "items": [
+            "TP Etudier la charge d'un condensateur",
+            "TP Mesurer les caracteristiques d'une onde"
+          ]
+        }
+      ],
+      "Tle": [
+        {
+          "partie": "L'energie : conversions et transferts",
+          "items": [
+            "TP Mesurer le rendement d'une conversion",
+            "TP Determiner la capacite thermique d'un solide"
+          ]
+        },
+        {
+          "partie": "Mouvement et interactions",
+          "items": [
+            "TP EXAO Etudier un mouvement dans un champ uniforme",
+            "TP Modeliser l'ecoulement d'un fluide"
+          ]
+        },
+        {
+          "partie": "Ondes et signaux",
+          "items": [
+            "TP Mesurer un effet Doppler",
+            "TP Observer diffraction et interferences",
+            "TP Transmettre une information par fibre optique"
+          ]
+        }
+      ]
+    },
+    "BPH": {
+      "1re": [
+        {
+          "partie": "L'organisme humain et son fonctionnement",
+          "items": [
+            "TP Observation microscopique de tissus",
+            "TP EXAO Mesurer une frequence cardiaque",
+            "TP Etudier la communication nerveuse"
+          ]
+        },
+        {
+          "partie": "Alimentation et sante",
+          "items": [
+            "TP Mise en evidence des constituants d'un aliment",
+            "TP Etudier la digestion de l'amidon",
+            "TP Chromatographie des pigments alimentaires"
+          ]
+        }
+      ],
+      "Tle": [
+        {
+          "partie": "Physiologie et physiopathologie",
+          "items": [
+            "TP EXAO Etudier la fonction respiratoire",
+            "TP Mesurer la pression arterielle",
+            "TP Etudier la fonction renale"
+          ]
+        },
+        {
+          "partie": "Biologie cellulaire et moleculaire",
+          "items": [
+            "TP Observation microscopique de cellules",
+            "TP Etudier les transports membranaires",
+            "TP Extraire et analyser l'ADN"
+          ]
+        },
+        {
+          "partie": "Microbiologie, immunologie et sante",
+          "items": [
+            "TP Mettre en culture et denombrer des microorganismes",
+            "TP Observer une reaction immunitaire",
+            "TP Tester l'efficacite d'un antiseptique"
+          ]
+        }
+      ]
     }
   }
 }

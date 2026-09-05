@@ -3709,6 +3709,41 @@
       .list-block.is-prog-page .tp-struct-prog-title .cell-edit {
         font-weight: 800;
       }
+      .list-block.is-prog-page .liste.has-tp-vlines thead tr:first-child > * {
+        border-left: 0;
+        border-right: 0;
+      }
+      .list-block.is-prog-page .liste tbody td.is-prog-activite,
+      .list-block.is-prog-page .liste tbody td.is-tp-label.is-prog-activite {
+        font-weight: 400;
+        letter-spacing: normal;
+        color: var(--ink);
+        border-color: var(--d-rule, var(--rule));
+      }
+      .list-block.is-prog-page .liste tbody td.is-prog-activite .cell-edit,
+      .list-block.is-prog-page
+        .liste
+        tbody
+        td.is-tp-label.is-prog-activite
+        .cell-edit {
+        font-weight: 400;
+        letter-spacing: normal;
+        color: inherit;
+      }
+      .list-block.is-prog-page
+        .liste
+        tbody
+        tr:nth-child(odd)
+        td.is-prog-activite {
+        background: var(--paper, #fff);
+      }
+      .list-block.is-prog-page
+        .liste
+        tbody
+        tr:nth-child(even)
+        td.is-prog-activite {
+        background: var(--d-zebra, var(--zebra));
+      }
       .list-block.is-prog-page .prog-col-lab {
         display: block;
         font-size: var(--list-th-pt, var(--th-pt, var(--th-size, 7.4pt)));
@@ -4186,7 +4221,10 @@
       }
       .prog-theme-grid {
         display: grid;
-        grid-template-columns: minmax(150px, 0.7fr) minmax(220px, 1fr) minmax(220px, 1fr);
+        grid-template-columns: minmax(150px, 0.7fr) minmax(220px, 1fr) minmax(
+            220px,
+            1fr
+          );
         gap: 10px;
         min-height: 270px;
       }
@@ -4239,6 +4277,28 @@
         padding: 12px 4px;
         color: var(--ink-soft);
         font-size: 12px;
+      }
+      .prog-theme-list h5 {
+        margin: 10px 0 0;
+        padding-top: 8px;
+        border-top: 1px solid rgba(14, 143, 140, 0.16);
+        color: var(--teal-deep);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .prog-theme-list h5:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+      .prog-theme-list h6 {
+        margin: 2px 0 0;
+        color: var(--ink-soft);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
       }
       .prog-theme-preview {
         margin-top: 12px;
@@ -4524,7 +4584,8 @@
       .modal #tpMatCats button.is-on {
         background: #fff;
         color: var(--teal-deep);
-        box-shadow: 0 -1px 0 rgba(14, 143, 140, 0.12),
+        box-shadow:
+          0 -1px 0 rgba(14, 143, 140, 0.12),
           1px 0 0 rgba(14, 143, 140, 0.12),
           -1px 0 0 rgba(14, 143, 140, 0.12);
       }
@@ -9078,7 +9139,8 @@
       >
         <h3 id="progActiviteTitle">Choisir une activité</h3>
         <p class="prog-theme-source" id="progActiviteSource">
-          Activités classiques, proposées selon la matière et le niveau.
+          Double-cliquez sur une proposition pour l'ajouter à la case
+          sélectionnée. Plusieurs ajouts sont possibles.
         </p>
         <div class="prog-theme-grid prog-theme-grid-single">
           <section class="prog-theme-pane">
@@ -10384,17 +10446,136 @@
         "AP",
       ];
       const PROG_ACTIVITIES_FALLBACK = (() => {
-        const svtCollegeDebut = ["Observation à l’œil nu ou à la loupe","Observation microscopique simple","Manipulation ou expérience simple","Dessin d’observation scientifique","Sortie nature ou étude de terrain","Activité documentaire (textes, photos)","Élevage ou culture en classe","Jeu, maquette ou modèle réduit","Débat argumenté","Recherche documentaire (CDI)","Bilan ou évaluation formative"];
-        const svtCollegeFin = ["Observation microscopique (lames, préparations)","Dissection","Manipulation ou expérience (TP)","Activité documentaire (données, graphiques)","Modélisation (maquette, schéma fonctionnel)","Sortie de terrain ou étude de risque","Extraction d’ADN","Étude de cas","Débat argumenté (enjeux environnementaux, santé)","Recherche documentaire","Tâche complexe","Bilan ou évaluation formative"];
-        const svtLycee = ["Manipulation ou expérience (TP)","Dissection ou observation anatomique","ExAO (expérimentation assistée par ordinateur)","Modélisation numérique (logiciel dédié)","Extraction et analyse d’ADN","Chromatographie ou électrophorèse","Activité documentaire (articles, données)","Exploitation de données chiffrées ou graphiques","Sortie de terrain ou étude géologique","Construction d’un arbre de parenté","Étude de cas","Démarche d’investigation","Débat argumenté ou question socialement vive","Recherche documentaire","Tâche complexe","Évaluation formative ou bilan"];
-        const spcCollegeDebut = ["Expérience simple ou manipulation","Observation d’un phénomène","Mesure (masse, volume, température)","Construction d’un circuit électrique","Activité documentaire","Résolution de problème simple","Sécurité au laboratoire","Jeu ou maquette","Bilan ou évaluation formative"];
-        const spcCollegeFin = ["Expérience ou manipulation (TP)","Mesure et exploitation de données","Modélisation (schéma, maquette)","Démarche d’investigation","Activité documentaire","Construction et lecture de graphiques","Résolution de problème scientifique","Sécurité et prévention des risques","Débat argumenté","Recherche documentaire","Bilan ou évaluation formative"];
-        const spcLycee = ["Expérience ou manipulation (TP)","Dosage ou titrage","Synthèse chimique","Mesure avec capteurs ou ExAO","Modélisation ou simulation numérique","Démarche d’investigation","Résolution de problème scientifique","Activité documentaire","Exploitation et construction de graphiques","Étude de cas","Sécurité et prévention des risques","Débat scientifique ou argumentation","Recherche documentaire","Exercices d’application","Évaluation formative"];
-        const bph1re = ["Étude de cas clinique","TP ou manipulation (analyses biologiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents médicaux ou statistiques","Modélisation d’un mécanisme physiologique","Enquête ou étude épidémiologique simple","Débat argumenté (santé, éthique)","Recherche documentaire institutionnelle","Évaluation formative"];
-        const bphTle = ["Étude de cas clinique","TP ou manipulation (analyses biologiques, biochimiques)","Observation microscopique (lames, coupes histologiques)","Analyse de documents médicaux ou statistiques","Étude épidémiologique","Modélisation d’un mécanisme physiopathologique","Démarche de soins ou parcours de santé","Enquête santé publique","Débat éthique ou argumentation","Recherche documentaire institutionnelle","Tâche complexe","Évaluation formative ou bilan"];
+        const svtCollegeDebut = [
+          "Observation à l’œil nu ou à la loupe",
+          "Observation microscopique simple",
+          "Manipulation ou expérience simple",
+          "Dessin d’observation scientifique",
+          "Sortie nature ou étude de terrain",
+          "Activité documentaire (textes, photos)",
+          "Élevage ou culture en classe",
+          "Jeu, maquette ou modèle réduit",
+          "Débat argumenté",
+          "Recherche documentaire (CDI)",
+          "Bilan ou évaluation formative",
+        ];
+        const svtCollegeFin = [
+          "Observation microscopique (lames, préparations)",
+          "Dissection",
+          "Manipulation ou expérience (TP)",
+          "Activité documentaire (données, graphiques)",
+          "Modélisation (maquette, schéma fonctionnel)",
+          "Sortie de terrain ou étude de risque",
+          "Extraction d’ADN",
+          "Étude de cas",
+          "Débat argumenté (enjeux environnementaux, santé)",
+          "Recherche documentaire",
+          "Tâche complexe",
+          "Bilan ou évaluation formative",
+        ];
+        const svtLycee = [
+          "Manipulation ou expérience (TP)",
+          "Dissection ou observation anatomique",
+          "ExAO (expérimentation assistée par ordinateur)",
+          "Modélisation numérique (logiciel dédié)",
+          "Extraction et analyse d’ADN",
+          "Chromatographie ou électrophorèse",
+          "Activité documentaire (articles, données)",
+          "Exploitation de données chiffrées ou graphiques",
+          "Sortie de terrain ou étude géologique",
+          "Construction d’un arbre de parenté",
+          "Étude de cas",
+          "Démarche d’investigation",
+          "Débat argumenté ou question socialement vive",
+          "Recherche documentaire",
+          "Tâche complexe",
+          "Évaluation formative ou bilan",
+        ];
+        const spcCollegeDebut = [
+          "Expérience simple ou manipulation",
+          "Observation d’un phénomène",
+          "Mesure (masse, volume, température)",
+          "Construction d’un circuit électrique",
+          "Activité documentaire",
+          "Résolution de problème simple",
+          "Sécurité au laboratoire",
+          "Jeu ou maquette",
+          "Bilan ou évaluation formative",
+        ];
+        const spcCollegeFin = [
+          "Expérience ou manipulation (TP)",
+          "Mesure et exploitation de données",
+          "Modélisation (schéma, maquette)",
+          "Démarche d’investigation",
+          "Activité documentaire",
+          "Construction et lecture de graphiques",
+          "Résolution de problème scientifique",
+          "Sécurité et prévention des risques",
+          "Débat argumenté",
+          "Recherche documentaire",
+          "Bilan ou évaluation formative",
+        ];
+        const spcLycee = [
+          "Expérience ou manipulation (TP)",
+          "Dosage ou titrage",
+          "Synthèse chimique",
+          "Mesure avec capteurs ou ExAO",
+          "Modélisation ou simulation numérique",
+          "Démarche d’investigation",
+          "Résolution de problème scientifique",
+          "Activité documentaire",
+          "Exploitation et construction de graphiques",
+          "Étude de cas",
+          "Sécurité et prévention des risques",
+          "Débat scientifique ou argumentation",
+          "Recherche documentaire",
+          "Exercices d’application",
+          "Évaluation formative",
+        ];
+        const bph1re = [
+          "Étude de cas clinique",
+          "TP ou manipulation (analyses biologiques)",
+          "Observation microscopique (lames, coupes histologiques)",
+          "Analyse de documents médicaux ou statistiques",
+          "Modélisation d’un mécanisme physiologique",
+          "Enquête ou étude épidémiologique simple",
+          "Débat argumenté (santé, éthique)",
+          "Recherche documentaire institutionnelle",
+          "Évaluation formative",
+        ];
+        const bphTle = [
+          "Étude de cas clinique",
+          "TP ou manipulation (analyses biologiques, biochimiques)",
+          "Observation microscopique (lames, coupes histologiques)",
+          "Analyse de documents médicaux ou statistiques",
+          "Étude épidémiologique",
+          "Modélisation d’un mécanisme physiopathologique",
+          "Démarche de soins ou parcours de santé",
+          "Enquête santé publique",
+          "Débat éthique ou argumentation",
+          "Recherche documentaire institutionnelle",
+          "Tâche complexe",
+          "Évaluation formative ou bilan",
+        ];
         return {
-          SVT: { "6e": svtCollegeDebut, "5e": svtCollegeDebut, "4e": svtCollegeFin, "3e": svtCollegeFin, "2nde": svtLycee, "1re": svtLycee, Tle: svtLycee },
-          SPC: { "6e": spcCollegeDebut, "5e": spcCollegeDebut, "4e": spcCollegeFin, "3e": spcCollegeFin, "2nde": spcLycee, "1re": spcLycee, Tle: spcLycee },
+          SVT: {
+            "6e": svtCollegeDebut,
+            "5e": svtCollegeDebut,
+            "4e": svtCollegeFin,
+            "3e": svtCollegeFin,
+            "2nde": svtLycee,
+            "1re": svtLycee,
+            Tle: svtLycee,
+          },
+          SPC: {
+            "6e": spcCollegeDebut,
+            "5e": spcCollegeDebut,
+            "4e": spcCollegeFin,
+            "3e": spcCollegeFin,
+            "2nde": spcLycee,
+            "1re": spcLycee,
+            Tle: spcLycee,
+          },
           BPH: { "2nde": [], "1re": bph1re, Tle: bphTle },
         };
       })();
@@ -15644,7 +15825,7 @@
       }
 
       function sheetHasFixedCols(list) {
-        return Boolean(list && isTpForm(list));
+        return Boolean(list && (isTpForm(list) || isProgList(list)));
       }
 
       function zoneInsertBox(list) {
@@ -16173,7 +16354,7 @@
           .forEach((t) => {
             t.style.fontSize = state.fontPt + "pt";
           });
-          if (clearAutoFitFrames()) renderPreview();
+        if (clearAutoFitFrames()) renderPreview();
         requestAnimationFrame(fitStage);
       }
 
@@ -16199,13 +16380,18 @@
           state.thPt + "pt",
         );
         syncPtControl("thPt", "thPtVal", state.thPt, formatPt);
-        $("sheets").querySelectorAll("table.liste").forEach((table) => {
-          const block = table.closest(".list-block[data-lid]");
-          const list = block && state.lists.find(
-            (item) => String(item.id) === String(block.dataset.lid),
-          );
-          if (list) table.style.setProperty("--list-th-pt", listThPt(list) + "pt");
-        });
+        $("sheets")
+          .querySelectorAll("table.liste")
+          .forEach((table) => {
+            const block = table.closest(".list-block[data-lid]");
+            const list =
+              block &&
+              state.lists.find(
+                (item) => String(item.id) === String(block.dataset.lid),
+              );
+            if (list)
+              table.style.setProperty("--list-th-pt", listThPt(list) + "pt");
+          });
         requestAnimationFrame(fitStage);
       }
 
@@ -26058,7 +26244,9 @@
         const subject = tpOf(list).matiere || "SVT";
         const level = tpOf(list).niveau || "";
         const subjects = progThemeData && progThemeData.subjects;
-        return (subjects && subjects[subject] && subjects[subject][level]) || [];
+        return (
+          (subjects && subjects[subject] && subjects[subject][level]) || []
+        );
       }
 
       function progThemeButton(text, selected, onClick, onDoubleClick) {
@@ -26114,29 +26302,35 @@
         if (!themesEl || !subsEl || !chaptersEl || !progThemeTarget) return;
         const entries = progThemeEntries(progThemeTarget.list);
         const current = String(
-          progThemeTarget.list.rows[progThemeTarget.ri][progThemeTarget.ci] || "",
+          progThemeTarget.list.rows[progThemeTarget.ri][progThemeTarget.ci] ||
+            "",
         ).trim();
         const currentPlain = progThemePlainText(current);
-        const selectedTheme = progThemeTarget.theme || entries.find((item) =>
-          [item.theme].concat(item.subthemes || [], item.chapters || []).some(
-            (label) => currentPlain.indexOf(label) >= 0,
-          ),
-        );
-        const selectedEntry = selectedTheme && selectedTheme.theme
-          ? selectedTheme
-          : entries[0];
+        const selectedTheme =
+          progThemeTarget.theme ||
+          entries.find((item) =>
+            [item.theme]
+              .concat(item.subthemes || [], item.chapters || [])
+              .some((label) => currentPlain.indexOf(label) >= 0),
+          );
+        const selectedEntry =
+          selectedTheme && selectedTheme.theme ? selectedTheme : entries[0];
         if (!progThemeTarget.subtheme && selectedEntry) {
-          progThemeTarget.subtheme = (selectedEntry.subthemes || []).find(
-            (subtheme) => currentPlain.indexOf(subtheme) >= 0,
-          ) || null;
+          progThemeTarget.subtheme =
+            (selectedEntry.subthemes || []).find(
+              (subtheme) => currentPlain.indexOf(subtheme) >= 0,
+            ) || null;
         }
         themesEl.innerHTML = "";
         subsEl.innerHTML = "";
         chaptersEl.innerHTML = "";
         if (!entries.length) {
-          themesEl.innerHTML = '<div class="empty">Aucune donnée pour cette matière et ce niveau.</div>';
-          subsEl.innerHTML = '<div class="empty">Choisissez une autre matière ou un autre niveau.</div>';
-          chaptersEl.innerHTML = '<div class="empty">Vous pouvez utiliser le champ libre.</div>';
+          themesEl.innerHTML =
+            '<div class="empty">Aucune donnée pour cette matière et ce niveau.</div>';
+          subsEl.innerHTML =
+            '<div class="empty">Choisissez une autre matière ou un autre niveau.</div>';
+          chaptersEl.innerHTML =
+            '<div class="empty">Vous pouvez utiliser le champ libre.</div>';
           if (preview) preview.hidden = true;
           return;
         }
@@ -26156,23 +26350,32 @@
         const subthemes = (selectedEntry && selectedEntry.subthemes) || [];
         subthemes.forEach((subtheme) => {
           subsEl.appendChild(
-            progThemeButton(subtheme, currentPlain.indexOf(subtheme) >= 0, () => {
-              progThemeTarget.subtheme = subtheme;
-            }, () => chooseProgThemeValue(subtheme),
+            progThemeButton(
+              subtheme,
+              currentPlain.indexOf(subtheme) >= 0,
+              () => {
+                progThemeTarget.subtheme = subtheme;
+              },
+              () => chooseProgThemeValue(subtheme),
             ),
           );
         });
         if (!subthemes.length)
-          subsEl.innerHTML = '<div class="empty">Pas de sous-thème indiqué.</div>';
-        (selectedEntry && selectedEntry.chapters || []).forEach((chapter) => {
+          subsEl.innerHTML =
+            '<div class="empty">Pas de sous-thème indiqué.</div>';
+        ((selectedEntry && selectedEntry.chapters) || []).forEach((chapter) => {
           chaptersEl.appendChild(
-            progThemeButton(chapter, currentPlain.indexOf(chapter) >= 0, () => {}, () =>
-              chooseProgThemeValue(chapter),
+            progThemeButton(
+              chapter,
+              currentPlain.indexOf(chapter) >= 0,
+              () => {},
+              () => chooseProgThemeValue(chapter),
             ),
           );
         });
         if (!selectedEntry || !(selectedEntry.chapters || []).length)
-          chaptersEl.innerHTML = '<div class="empty">Pas de proposition pour ce thème.</div>';
+          chaptersEl.innerHTML =
+            '<div class="empty">Pas de proposition pour ce thème.</div>';
         if (preview) {
           preview.hidden = false;
           preview.innerHTML = "";
@@ -26181,7 +26384,9 @@
           preview.appendChild(strong);
           preview.appendChild(
             document.createTextNode(
-              [selectedEntry && selectedEntry.theme, current].filter(Boolean).join(" · "),
+              [selectedEntry && selectedEntry.theme, current]
+                .filter(Boolean)
+                .join(" · "),
             ),
           );
         }
@@ -26189,8 +26394,8 @@
 
       async function loadProgThemeData() {
         const urls = [
-          "https://michawaro.github.io/epicsv/progression-themes.json",
           new URL("progression-themes.json", document.baseURI).href,
+          "https://michawaro.github.io/epicsv/progression-themes.json",
         ];
         for (const url of urls) {
           try {
@@ -26225,16 +26430,29 @@
         progThemeTarget = { list: list, ri: ri, ci: ci, theme: null };
         const title = $("progThemeTitle");
         const source = $("progThemeSource");
-        if (title) title.textContent = "Choisir un thème / chapitre · " + (tpOf(list).matiere || "SVT") + " " + (tpOf(list).niveau || "");
+        if (title)
+          title.textContent =
+            "Choisir un thème / chapitre · " +
+            (tpOf(list).matiere || "SVT") +
+            " " +
+            (tpOf(list).niveau || "");
         if (source) source.textContent = "Chargement des thèmes et chapitres…";
         modal.hidden = false;
         if (progThemeDlgRestore) progThemeDlgRestore();
         progThemeDlgRestore = attachDialog(modal, closeProgThemeModal);
         if (!progThemeDataLoaded) await loadProgThemeData();
-        if (!progThemeTarget || progThemeTarget.list !== list || progThemeTarget.ri !== ri || progThemeTarget.ci !== ci) return;
-        if (source) source.textContent = progThemeData
-          ? progThemeData.source || "Programmes officiels et compléments pédagogiques."
-          : "Données indisponibles. Vous pouvez saisir un thème ou un chapitre personnalisé.";
+        if (
+          !progThemeTarget ||
+          progThemeTarget.list !== list ||
+          progThemeTarget.ri !== ri ||
+          progThemeTarget.ci !== ci
+        )
+          return;
+        if (source)
+          source.textContent = progThemeData
+            ? progThemeData.source ||
+              "Programmes officiels et compléments pédagogiques."
+            : "Données indisponibles. Vous pouvez saisir un thème ou un chapitre personnalisé.";
         renderProgThemeModal();
       }
 
@@ -26242,8 +26460,16 @@
         const subject = tpOf(list).matiere || "SVT";
         const level = tpOf(list).niveau || "";
         const activities =
-          (progThemeData && progThemeData.activities) || PROG_ACTIVITIES_FALLBACK;
-        return (activities && activities[subject] && activities[subject][level]) || [];
+          (progThemeData && progThemeData.activities) ||
+          PROG_ACTIVITIES_FALLBACK;
+        const tpActivities =
+          (progThemeData && progThemeData.tpActivities) || {};
+        return {
+          tp: (tpActivities[subject] && tpActivities[subject][level]) || [],
+          other:
+            (activities && activities[subject] && activities[subject][level]) ||
+            [],
+        };
       }
 
       function closeProgActiviteModal() {
@@ -26259,34 +26485,68 @@
       function chooseProgActiviteValue(value) {
         const target = progActiviteTarget;
         if (!target || !target.list || !target.list.rows[target.ri]) return;
+        const nextValue = String(value || "").trim();
+        if (!nextValue) return;
+        const currentValue = progThemePlainText(
+          target.list.rows[target.ri][target.ci] || "",
+        ).trim();
+        const currentEntries = currentValue
+          ? currentValue
+              .split(/\n+/)
+              .map((entry) => entry.trim())
+              .filter(Boolean)
+          : [];
+        if (currentEntries.includes(nextValue)) return;
         pushHist();
-        target.list.rows[target.ri][target.ci] = String(value || "").trim();
-        closeProgActiviteModal();
+        target.list.rows[target.ri][target.ci] = currentEntries.length
+          ? currentEntries.concat(nextValue).join("\n")
+          : nextValue;
+        renderProgActiviteModal();
         renderPreview();
       }
 
       function renderProgActiviteModal() {
         const listEl = $("progActiviteList");
         if (!listEl || !progActiviteTarget) return;
-        const entries = progActiviteEntries(progActiviteTarget.list);
+        const groups = progActiviteEntries(progActiviteTarget.list);
         const current = progThemePlainText(
-          progActiviteTarget.list.rows[progActiviteTarget.ri][progActiviteTarget.ci] || "",
+          progActiviteTarget.list.rows[progActiviteTarget.ri][
+            progActiviteTarget.ci
+          ] || "",
         );
         listEl.innerHTML = "";
-        if (!entries.length) {
-          listEl.innerHTML = '<div class="empty">Aucune proposition pour cette matière et ce niveau. Vous pouvez utiliser le champ libre.</div>';
-          return;
+        const appendGroup = (label, entries) => {
+          if (!entries.length) return;
+          const heading = document.createElement("h5");
+          heading.textContent = label;
+          listEl.appendChild(heading);
+          entries.forEach((entry) => {
+            const partie = typeof entry === "string" ? "" : entry.partie;
+            const activities =
+              typeof entry === "string" ? [entry] : entry.items || [];
+            if (partie) {
+              const partieHeading = document.createElement("h6");
+              partieHeading.textContent = partie;
+              listEl.appendChild(partieHeading);
+            }
+            activities.forEach((activite) => {
+              listEl.appendChild(
+                progThemeButton(
+                  activite,
+                  current.indexOf(activite) >= 0,
+                  () => {},
+                  () => chooseProgActiviteValue(activite),
+                ),
+              );
+            });
+          });
+        };
+        appendGroup("Propositions de TP par partie", groups.tp);
+        appendGroup("Autres propositions", groups.other);
+        if (!groups.tp.length && !groups.other.length) {
+          listEl.innerHTML =
+            '<div class="empty">Aucune proposition pour cette matière et ce niveau. Vous pouvez utiliser le champ libre.</div>';
         }
-        entries.forEach((activite) => {
-          listEl.appendChild(
-            progThemeButton(
-              activite,
-              current.indexOf(activite) >= 0,
-              () => {},
-              () => chooseProgActiviteValue(activite),
-            ),
-          );
-        });
       }
 
       async function openProgActiviteModal(anchor, list) {
@@ -26306,14 +26566,27 @@
         progActiviteTarget = { list: list, ri: ri, ci: ci };
         const title = $("progActiviteTitle");
         const source = $("progActiviteSource");
-        if (title) title.textContent = "Choisir une activité · " + (tpOf(list).matiere || "SVT") + " " + (tpOf(list).niveau || "");
+        if (title)
+          title.textContent =
+            "Choisir une activité · " +
+            (tpOf(list).matiere || "SVT") +
+            " " +
+            (tpOf(list).niveau || "");
         if (source) source.textContent = "Chargement des activités…";
         modal.hidden = false;
         if (progActiviteDlgRestore) progActiviteDlgRestore();
         progActiviteDlgRestore = attachDialog(modal, closeProgActiviteModal);
         if (!progThemeDataLoaded) await loadProgThemeData();
-        if (!progActiviteTarget || progActiviteTarget.list !== list || progActiviteTarget.ri !== ri || progActiviteTarget.ci !== ci) return;
-        if (source) source.textContent = "Activités classiques, proposées selon la matière et le niveau.";
+        if (
+          !progActiviteTarget ||
+          progActiviteTarget.list !== list ||
+          progActiviteTarget.ri !== ri ||
+          progActiviteTarget.ci !== ci
+        )
+          return;
+        if (source)
+          source.textContent =
+            "Double-cliquez sur une proposition pour l'ajouter à la case sélectionnée. Plusieurs ajouts sont possibles.";
         renderProgActiviteModal();
       }
 
@@ -26350,9 +26623,11 @@
         const themeCell = e.target.closest('td[data-tp-field="theme"]');
         if (themeCell) {
           const block = themeCell.closest(".list-block[data-lid]");
-          const list = block && state.lists.find(
-            (item) => String(item.id) === String(block.dataset.lid),
-          );
+          const list =
+            block &&
+            state.lists.find(
+              (item) => String(item.id) === String(block.dataset.lid),
+            );
           if (list && isProgList(list)) {
             e.preventDefault();
             e.stopPropagation();
@@ -26363,9 +26638,11 @@
         const activiteCell = e.target.closest('td[data-tp-field="activite"]');
         if (activiteCell) {
           const block = activiteCell.closest(".list-block[data-lid]");
-          const list = block && state.lists.find(
-            (item) => String(item.id) === String(block.dataset.lid),
-          );
+          const list =
+            block &&
+            state.lists.find(
+              (item) => String(item.id) === String(block.dataset.lid),
+            );
           if (list && isProgList(list)) {
             e.preventDefault();
             e.stopPropagation();
